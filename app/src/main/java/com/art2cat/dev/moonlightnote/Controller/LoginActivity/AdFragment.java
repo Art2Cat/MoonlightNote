@@ -46,6 +46,8 @@ public class AdFragment extends Fragment {
 
 
         adView.loadAd(request);
+
+        //if ()
         return mView;
     }
 

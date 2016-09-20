@@ -4,21 +4,18 @@ package com.art2cat.dev.moonlightnote.Controller.LoginActivity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.LoaderManager;
-import android.content.CursorLoader;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
+import android.support.v7.widget.AppCompatImageButton;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -26,31 +23,55 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.art2cat.dev.moonlightnote.Firebase.AuthTools;
+import com.art2cat.dev.moonlightnote.Controller.MoonlightActivity.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.Utils.SPUtils;
+import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.Manifest.permission.READ_CONTACTS;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LoginFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private View mView;
+public class LoginFragment extends Fragment implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
+    protected View mView;
+    private Toolbar mToolbar;
     private AppCompatAutoCompleteTextView mEmailView;
     private AppCompatEditText mPasswordView;
     private AppCompatButton mRegister;
     private AppCompatButton mLogin;
+    private AppCompatImageButton mLogin_Google;
     private View mProgressView;
     private View mLoginFormView;
-    private AuthTools authTools;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference myReference;
+    private GoogleApiClient mGoogleApiClient;
+    private GoogleSignInOptions mGoogleSignInOptions;
     private int flag = 0;
+    private boolean signUp_state;
+    private static final int RC_SIGN_IN = 9001;
+    private static final String USER_G = "google";
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -67,8 +88,9 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        authTools = new AuthTools(getActivity());
-        authTools.signIn();
+        mAuth = FirebaseAuth.getInstance();
+        myReference = FirebaseDatabase.getInstance().getReference();
+        signIn();
     }
 
     @Override
@@ -77,7 +99,13 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_login, null);
         mEmailView = (AppCompatAutoCompleteTextView) mView.findViewById(R.id.email);
-        populateAutoComplete();
+
+        mToolbar = (Toolbar) mView.findViewById(R.id.toolbar);
+        if (mToolbar != null) {
+            ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+            mToolbar.setTitle(null);
+            Log.i(TAG, "onCreateView: ");
+        }
 
         mPasswordView = (AppCompatEditText) mView.findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -92,87 +120,50 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
         });
 
         mRegister = (AppCompatButton) mView.findViewById(R.id.email_sign_in_button);
-        mRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                flag = 2;
-                attemptLogin();
-            }
-        });
         mLogin = (AppCompatButton) mView.findViewById(R.id.email_sign_up_button);
-        mLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                flag = 1;
-                attemptLogin();
-            }
-        });
+        mLogin_Google = (AppCompatImageButton) mView.findViewById(R.id.login_google_btn);
+        mRegister.setOnClickListener(this);
+        mLogin.setOnClickListener(this);
+        mLogin_Google.setOnClickListener(this);
 
         mLoginFormView = mView.findViewById(R.id.login_form);
-        mProgressView = mView.findViewById(R.id.login_progress);
+        //mProgressView = mView.findViewById(R.id.login_progress);
         return mView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        authTools.addListener();
+        addListener();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mGoogleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getActivity().getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                .enableAutoManage(getActivity() /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, mGoogleSignInOptions)
+                .build();
+
+        Log.d(TAG, "233: " + mGoogleApiClient.toString());
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        authTools.removeListener();
+        removeListener();
+        mGoogleApiClient.disconnect();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
     }
-
-    private void populateAutoComplete() {
-        if (!mayRequestContacts()) {
-            return;
-        }
-
-        getActivity().getLoaderManager().initLoader(0, null, this);
-    }
-
-    private boolean mayRequestContacts() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return true;
-        }
-        if (getActivity().checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(android.R.string.ok, new View.OnClickListener() {
-                        @Override
-                        @TargetApi(Build.VERSION_CODES.M)
-                        public void onClick(View v) {
-                            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-                        }
-                    });
-        } else {
-            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
-        }
-        return false;
-    }
-
-    /**
-     * Callback received when a permissions request has been completed.
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_READ_CONTACTS) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                populateAutoComplete();
-            }
-        }
-    }
-
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -217,14 +208,11 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
         } else {
             showProgress(true);
             if (flag == 1) {
-                boolean s = authTools.signUp(email, password);
-                if (s) {
-                    Log.d(TAG, "signUp success");
-                }
+                signUp(email, password);
                 showProgress(false);
                 flag = 2;
             } else if (flag == 2) {
-                authTools.signInWithEmail(email, password);
+                signInWithEmail(email, password);
                 showProgress(false);
                 //Intent intent = new Intent(getActivity(), MoonlightActivity.class);
                 //startActivity(intent);
@@ -277,57 +265,144 @@ public class LoginFragment extends Fragment implements LoaderManager.LoaderCallb
     }
 
     @Override
-    public android.content.Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(getActivity(),
-                // Retrieve data rows for the device user's 'profile' contact.
-                Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
-                        ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-                // Select only email addresses.
-                ContactsContract.Contacts.Data.MIMETYPE +
-                        " = ?", new String[]{ContactsContract.CommonDataKinds.Email
-                .CONTENT_ITEM_TYPE},
-
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
-                ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
-    }
-
-    @Override
-    public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor data) {
-        List<String> emails = new ArrayList<>();
-        data.moveToFirst();
-        while (!data.isAfterLast()) {
-            emails.add(data.getString(ProfileQuery.ADDRESS));
-            data.moveToNext();
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            Log.d(TAG, "onActivityResult: " + result.getStatus());
+            if (result.isSuccess()) {
+                GoogleSignInAccount account = result.getSignInAccount();
+                firebaseAuthWithGoogle(account);
+            } else {
+                SnackBarUtils.shortSnackBar(mView, "Google Sign In failed", SnackBarUtils.TYPE_INFO).show();
+                Log.d(TAG, "Google Sign In failed");
+            }
         }
-
-        addEmailsToAutoComplete(emails);
     }
 
     @Override
-    public void onLoaderReset(android.content.Loader<Cursor> loader) {
-
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.email_sign_in_button:
+                flag = 1;
+                attemptLogin();
+                break;
+            case R.id.email_sign_up_button:
+                flag = 2;
+                attemptLogin();
+                break;
+            case R.id.login_google_btn:
+                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+                break;
+        }
     }
 
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(getActivity(),
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        mEmailView.setAdapter(adapter);
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        SnackBarUtils.shortSnackBar(mView, connectionResult.getErrorMessage(),
+                SnackBarUtils.TYPE_ALERT).show();
     }
 
-    private interface ProfileQuery {
-        String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
+    public void signIn() {
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    SPUtils.putString(getActivity(), "User", "Id", user.getUid());
+                    User user1 = new User(user.getDisplayName(), user.getEmail(), user.getUid());
+                    createUser(user.getUid(), user1);
+                } else {
+                    Log.d(TAG, "onAuthStateChanged:signed_out:");
+                }
+            }
         };
-
-        int ADDRESS = 0;
-        int IS_PRIMARY = 1;
     }
 
+    public void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "signInWithCredential", task.getException());
+                            SnackBarUtils.shortSnackBar(mView, "Authentication failed.",
+                                    SnackBarUtils.TYPE_WARNING).show();
+                        } else {
+                            SnackBarUtils.shortSnackBar(mView, "Google Sign In successed", SnackBarUtils.TYPE_INFO).show();
+                        }
+                    }
+                });
+    }
+
+    public void signInWithEmail(final String email, final String password) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Intent intent = new Intent(getActivity(), MoonlightActivity.class);
+                            getActivity().startActivity(intent);
+                            //销毁当前Activity
+                            getActivity().finish();
+                            Log.d(TAG, "signIn:onComplete:" + task.isSuccessful());
+                        } else {
+                            SnackBarUtils.shortSnackBar(mView, "Sign In Failed",
+                                    SnackBarUtils.TYPE_WARNING).show();
+                        }
+                    }
+                });
+    }
+
+    public void signUp(String email, String password) {
+
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            signUp_state = true;
+                        } else {
+                            signUp_state = false;
+                            SnackBarUtils.shortSnackBar(mView, "Sign Up Failed",
+                                    SnackBarUtils.TYPE_WARNING).show();
+                        }
+                    }
+                });
+    }
+
+    public void addListener() {
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    public void removeListener() {
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
+    public void createUser(String userId, User user) {
+        Log.d(TAG, "createUser: ");
+        myReference.child("user").push();
+
+        Map<String, Object> userValues = user.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/user/" + userId, userValues);
+
+        myReference.updateChildren(childUpdates);
+    }
 
 }

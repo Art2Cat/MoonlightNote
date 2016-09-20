@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "301624616393-m6c5damk7b044skg4k5snqkmp21ih2p1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.art2cat.dev.moonlightnote",
+            "certificate_hash": "368678D5DA46F7BC8DCE7EC29436FCD8655A1265"
+          }
+        },
+        {
           "client_id": "301624616393-qpeibc3aqlrnskli7re50cagr3t7gscn.apps.googleusercontent.com",
           "client_type": 3
         }

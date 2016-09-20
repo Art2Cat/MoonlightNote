@@ -8,7 +8,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 
 import com.art2cat.dev.moonlightnote.Controller.MoonlightActivity.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.Constants;
@@ -21,6 +23,7 @@ import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
+    private Toolbar mToolbar;
     private FragmentManager mFragmentManager;
     private boolean mLoginState = false;
 
@@ -38,6 +41,9 @@ public class LoginActivity extends AppCompatActivity {
             signIn();
         }
 
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        //mToolbar.setVisibility(View.INVISIBLE);
+
         mFragmentManager = getSupportFragmentManager();
         Fragment fragment = mFragmentManager.findFragmentById(R.id.login_fragmentContainer);
 
@@ -49,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
                 mFragmentManager.beginTransaction()
                         .add(R.id.login_fragmentContainer, fragment)
                         .commit();
+                mToolbar.setVisibility(View.VISIBLE);
             }
         } else {
             //在这里首先加载一个含有广告的fragment
@@ -61,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
 
             //创建handler对象，调用postDelayed()方法，使广告显示3秒钟
             Handler handler = new Handler();
-            handler.postDelayed(new UpdateUI(), 5000);
+            handler.postDelayed(new UpdateUI(), 3000);
         }
     }
 
@@ -100,9 +107,11 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             } else {
                 Fragment fragment = new LoginFragment();
+                //mFragmentManager.beginTransaction().remove()
                 mFragmentManager.beginTransaction()
                         .replace(R.id.login_fragmentContainer, fragment)
                         .commit();
+                mToolbar.setVisibility(View.VISIBLE);
             }
         }
 
