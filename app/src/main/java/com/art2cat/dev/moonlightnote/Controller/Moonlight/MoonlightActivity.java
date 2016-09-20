@@ -1,8 +1,9 @@
-package com.art2cat.dev.moonlightnote.Controller.MoonlightActivity;
+package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -19,15 +20,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.art2cat.dev.moonlightnote.Controller.LoginActivity.LoginActivity;
-import com.art2cat.dev.moonlightnote.Controller.MoonlightDetialActivity.MoonlightDetailActivity;
+import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
+import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
+import com.art2cat.dev.moonlightnote.Controller.User.UserActivity;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.CustomSpinner;
+import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,6 +36,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.widget.AdapterView.OnItemSelectedListener;
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
@@ -47,7 +50,7 @@ public class MoonlightActivity extends AppCompatActivity
     private ToggleButton mToggleButton;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private ImageView iv;
+    private CircleImageView mCircleImageView;
     private boolean userIsInteracting;
     private TextView emailTV;
     private TextView nickTV;
@@ -206,12 +209,13 @@ public class MoonlightActivity extends AppCompatActivity
         });
 
         //头像实例化
-        iv = (ImageView) headerView.findViewById(R.id.imageView);
+        mCircleImageView = (CircleImageView) headerView.findViewById(R.id.imageView);
         //设置点击头像事件启动LoginActivity
-        iv.setOnClickListener(new View.OnClickListener() {
+        mCircleImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MoonlightActivity.this, "None Action here Now!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MoonlightActivity.this, UserActivity.class));
+                //Toast.makeText(MoonlightActivity.this, "None Action here Now!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -288,7 +292,7 @@ public class MoonlightActivity extends AppCompatActivity
             // Name, email address, and profile photo Url
             String name = user.getDisplayName();
             String email = user.getEmail();
-            //Uri photoUrl = user.getPhotoUrl();
+            Uri photoUrl = user.getPhotoUrl();
 
             // The user's ID, unique to the Firebase project. Do NOT use this value to
             // authenticate with your backend server, if you have one. Use
@@ -301,6 +305,13 @@ public class MoonlightActivity extends AppCompatActivity
 
             if (email != null) {
                 emailTV.setText(email);
+            }
+
+            if (photoUrl != null) {
+                BitmapUtils bitmapUtils = new BitmapUtils();
+                String url = photoUrl.toString();
+                Log.d(TAG, "getUserInfo: " + url);
+                bitmapUtils.display(mCircleImageView, url);
             }
         }
     }

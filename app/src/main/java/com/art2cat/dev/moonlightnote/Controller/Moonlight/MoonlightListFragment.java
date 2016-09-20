@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.MoonlightActivity;
+package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
 import android.app.Fragment;
 import android.content.res.Configuration;

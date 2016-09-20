@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.MoonlightActivity;
+package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
 import android.content.Context;
 import android.support.v7.widget.CardView;

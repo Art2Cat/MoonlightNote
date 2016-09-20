@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.LoginActivity;
+package com.art2cat.dev.moonlightnote.Controller.Login;
 
 
 import android.animation.Animator;
@@ -25,7 +25,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
-import com.art2cat.dev.moonlightnote.Controller.MoonlightActivity.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
@@ -341,7 +341,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                             SnackBarUtils.shortSnackBar(mView, "Authentication failed.",
                                     SnackBarUtils.TYPE_WARNING).show();
                         } else {
+                            Intent intent = new Intent(getActivity(), MoonlightActivity.class);
+                            getActivity().startActivity(intent);
                             SnackBarUtils.shortSnackBar(mView, "Google Sign In successed", SnackBarUtils.TYPE_INFO).show();
+                            getActivity().finish();
                         }
                     }
                 });

@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.art2cat.dev.moonlightnote.Controller.MoonlightActivity.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;

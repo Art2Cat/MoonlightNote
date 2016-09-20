@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.LoginActivity;
+package com.art2cat.dev.moonlightnote.Controller.Login;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
-import com.art2cat.dev.moonlightnote.Controller.MoonlightActivity.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;

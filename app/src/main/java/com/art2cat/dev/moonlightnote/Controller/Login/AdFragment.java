@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.LoginActivity;
+package com.art2cat.dev.moonlightnote.Controller.Login;
 
 
 import android.os.Bundle;
