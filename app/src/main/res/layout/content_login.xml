@@ -7,5 +7,5 @@
     android:id="@+id/login_fragmentContainer"
     android:padding="16dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".Controller.LoginActivity.LoginActivity"
+    tools:context=".Controller.Login.LoginActivity"
     tools:showIn="@layout/app_bar_main" />

@@ -3,7 +3,7 @@
     android:id="@+id/login_form"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Controller.LoginActivity.LoginActivity"
+    tools:context=".Controller.Login.LoginActivity"
     tools:showIn="@layout/fragment_login">
 
     <android.support.v7.widget.LinearLayoutCompat

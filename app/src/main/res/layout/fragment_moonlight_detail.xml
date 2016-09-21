@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.art2cat.dev.moonlightnote.Controller.MoonlightDetialActivity.MoonlightDetailFragment">
+    tools:context="com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailFragment">
 
 
     <android.support.design.widget.TextInputLayout

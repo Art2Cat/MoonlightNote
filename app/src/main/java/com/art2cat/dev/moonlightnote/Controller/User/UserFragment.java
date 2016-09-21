@@ -38,7 +38,7 @@ public class UserFragment extends Fragment {
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         String photoUri = mUser.getPhotoUrl().toString();
         if (photoUri != null) {
-            BitmapUtils bitmapUtils = new BitmapUtils();
+            BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
             bitmapUtils.display(mCircleImageView, photoUri);
         }
         return mView;

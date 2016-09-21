@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote.Utils.ImageLoader;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.widget.ImageView;
@@ -15,9 +16,9 @@ public class BitmapUtils {
     private LocalCacheUtils mLocalCacheUtils;
     private MemoryCacheUtils mMemoryCacheUtils;
 
-    public BitmapUtils() {
+    public BitmapUtils(Context context) {
         mMemoryCacheUtils = new MemoryCacheUtils();
-        mLocalCacheUtils = new LocalCacheUtils();
+        mLocalCacheUtils = new LocalCacheUtils(context);
         mNetCacheUtils = new NetCacheUtils(mLocalCacheUtils, mMemoryCacheUtils);
     }
 

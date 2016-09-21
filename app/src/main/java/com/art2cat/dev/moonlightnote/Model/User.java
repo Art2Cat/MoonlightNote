@@ -1,5 +1,7 @@
 package com.art2cat.dev.moonlightnote.Model;
 
+import android.net.Uri;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,15 +13,26 @@ public class User {
     public String username;
     public String email;
     public String uid;
+    public Uri avatarUrl;
+    public UserConfig userConfig;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String username, String email, String uid) {
+    public User(String username, String email, String uid, Uri avatarUrl) {
         this.username = username;
         this.email = email;
         this.uid = uid;
+        this.avatarUrl = avatarUrl;
+    }
+
+    public UserConfig getUserConfig() {
+        return userConfig;
+    }
+
+    public void setUserConfig(UserConfig userConfig) {
+        this.userConfig = userConfig;
     }
 
     public String getUid() {
@@ -35,6 +48,8 @@ public class User {
         result.put("nickname", username);
         result.put("email", email);
         result.put("uid", uid);
+        result.put("avatarUrl", avatarUrl );
+        result.put("userConfig", userConfig);
 
         return result;
     }

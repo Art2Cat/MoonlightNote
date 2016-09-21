@@ -308,7 +308,7 @@ public class MoonlightActivity extends AppCompatActivity
             }
 
             if (photoUrl != null) {
-                BitmapUtils bitmapUtils = new BitmapUtils();
+                BitmapUtils bitmapUtils = new BitmapUtils(MoonlightActivity.this);
                 String url = photoUrl.toString();
                 Log.d(TAG, "getUserInfo: " + url);
                 bitmapUtils.display(mCircleImageView, url);

@@ -314,7 +314,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     SPUtils.putString(getActivity(), "User", "Id", user.getUid());
-                    User user1 = new User(user.getDisplayName(), user.getEmail(), user.getUid());
+                    User user1 = new User(user.getDisplayName(), user.getEmail(), user.getUid(), user.getPhotoUrl());
+
                     createUser(user.getUid(), user1);
                 } else {
                     Log.d(TAG, "onAuthStateChanged:signed_out:");

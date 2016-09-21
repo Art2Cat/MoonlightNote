@@ -130,5 +130,6 @@
     <string name="title_activity_moonlight">MoonlightActivity</string>
     <string name="menu_login">Add account</string>
     <string name="menu_logout">Remove active account</string>
+    <string name="dialog_enter_new_label">Enter new label</string>
 
 </resources>

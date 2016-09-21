@@ -24,6 +24,7 @@ public class NetCacheUtils {
 
     /**
      * 从网络下载图片
+     *
      * @param ivPic 显示图片的imageview
      * @param url   下载图片的网络地址
      */
@@ -34,6 +35,7 @@ public class NetCacheUtils {
 
     /**
      * 网络下载图片
+     *
      * @param url
      * @return
      */
@@ -78,6 +80,7 @@ public class NetCacheUtils {
 
         /**
          * 后台耗时操作,存在于子线程中
+         *
          * @param params
          * @return
          */
@@ -91,6 +94,7 @@ public class NetCacheUtils {
 
         /**
          * 更新进度,在主线程中
+         *
          * @param values
          */
         @Override
@@ -100,6 +104,7 @@ public class NetCacheUtils {
 
         /**
          * 耗时方法结束后执行该方法,主线程中
+         *
          * @param result
          */
         @Override
