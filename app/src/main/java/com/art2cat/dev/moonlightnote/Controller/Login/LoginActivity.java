@@ -14,10 +14,15 @@ import android.view.View;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.Constants;
+import com.art2cat.dev.moonlightnote.Model.UserConfig;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
+import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
@@ -70,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
             Handler handler = new Handler();
             handler.postDelayed(new UpdateUI(), 3000);
         }
+
     }
 
     @Override
@@ -124,6 +130,8 @@ public class LoginActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+
+
                     mLoginState = true;
                 } else {
                     mLoginState = false;

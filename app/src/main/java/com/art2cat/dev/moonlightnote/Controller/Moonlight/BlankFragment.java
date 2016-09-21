@@ -18,7 +18,7 @@ import android.widget.Toast;
 import com.art2cat.dev.moonlightnote.Firebase.DbTools;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.Utils;
+import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -170,7 +170,8 @@ public class BlankFragment extends Fragment {
                         }
                         Log.d(TAG, "onDataChange: " + mData.size());
                     } else {
-                        Utils.displaySnackBar(view, "absolutely none data here!");
+                        SnackBarUtils.shortSnackBar(view, "absolutely none data here!",
+                                SnackBarUtils.TYPE_INFO).show();
                     }
 
                     MoonlightAdapter ad = new MoonlightAdapter(getActivity(), mData);

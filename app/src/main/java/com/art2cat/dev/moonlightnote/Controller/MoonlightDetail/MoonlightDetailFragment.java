@@ -2,9 +2,9 @@ package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
 
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -27,23 +27,17 @@ import android.widget.ArrayAdapter;
 import com.art2cat.dev.moonlightnote.Firebase.DbTools;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
-import com.art2cat.dev.moonlightnote.Model.UserConfig;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.Bus.BusAction;
 import com.art2cat.dev.moonlightnote.Utils.Bus.BusProvider;
+import com.art2cat.dev.moonlightnote.Utils.CustomSpinner;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
+import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.squareup.otto.Subscribe;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -60,20 +54,22 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
     private AppCompatTextView mDate;
     private AppCompatImageButton mCamera;
     private AppCompatImageButton mAudio;
-    private AppCompatSpinner mLabelSpinner;
+    private CustomSpinner mLabelSpinner;
     private AppCompatSpinner mColor;
+    private ArrayAdapter<String> mArrayAdapter;
 
     private Moonlight moonlight;
     private DbTools mDbTools;
     private String userId;
 
     private String mLabel;
-    private List<String> mLabelList = new ArrayList<>();
 
 
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mStorageReference;
 
+    private static final int SPINNER_TYPE_LABEL = 1;
+    private static final int SPINNER_TYPE_COLOR = 2;
     private static final String TAG = "MoonlightDetailFragment";
 
     public MoonlightDetailFragment() {
@@ -84,6 +80,7 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //获取Bus单例，并注册
         BusProvider.getInstance().register(this);
         userId = SPUtils.getString(getActivity(), "User", "Id", null);
         mDbTools = new DbTools(getActivity(), userId);
@@ -92,7 +89,6 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
         mStorageReference = mFirebaseStorage.getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE);
         long date = System.currentTimeMillis();
         moonlight.setDate(date);
-        moonlight.setLabel("Default");
     }
 
     @Override
@@ -105,10 +101,10 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
         mDate = (AppCompatTextView) mView.findViewById(R.id.bottomBar_date);
         Date date = new Date(System.currentTimeMillis());
         mDate.setText(Utils.dateFormat(date));
-        mLabelSpinner = (AppCompatSpinner) mView.findViewById(R.id.bottomBar_label);
+        mLabelSpinner = (CustomSpinner) mView.findViewById(R.id.bottomBar_label);
         mColor = (AppCompatSpinner) mView.findViewById(R.id.bottomBar_color);
 
-        displaySpinner(mLabelSpinner, 1);
+        displaySpinner(mLabelSpinner, SPINNER_TYPE_LABEL);
 
         mLabelSpinner.setOnItemSelectedListener(this);
 
@@ -194,30 +190,36 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
         super.onDestroy();
     }
 
-    private void displaySpinner(AppCompatSpinner spinner, int type) {
-        if (type == 1) {
-            UserConfig userConfig = readUserConfig();
-            if (userConfig != null) {
-                List<String> data = userConfig.getLabels();
-                data.add("New Label");
-                mLabelList = data;
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(),
-                        android.R.layout.simple_spinner_item, mLabelList);
-                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    private void displaySpinner(CustomSpinner spinner, int type) {
+        switch (type) {
+            case 1:
+                try {
+                    List<String> data;
+                    data = UserConfigUtils.readLabelFromUserConfig(getActivity());
+                    if (data != null) {
+                        mArrayAdapter = new ArrayAdapter<String>(getActivity(),
+                                android.R.layout.simple_spinner_item, data);
+                        mArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-                spinner.setAdapter(arrayAdapter);
-            } else {
-                List<String> data = new ArrayList<String>();
-                data.add("Default");
-                data.add("New Label");
-                mLabelList = data;
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(),
-                        android.R.layout.simple_spinner_item, mLabelList);
-                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                Log.d(TAG, "displaySpinner: " + data.size());
-                spinner.setAdapter(arrayAdapter);
-            }
-
+                        spinner.setAdapter(mArrayAdapter);
+                        spinner.setSelection(1);
+                    } else {
+                        data = new ArrayList<String>();
+                        data.add("Default");
+                        data.add("New Label");
+                        UserConfigUtils.writeLabelToUserConfig(getActivity(), data);
+                        mArrayAdapter = new ArrayAdapter<String>(getActivity(),
+                                android.R.layout.simple_spinner_item, data);
+                        mArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        Log.d(TAG, "displaySpinner: " + data.size());
+                        spinner.setAdapter(mArrayAdapter);
+                    }
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 2:
+                break;
         }
     }
 
@@ -226,44 +228,26 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
         return label;
     }
 
-    private void addNewLabelToList(String label) {
-        if (label != null) {
-            mLabelList.remove(mLabelList.size() - 1);
-            mLabelList.add(label);
-            writeUserConfig(mLabelList);
+    /**
+     * 添加新标签到标签列表中
+     *
+     * @param label 需要添加的标签
+     */
+    private void addNewLabelToList(@NonNull String label) {
+        //从本地读取用户配置信息，当用户信息不为空时，将新标签写入用户配置中。
+        List<String> data = UserConfigUtils.readLabelFromUserConfig(getActivity());
+        if (data != null) {
+            data.add(label);
+            Log.d(TAG, "addNewLabelToList: ");
+            UserConfigUtils.writeLabelToUserConfig(getActivity(), data);
+        } else {
+            Log.d(TAG, "addNewLabelToList: " + data);
         }
+
     }
 
 
-    public void writeUserConfig(List<String> labelList) {
-        UserConfig userConfig = new UserConfig();
-        userConfig.setLabels(labelList);
-        //获取userConfig文件目录
-        String userConfigFile = getActivity().getDir("userConfig", Context.MODE_PRIVATE).getPath();
 
-        try (Writer writer = new FileWriter(userConfigFile + "/UserConfig.json")) {
-            Gson gson = new GsonBuilder().create();
-            gson.toJson(userConfig, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Nullable
-    private UserConfig readUserConfig() {
-        String userConfigFile = getActivity().getDir("userConfig", Context.MODE_PRIVATE).getPath();
-
-        try (Reader reader = new FileReader(userConfigFile + "/UserConfig.json")) {
-            Gson gson = new Gson();
-            //从Gson文件中解析UserConfig类
-            UserConfig userConfig = gson.fromJson(reader, UserConfig.class);
-
-            return userConfig;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     private void uploadUserConfig() {
         StorageReference userConfigRef = mStorageReference.child("userConfig");
@@ -271,12 +255,13 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (mLabelList.size() - 1 != position) {
-            String label = mLabelList.get(position);
-            moonlight.setLabel(label);
-        } else {
-            showLabelDialog();
-            //addNewLabelToList(getActivity().getIntent().getStringExtra("label"));
+        String item = mArrayAdapter.getItem(position);
+        if (item != null) {
+            if (item.equals("New Label")) {
+                showLabelDialog();
+            } else {
+                moonlight.setLabel(item);
+            }
         }
     }
 
@@ -296,7 +281,9 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
         //这里更新视图或者后台操作,从TestAction获取传递参数.
         if (busAction.getString() != null) {
             //
+            mArrayAdapter = null;
             addNewLabelToList(busAction.getString());
+            displaySpinner(mLabelSpinner, SPINNER_TYPE_LABEL);
         }
     }
 

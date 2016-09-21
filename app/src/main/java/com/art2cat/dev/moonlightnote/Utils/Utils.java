@@ -1,8 +1,5 @@
 package com.art2cat.dev.moonlightnote.Utils;
 
-import android.support.design.widget.Snackbar;
-import android.view.View;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -12,17 +9,6 @@ import java.util.Locale;
  * on 8/4/16.
  */
 public class Utils {
-
-    /**
-     * 显示SnackBar信息
-     *
-     * @param view    显示信息目标视图
-     * @param content 显示信息内容
-     */
-    public static void displaySnackBar(View view, String content) {
-        Snackbar.make(view, content, Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
-    }
 
     /**
      * 格式化日期
@@ -40,6 +26,7 @@ public class Utils {
         SimpleDateFormat formatter = new SimpleDateFormat(pattern, Locale.getDefault());
         return formatter.format(date);
     }
+
 
 
 }

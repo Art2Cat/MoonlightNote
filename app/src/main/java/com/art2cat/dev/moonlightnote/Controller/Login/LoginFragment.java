@@ -5,6 +5,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,9 +28,11 @@ import android.widget.TextView;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.User;
+import com.art2cat.dev.moonlightnote.Model.UserConfig;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
+import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -46,7 +49,9 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -314,8 +319,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     SPUtils.putString(getActivity(), "User", "Id", user.getUid());
-                    User user1 = new User(user.getDisplayName(), user.getEmail(), user.getUid(), user.getPhotoUrl());
-
+                    Uri photoUrl = user.getPhotoUrl();
+                    User user1 = new User(user.getDisplayName(), user.getEmail(), user.getUid());
+                    if (photoUrl != null) {
+                        user1.avatarUrl = photoUrl.toString();
+                    }
+                    createUserConfig(user.getUid());
                     createUser(user.getUid(), user1);
                 } else {
                     Log.d(TAG, "onAuthStateChanged:signed_out:");
@@ -409,4 +418,19 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         myReference.updateChildren(childUpdates);
     }
 
+    private void createUserConfig(String userId) {
+        UserConfig userConfig = new UserConfig();
+        List<String> labels = new ArrayList<String>();
+        labels.add("New Label");
+        labels.add("Default");
+        Map<String, Integer> colors = new HashMap<String, Integer>();
+        colors.put("red", 0xfff44336);
+        colors.put("green", 0xff4caf50);
+        colors.put("blue", 0xff2195f3);
+        userConfig.setUserId(userId);
+        userConfig.setLabels(labels);
+        userConfig.setColors(colors);
+        UserConfigUtils.writeUserConfig(getActivity(), userConfig);
+
+    }
 }

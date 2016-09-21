@@ -4,7 +4,7 @@
     android:layout_height="50dp"
     android:orientation="horizontal">
 
-    <android.support.v7.widget.AppCompatSpinner
+    <com.art2cat.dev.moonlightnote.Utils.CustomSpinner
         android:id="@+id/bottomBar_label"
         android:layout_width="50dp"
         android:layout_height="50dp" />
