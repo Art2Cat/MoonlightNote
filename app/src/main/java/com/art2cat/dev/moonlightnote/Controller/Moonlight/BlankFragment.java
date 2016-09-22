@@ -97,9 +97,6 @@ public class BlankFragment extends Fragment {
                 mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                MoonlightAdapter ad = new MoonlightAdapter(getActivity(), mData);
-                mRecyclerView.setAdapter(ad);
-                Log.d(TAG, "onPostExecute: " + ad.getItemCount());
 
             }
         }
@@ -142,9 +139,6 @@ public class BlankFragment extends Fragment {
                 mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                MoonlightAdapter ad = new MoonlightAdapter(getActivity(), mData);
-                mRecyclerView.setAdapter(ad);
-                Log.d(TAG, "onPostExecute: " + ad.getItemCount());
 
             }
         }
@@ -174,8 +168,6 @@ public class BlankFragment extends Fragment {
                                 SnackBarUtils.TYPE_INFO).show();
                     }
 
-                    MoonlightAdapter ad = new MoonlightAdapter(getActivity(), mData);
-                    mRecyclerView.setAdapter(ad);
                 }
 
                 @Override

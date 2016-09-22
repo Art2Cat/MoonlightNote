@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Controller.MoonlightDetail.MoonlightDetailActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:windowSoftInputMode="stateVisible|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Controller.Moonlight.MoonlightActivity" />
