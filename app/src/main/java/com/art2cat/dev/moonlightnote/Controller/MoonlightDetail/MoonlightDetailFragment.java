@@ -18,11 +18,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
-import com.art2cat.dev.moonlightnote.Firebase.DbTools;
+import com.art2cat.dev.moonlightnote.Firebase.DatabaseTools;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
@@ -57,7 +56,7 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
     private ArrayAdapter<String> mArrayAdapter;
 
     private Moonlight moonlight;
-    private DbTools mDbTools;
+    private DatabaseTools mDatabaseTools;
     private String userId;
 
     private String mLabel;
@@ -81,7 +80,7 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
         //获取Bus单例，并注册
         BusProvider.getInstance().register(this);
         userId = SPUtils.getString(getActivity(), "User", "Id", null);
-        mDbTools = new DbTools(getActivity(), userId);
+        mDatabaseTools = new DatabaseTools(getActivity(), userId);
         moonlight = new Moonlight();
         mFirebaseStorage = FirebaseStorage.getInstance();
         mStorageReference = mFirebaseStorage.getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE);
@@ -153,7 +152,7 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
     @Override
     public void onPause() {
         super.onPause();
-        mDbTools.addMoonlight(moonlight);
+        mDatabaseTools.addMoonlight(moonlight);
     }
 
     @Override
@@ -165,7 +164,7 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
     public void onStop() {
         super.onStop();
         Log.i(TAG, "onStop");
-        mDbTools.removeListener();
+        mDatabaseTools.removeListener();
     }
 
     @Override
@@ -233,9 +232,6 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
         }
 
     }
-
-
-
 
     private void uploadUserConfig() {
         StorageReference userConfigRef = mStorageReference.child("userConfig");

@@ -2,6 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     android:orientation="vertical"
     tools:context="com.art2cat.dev.moonlightnote.Controller.User.UserFragment">
 
@@ -19,38 +21,35 @@
     </android.support.v7.widget.LinearLayoutCompat>
 
     <android.support.design.widget.TextInputLayout
-        android:layout_marginTop="8dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/user_nickname"
             android:layout_width="match_parent"
-            android:hint="@string/user_nickname"
             android:layout_height="wrap_content"
-            android:text="@string/user_setNickname"/>
+            android:hint="@string/user_nickname"
+
+            android:inputType="none" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
-        android:layout_marginTop="8dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/user_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/user_email"/>
+            android:hint="@string/user_email"
+            android:inputType="none" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.v7.widget.AppCompatButton
-        android:hint="@string/user_change_password"
         android:id="@+id/user_change_password"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-
-
-
-
+        android:layout_height="wrap_content"
+        android:hint="@string/user_change_password" />
 </android.support.v7.widget.LinearLayoutCompat>

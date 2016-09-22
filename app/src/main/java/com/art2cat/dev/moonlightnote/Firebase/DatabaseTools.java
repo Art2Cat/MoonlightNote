@@ -21,7 +21,7 @@ import java.util.Map;
  * Created by art2cat
  * on 8/12/16.
  */
-public class DbTools {
+public class DatabaseTools {
     private Context mContext;
     private Moonlight mMoonlight;
     private String mUserId;
@@ -29,9 +29,9 @@ public class DbTools {
     private DatabaseReference moonlightReference;
     private DatabaseReference myReference;
     private ValueEventListener mMoonlightListener;
-    private static final String TAG = "DbTools";
+    private static final String TAG = "DatabaseTools";
 
-    public DbTools(Context context, String userId) {
+    public DatabaseTools(Context context, String userId) {
         this.mContext = context;
         mUserId = userId;
         Log.i(TAG, "uid: " + userId);

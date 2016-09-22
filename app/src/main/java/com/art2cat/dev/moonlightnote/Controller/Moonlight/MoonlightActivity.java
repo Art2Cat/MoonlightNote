@@ -26,11 +26,13 @@ import android.widget.ToggleButton;
 import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
 import com.art2cat.dev.moonlightnote.Controller.User.UserActivity;
+import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.CustomSpinner;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
+import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -59,6 +61,7 @@ public class MoonlightActivity extends AppCompatActivity
     private static final String TAG = "MoonlightActivity";
     private ArrayAdapter<String> adapter;
     private String mUserId;
+    private FirebaseUser mFirebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,16 +70,16 @@ public class MoonlightActivity extends AppCompatActivity
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         mView = inflater.inflate(R.layout.activity_main, null);
         setContentView(mView);
-
+        mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         //获取FirebaseAuth实例
         mAuth = getInstance();
-        signIn();
+        //signIn();
 
-        mUserId = SPUtils.getString(this, "User", "Id", null);
+        //mUserId = SPUtils.getString(this, "User", "Id", null);
         //当userId等于null时，启动匿名登陆模式
-        if (mUserId == null) {
-            anonymousSignIn();
-        }
+        //if (mUserId == null) {
+        //    anonymousSignIn();
+        //}
 
         initView();
 
@@ -105,7 +108,7 @@ public class MoonlightActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
-        getUserInfo();
+        displayUserInfo();
         Log.i(TAG, "onResume: ");
         super.onResume();
     }
@@ -286,18 +289,13 @@ public class MoonlightActivity extends AppCompatActivity
 
     }
 
-    private void getUserInfo() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private void displayUserInfo() {
+        User user = Utils.getUserInfo(mFirebaseUser);
         if (user != null) {
             // Name, email address, and profile photo Url
-            String name = user.getDisplayName();
+            String name = user.getUsername();
             String email = user.getEmail();
-            Uri photoUrl = user.getPhotoUrl();
-
-            // The user's ID, unique to the Firebase project. Do NOT use this value to
-            // authenticate with your backend server, if you have one. Use
-            // FirebaseUser.getToken() instead.
-            String uid = user.getUid();
+            String photoUrl = user.getAvatarUrl();
 
             if (name != null) {
                 nickTV.setText(name);
@@ -309,9 +307,8 @@ public class MoonlightActivity extends AppCompatActivity
 
             if (photoUrl != null) {
                 BitmapUtils bitmapUtils = new BitmapUtils(MoonlightActivity.this);
-                String url = photoUrl.toString();
-                Log.d(TAG, "getUserInfo: " + url);
-                bitmapUtils.display(mCircleImageView, url);
+                Log.d(TAG, "displayUserInfo: " + photoUrl);
+                bitmapUtils.display(mCircleImageView, photoUrl);
             }
         }
     }

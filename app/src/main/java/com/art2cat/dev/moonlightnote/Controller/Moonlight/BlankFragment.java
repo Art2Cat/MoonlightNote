@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.art2cat.dev.moonlightnote.Firebase.DbTools;
+import com.art2cat.dev.moonlightnote.Firebase.DatabaseTools;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
@@ -35,7 +35,7 @@ public class BlankFragment extends Fragment {
     private View view;
     private RecyclerView mRecyclerView;
     private List<Moonlight> mData, mDatas;
-    private DbTools mDbTools;
+    private DatabaseTools mDatabaseTools;
     private String mUserId;
     private int flag;
     private DatabaseReference moonlightReference;
