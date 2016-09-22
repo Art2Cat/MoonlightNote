@@ -5,4 +5,5 @@
         android:id="@+id/menu_delete"
         android:title="@string/done"
         app:showAsAction="ifRoom" />
+    
 </menu>

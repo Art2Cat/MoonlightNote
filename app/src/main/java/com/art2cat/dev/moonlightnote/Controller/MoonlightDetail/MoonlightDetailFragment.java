@@ -16,9 +16,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -146,20 +143,6 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
         return mView;
     }
 
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.create_moonlight_menu, menu);
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        return super.onOptionsItemSelected(item);
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -188,6 +171,10 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
     public void onDestroy() {
         BusProvider.getInstance().unregister(this);
         super.onDestroy();
+    }
+
+    private void initToolbar(){
+
     }
 
     private void displaySpinner(CustomSpinner spinner, int type) {

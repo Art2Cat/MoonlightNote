@@ -33,13 +33,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Controller.MoonlightDetail.MoonlightDetailActivity">
+        <activity android:name=".Controller.MoonlightDetail.MoonlightDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Controller.Moonlight.MoonlightActivity" />
         </activity>
-        <activity android:name=".Controller.User.UserActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".Controller.User.UserActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Controller.Moonlight.MoonlightActivity" />

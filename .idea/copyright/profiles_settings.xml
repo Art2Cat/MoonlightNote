@@ -1,9 +1,3 @@
 <component name="CopyrightManager">
-  <settings default="">
-    <LanguageOptions name="Properties">
-      <option name="fileTypeOverride" value="3" />
-      <option name="separateBefore" value="true" />
-      <option name="separateAfter" value="true" />
-    </LanguageOptions>
-  </settings>
+  <settings default="" />
 </component>
