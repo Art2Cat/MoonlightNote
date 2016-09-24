@@ -39,39 +39,6 @@ public class StorageTools {
 
     }
 
-    public class UploadFile extends AsyncTask<String, Long, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(mContext, ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.show();
-
-        }
-
-        @Override
-        protected Void doInBackground(String... params) {
-            Uri uri = Uri.parse(params[0]);
-            uploadFromUri(uri, params[1], params[2]);
-            publishProgress(mValue);
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(Long... values) {
-            super.onProgressUpdate(values);
-            int value = values[0].intValue();
-            Log.d(TAG, "onProgressUpdate: " + value);
-            progressDialog.setProgress(value);
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            progressDialog.dismiss();
-        }
-    }
-
     private void uploadFromUri(Uri fileUri, String userId, String type) {
         // Get a reference to store file at photos/<FILENAME>.jpg
         final StorageReference photoRef = mStorageRef.child(userId)

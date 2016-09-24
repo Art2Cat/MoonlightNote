@@ -4,6 +4,7 @@ package com.art2cat.dev.moonlightnote.Controller.Login;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -16,6 +17,7 @@ import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatImageButton;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -30,6 +32,8 @@ import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.Model.UserConfig;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.Utils.Bus.BusAction;
+import com.art2cat.dev.moonlightnote.Utils.Bus.BusProvider;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
@@ -48,6 +52,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,7 +66,7 @@ import java.util.Map;
 public class LoginFragment extends Fragment implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
     protected View mView;
     private Toolbar mToolbar;
-    private AppCompatAutoCompleteTextView mEmailView;
+    private AppCompatEditText mEmailView;
     private AppCompatEditText mPasswordView;
     private AppCompatButton mRegister;
     private AppCompatButton mLogin;
@@ -72,7 +77,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference myReference;
     private GoogleApiClient mGoogleApiClient;
-    private GoogleSignInOptions mGoogleSignInOptions;
     private int flag = 0;
     private boolean signUp_state;
     private static final int RC_SIGN_IN = 9001;
@@ -95,6 +99,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         myReference = FirebaseDatabase.getInstance().getReference();
+        BusProvider.getInstance().register(this);
         signIn();
     }
 
@@ -103,7 +108,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_login, null);
-        mEmailView = (AppCompatAutoCompleteTextView) mView.findViewById(R.id.email);
+        mEmailView = (AppCompatEditText) mView.findViewById(R.id.email);
 
         mToolbar = (Toolbar) mView.findViewById(R.id.toolbar);
         if (mToolbar != null) {
@@ -124,9 +129,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
             }
         });
 
+        AppCompatTextView reset = (AppCompatTextView) mView.findViewById(R.id.reset_password);
         mRegister = (AppCompatButton) mView.findViewById(R.id.email_sign_in_button);
         mLogin = (AppCompatButton) mView.findViewById(R.id.email_sign_up_button);
         mLogin_Google = (AppCompatImageButton) mView.findViewById(R.id.login_google_btn);
+
+        reset.setOnClickListener(this);
         mRegister.setOnClickListener(this);
         mLogin.setOnClickListener(this);
         mLogin_Google.setOnClickListener(this);
@@ -145,7 +153,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mGoogleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        GoogleSignInOptions mGoogleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getActivity().getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
@@ -167,6 +175,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
 
     @Override
     public void onDestroy() {
+        BusProvider.getInstance().unregister(this);
         super.onDestroy();
     }
 
@@ -290,12 +299,22 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.reset_password:
+                mEmailView.setError(null);
+                String email = mEmailView.getText().toString();
+                if (TextUtils.isEmpty(email)) {
+                    RPDialogFragment rpDialogFragment = new RPDialogFragment();
+                    rpDialogFragment.show(getFragmentManager(), "resetPassword");
+                } else {
+                    sendRPEmail(email);
+                }
+                break;
             case R.id.email_sign_in_button:
-                flag = 1;
+                flag = 2;
                 attemptLogin();
                 break;
             case R.id.email_sign_up_button:
-                flag = 2;
+                flag = 1;
                 attemptLogin();
                 break;
             case R.id.login_google_btn:
@@ -432,5 +451,44 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         userConfig.setColors(colors);
         UserConfigUtils.writeUserConfig(getActivity(), userConfig);
 
+    }
+
+    @Subscribe
+    public void busAction(BusAction busAction) {
+        if (busAction.getString().contains("@")) {
+            sendRPEmail(busAction.getString());
+        } else {
+            SnackBarUtils.shortSnackBar(mView, "Invalid email address",
+                    SnackBarUtils.TYPE_WARNING).show();
+        }
+    }
+
+
+    private void sendRPEmail(String emailAddress) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        auth.sendPasswordResetEmail(emailAddress)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            SnackBarUtils.longSnackBar(mView, getString(R.string.login_send_email_succeed),
+                                    SnackBarUtils.TYPE_INFO).setAction("Check your email", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                                    intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+                                    try {
+                                        startActivity(intent);
+                                        startActivity(Intent.createChooser(intent,
+                                                getString(R.string.ChoseEmailClient)));
+                                    }catch (ActivityNotFoundException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }).show();
+                        }
+                    }
+                });
     }
 }

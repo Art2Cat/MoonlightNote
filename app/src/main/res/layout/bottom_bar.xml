@@ -7,16 +7,16 @@
 
     <com.art2cat.dev.moonlightnote.Utils.CustomSpinner
         android:id="@+id/bottomBar_label"
-        android:layout_width="50dp"
+        android:layout_width="wrap_content"
         android:layout_height="50dp" />
 
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/bottomBar_camera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_gravity="center"
-        android:background="@drawable/ic_photo_camera_cyan_400_24dp" />
+        android:layout_marginStart="8dp"
+        android:background="@drawable/ic_camera_alt_cyan_400_48dp" />
 
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/bottomBar_audio"
@@ -24,16 +24,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginStart="8dp"
-        android:background="@drawable/ic_settings_voice_cyan_400_24dp" />
-
-    <android.support.v7.widget.AppCompatTextView
-        android:id="@+id/bottomBar_date"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1" />
+        android:background="@drawable/ic_keyboard_voice_cyan_400_48dp" />
 
 
-    <android.support.v7.widget.AppCompatSpinner
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/bottomBar_color"
         android:layout_width="50dp"
         android:layout_height="50dp" />

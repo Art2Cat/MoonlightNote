@@ -108,6 +108,13 @@ public class MoonlightActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onRestart() {
+        displayUserInfo();
+        Log.d(TAG, "onRestart: ");
+        super.onRestart();
+    }
+
+    @Override
     protected void onResume() {
         displayUserInfo();
         Log.i(TAG, "onResume: ");

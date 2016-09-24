@@ -30,8 +30,9 @@ public class LabelDialogFragment extends DialogFragment {
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         final LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_label, null);
-        label_TIET = (TextInputEditText) view.findViewById(R.id.dialog_new_label);
+        View view = inflater.inflate(R.layout.dialog_editext, null);
+        label_TIET = (TextInputEditText) view.findViewById(R.id.dialog_edittext);
+        label_TIET.setHint(R.string.dialog_enter_new_label);
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         builder.setTitle("New label")

@@ -39,11 +39,18 @@
     <string name="menu_logout">Remove active account</string>
     <string name="dialog_enter_new_label">Enter new label</string>
     <string name="user_change_password">Change Password</string>
-    <string name="user_email">Email</string>
-    <string name="user_nickname">Nickname</string>
+    <string name="user_email">Email:</string>
+    <string name="user_nickname">Nickname:</string>
     <string name="user_setNickname">Click to set nickname</string>
     <string name="done">Done</string>
     <string name="dialog_camera">Camera</string>
     <string name="dialog_album">Album</string>
+    <string name="login_reset_password">Forgot password?</string>
+    <string name="dialog_reset_password">Send a password reset email</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="login_send_email_succeed">Reset password email have been send to your email</string>
+    <string name="ChoseEmailClient">Chose email app</string>
+    <string name="dialog_enter_your_register_email">Enter your register email</string>
 
 </resources>

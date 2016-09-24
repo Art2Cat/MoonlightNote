@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.User;
+package com.art2cat.dev.moonlightnote.Controller.Login;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -16,29 +16,30 @@ import com.art2cat.dev.moonlightnote.Utils.Bus.BusProvider;
 
 /**
  * Created by art2cat
- * on 9/22/16.
+ * on 9/24/16.
  */
 
-public class SetNicknameFragment extends DialogFragment {
-
+public class RPDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_editext, null);
-        final TextInputEditText nicknameTIET = (TextInputEditText) view.findViewById(R.id.dialog_edittext);
-        builder.setTitle("Set nickname")
-                .setView(view)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        final TextInputEditText email = (TextInputEditText) view.findViewById(R.id.dialog_edittext);
+        email.setHint(R.string.dialog_enter_your_register_email);
+        builder.setView(view)
+                .setTitle(R.string.dialog_reset_password)
+                .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String nickname = nicknameTIET.getText().toString();
                         BusAction busAction = new BusAction();
-                        busAction.setString(nickname);
+                        busAction.setString(email.getText().toString());
                         BusProvider.getInstance().post(busAction);
                     }
-                }).setNegativeButton("Cancel", null);
+                }).setNegativeButton(R.string.dialog_cancel, null);
         return builder.create();
     }
+
+
 }

@@ -49,7 +49,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
@@ -143,16 +142,15 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Date date = new Date(System.currentTimeMillis());
+        getActivity().setTitle(Utils.dateFormat(date));
         mView = inflater.inflate(R.layout.fragment_moonlight_detail, null);
         mTitle = (TextInputEditText) mView.findViewById(R.id.title_TIET);
         mContent = (TextInputEditText) mView.findViewById(R.id.content_TIET);
         mPhoto = (AppCompatImageView) mView.findViewById(R.id.moonlight_photo);
 
-        mDate = (AppCompatTextView) mView.findViewById(R.id.bottomBar_date);
-        Date date = new Date(System.currentTimeMillis());
-        mDate.setText(Utils.dateFormat(date));
+
         mLabelSpinner = (CustomSpinner) mView.findViewById(R.id.bottomBar_label);
-        mColor = (AppCompatSpinner) mView.findViewById(R.id.bottomBar_color);
         mCamera = (AppCompatImageButton) mView.findViewById(R.id.bottomBar_camera);
         mAudio = (AppCompatImageButton) mView.findViewById(R.id.bottomBar_audio);
         mCardView = (CardView) mView.findViewById(R.id.photo_container);
@@ -469,6 +467,7 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
 
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("Uploading...");
         progressDialog.show();
         StorageTask<UploadTask.TaskSnapshot> uploadTask = null;
 

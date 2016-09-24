@@ -2,8 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Controller.Login.LoginActivity"
-    tools:showIn="@layout/fragment_login">
+    android:scrollbars="none"
+    tools:context=".Controller.Login.LoginActivity">
 
     <android.support.v7.widget.ContentFrameLayout
         android:id="@+id/login_form"
@@ -27,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <android.support.v7.widget.AppCompatAutoCompleteTextView
+                <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -60,11 +60,20 @@
                 android:gravity="end"
                 android:orientation="horizontal">
 
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/reset_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/login_reset_password"
+                    android:textColor="@color/colorAccent" />
+
                 <android.support.v7.widget.AppCompatButton
                     android:id="@+id/email_sign_up_button"
                     style="?android:textAppearanceSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:background="@drawable/button_style"
                     android:text="@string/action_sign_up"
