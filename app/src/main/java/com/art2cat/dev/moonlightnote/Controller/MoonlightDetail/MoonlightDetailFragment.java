@@ -211,6 +211,7 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
     public void onPause() {
         super.onPause();
         mDatabaseTools.addMoonlight(moonlight);
+        uploadUserConfig();
     }
 
     @Override
@@ -288,11 +289,6 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
 
     }
 
-    public List<String> getLabel() {
-        List<String> label = new ArrayList<>();
-        return label;
-    }
-
     /**
      * 添加新标签到标签列表中
      *
@@ -309,7 +305,8 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
     }
 
     private void uploadUserConfig() {
-        StorageReference userConfigRef = mStorageReference.child("userConfig");
+        Uri file = Uri.fromFile(new File(getActivity().getFilesDir().getPath() + "/UserConfig.json"));
+        uploadFromUri(file, userId, 1);
     }
 
     @Override
@@ -376,16 +373,13 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
             case TAKE_PICTURE:
                 if (resultCode == RESULT_OK && mFileUri != null) {
                     Log.d(TAG, "mFileUri:" + mFileUri);
-                    //new UploadFile().execute(data.getData().toString(), userId);
-                    uploadFromUri(data.getData(), userId);
+                    uploadFromUri(data.getData(), userId, 0);
                 }
                 break;
             case ALBUM_CHOOSE:
                 if (resultCode == RESULT_OK && mFileUri != null) {
                     Log.d(TAG, "mFileUri:" + mFileUri);
-
-                    //new UploadFile().execute(data.getData().toString(), userId);
-                    uploadFromUri(data.getData(), userId);
+                    uploadFromUri(data.getData(), userId, 0);
 
                 }
                 break;
@@ -471,75 +465,48 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
         }
     }
 
-    public class UploadFile extends AsyncTask<String, Long, String> {
+    private void uploadFromUri(Uri fileUri, String userId, int type) {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(getActivity(), ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.show();
-
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            Uri uri = Uri.parse(params[0]);
-            uploadFromUri(uri, params[1]);
-            publishProgress(mValue);
-
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(Long... values) {
-            super.onProgressUpdate(values);
-            int value = values[0].intValue();
-            Log.d(TAG, "onProgressUpdate: " + value);
-            progressDialog.setProgress(value);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            progressDialog.dismiss();
-            updateUI();
-        }
-    }
-
-    private void uploadFromUri(Uri fileUri, String userId) {
-        // Get a reference to store file at photos/<FILENAME>.jpg
-        StorageReference photoRef = mStorageReference.child(userId).child("photos")
-                .child(fileUri.getLastPathSegment());
         progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.show();
+        StorageTask<UploadTask.TaskSnapshot> uploadTask = null;
 
-        // Upload file to Firebase Storage
-        StorageTask<UploadTask.TaskSnapshot> uploadTask = photoRef.putFile(fileUri);
+        if (type ==0) {
+            // Get a reference to store file at photos/<FILENAME>.jpg
+            StorageReference photoRef = mStorageReference.child(userId).child("photos")
+                    .child(fileUri.getLastPathSegment());
 
-        uploadTask.addOnProgressListener(getActivity(), new OnProgressListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                progressDialog.setProgress((int) progress);
-            }
-        }).addOnSuccessListener(getActivity(), new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                mDownloadUrl = taskSnapshot.getDownloadUrl();
-                Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadUrl.toString());
-                progressDialog.dismiss();
-                moonlight.setPhoto(mDownloadUrl.toString());
-                updateUI();
-            }
-        }).addOnFailureListener(getActivity(), new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                progressDialog.dismiss();
-                mFileName = null;
-                mDownloadUrl = null;
-                updateUI();
-            }
-        });
+            // Upload file to Firebase Storage
+            uploadTask = photoRef.putFile(fileUri);
+        } else if (type == 1) {
+            StorageReference storageReference = mStorageReference.child(userId).child("userconfig")
+                    .child(fileUri.getLastPathSegment());
+            uploadTask = storageReference.putFile(fileUri);
+        }
+
+        if (uploadTask != null) {
+            uploadTask.addOnSuccessListener(getActivity(), new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    mDownloadUrl = taskSnapshot.getDownloadUrl();
+                    Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadUrl.toString());
+                    progressDialog.dismiss();
+                    moonlight.setPhoto(mDownloadUrl.toString());
+                    updateUI();
+                }
+            }).addOnFailureListener(getActivity(), new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    progressDialog.dismiss();
+                    mFileName = null;
+                    mDownloadUrl = null;
+                    updateUI();
+                }
+            });
+        } else {
+            Log.w(TAG, "uploadFromUri: failed" );
+        }
+
     }
 }

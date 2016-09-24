@@ -55,7 +55,7 @@ public class UserConfigUtils {
         //获取userConfig文件目录
         //String userConfigFile = context.getDir("userConfig", Context.MODE_PRIVATE).getPath();
         String userConfigFile = context.getFilesDir().getPath();
-
+        Log.d(TAG, "readUserConfig: " + userConfigFile.toString());
         try (Reader reader = new FileReader(userConfigFile + "/UserConfig.json")) {
             Gson gson = new Gson();
             //从Gson文件中解析UserConfig类
