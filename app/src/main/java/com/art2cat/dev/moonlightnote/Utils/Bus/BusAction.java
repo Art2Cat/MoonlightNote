@@ -8,6 +8,15 @@ package com.art2cat.dev.moonlightnote.Utils.Bus;
 public class BusAction {
 
     private String mString;
+    private int mInt;
+
+    public int getInt() {
+        return mInt;
+    }
+
+    public void setInt(int mInt) {
+        this.mInt = mInt;
+    }
 
     public String getString() {
         return mString;

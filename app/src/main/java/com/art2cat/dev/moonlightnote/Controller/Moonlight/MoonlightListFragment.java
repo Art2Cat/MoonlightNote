@@ -49,6 +49,7 @@ public abstract class MoonlightListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+        Log.d(TAG, "onCreateView: ");
         View rootView = inflater.inflate(R.layout.fragment_moonlight, container, false);
         setHasOptionsMenu(true);
 
@@ -77,7 +78,6 @@ public abstract class MoonlightListFragment extends Fragment {
                             moonlightsQuery) {
                 @Override
                 public DatabaseReference getRef(int position) {
-                    Log.i(TAG, "getRef");
                     return super.getRef(position);
                 }
 

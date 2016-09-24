@@ -15,11 +15,20 @@ public class BitmapUtils {
     private NetCacheUtils mNetCacheUtils;
     private LocalCacheUtils mLocalCacheUtils;
     private MemoryCacheUtils mMemoryCacheUtils;
+    private Context context;
+
+
+    public BitmapUtils() {
+        mMemoryCacheUtils = new MemoryCacheUtils();
+        mLocalCacheUtils = new LocalCacheUtils();
+        mNetCacheUtils = new NetCacheUtils(mLocalCacheUtils, mMemoryCacheUtils);
+    }
 
     public BitmapUtils(Context context) {
         mMemoryCacheUtils = new MemoryCacheUtils();
-        mLocalCacheUtils = new LocalCacheUtils(context);
+        mLocalCacheUtils = new LocalCacheUtils();
         mNetCacheUtils = new NetCacheUtils(mLocalCacheUtils, mMemoryCacheUtils);
+        this.context = context;
     }
 
     public void display(ImageView ivPic, String url) {

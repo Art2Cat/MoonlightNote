@@ -59,14 +59,14 @@ public class DatabaseTools {
     public void updateMoonlight(@Nullable String keyId, Moonlight moonlight) {
         String mKey;
         if (keyId == null) {
-            mKey = myReference.child("mMoonlight").push().getKey();
+            mKey = myReference.child("moonlight").push().getKey();
         } else {
             mKey = keyId;
         }
         Map<String, Object> moonlightValues = moonlight.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
 
-        childUpdates.put("/users-mMoonlight/" + mUserId + "/note/" + mKey, moonlightValues);
+        childUpdates.put("/users-moonlight/" + mUserId + "/note/" + mKey, moonlightValues);
 
 
         myReference.updateChildren(childUpdates);
@@ -78,7 +78,7 @@ public class DatabaseTools {
         try {
             // Initialize Database
             moonlightReference = FirebaseDatabase.getInstance().getReference()
-                    .child("users-mMoonlight").child(mUserId).child("note");
+                    .child("users-moonlight").child(mUserId).child("note");
 
 
             ValueEventListener moonlightListener = new ValueEventListener() {
@@ -134,7 +134,7 @@ public class DatabaseTools {
 
     public void removeMoonlight(String keyId) {
         try {
-            FirebaseDatabase.getInstance().getReference().child("users-mMoonlight")
+            FirebaseDatabase.getInstance().getReference().child("users-moonlight")
                     .child(mUserId).child(keyId).removeValue(new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {

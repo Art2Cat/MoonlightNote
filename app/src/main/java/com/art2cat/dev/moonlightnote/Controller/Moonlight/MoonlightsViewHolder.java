@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
 
 import java.util.Date;
@@ -49,6 +50,10 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
         if (moonlight.getContent() != null) {
             Log.d("ViewHolder", "content" + moonlight.getContent());
             contentAppCompatTextView.setText(moonlight.getContent());
+        }
+        if (moonlight.getPhoto() != null) {
+            BitmapUtils bitmapUtils = new BitmapUtils();
+            bitmapUtils.display(photoAppCompatImageView, moonlight.getPhoto());
         }
 
 

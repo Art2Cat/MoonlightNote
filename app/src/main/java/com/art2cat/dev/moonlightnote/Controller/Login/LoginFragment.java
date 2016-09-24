@@ -132,7 +132,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         mLogin_Google.setOnClickListener(this);
 
         mLoginFormView = mView.findViewById(R.id.login_form);
-        //mProgressView = mView.findViewById(R.id.login_progress);
+        mProgressView = mView.findViewById(R.id.login_progress);
         return mView;
     }
 

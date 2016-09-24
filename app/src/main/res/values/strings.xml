@@ -43,5 +43,7 @@
     <string name="user_nickname">Nickname</string>
     <string name="user_setNickname">Click to set nickname</string>
     <string name="done">Done</string>
+    <string name="dialog_camera">Camera</string>
+    <string name="dialog_album">Album</string>
 
 </resources>

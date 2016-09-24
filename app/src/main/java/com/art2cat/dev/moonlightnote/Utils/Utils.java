@@ -40,7 +40,9 @@ public class Utils {
         User user;
         if (firebaseUser != null) {
             user = new User();
-            user.setAvatarUrl(firebaseUser.getPhotoUrl().toString());
+            if (firebaseUser.getPhotoUrl() != null) {
+                user.setAvatarUrl(firebaseUser.getPhotoUrl().toString());
+            }
             user.setEmail(firebaseUser.getEmail());
             user.setUsername(firebaseUser.getDisplayName());
 

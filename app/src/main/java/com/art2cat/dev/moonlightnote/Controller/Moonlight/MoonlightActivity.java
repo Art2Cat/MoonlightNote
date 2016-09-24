@@ -73,7 +73,8 @@ public class MoonlightActivity extends AppCompatActivity
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         //获取FirebaseAuth实例
         mAuth = getInstance();
-        //signIn();
+        signIn();
+        mUserId = mAuth.getCurrentUser().getUid();
 
         //mUserId = SPUtils.getString(this, "User", "Id", null);
         //当userId等于null时，启动匿名登陆模式
@@ -98,7 +99,7 @@ public class MoonlightActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+        //mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
@@ -306,7 +307,7 @@ public class MoonlightActivity extends AppCompatActivity
             }
 
             if (photoUrl != null) {
-                BitmapUtils bitmapUtils = new BitmapUtils(MoonlightActivity.this);
+                BitmapUtils bitmapUtils = new BitmapUtils();
                 Log.d(TAG, "displayUserInfo: " + photoUrl);
                 bitmapUtils.display(mCircleImageView, photoUrl);
             }
