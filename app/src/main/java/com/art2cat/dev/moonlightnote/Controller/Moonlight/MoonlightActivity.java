@@ -38,6 +38,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -298,27 +299,31 @@ public class MoonlightActivity extends AppCompatActivity
     }
 
     private void displayUserInfo() {
-        User user = Utils.getUserInfo(mFirebaseUser);
-        if (user != null) {
-            // Name, email address, and profile photo Url
-            String name = user.getUsername();
-            String email = user.getEmail();
-            String photoUrl = user.getAvatarUrl();
+        // Name, email address, and profile photo Url
+        if (mFirebaseUser != null) {
+            for (UserInfo profile : mFirebaseUser.getProviderData()) {
+                // Id of the provider (ex: google.com)
+                String providerId = profile.getProviderId();
 
-            if (name != null) {
-                nickTV.setText(name);
-            }
+                // UID specific to the provider
+                String uid = profile.getUid();
 
-            if (email != null) {
-                emailTV.setText(email);
-            }
-
-            if (photoUrl != null) {
-                BitmapUtils bitmapUtils = new BitmapUtils();
-                Log.d(TAG, "displayUserInfo: " + photoUrl);
-                bitmapUtils.display(mCircleImageView, photoUrl);
+                // Name, email address, and profile photo Url
+                if (profile.getDisplayName() != null) {
+                    nickTV.setText(profile.getDisplayName());
+                }
+                if (profile.getEmail() != null) {
+                    emailTV.setText(profile.getEmail());
+                }
+                if (profile.getPhotoUrl() != null) {
+                    String photoUrl = profile.getPhotoUrl().toString();
+                    BitmapUtils bitmapUtils = new BitmapUtils();
+                    Log.d(TAG, "displayUserInfo: " + photoUrl);
+                    bitmapUtils.display(mCircleImageView, photoUrl);
+                }
             }
         }
+
     }
 
 }

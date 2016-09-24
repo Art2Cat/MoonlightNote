@@ -42,6 +42,7 @@ public class Utils {
             user = new User();
             if (firebaseUser.getPhotoUrl() != null) {
                 user.setAvatarUrl(firebaseUser.getPhotoUrl().toString());
+
             }
             user.setEmail(firebaseUser.getEmail());
             user.setUsername(firebaseUser.getDisplayName());

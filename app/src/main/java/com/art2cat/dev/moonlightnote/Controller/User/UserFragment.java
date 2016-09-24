@@ -76,7 +76,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private Uri mFileUri = null;
 
     private DatabaseReference myReference;
-    private FirebaseStorage mFirebaseStorage;
     private StorageReference mStorageReference;
     private String mFileName;
     private Uri mDownloadUrl;
@@ -102,8 +101,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         mUser = Utils.getUserInfo(user);
 
         //获取firebaseStorage实例
-        mFirebaseStorage = FirebaseStorage.getInstance();
-        mStorageReference = mFirebaseStorage.getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE);
+        mStorageReference = FirebaseStorage.getInstance()
+                .getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE);
 
         myReference = FirebaseDatabase.getInstance().getReference();
     }
@@ -119,7 +118,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         mChangePassword = (AppCompatButton) mView.findViewById(R.id.user_change_password);
 
         initView();
-        updateUI(Uri.parse(mUser.getAvatarUrl()));
+        updateUI(user.getPhotoUrl());
         mCircleImageView.setOnClickListener(this);
         mChangePassword.setOnClickListener(this);
         mNickname.setOnClickListener(this);
@@ -130,7 +129,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     public void onPause() {
         super.onPause();
         updateUser(user.getUid(), mUser);
-        updateProfile(mUser.getUsername(), mDownloadUrl);
+        if (mDownloadUrl != null) {
+            updateProfile(mUser.getUsername(), mDownloadUrl);
+        }
     }
 
     @Override
@@ -214,12 +215,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     }
 
     private void updateProfile(String nickname, Uri uri) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName(nickname)
                 .setPhotoUri(uri)
                 .build();
+        Log.d(TAG, "updateProfile: " + profileUpdates.getPhotoUri().toString());
 
         user.updateProfile(profileUpdates)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -357,9 +358,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     mDownloadUrl = taskSnapshot.getDownloadUrl();
                     Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadUrl.toString());
-                    progressDialog.dismiss();
                     mUser.setAvatarUrl(mDownloadUrl.toString());
                     updateUI(mDownloadUrl);
+                    progressDialog.dismiss();
                 }
             }).addOnFailureListener(getActivity(), new OnFailureListener() {
                 @Override

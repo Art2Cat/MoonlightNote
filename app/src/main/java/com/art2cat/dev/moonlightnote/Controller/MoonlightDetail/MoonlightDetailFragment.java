@@ -3,13 +3,11 @@ package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -97,7 +95,6 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
     private StorageReference mStorageRef;
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mStorageReference;
-    private long mValue;
     private String mFileName;
     private Uri mDownloadUrl;
 
@@ -208,8 +205,13 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
     @Override
     public void onPause() {
         super.onPause();
-        mDatabaseTools.addMoonlight(moonlight);
-        uploadUserConfig();
+        if (moonlight.getPhoto() != null || moonlight.getContent() != null
+                || moonlight.getTitle() !=null) {
+            mDatabaseTools.addMoonlight(moonlight);
+        }
+        if (mLabel != null) {
+            uploadUserConfig();
+        }
     }
 
     @Override
@@ -299,6 +301,7 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
             data.add(label);
             Log.d(TAG, "addNewLabelToList: ");
             UserConfigUtils.writeLabelToUserConfig(getActivity(), data);
+            mLabel = "label";
         }
     }
 
