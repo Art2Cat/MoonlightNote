@@ -1,6 +1,7 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
@@ -93,10 +95,19 @@ public abstract class MoonlightListFragment extends Fragment {
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
+                            intent.putExtra("writeoredit", 1);
+                            intent.putExtra("keyid", moonlightKey);
+                            startActivity(intent);
                         }
                     });
-
-                    viewHolder.onBindMoonlight(model);
+                    viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            return false;
+                        }
+                    });
+                    viewHolder.onBindMoonlight(getActivity(), model);
                 }
             };
             mRecyclerView.setAdapter(mAdapter);

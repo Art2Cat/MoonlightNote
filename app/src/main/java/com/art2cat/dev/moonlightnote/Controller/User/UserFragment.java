@@ -29,6 +29,7 @@ import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.Bus.BusAction;
 import com.art2cat.dev.moonlightnote.Utils.Bus.BusProvider;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
+import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -119,10 +120,17 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
         initView();
         updateUI(user.getPhotoUrl());
-        mCircleImageView.setOnClickListener(this);
-        mChangePassword.setOnClickListener(this);
-        mNickname.setOnClickListener(this);
         return mView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (!SPUtils.getBoolean(getActivity(), "User", "google", false)) {
+            mCircleImageView.setOnClickListener(this);
+            mChangePassword.setOnClickListener(this);
+            mNickname.setOnClickListener(this);
+        }
     }
 
     @Override

@@ -1,5 +1,8 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
@@ -18,8 +21,9 @@ import java.util.Date;
  * Created by art2cat
  * on 9/17/16.
  */
-public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
-    public CardView mCardView;
+class MoonlightsViewHolder extends RecyclerView.ViewHolder {
+    private Context context;
+    private CardView mCardView;
     private AppCompatTextView titleAppCompatTextView;
     private AppCompatTextView contentAppCompatTextView;
     private AppCompatTextView dateAppCompatTextView;
@@ -34,8 +38,7 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
         photoAppCompatImageView = (AppCompatImageView) itemView.findViewById(R.id.moonlight_photo);
     }
 
-    public void onBindMoonlight(Moonlight moonlight) {
-
+    void onBindMoonlight(final Context context, final Moonlight moonlight) {
         Date date = new Date(moonlight.getDate());
         if (date != null) {
             Log.d("ViewHolder", "date" + date);
@@ -54,6 +57,15 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
         if (moonlight.getPhoto() != null) {
             BitmapUtils bitmapUtils = new BitmapUtils();
             bitmapUtils.display(photoAppCompatImageView, moonlight.getPhoto());
+            photoAppCompatImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //网页浏览图片。。。
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(moonlight.getPhoto()));
+                    context.startActivity(intent);
+                }
+            });
         }
 
 

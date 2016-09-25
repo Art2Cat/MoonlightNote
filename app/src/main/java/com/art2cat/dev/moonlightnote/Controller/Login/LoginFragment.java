@@ -373,6 +373,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                             Intent intent = new Intent(getActivity(), MoonlightActivity.class);
                             getActivity().startActivity(intent);
                             SnackBarUtils.shortSnackBar(mView, "Google Sign In successed", SnackBarUtils.TYPE_INFO).show();
+                            SPUtils.putBoolean(getActivity(), "User", "google", true);
                             getActivity().finish();
                         }
                     }
@@ -482,7 +483,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                                         startActivity(intent);
                                         startActivity(Intent.createChooser(intent,
                                                 getString(R.string.ChoseEmailClient)));
-                                    }catch (ActivityNotFoundException e) {
+                                    } catch (ActivityNotFoundException e) {
                                         e.printStackTrace();
                                     }
                                 }

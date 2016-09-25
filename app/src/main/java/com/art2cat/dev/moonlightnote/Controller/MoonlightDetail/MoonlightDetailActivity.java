@@ -18,7 +18,13 @@ public class MoonlightDetailActivity extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.detail_fragmentContainer);
         if (fragment == null) {
-            fragment = new MoonlightDetailFragment();
+             int flag = getIntent().getIntExtra("writeoredit", 0);
+            if (flag == 0) {
+                fragment = MoonlightDetailFragment.newInstance();
+            } else if (flag == 1) {
+                String keyid = getIntent().getStringExtra("keyid");
+                fragment = MoonlightDetailFragment.newInstance(keyid);
+            }
             fm.beginTransaction().add(R.id.detail_fragmentContainer, fragment).commit();
         }
     }

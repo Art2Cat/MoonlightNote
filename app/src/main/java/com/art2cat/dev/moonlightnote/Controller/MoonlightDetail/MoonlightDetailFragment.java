@@ -11,6 +11,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +20,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatSpinner;
@@ -46,6 +49,11 @@ import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
@@ -76,8 +84,6 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
     private TextInputEditText mTitle;
     private TextInputEditText mContent;
     private AppCompatTextView mDate;
-    private AppCompatImageButton mCamera;
-    private AppCompatImageButton mAudio;
     private CardView mCardView;
     private AppCompatImageView mPhoto;
     private CustomSpinner mLabelSpinner;
@@ -87,13 +93,14 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
 
     private Moonlight moonlight;
     private DatabaseTools mDatabaseTools;
+    private boolean flag;
     private String userId;
-
+    private String keyid;
     private String mLabel;
     private Uri mFileUri = null;
-
+    private DatabaseReference moonlightReference;
+    private ValueEventListener moonlightListener;
     private StorageReference mStorageRef;
-    private FirebaseStorage mFirebaseStorage;
     private StorageReference mStorageReference;
     private String mFileName;
     private Uri mDownloadUrl;
@@ -112,8 +119,54 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
 
     private static final String TAG = "MoonlightDetailFragment";
 
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+        }
+    };
+
+    private MyRunnable myRunnable = new MyRunnable();
+
+    private class MyRunnable implements Runnable{
+
+        @Override
+        public void run() {
+            if (moonlight.getTitle()!= null) {
+                mTitle.setText(moonlight.getTitle());
+            }
+            if (moonlight.getContent() != null) {
+                mContent.setText(moonlight.getContent());
+            }
+            if (moonlight.getPhoto()!= null) {
+                BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
+                bitmapUtils.display(mPhoto,moonlight.getPhoto());
+                mCardView.setVisibility(View.VISIBLE);
+            }
+            if (moonlight.getLabel() != null) {
+                List<String> data;
+                //从本地读取用户配置
+                data = UserConfigUtils.readLabelFromUserConfig(getActivity());
+                int index = data.indexOf(moonlight.getLabel());
+                mLabelSpinner.setSelection(index);
+            }
+        }
+    }
     public MoonlightDetailFragment() {
         // Required empty public constructor
+    }
+
+    public static MoonlightDetailFragment newInstance() {
+        MoonlightDetailFragment moonlightDetailFragment = new MoonlightDetailFragment();
+        return moonlightDetailFragment;
+    }
+    
+    public static MoonlightDetailFragment newInstance(String keyid) {
+        MoonlightDetailFragment moonlightDetailFragment = new MoonlightDetailFragment();
+        Bundle args = new Bundle();
+        args.putString("keyId", keyid);
+        moonlightDetailFragment.setArguments(args);
+        return moonlightDetailFragment;
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -129,11 +182,17 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
         //新建moonlight对象
         moonlight = new Moonlight();
         //获取firebaseStorage实例
-        mFirebaseStorage = FirebaseStorage.getInstance();
+        FirebaseStorage mFirebaseStorage = FirebaseStorage.getInstance();
         mStorageReference = mFirebaseStorage.getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE);
         //获取系统当前时间
         long date = System.currentTimeMillis();
         moonlight.setDate(date);
+        
+        if (getArguments() != null) {
+            keyid = getArguments().getString("keyId");
+            getMoonlight(keyid);
+            flag = true;
+        }
     }
 
     @Override
@@ -148,14 +207,16 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
 
 
         mLabelSpinner = (CustomSpinner) mView.findViewById(R.id.bottomBar_label);
-        mCamera = (AppCompatImageButton) mView.findViewById(R.id.bottomBar_camera);
-        mAudio = (AppCompatImageButton) mView.findViewById(R.id.bottomBar_audio);
+        AppCompatImageButton mCamera = (AppCompatImageButton) mView.findViewById(R.id.bottomBar_camera);
+        AppCompatImageButton mAudio = (AppCompatImageButton) mView.findViewById(R.id.bottomBar_audio);
         mCardView = (CardView) mView.findViewById(R.id.photo_container);
+        AppCompatButton mDeletePhoto = (AppCompatButton) mView.findViewById(R.id.delete_image);
 
         displaySpinner(mLabelSpinner);
 
         mCamera.setOnClickListener(this);
         mAudio.setOnClickListener(this);
+        mDeletePhoto.setOnClickListener(this);
         mLabelSpinner.setOnItemSelectedListener(this);
 
         mTitle.addTextChangedListener(new TextWatcher() {
@@ -198,16 +259,31 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
 
     @Override
     public void onStart() {
+        Log.d(TAG, "onStart: ");
         super.onStart();
 
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (flag) {
+            mHandler.postDelayed(myRunnable, 500);
+        }
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
-        if (moonlight.getPhoto() != null || moonlight.getContent() != null
-                || moonlight.getTitle() !=null) {
-            mDatabaseTools.addMoonlight(moonlight);
+        Log.d(TAG, "onPause: ");
+        if (flag) {
+            Log.d(TAG, "keyid" + keyid);
+            mDatabaseTools.updateMoonlight(keyid, moonlight);
+        } else {
+            if (moonlight.getPhoto() != null || moonlight.getContent() != null
+                    || moonlight.getTitle() != null) {
+                mDatabaseTools.addMoonlight(moonlight);
+            }
         }
         if (mLabel != null) {
             uploadUserConfig();
@@ -224,6 +300,9 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
         super.onStop();
         Log.i(TAG, "onStop");
         mDatabaseTools.removeListener();
+        if (moonlightListener != null) {
+            moonlightReference.removeEventListener(moonlightListener);
+        }
     }
 
     @Override
@@ -234,7 +313,6 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
 
     private void updateUI() {
         if (mDownloadUrl != null) {
-
             try {
                 Bitmap bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(mFileUri));
                 mPhoto.setImageBitmap(bitmap);
@@ -285,8 +363,6 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
     /**
@@ -345,7 +421,7 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
 
         if (busAction.getInt() != 0) {
             switch (busAction.getInt()) {
-                case 1:
+                case 3:
                     onCameraClick();
                     break;
                 case 2:
@@ -364,6 +440,31 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
                 break;
             case R.id.bottomBar_audio:
                 break;
+            case R.id.moonlight_photo:
+                //网页浏览图片。。。
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(moonlight.getPhoto()));
+                startActivity(intent);
+                break;
+            case R.id.delete_image:
+                StorageReference photoRef = mStorageReference.child(userId).child("photos")
+                        .child(mFileName);
+                Log.d(TAG, "onClick: " + mFileName);
+                photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "onSuccess: ");
+                        SnackBarUtils.shortSnackBar(mView, "Image removed!", SnackBarUtils.TYPE_INFO).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "onFailure: " + e.toString() );
+                    }
+                });
+                moonlight.setPhoto(null);
+                mCardView.setVisibility(View.GONE);
+                break;
         }
     }
 
@@ -381,7 +482,6 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
                 if (resultCode == RESULT_OK && mFileUri != null) {
                     Log.d(TAG, "mFileUri:" + mFileUri);
                     uploadFromUri(data.getData(), userId, 0);
-
                 }
                 break;
             default:
@@ -478,7 +578,7 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
             // Get a reference to store file at photos/<FILENAME>.jpg
             StorageReference photoRef = mStorageReference.child(userId).child("photos")
                     .child(fileUri.getLastPathSegment());
-
+            Log.d(TAG, "uploadFromUri: " + fileUri.getLastPathSegment());
             // Upload file to Firebase Storage
             uploadTask = photoRef.putFile(fileUri);
         } else if (type == 1) {
@@ -492,6 +592,7 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     mDownloadUrl = taskSnapshot.getDownloadUrl();
+                    mFileName = taskSnapshot.getMetadata().getName();
                     Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadUrl.toString());
                     progressDialog.dismiss();
                     moonlight.setPhoto(mDownloadUrl.toString());
@@ -510,5 +611,39 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
             Log.w(TAG, "uploadFromUri: failed" );
         }
 
+    }
+
+    /**
+     * 从firebase的database获取moonlight
+     *
+     * @param keyId 当前读取moonlight的keyId
+     * @return 返回从firebase中获取的moonlight
+     */
+    public void getMoonlight(String keyId) {
+        moonlightReference = FirebaseDatabase.getInstance().getReference()
+                .child("users-moonlight").child(userId).child("note").child(keyId);
+        moonlightListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try {
+                    if (dataSnapshot.exists()) {
+                        moonlight = dataSnapshot.getValue(Moonlight.class);
+
+                    }
+
+                    Log.d(TAG, "moonlight.getTitle: " + moonlight.getTitle());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadMoonlight:onCancelled", databaseError.toException());
+                SnackBarUtils.shortSnackBar(mView, "Failed to load moonlight.", SnackBarUtils.TYPE_WARNING).show();
+
+            }
+        };
+        moonlightReference.addValueEventListener(moonlightListener);
     }
 }

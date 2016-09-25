@@ -35,7 +35,7 @@ public class PickPicFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 BusAction busAction = new BusAction();
-                busAction.setInt(1);
+                busAction.setInt(3);
                 BusProvider.getInstance().post(busAction);
                 dismiss();
             }

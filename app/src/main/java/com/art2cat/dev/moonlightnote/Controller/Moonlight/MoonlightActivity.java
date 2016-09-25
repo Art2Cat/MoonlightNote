@@ -187,7 +187,9 @@ public class MoonlightActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MoonlightActivity.this, MoonlightDetailActivity.class));
+                Intent intent =new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
+                intent.putExtra("writeoredit", 0);
+                startActivity(intent);
             }
         });
 

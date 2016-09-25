@@ -52,5 +52,7 @@
     <string name="login_send_email_succeed">Reset password email have been send to your email</string>
     <string name="ChoseEmailClient">Chose email app</string>
     <string name="dialog_enter_your_register_email">Enter your register email</string>
+    <string name="moonlight_detail_title">Title</string>
+    <string name="moonlight_detail_note">Note</string>
 
 </resources>
