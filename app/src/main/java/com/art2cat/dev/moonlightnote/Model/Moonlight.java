@@ -14,6 +14,7 @@ public class Moonlight {
     public String photo;
     public long date;
     public String label;
+    public String photoName;
 
     public Moonlight() {
 
@@ -73,6 +74,15 @@ public class Moonlight {
         this.title = title;
     }
 
+
+    public String getPhotoName() {
+        return photoName;
+    }
+
+    public void setPhotoName(String photoName) {
+        this.photoName = photoName;
+    }
+
     public Map<String, Object> toMap() {
         HashMap<String, Object> moonlight = new HashMap<>();
         moonlight.put("id", id);
@@ -81,6 +91,7 @@ public class Moonlight {
         moonlight.put("photo", photo);
         moonlight.put("date", date);
         moonlight.put("label", label);
+        moonlight.put("photoname", photoName);
         return moonlight;
     }
 }

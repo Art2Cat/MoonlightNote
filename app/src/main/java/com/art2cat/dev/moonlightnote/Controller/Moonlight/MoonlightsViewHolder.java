@@ -3,6 +3,8 @@ package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
@@ -10,12 +12,20 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
+import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.Date;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by art2cat
@@ -28,6 +38,7 @@ class MoonlightsViewHolder extends RecyclerView.ViewHolder {
     private AppCompatTextView contentAppCompatTextView;
     private AppCompatTextView dateAppCompatTextView;
     private AppCompatImageView photoAppCompatImageView;
+    private AppCompatButton mDeletePhoto;
 
     public MoonlightsViewHolder(View itemView) {
         super(itemView);
@@ -36,9 +47,10 @@ class MoonlightsViewHolder extends RecyclerView.ViewHolder {
         contentAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_content);
         dateAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_date);
         photoAppCompatImageView = (AppCompatImageView) itemView.findViewById(R.id.moonlight_photo);
+        mDeletePhoto = (AppCompatButton) itemView.findViewById(R.id.delete_image);
     }
 
-    void onBindMoonlight(final Context context, final Moonlight moonlight) {
+    void onBindMoonlight(final Context context, final String userid, final Moonlight moonlight , boolean delete) {
         Date date = new Date(moonlight.getDate());
         if (date != null) {
             Log.d("ViewHolder", "date" + date);
@@ -48,7 +60,7 @@ class MoonlightsViewHolder extends RecyclerView.ViewHolder {
 
         if (moonlight.getTitle() != null) {
             Log.d("ViewHolder", "title" + moonlight.getTitle());
-            titleAppCompatTextView.setText( moonlight.getTitle());
+            titleAppCompatTextView.setText(moonlight.getTitle());
         }
         if (moonlight.getContent() != null) {
             Log.d("ViewHolder", "content" + moonlight.getContent());
@@ -68,7 +80,30 @@ class MoonlightsViewHolder extends RecyclerView.ViewHolder {
             });
         }
 
+        if (delete) {
+            mDeletePhoto.setVisibility(View.VISIBLE);
+            mDeletePhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    StorageReference photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE)
+                            .child(userid).child("photos")
+                            .child(moonlight.getPhotoName());
+                    Log.d(TAG, "onClick: " + moonlight.getPhotoName());
+                    photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "onSuccess: ");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "onFailure: " + e.toString());
+                        }
+                    });
+                }
+            });
 
+        }
     }
 
 }

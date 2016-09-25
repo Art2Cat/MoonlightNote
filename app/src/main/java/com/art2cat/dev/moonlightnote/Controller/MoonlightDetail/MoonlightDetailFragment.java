@@ -595,6 +595,7 @@ public class MoonlightDetailFragment extends Fragment implements AdapterView.OnI
                     mFileName = taskSnapshot.getMetadata().getName();
                     Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadUrl.toString());
                     progressDialog.dismiss();
+                    moonlight.setPhotoName(mFileName);
                     moonlight.setPhoto(mDownloadUrl.toString());
                     updateUI();
                 }

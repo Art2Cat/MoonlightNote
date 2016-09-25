@@ -39,6 +39,7 @@ public abstract class MoonlightListFragment extends Fragment {
     private StaggeredGridLayoutManager mStaggeredGridLayoutManager;
     private Menu menu;
     private int index;
+    private boolean deleteFlag;
     private int[] drawableArray = new int[]{
             R.drawable.ic_view_stream_white_24dp,
             R.drawable.ic_view_quilt_white_24dp
@@ -104,10 +105,11 @@ public abstract class MoonlightListFragment extends Fragment {
                     viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
-                            return false;
+                            deleteFlag = true;
+                            return deleteFlag;
                         }
                     });
-                    viewHolder.onBindMoonlight(getActivity(), model);
+                    viewHolder.onBindMoonlight(getActivity(), getUid(), model , deleteFlag);
                 }
             };
             mRecyclerView.setAdapter(mAdapter);
