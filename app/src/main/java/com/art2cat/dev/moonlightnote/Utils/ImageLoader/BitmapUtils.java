@@ -2,6 +2,7 @@ package com.art2cat.dev.moonlightnote.Utils.ImageLoader;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -31,22 +32,33 @@ public class BitmapUtils {
         this.context = context;
     }
 
+    /**
+     * 显示图片
+     *
+     * @param ivPic 传入的图片对象，一定要给参数设置tag(ImageView.setTag(obj))！！！
+     * @param url 图片Uri地址
+     */
     public void display(ImageView ivPic, String url) {
         Bitmap bitmap;
 
         //内存缓存
         bitmap = mMemoryCacheUtils.getBitmapFromMemory(url);
         if (bitmap != null) {
-            ivPic.setImageBitmap(bitmap);
-            System.out.println("从内存获取图片啦.....");
+            if (ivPic.getTag().equals(url)) {
+                ivPic.setImageBitmap(bitmap);
+                Log.d(TAG, "display: " + "从内存获取图片啦.....");
+            }
             return;
         }
 
         //本地缓存
         bitmap = mLocalCacheUtils.getBitmapFromLocal(url);
+
         if (bitmap != null) {
-            ivPic.setImageBitmap(bitmap);
-            System.out.println("从本地获取图片啦.....");
+            if (ivPic.getTag().equals(url)) {
+                ivPic.setImageBitmap(bitmap);
+                Log.d(TAG, "display: " + "从本地获取图片啦.....");
+            }
             //从本地获取图片后,保存至内存中
             mMemoryCacheUtils.setBitmapToMemory(url, bitmap);
             return;

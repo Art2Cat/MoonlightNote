@@ -161,6 +161,7 @@ public class MoonlightActivity extends AppCompatActivity
                 break;
             case R.id.nav_logout:
                 mAuth.signOut();
+                SPUtils.clear(this, "User");
                 SnackBarUtils.shortSnackBar(mView, "Your account have been remove!",
                         SnackBarUtils.TYPE_ALERT).show();
                 break;
@@ -242,7 +243,7 @@ public class MoonlightActivity extends AppCompatActivity
             Fragment fragment = fm.findFragmentById(R.id.main_fragment_container);
             int flag = 0;
             if (fragment == null) {
-                //fragment = new BlankFragment().newInstance(mUserId, flag);
+                //fragment = BlankFragment.newInstance(mUserId);
                 fragment = new MoonlightFragment();
                 fm.beginTransaction()
                         .add(R.id.main_fragment_container, fragment)
@@ -319,6 +320,7 @@ public class MoonlightActivity extends AppCompatActivity
                 }
                 if (profile.getPhotoUrl() != null) {
                     String photoUrl = profile.getPhotoUrl().toString();
+                    mCircleImageView.setTag(photoUrl);
                     BitmapUtils bitmapUtils = new BitmapUtils();
                     Log.d(TAG, "displayUserInfo: " + photoUrl);
                     bitmapUtils.display(mCircleImageView, photoUrl);

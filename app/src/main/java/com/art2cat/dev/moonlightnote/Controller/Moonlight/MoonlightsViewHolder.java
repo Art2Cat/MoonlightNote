@@ -51,6 +51,7 @@ class MoonlightsViewHolder extends RecyclerView.ViewHolder {
     }
 
     void onBindMoonlight(final Context context, final String userid, final Moonlight moonlight , boolean delete) {
+        Log.d(TAG, "onBindMoonlight: " + moonlight.getId());
         Date date = new Date(moonlight.getDate());
         if (date != null) {
             Log.d("ViewHolder", "date" + date);
@@ -67,6 +68,8 @@ class MoonlightsViewHolder extends RecyclerView.ViewHolder {
             contentAppCompatTextView.setText(moonlight.getContent());
         }
         if (moonlight.getPhoto() != null) {
+            Log.d(TAG, "moonlight.getPhoto(): " + moonlight.getPhoto());
+            photoAppCompatImageView.setTag(moonlight.getPhoto());
             BitmapUtils bitmapUtils = new BitmapUtils();
             bitmapUtils.display(photoAppCompatImageView, moonlight.getPhoto());
             photoAppCompatImageView.setOnClickListener(new View.OnClickListener() {

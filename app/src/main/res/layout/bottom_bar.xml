@@ -1,34 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="40dp"
     android:background="@color/bottomBar"
     android:orientation="horizontal">
 
-    <com.art2cat.dev.moonlightnote.Utils.CustomSpinner
-        android:id="@+id/bottomBar_label"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp" />
-
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/bottomBar_camera"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginStart="8dp"
         android:background="@drawable/ic_camera_alt_cyan_400_48dp" />
 
     <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/bottomBar_audio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginStart="8dp"
         android:background="@drawable/ic_keyboard_voice_cyan_400_48dp" />
 
-
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/bottomBar_color"
-        android:layout_width="50dp"
-        android:layout_height="50dp" />
+        android:layout_width="40dp"
+        android:layout_height="40dp" />
+
+    <com.art2cat.dev.moonlightnote.Utils.CustomSpinner
+        android:id="@+id/bottomBar_label"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp" />
 </android.support.v7.widget.LinearLayoutCompat>

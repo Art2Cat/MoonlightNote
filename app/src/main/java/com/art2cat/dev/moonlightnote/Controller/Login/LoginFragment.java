@@ -223,11 +223,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
             showProgress(true);
             if (flag == 1) {
                 signUp(email, password);
-                showProgress(false);
+
                 flag = 2;
             } else if (flag == 2) {
                 signInWithEmail(email, password);
-                showProgress(false);
                 //Intent intent = new Intent(getActivity(), MoonlightActivity.class);
                 //startActivity(intent);
             }
@@ -245,36 +244,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     /**
      * Shows the progress UI and hides the login form.
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
+    private void showProgress(boolean show) {
+        if (show) {
+            mProgressView.setVisibility(View.VISIBLE);
         } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mProgressView.setVisibility(View.GONE);
         }
     }
 
@@ -318,6 +292,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                 attemptLogin();
                 break;
             case R.id.login_google_btn:
+                showProgress(true);
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
                 startActivityForResult(signInIntent, RC_SIGN_IN);
                 break;
@@ -366,10 +341,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
+                            showProgress(false);
                             Log.w(TAG, "signInWithCredential", task.getException());
                             SnackBarUtils.shortSnackBar(mView, "Authentication failed.",
                                     SnackBarUtils.TYPE_WARNING).show();
                         } else {
+                            showProgress(false);
                             Intent intent = new Intent(getActivity(), MoonlightActivity.class);
                             getActivity().startActivity(intent);
                             SnackBarUtils.shortSnackBar(mView, "Google Sign In successed", SnackBarUtils.TYPE_INFO).show();
@@ -386,6 +363,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            showProgress(false);
                             Intent intent = new Intent(getActivity(), MoonlightActivity.class);
                             getActivity().startActivity(intent);
                             //销毁当前Activity
@@ -406,10 +384,15 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            showProgress(false);
+                            SnackBarUtils.longSnackBar(mView, "Sign Up succeed!",
+                                    SnackBarUtils.TYPE_WARNING).show();
+
                             signUp_state = true;
                         } else {
+                            showProgress(false);
                             signUp_state = false;
-                            SnackBarUtils.shortSnackBar(mView, "Sign Up Failed",
+                            SnackBarUtils.longSnackBar(mView, "Sign Up Failed: " + task.getException().toString(),
                                     SnackBarUtils.TYPE_WARNING).show();
                         }
                     }

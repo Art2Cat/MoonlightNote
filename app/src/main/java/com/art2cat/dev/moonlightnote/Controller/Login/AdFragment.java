@@ -46,8 +46,10 @@ public class AdFragment extends Fragment {
 
 
         adView.loadAd(request);
+        if (!adView.isLoading()) {
+            adView.setVisibility(View.GONE);
+        }
 
-        //if ()
         return mView;
     }
 

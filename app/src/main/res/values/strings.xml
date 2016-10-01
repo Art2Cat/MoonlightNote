@@ -54,5 +54,6 @@
     <string name="dialog_enter_your_register_email">Enter your register email</string>
     <string name="moonlight_detail_title">Title</string>
     <string name="moonlight_detail_note">Note</string>
+    <string name="prograssBar_uploading">Uploading...</string>
 
 </resources>

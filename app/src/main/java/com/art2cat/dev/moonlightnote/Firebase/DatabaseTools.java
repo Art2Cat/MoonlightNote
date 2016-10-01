@@ -63,6 +63,7 @@ public class DatabaseTools {
         } else {
             mKey = keyId;
         }
+        moonlight.setId(mKey);
         Map<String, Object> moonlightValues = moonlight.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
 

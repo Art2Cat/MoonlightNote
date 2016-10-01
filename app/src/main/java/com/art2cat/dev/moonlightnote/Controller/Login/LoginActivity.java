@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +36,7 @@ import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
+    private AppBarLayout mAppBarLayout;
     private Toolbar mToolbar;
     private FragmentManager mFragmentManager;
     private boolean mLoginState = false;
@@ -52,6 +54,8 @@ public class LoginActivity extends AppCompatActivity {
         if (!flag) {
             signIn();
         }
+
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.login_appbarLayout);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         //mToolbar.setVisibility(View.INVISIBLE);
@@ -124,6 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                 mFragmentManager.beginTransaction()
                         .replace(R.id.login_fragmentContainer, fragment)
                         .commit();
+                mAppBarLayout.setVisibility(View.VISIBLE);
                 mToolbar.setVisibility(View.VISIBLE);
             }
         }

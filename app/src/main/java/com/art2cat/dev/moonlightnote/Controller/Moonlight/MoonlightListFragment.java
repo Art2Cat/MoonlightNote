@@ -88,7 +88,6 @@ public abstract class MoonlightListFragment extends Fragment {
                 protected void populateViewHolder(MoonlightsViewHolder viewHolder,
                                                   Moonlight model, int position) {
                     final DatabaseReference moonlightRef = getRef(position);
-
                     final String moonlightKey = moonlightRef.getKey();
 
 
@@ -109,7 +108,9 @@ public abstract class MoonlightListFragment extends Fragment {
                             return deleteFlag;
                         }
                     });
-                    viewHolder.onBindMoonlight(getActivity(), getUid(), model , deleteFlag);
+                    if (moonlightKey.equals(model.getId())) {
+                        viewHolder.onBindMoonlight(getActivity(), getUid(), model, deleteFlag);
+                    }
                 }
             };
             mRecyclerView.setAdapter(mAdapter);

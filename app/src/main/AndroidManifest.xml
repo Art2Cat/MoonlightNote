@@ -16,7 +16,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_app_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -36,6 +36,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Controller.Login.LoginActivity"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,6 +45,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Controller.MoonlightDetail.MoonlightDetailActivity"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateVisible|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

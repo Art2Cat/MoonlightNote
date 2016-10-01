@@ -34,10 +34,8 @@ import java.util.List;
 public class BlankFragment extends Fragment {
     private View view;
     private RecyclerView mRecyclerView;
-    private List<Moonlight> mData, mDatas;
-    private DatabaseTools mDatabaseTools;
+    private List<Moonlight> mData;
     private String mUserId;
-    private int flag;
     private DatabaseReference moonlightReference;
     private ValueEventListener mMoonlightListener;
     private static final String TAG = "BlankFragment";
@@ -47,11 +45,10 @@ public class BlankFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public BlankFragment newInstance(String userId, int state) {
+    public static BlankFragment newInstance(String userId) {
         BlankFragment fragment = new BlankFragment();
         Bundle bundle = new Bundle();
         bundle.putString("userId", userId);
-        bundle.putInt("state", state);
         fragment.setArguments(bundle);
         Log.i(TAG, "newInstance: ");
         return fragment;
@@ -62,9 +59,7 @@ public class BlankFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mUserId = getArguments().getString("userId");
-            flag = getArguments().getInt("state");
             Log.i(TAG, "onCreate: " + mUserId);
-            getMoonlights();
             mData = new ArrayList<Moonlight>();
         }
     }
@@ -84,84 +79,45 @@ public class BlankFragment extends Fragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
     }
-
-    public Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            Log.d(TAG, "handleMessage: ");
-            if (mData != null) {
-
-                mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-
-                mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-            }
-        }
-    };
 
     @Override
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume: ");
-       // getMoonlights();
+            getMoonlights();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         Log.i(TAG, "onStop: ");
-      //  if (mMoonlightListener != null) {
-      //      moonlightReference.removeEventListener(mMoonlightListener);
-      //  }
-    }
-
-    private class LoadData extends AsyncTask<Void, Void, Void> {
-
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            if (mData != null) {
-
-                mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-
-                mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-            }
+        if (mMoonlightListener != null) {
+            moonlightReference.removeEventListener(mMoonlightListener);
         }
     }
-
 
     public void getMoonlights() {
         Log.d(TAG, "getMoonlights: ");
         try {
             moonlightReference = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight").child(mUserId).child("day_book");
+                    .child("users-moonlight").child(mUserId).child("note");
             ValueEventListener moonlightListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    //清空list数据
+                    mData.clear();
                     if (dataSnapshot.exists()) {
                         Log.d(TAG, "getChildrenCount: " + dataSnapshot.getChildrenCount());
                         for (DataSnapshot child : dataSnapshot.getChildren()) {
-                            Moonlight moonlightTest = child.getValue(Moonlight.class);
+                            Moonlight moonlight = child.getValue(Moonlight.class);
                             String key = child.getKey();
-                            if (moonlightTest != null) {
-                                mData.add(moonlightTest);
+                            moonlight.setId(key);
+                            if (moonlight != null) {
+                                mData.add(moonlight);
                             }
                         }
+                        mRecyclerView.setAdapter(new MoonlightAdapter(getActivity(), mUserId, mData));
                         Log.d(TAG, "onDataChange: " + mData.size());
                     } else {
                         SnackBarUtils.shortSnackBar(view, "absolutely none data here!",

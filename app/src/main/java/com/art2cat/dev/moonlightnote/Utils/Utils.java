@@ -1,9 +1,16 @@
 package com.art2cat.dev.moonlightnote.Utils;
 
+import android.content.Context;
+import android.support.annotation.MenuRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.*;
+import android.support.v7.widget.PopupMenu;
+import android.view.View;
 
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.Model.User;
+import com.art2cat.dev.moonlightnote.R;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
