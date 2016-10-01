@@ -136,7 +136,8 @@ public class DatabaseTools {
     public void removeMoonlight(String keyId) {
         try {
             FirebaseDatabase.getInstance().getReference().child("users-moonlight")
-                    .child(mUserId).child(keyId).removeValue(new DatabaseReference.CompletionListener() {
+                    .child(mUserId).child("note").child(keyId).removeValue(
+                    new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
 

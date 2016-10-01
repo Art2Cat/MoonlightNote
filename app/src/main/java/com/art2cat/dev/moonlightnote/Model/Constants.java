@@ -30,6 +30,7 @@ public class Constants {
      */
     public static final String FB_STORAGE_REFERENCE = "gs://isjianxue.appspot.com";
 
+    public static final String FILE_PROVIDER = "com.art2cat.dev.moonlightnote.fileprovider";
     /**
      * 此为AESKey（可修改）
      */

@@ -92,6 +92,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d(TAG, "onStart: ");
         addListener();
     }
 
@@ -103,6 +104,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        Log.d(TAG, "onStop: ");
         removeListener();
     }
 
@@ -124,7 +126,6 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             } else {
                 Fragment fragment = new LoginFragment();
-                //mFragmentManager.beginTransaction().remove()
                 mFragmentManager.beginTransaction()
                         .replace(R.id.login_fragmentContainer, fragment)
                         .commit();

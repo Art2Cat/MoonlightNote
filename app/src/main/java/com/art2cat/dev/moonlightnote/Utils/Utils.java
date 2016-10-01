@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.*;
 import android.support.v7.widget.PopupMenu;
 import android.view.View;
+import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.Model.User;
@@ -57,6 +58,14 @@ public class Utils {
             return user;
         }
         return null;
+    }
+
+    public static void showToast(Context context, String content, int type) {
+        if (type == 0) {
+            Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
+        } else if (type == 1) {
+            Toast.makeText(context, content, Toast.LENGTH_LONG).show();
+        }
     }
 
 }
