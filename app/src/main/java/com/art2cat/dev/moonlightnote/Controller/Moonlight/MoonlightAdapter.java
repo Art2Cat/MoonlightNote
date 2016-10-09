@@ -44,7 +44,6 @@ public class MoonlightAdapter extends RecyclerView.Adapter<MoonlightAdapter.Moon
     private CardView mCardView;
     private AppCompatTextView titleAppCompatTextView;
     private AppCompatTextView contentAppCompatTextView;
-    private AppCompatTextView dateAppCompatTextView;
     private AppCompatImageView photoAppCompatImageView;
     private AppCompatButton mDeletePhoto;
     private boolean deleteState = false;
@@ -93,7 +92,6 @@ public class MoonlightAdapter extends RecyclerView.Adapter<MoonlightAdapter.Moon
             mCardView = (CardView) itemView.findViewById(R.id.item_main);
             titleAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_title);
             contentAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_content);
-            dateAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_date);
             photoAppCompatImageView = (AppCompatImageView) itemView.findViewById(R.id.moonlight_photo);
             mDeletePhoto = (AppCompatButton) itemView.findViewById(R.id.delete_image);
         }
@@ -116,11 +114,6 @@ public class MoonlightAdapter extends RecyclerView.Adapter<MoonlightAdapter.Moon
                     return deleteState = true;
                 }
             });
-
-            if (date != null) {
-                Log.d("ViewHolder", "date" + date);
-                dateAppCompatTextView.setText(Utils.dateFormat(date));
-            }
 
             if (moonlight.getTitle() != null) {
                 Log.d("ViewHolder", "title" + moonlight.getTitle());

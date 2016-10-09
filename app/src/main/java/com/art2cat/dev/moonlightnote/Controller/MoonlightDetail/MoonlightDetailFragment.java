@@ -161,7 +161,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 mContent.setText(moonlight.getContent());
             }
             if (moonlight.getPhoto() != null) {
-                mPhoto.setTag(moonlight.getPhoto());
                 BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
                 bitmapUtils.display(mPhoto, moonlight.getPhoto());
                 mCardView.setVisibility(View.VISIBLE);
@@ -339,7 +338,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         //图片地址为空则不加载图片
         if (mFileUri != null) {
             try {
-                mPhoto.setTag(mDownloadUrl.toString());
                 Bitmap bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(mFileUri));
                 if (bitmap != null) {
                     mPhoto.setImageBitmap(bitmap);

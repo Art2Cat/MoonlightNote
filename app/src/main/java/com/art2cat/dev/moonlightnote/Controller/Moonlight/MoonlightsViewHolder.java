@@ -36,7 +36,6 @@ class MoonlightsViewHolder extends RecyclerView.ViewHolder {
     private CardView mCardView;
     private AppCompatTextView titleAppCompatTextView;
     private AppCompatTextView contentAppCompatTextView;
-    private AppCompatTextView dateAppCompatTextView;
     private AppCompatImageView photoAppCompatImageView;
     private AppCompatButton mDeletePhoto;
 
@@ -45,7 +44,6 @@ class MoonlightsViewHolder extends RecyclerView.ViewHolder {
         mCardView = (CardView) itemView.findViewById(R.id.item_main);
         titleAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_title);
         contentAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_content);
-        dateAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_date);
         photoAppCompatImageView = (AppCompatImageView) itemView.findViewById(R.id.moonlight_photo);
         mDeletePhoto = (AppCompatButton) itemView.findViewById(R.id.delete_image);
     }
@@ -66,7 +64,6 @@ class MoonlightsViewHolder extends RecyclerView.ViewHolder {
         }
         if (moonlight.getPhoto() != null) {
             Log.d(TAG, "moonlight.getPhoto(): " + moonlight.getPhoto());
-            photoAppCompatImageView.setTag(moonlight.getPhoto());
             BitmapUtils bitmapUtils = new BitmapUtils();
             bitmapUtils.display(photoAppCompatImageView, moonlight.getPhoto());
             photoAppCompatImageView.setOnClickListener(new View.OnClickListener() {

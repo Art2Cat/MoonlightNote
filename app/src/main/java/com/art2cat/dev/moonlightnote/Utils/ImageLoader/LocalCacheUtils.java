@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.ImageView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,6 +30,10 @@ public class LocalCacheUtils {
     public LocalCacheUtils() {
     }
 
+    public void getBitmapFromLocal(ImageView imageView, String url) {
+        new BitmapTask().execute(imageView, url);
+    }
+
     /**
      * 从本地存储中获取图片缓存
      *
@@ -35,8 +41,8 @@ public class LocalCacheUtils {
      * @return bitmap图片
      */
     public Bitmap getBitmapFromLocal(String url) {
-        try {
 
+        try {
             Bitmap bitmap = null;
             File file = new File(CACHE_PATH, url);
 
@@ -153,5 +159,25 @@ public class LocalCacheUtils {
             e.printStackTrace();
         }
 
+    }
+
+    class BitmapTask extends AsyncTask<Object, Void, Bitmap> {
+        private ImageView ivPic;
+        private String url;
+
+        @Override
+        protected Bitmap doInBackground(Object... params) {
+            ivPic = (ImageView) params[0];
+            url = (String) params[1];
+            return getBitmapFromLocal(url);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            if (bitmap !=null) {
+                ivPic.setImageBitmap(bitmap);
+            }
+        }
     }
 }

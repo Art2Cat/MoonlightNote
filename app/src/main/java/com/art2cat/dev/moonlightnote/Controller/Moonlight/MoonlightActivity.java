@@ -188,7 +188,7 @@ public class MoonlightActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent =new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
+                Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
                 intent.putExtra("writeoredit", 0);
                 startActivity(intent);
             }
@@ -320,7 +320,6 @@ public class MoonlightActivity extends AppCompatActivity
                 }
                 if (profile.getPhotoUrl() != null) {
                     String photoUrl = profile.getPhotoUrl().toString();
-                    mCircleImageView.setTag(photoUrl);
                     BitmapUtils bitmapUtils = new BitmapUtils();
                     Log.d(TAG, "displayUserInfo: " + photoUrl);
                     bitmapUtils.display(mCircleImageView, photoUrl);

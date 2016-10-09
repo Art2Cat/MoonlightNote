@@ -112,10 +112,8 @@ public class NetCacheUtils {
         @Override
         protected void onPostExecute(Bitmap result) {
             if (result != null) {
-                if (ivPic.getTag().equals(url)) {
-                    ivPic.setImageBitmap(result);
-                    Log.d(TAG, "onPostExecute: " + "从网络缓存图片啦.....");
-                }
+                ivPic.setImageBitmap(result);
+                Log.d(TAG, "onPostExecute: " + "从网络缓存图片啦.....");
                 //从网络获取图片后,保存至本地缓存
                 mLocalCacheUtils.setBitmapToLocal(url, result);
                 //保存至内存中

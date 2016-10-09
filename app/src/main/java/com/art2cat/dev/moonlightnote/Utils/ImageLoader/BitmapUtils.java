@@ -36,7 +36,7 @@ public class BitmapUtils {
      * 显示图片
      *
      * @param ivPic 传入的图片对象，一定要给参数设置tag(ImageView.setTag(obj))！！！
-     * @param url 图片Uri地址
+     * @param url   图片Uri地址
      */
     public void display(ImageView ivPic, String url) {
         Bitmap bitmap;
@@ -44,25 +44,22 @@ public class BitmapUtils {
         //内存缓存
         bitmap = mMemoryCacheUtils.getBitmapFromMemory(url);
         if (bitmap != null) {
-            if (ivPic.getTag().equals(url)) {
-                ivPic.setImageBitmap(bitmap);
-                Log.d(TAG, "display: " + "从内存获取图片啦.....");
-            }
+            ivPic.setImageBitmap(bitmap);
+            Log.d(TAG, "display: " + "从内存获取图片啦.....");
             return;
         }
 
         //本地缓存
-        bitmap = mLocalCacheUtils.getBitmapFromLocal(url);
+        //bitmap = mLocalCacheUtils.getBitmapFromLocal(url);
+        mLocalCacheUtils.getBitmapFromLocal(ivPic, url);
 
-        if (bitmap != null) {
-            if (ivPic.getTag().equals(url)) {
-                ivPic.setImageBitmap(bitmap);
-                Log.d(TAG, "display: " + "从本地获取图片啦.....");
-            }
-            //从本地获取图片后,保存至内存中
-            mMemoryCacheUtils.setBitmapToMemory(url, bitmap);
-            return;
-        }
+        //if (bitmap != null) {
+        //    ivPic.setImageBitmap(bitmap);
+        //    Log.d(TAG, "display: " + "从本地获取图片啦.....");
+        //    //从本地获取图片后,保存至内存中
+        //    mMemoryCacheUtils.setBitmapToMemory(url, bitmap);
+        //    return;
+        //}
         //网络缓存
         mNetCacheUtils.getBitmapFromNet(ivPic, url);
     }

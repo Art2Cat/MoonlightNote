@@ -169,7 +169,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     private void updateUI(Uri mDownloadUrl) {
         if (mDownloadUrl != null) {
-            mCircleImageView.setTag(mDownloadUrl.toString());
             BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
             bitmapUtils.display(mCircleImageView, mDownloadUrl.toString());
 
