@@ -10,18 +10,13 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_gravity="end"
-        android:visibility="gone"
-        android:background="@drawable/ic_clear_black_24dp" />
+        android:background="@drawable/ic_clear_black_24dp"
+        android:visibility="gone" />
 
     <android.support.v7.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/moonlight_date"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/moonlight_title"

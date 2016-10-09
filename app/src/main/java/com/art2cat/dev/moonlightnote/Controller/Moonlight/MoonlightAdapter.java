@@ -63,7 +63,7 @@ public class MoonlightAdapter extends RecyclerView.Adapter<MoonlightAdapter.Moon
     @Override
     public MoonlightViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         MoonlightViewHolder holder = new MoonlightViewHolder(
-                LayoutInflater.from(mContext).inflate(R.layout.moonlight_item, parent, false));
+                LayoutInflater.from(mContext).inflate(R.layout.moonlight_items, parent, false));
         return holder;
     }
 

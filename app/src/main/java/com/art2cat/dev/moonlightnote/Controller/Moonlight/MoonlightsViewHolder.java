@@ -50,22 +50,19 @@ class MoonlightsViewHolder extends RecyclerView.ViewHolder {
         mDeletePhoto = (AppCompatButton) itemView.findViewById(R.id.delete_image);
     }
 
-    void onBindMoonlight(final Context context, final String userid, final Moonlight moonlight , boolean delete) {
+    void onBindMoonlight(final Context context, final String userid, final Moonlight moonlight, boolean delete) {
         Log.d(TAG, "onBindMoonlight: " + moonlight.getId());
-        Date date = new Date(moonlight.getDate());
-        if (date != null) {
-            Log.d("ViewHolder", "date" + date);
-            dateAppCompatTextView.setText(Utils.dateFormat(date));
-
-        }
-
         if (moonlight.getTitle() != null) {
             Log.d("ViewHolder", "title" + moonlight.getTitle());
             titleAppCompatTextView.setText(moonlight.getTitle());
+        } else {
+            titleAppCompatTextView.setVisibility(View.GONE);
         }
         if (moonlight.getContent() != null) {
             Log.d("ViewHolder", "content" + moonlight.getContent());
             contentAppCompatTextView.setText(moonlight.getContent());
+        } else {
+            contentAppCompatTextView.setVisibility(View.GONE);
         }
         if (moonlight.getPhoto() != null) {
             Log.d(TAG, "moonlight.getPhoto(): " + moonlight.getPhoto());
@@ -81,6 +78,8 @@ class MoonlightsViewHolder extends RecyclerView.ViewHolder {
                     context.startActivity(intent);
                 }
             });
+        } else {
+            photoAppCompatImageView.setVisibility(View.GONE);
         }
 
         if (delete) {

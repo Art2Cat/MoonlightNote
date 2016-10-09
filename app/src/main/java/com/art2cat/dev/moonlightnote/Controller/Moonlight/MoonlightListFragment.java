@@ -77,7 +77,7 @@ public abstract class MoonlightListFragment extends Fragment {
         Query moonlightsQuery = getQuery(mDatabase);
         if (moonlightsQuery != null) {
             mAdapter = new FirebaseRecyclerAdapter<Moonlight, MoonlightsViewHolder>
-                    (Moonlight.class, R.layout.moonlight_item, MoonlightsViewHolder.class,
+                    (Moonlight.class, R.layout.moonlight_items, MoonlightsViewHolder.class,
                             moonlightsQuery) {
                 @Override
                 public DatabaseReference getRef(int position) {

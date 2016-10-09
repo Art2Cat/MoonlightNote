@@ -108,9 +108,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
     private Moonlight moonlight;
     private DatabaseTools mDatabaseTools;
-    private boolean flag;
+    private boolean mEditFlag;
     private String mUserId;
-    private String keyid;
+    private String mKeyId;
     private String mLabel;
     private Uri mFileUri = null;
     private DatabaseReference mMoonlightRef;
@@ -206,18 +206,22 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         long date = System.currentTimeMillis();
         moonlight.setDate(date);
 
+        //当能argument不为空时，从argument中获取keyId，同时调用getMoonlight方法获取moonlight信息，editFlag设为true
         if (getArguments() != null) {
-            keyid = getArguments().getString("keyId");
-            getMoonlight(keyid);
-            flag = true;
+            mKeyId = getArguments().getString("keyId");
+            getMoonlight(mKeyId);
+            mEditFlag = true;
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Date date = new Date(System.currentTimeMillis());
+        //新建日期对象
+        Date date = new Date(moonlight.getDate());
+        //标题栏设置编辑时间
         getActivity().setTitle(Utils.dateFormat(date));
+        //视图初始化
         mView = inflater.inflate(R.layout.fragment_moonlight_detail, null);
         mTitle = (TextInputEditText) mView.findViewById(R.id.title_TIET);
         mContent = (TextInputEditText) mView.findViewById(R.id.content_TIET);
@@ -285,7 +289,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (flag) {
+        //当editFlag为true时延时0.5秒更新UI（防止UI已更新，moonlight数据未载入）
+        if (mEditFlag) {
             mHandler.postDelayed(myRunnable, 500);
         }
     }
@@ -294,18 +299,17 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause: ");
-        if (flag && moonlight != null) {
-            Log.d(TAG, "keyid" + keyid);
-            updateMoonlight(keyid, moonlight);
-        }
-        if (mLabel != null) {
-            uploadUserConfig();
+        //当editFlag为true且moonlight不为空时更新moonlight信息到服务器
+        if (mEditFlag && moonlight != null) {
+            Log.d(TAG, "mKeyId" + mKeyId);
+            updateMoonlight(mKeyId, moonlight);
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume: ");
     }
 
     @Override
@@ -313,28 +317,41 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         super.onStop();
         Log.i(TAG, "onStop");
         removeListener();
+        //mLabel不为空时，上传用户配置到服务器
+        if (mLabel != null) {
+            uploadUserConfig();
+        }
     }
 
     @Override
     public void onDestroy() {
+        //取消对Bus的注册
         BusProvider.getInstance().unregister(this);
         super.onDestroy();
     }
 
-    private void updateUI(Uri mFileUri) {
-        if (mDownloadUrl != null) {
+    /**
+     * 更新显示图片信息
+     * @param mFileUri 图片地址
+     */
+    private void updatePhoto(Uri mFileUri) {
+        //当图片地址不为空时，首先从本地读取bitmap设置图片，bitmap为空，则从网络加载
+        //图片地址为空则不加载图片
+        if (mFileUri != null) {
             try {
                 mPhoto.setTag(mDownloadUrl.toString());
                 Bitmap bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(mFileUri));
-                mPhoto.setImageBitmap(bitmap);
+                if (bitmap != null) {
+                    mPhoto.setImageBitmap(bitmap);
+                } else {
+                    BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
+                    bitmapUtils.display(mPhoto, mDownloadUrl.toString());
+                }
+                mCardView.setVisibility(View.VISIBLE);
+
             } catch (FileNotFoundException e) {
                 Log.d(TAG, "load local file failed" + e.toString());
             }
-            mPhoto.setTag(mDownloadUrl.toString());
-            BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
-            bitmapUtils.display(mPhoto, mDownloadUrl.toString());
-            mCardView.setVisibility(View.VISIBLE);
-
         } else {
             mFileName = null;
             mCardView.setVisibility(View.GONE);
@@ -344,10 +361,11 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        if (keyid == null) {
-            inflater.inflate(R.menu.create_moonlight_menu, menu);
-        } else {
+        //如mEditFlag为true，加载edit_moonlight_menu，反之则加载create_moonlight_menu
+        if (mEditFlag) {
             inflater.inflate(R.menu.edit_moontlight_menu, menu);
+        } else {
+            inflater.inflate(R.menu.create_moonlight_menu, menu);
         }
     }
 
@@ -355,6 +373,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_done:
+                //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
                 if (moonlight.getPhoto() != null || moonlight.getContent() != null
                         || moonlight.getTitle() != null) {
                     addMoonlight(moonlight);
@@ -364,8 +383,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 }
                 break;
             case R.id.menu_delete:
+                //将moonlight设置为空，删除服务器中指定的moonlight数据
                 moonlight = null;
-                removeMoonlight(keyid);
+                removeMoonlight(mKeyId);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -476,8 +496,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bottomBar_camera:
-                //PickPicFragment pickPicFragment = new PickPicFragment();
-                //pickPicFragment.show(getFragmentManager(), "PICK_PIC");
+                //使用PopupMenu选择使用相机还是相册添加图片
                 MenuUtils.showPopupMenu(getActivity(), v, R.menu.photo_choose_menu, new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -504,21 +523,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 startActivity(intent);
                 break;
             case R.id.delete_image:
-                StorageReference photoRef = mStorageReference.child(mUserId).child("photos")
-                        .child(mFileName);
-                Log.d(TAG, "onClick: " + mFileName);
-                photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "onSuccess: ");
-                        SnackBarUtils.shortSnackBar(mView, "Image removed!", SnackBarUtils.TYPE_INFO).show();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "onFailure: " + e.toString());
-                    }
-                });
+                //
+                removePhoto();
                 moonlight.setPhoto(null);
                 mCardView.setVisibility(View.GONE);
                 break;
@@ -660,7 +666,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     moonlight.setPhotoName(mFileName);
                     moonlight.setPhoto(mDownloadUrl.toString());
                     mProgressBarContainer.setVisibility(View.GONE);
-                    updateUI(fileUri);
+                    updatePhoto(fileUri);
                 }
             }).addOnFailureListener(getActivity(), new OnFailureListener() {
                 @Override
@@ -668,7 +674,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     mFileName = null;
                     mDownloadUrl = null;
                     mProgressBarContainer.setVisibility(View.GONE);
-                    updateUI(fileUri);
+                    updatePhoto(fileUri);
                 }
             }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -749,6 +755,24 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             }
         };
         mMoonlightRef.addValueEventListener(moonlightListener);
+    }
+
+    private void removePhoto() {
+        StorageReference photoRef = mStorageReference.child(mUserId).child("photos")
+                .child(mFileName);
+        Log.d(TAG, "onClick: " + mFileName);
+        photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "onSuccess: ");
+                SnackBarUtils.shortSnackBar(mView, "Image removed!", SnackBarUtils.TYPE_INFO).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "onFailure: " + e.toString());
+            }
+        });
     }
 
     private void removeListener() {
