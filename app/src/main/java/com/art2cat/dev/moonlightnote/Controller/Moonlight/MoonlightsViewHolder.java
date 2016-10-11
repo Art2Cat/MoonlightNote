@@ -16,14 +16,10 @@ import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
-import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
-import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import java.util.Date;
 
 import static android.content.ContentValues.TAG;
 
@@ -62,16 +58,16 @@ class MoonlightsViewHolder extends RecyclerView.ViewHolder {
         } else {
             contentAppCompatTextView.setVisibility(View.GONE);
         }
-        if (moonlight.getPhoto() != null) {
-            Log.d(TAG, "moonlight.getPhoto(): " + moonlight.getPhoto());
+        if (moonlight.getPhotoUrl() != null) {
+            Log.d(TAG, "moonlight.getPhotoUrl(): " + moonlight.getPhotoUrl());
             BitmapUtils bitmapUtils = new BitmapUtils();
-            bitmapUtils.display(photoAppCompatImageView, moonlight.getPhoto());
+            bitmapUtils.display(photoAppCompatImageView, moonlight.getPhotoUrl());
             photoAppCompatImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //网页浏览图片。。。
                     Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(moonlight.getPhoto()));
+                    intent.setData(Uri.parse(moonlight.getPhotoUrl()));
                     context.startActivity(intent);
                 }
             });

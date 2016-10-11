@@ -11,7 +11,7 @@ public class Moonlight {
     public String id;
     public String title;
     public String content;
-    public String photo;
+    public String photoUrl;
     public long date;
     public String label;
     public String photoName;
@@ -51,8 +51,8 @@ public class Moonlight {
     public void setContent(String content) {
         this.content = content;
     }
-    public String getPhoto() {
-        return photo;
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 
     public String getId() {
@@ -63,8 +63,8 @@ public class Moonlight {
         this.id = id;
     }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
     public String getTitle() {
         return title;
@@ -88,7 +88,7 @@ public class Moonlight {
         moonlight.put("id", id);
         moonlight.put("title", title);
         moonlight.put("content", content);
-        moonlight.put("photo", photo);
+        moonlight.put("photoUrl", photoUrl);
         moonlight.put("date", date);
         moonlight.put("label", label);
         moonlight.put("photoname", photoName);

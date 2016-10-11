@@ -160,9 +160,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             if (moonlight.getContent() != null) {
                 mContent.setText(moonlight.getContent());
             }
-            if (moonlight.getPhoto() != null) {
+            if (moonlight.getPhotoUrl() != null) {
                 BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
-                bitmapUtils.display(mPhoto, moonlight.getPhoto());
+                bitmapUtils.display(mPhoto, moonlight.getPhotoUrl());
                 mCardView.setVisibility(View.VISIBLE);
             }
             if (moonlight.getLabel() != null) {
@@ -372,7 +372,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         switch (item.getItemId()) {
             case R.id.menu_done:
                 //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
-                if (moonlight.getPhoto() != null || moonlight.getContent() != null
+                if (moonlight.getPhotoUrl() != null || moonlight.getContent() != null
                         || moonlight.getTitle() != null) {
                     addMoonlight(moonlight);
                     getActivity().startActivity(new Intent(getActivity(), MoonlightActivity.class));
@@ -517,13 +517,13 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             case R.id.moonlight_photo:
                 //网页浏览图片。。。
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(moonlight.getPhoto()));
+                intent.setData(Uri.parse(moonlight.getPhotoUrl()));
                 startActivity(intent);
                 break;
             case R.id.delete_image:
                 //
                 removePhoto();
-                moonlight.setPhoto(null);
+                moonlight.setPhotoUrl(null);
                 mCardView.setVisibility(View.GONE);
                 break;
         }
@@ -662,7 +662,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     }
                     Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadUrl.toString());
                     moonlight.setPhotoName(mFileName);
-                    moonlight.setPhoto(mDownloadUrl.toString());
+                    moonlight.setPhotoUrl(mDownloadUrl.toString());
                     mProgressBarContainer.setVisibility(View.GONE);
                     updatePhoto(fileUri);
                 }

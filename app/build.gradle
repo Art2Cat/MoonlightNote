@@ -5,12 +5,12 @@ android {
         config {
             keyAlias 'Art2Cat'
             keyPassword 'fuckyou'
-            storeFile file('/home/art2cat/Art2Cat.jks')
+            storeFile file('/home/rorschach_ac/Art2Cat.jks')
             storePassword 'fuckyou'
         }
     }
     compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    buildToolsVersion "24.0.3"
     defaultConfig {
         applicationId "com.art2cat.dev.moonlightnote"
         minSdkVersion 21
@@ -59,11 +59,11 @@ dependencies {
     compile 'com.android.support:support-v4:24.2.1'
     compile 'com.android.support:design:24.2.1'
 
-    compile 'com.google.android.gms:play-services:9.6.0'
-    compile 'com.google.android.gms:play-services-auth:9.6.0'
-    compile 'com.google.android.gms:play-services-appindexing:9.6.0'
-    compile 'com.google.android.gms:play-services-ads:9.6.0'
-    compile 'com.google.android.gms:play-services-gcm:9.6.0'
+    compile 'com.google.android.gms:play-services:9.6.1'
+    compile 'com.google.android.gms:play-services-auth:9.6.1'
+    compile 'com.google.android.gms:play-services-appindexing:9.6.1'
+    compile 'com.google.android.gms:play-services-ads:9.6.1'
+    compile 'com.google.android.gms:play-services-gcm:9.6.1'
     compile 'com.google.firebase:firebase-core:9.4.0'
     compile 'com.google.firebase:firebase-auth:9.4.0'
     compile 'com.google.firebase:firebase-messaging:9.4.0'

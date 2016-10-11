@@ -19,7 +19,6 @@ import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
-import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -123,16 +122,16 @@ public class MoonlightAdapter extends RecyclerView.Adapter<MoonlightAdapter.Moon
                 Log.d("ViewHolder", "content" + moonlight.getContent());
                 contentAppCompatTextView.setText(moonlight.getContent());
             }
-            if (moonlight.getPhoto() != null) {
-                photoAppCompatImageView.setTag(moonlight.getPhoto());
+            if (moonlight.getPhotoUrl() != null) {
+                photoAppCompatImageView.setTag(moonlight.getPhotoUrl());
                 BitmapUtils bitmapUtils = new BitmapUtils();
-                bitmapUtils.display(photoAppCompatImageView, moonlight.getPhoto());
+                bitmapUtils.display(photoAppCompatImageView, moonlight.getPhotoUrl());
                 photoAppCompatImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //网页浏览图片。。。
                         Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse(moonlight.getPhoto()));
+                        intent.setData(Uri.parse(moonlight.getPhotoUrl()));
                         context.startActivity(intent);
                     }
                 });

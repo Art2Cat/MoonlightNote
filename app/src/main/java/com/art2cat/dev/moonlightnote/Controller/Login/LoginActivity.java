@@ -20,6 +20,7 @@ import com.art2cat.dev.moonlightnote.Model.UserConfig;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private static final String AD_UNIT_ID = "ca-app-pub-5043396164425122/9918900095";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             //在这里首先加载一个含有广告的fragment
             if (fragment == null) {
+                MobileAds.initialize(this, AD_UNIT_ID);
                 fragment = new AdFragment();
                 mFragmentManager.beginTransaction()
                         .add(R.id.login_fragmentContainer, fragment)
@@ -84,7 +87,7 @@ public class LoginActivity extends AppCompatActivity {
 
             //创建handler对象，调用postDelayed()方法，使广告显示3秒钟
             Handler handler = new Handler();
-            handler.postDelayed(new UpdateUI(), 3000);
+            handler.postDelayed(new UpdateUI(), 5000);
         }
 
     }
