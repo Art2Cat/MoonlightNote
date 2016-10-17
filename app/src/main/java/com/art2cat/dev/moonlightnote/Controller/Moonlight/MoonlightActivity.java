@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -32,6 +33,7 @@ import com.art2cat.dev.moonlightnote.Utils.CustomSpinner;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
+import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -39,6 +41,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -74,7 +78,7 @@ public class MoonlightActivity extends AppCompatActivity
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         //获取FirebaseAuth实例
         mAuth = getInstance();
-        signIn();
+        //signIn();
         mUserId = mAuth.getCurrentUser().getUid();
 
         //mUserId = SPUtils.getString(this, "User", "Id", null);
@@ -137,12 +141,7 @@ public class MoonlightActivity extends AppCompatActivity
         // Handle navigation mView item clicks here.
         int id = item.getItemId();
         switch (id) {
-            case R.id.nav_income:
-                break;
-            case R.id.nav_output:
-                break;
-            case R.id.nav_summary:
-                break;
+
             case R.id.nav_setting:
                 break;
             case R.id.nav_share:

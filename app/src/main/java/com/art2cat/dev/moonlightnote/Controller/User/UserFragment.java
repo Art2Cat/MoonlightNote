@@ -32,6 +32,9 @@ import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -70,6 +73,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private AppCompatTextView mNickname;
     private AppCompatTextView mEmail;
     private AppCompatButton mChangePassword;
+    private AdView mAdView;
     private ProgressDialog progressDialog;
     private FirebaseUser user;
     private User mUser;
@@ -117,6 +121,13 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         mNickname = (AppCompatTextView) mView.findViewById(R.id.user_nickname);
         mEmail = (AppCompatTextView) mView.findViewById(R.id.user_email);
         mChangePassword = (AppCompatButton) mView.findViewById(R.id.user_change_password);
+        mAdView = (AdView) mView.findViewById(R.id.banner_adView);
+
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .addTestDevice("0ACA1878D607E6C4360F91E0A0379C2F")
+                .build();
+        mAdView.loadAd(adRequest);
 
         initView();
         updateUI(user.getPhotoUrl());

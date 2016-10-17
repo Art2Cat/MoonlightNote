@@ -22,7 +22,7 @@ public class AdFragment extends Fragment {
     private View mView;
     private AdRequest request;
     private static final String AD_UNIT_ID = "ca-app-pub-5043396164425122/9918900095";
-
+    private static final String APP_ID = "ca-app-pub-5043396164425122~8442166898";
     public AdFragment() {
         // Required empty public constructor
     }
@@ -30,7 +30,6 @@ public class AdFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //MobileAds.initialize(getActivity().getApplicationContext(), AD_UNIT_ID);
 
     }
 
@@ -39,6 +38,7 @@ public class AdFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_ad, null);
+        MobileAds.initialize(getActivity(), APP_ID);
         NativeExpressAdView adView = (NativeExpressAdView) mView.findViewById(R.id.adView);
         request = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)

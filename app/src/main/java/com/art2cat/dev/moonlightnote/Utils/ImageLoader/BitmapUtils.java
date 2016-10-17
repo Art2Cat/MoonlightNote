@@ -50,16 +50,16 @@ public class BitmapUtils {
         }
 
         //本地缓存
-        //bitmap = mLocalCacheUtils.getBitmapFromLocal(url);
-        mLocalCacheUtils.getBitmapFromLocal(ivPic, url);
+        bitmap = mLocalCacheUtils.getBitmapFromLocal1(url);
+        //boolean local = mLocalCacheUtils.getBitmapFromLocal(ivPic, url);
 
-        //if (bitmap != null) {
-        //    ivPic.setImageBitmap(bitmap);
-        //    Log.d(TAG, "display: " + "从本地获取图片啦.....");
-        //    //从本地获取图片后,保存至内存中
-        //    mMemoryCacheUtils.setBitmapToMemory(url, bitmap);
-        //    return;
-        //}
+        if (bitmap != null) {
+            ivPic.setImageBitmap(bitmap);
+            Log.d(TAG, "display: " + "从本地获取图片啦.....");
+            //从本地获取图片后,保存至内存中
+            mMemoryCacheUtils.setBitmapToMemory(url, bitmap);
+            return;
+        }
         //网络缓存
         mNetCacheUtils.getBitmapFromNet(ivPic, url);
     }

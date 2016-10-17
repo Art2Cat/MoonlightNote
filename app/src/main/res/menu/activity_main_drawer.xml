@@ -1,16 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_income"
-            android:title="@string/menu_income" />
-        <item
-            android:id="@+id/nav_output"
-            android:title="@string/menu_output" />
-        <item
-            android:id="@+id/nav_summary"
-            android:title="@string/summary" />
+    <group android:checkableBehavior="single"
+        android:id="@+id/group_main">
         <item
             android:id="@+id/nav_setting"
             android:title="@string/action_settings" />
@@ -22,6 +14,10 @@
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
                 android:title="@string/menu_share" />
+            <item
+                android:id="@+id/nav_about_app"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/menu_about_app" />
         </menu>
     </item>
 

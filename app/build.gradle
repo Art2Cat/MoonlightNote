@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'Art2Cat'
             keyPassword 'fuckyou'
-            storeFile file('/home/rorschach_ac/Art2Cat.jks')
+            storeFile file('/home/rorschach/Art2Cat.jks')
             storePassword 'fuckyou'
         }
     }

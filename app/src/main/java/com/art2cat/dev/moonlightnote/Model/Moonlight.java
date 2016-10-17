@@ -20,12 +20,15 @@ public class Moonlight {
 
     }
 
-    public Moonlight(String id, String title, String content, long date, String label) {
+    public Moonlight(String id, String title, String content, String photoUrl, long date,
+                     String label, String photoName) {
         this.id= id;
         this.title = title;
         this.content = content;
+        this.photoUrl = photoUrl;
         this.date = date;
         this.label = label;
+        this.photoName = photoName;
     }
 
     public String getLabel() {

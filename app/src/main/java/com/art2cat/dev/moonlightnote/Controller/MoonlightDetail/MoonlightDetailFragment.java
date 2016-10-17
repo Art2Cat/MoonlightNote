@@ -52,6 +52,7 @@ import com.art2cat.dev.moonlightnote.Utils.Bus.BusAction;
 import com.art2cat.dev.moonlightnote.Utils.Bus.BusProvider;
 import com.art2cat.dev.moonlightnote.Utils.CustomSpinner;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
+import com.art2cat.dev.moonlightnote.Utils.ImageLoader.LocalCacheUtils;
 import com.art2cat.dev.moonlightnote.Utils.MenuUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
@@ -72,8 +73,11 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.otto.Subscribe;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -121,6 +125,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private StorageReference mStorageReference;
     private String mFileName;
     private Uri mDownloadUrl;
+    private File mFile;
 
     private static final String REQUIRED = "Required";
 
@@ -331,6 +336,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
     /**
      * 更新显示图片信息
+     *
      * @param mFileUri 图片地址
      */
     private void updatePhoto(Uri mFileUri) {
@@ -341,6 +347,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 Bitmap bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(mFileUri));
                 if (bitmap != null) {
                     mPhoto.setImageBitmap(bitmap);
+                    LocalCacheUtils localCacheUtils = new LocalCacheUtils();
+                    localCacheUtils.setBitmapToLocal(mDownloadUrl.toString(), bitmap);
                 } else {
                     BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
                     bitmapUtils.display(mPhoto, mDownloadUrl.toString());
@@ -566,23 +574,23 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             return;
         }
         // Choose file storage location, must be listed in res/xml/file_paths.xml
-        File dir = new File(Environment.getExternalStorageDirectory() + "/photos");
-        File file = new File(dir, UUID.randomUUID().toString() + ".jpg");
+        File dir = new File(Environment.getExternalStorageDirectory() + "/Pictures/MoonlightNote");
+        mFile = new File(dir, UUID.randomUUID().toString() + ".jpg");
         try {
             // Create directory if it does not exist.
             if (!dir.exists()) {
                 dir.mkdir();
             }
-            boolean created = file.createNewFile();
-            Log.d(TAG, "file.createNewFile:" + file.getAbsolutePath() + ":" + created);
+            boolean created = mFile.createNewFile();
+            Log.d(TAG, "file.createNewFile:" + mFile.getAbsolutePath() + ":" + created);
         } catch (IOException e) {
-            Log.e(TAG, "file.createNewFile" + file.getAbsolutePath() + ":FAILED", e);
+            Log.e(TAG, "file.createNewFile" + mFile.getAbsolutePath() + ":FAILED", e);
         }
 
         // Create content:// URI for file, required since Android N
         // See: https://developer.android.com/reference/android/support/v4/content/FileProvider.html
 
-        mFileUri = FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, file);
+        mFileUri = FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, mFile);
         Log.i(TAG, "file: " + mFileUri);
         // Create and launch the intent
         Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -608,20 +616,20 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
 
         // Choose file storage location, must be listed in res/xml/file_paths.xml
-        File dir = new File(Environment.getExternalStorageDirectory() + "/photos");
-        File file = new File(dir, UUID.randomUUID().toString() + ".jpg");
+        File dir = new File(Environment.getExternalStorageDirectory() + "/Pictures/MoonlightNote");
+        mFile = new File(dir, UUID.randomUUID().toString() + ".jpg");
         try {
             // Create directory if it does not exist.
             if (!dir.exists()) {
                 dir.mkdir();
             }
-            boolean created = file.createNewFile();
-            Log.d(TAG, "file.createNewFile:" + file.getAbsolutePath() + ":" + created);
+            boolean created = mFile.createNewFile();
+            Log.d(TAG, "file.createNewFile:" + mFile.getAbsolutePath() + ":" + created);
         } catch (IOException e) {
-            Log.e(TAG, "file.createNewFile" + file.getAbsolutePath() + ":FAILED", e);
+            Log.e(TAG, "file.createNewFile" + mFile.getAbsolutePath() + ":FAILED", e);
         }
 
-        Uri fileUri = FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, file);
+        Uri fileUri = FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, mFile);
         Intent albumIntent = new Intent(Intent.ACTION_PICK);
         albumIntent.setType("image/*");
         albumIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
@@ -660,6 +668,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     if (type == 0) {
                         mFileName = taskSnapshot.getMetadata().getName();
                     }
+
                     Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadUrl.toString());
                     moonlight.setPhotoName(mFileName);
                     moonlight.setPhotoUrl(mDownloadUrl.toString());

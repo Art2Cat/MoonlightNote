@@ -44,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private static final String AD_UNIT_ID = "ca-app-pub-5043396164425122/9918900095";
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,7 +60,6 @@ public class LoginActivity extends AppCompatActivity {
         mAppBarLayout = (AppBarLayout) findViewById(R.id.login_appbarLayout);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        //mToolbar.setVisibility(View.INVISIBLE);
 
         mFragmentManager = getSupportFragmentManager();
         Fragment fragment = mFragmentManager.findFragmentById(R.id.login_fragmentContainer);
@@ -78,7 +77,7 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             //在这里首先加载一个含有广告的fragment
             if (fragment == null) {
-                MobileAds.initialize(this, AD_UNIT_ID);
+
                 fragment = new AdFragment();
                 mFragmentManager.beginTransaction()
                         .add(R.id.login_fragmentContainer, fragment)

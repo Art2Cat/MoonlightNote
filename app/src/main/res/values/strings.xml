@@ -55,5 +55,6 @@
     <string name="moonlight_detail_title">Title</string>
     <string name="moonlight_detail_note">Note</string>
     <string name="prograssBar_uploading">Uploading...</string>
+    <string name="menu_about_app">About App</string>
 
 </resources>
