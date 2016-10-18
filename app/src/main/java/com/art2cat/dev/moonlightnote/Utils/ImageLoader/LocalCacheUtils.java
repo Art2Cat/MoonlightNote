@@ -36,11 +36,10 @@ public class LocalCacheUtils {
         return local.getBitmap();
     }
 
-    public boolean getBitmapFromLocal(ImageView imageView, String url) {
+    public void getBitmapFromLocal(ImageView imageView, String url) {
         BitmapTask bitmapTask = new BitmapTask();
         bitmapTask.execute(imageView, url);
         Log.d(TAG, "getBitmapFromLocal: " + imageView.getTag());
-        return imageView.getTag() != null;
     }
 
     /**
@@ -71,9 +70,6 @@ public class LocalCacheUtils {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
-        Thread thread = new Thread();
-        thread.run();
         return null;
     }
 
@@ -129,86 +125,6 @@ public class LocalCacheUtils {
 
     }
 
-    /**
-     * 从本地存储中获取图片缓存
-     *
-     * @param url 图片url地址
-     * @return bitmap图片
-     */
-    public Bitmap getBitmapFromLocal(Context context, String url) {
-        try {
-
-            Bitmap bitmap = null;
-            File file = new File(CACHE_PATH, url);
-            /**
-             * 首先检查当前系统版本信息，当系统版本大于等于6.0时，检查程序是否获取读取存储卡的权限
-             * 如果未获取，则bitmap返回值为null
-             */
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (mContext.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                        == PackageManager.PERMISSION_GRANTED) {
-                    bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-                    return bitmap;
-                } else {
-                    Log.w(TAG, "getBitmapFromLocal: Permission Denied");
-                }
-            } else {
-                bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-                return bitmap;
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * 从网络获取图片后,保存至本地缓存
-     *
-     * @param url    图片url地址
-     * @param bitmap bitmap图片
-     */
-    public void setBitmapToLocal(Context mContext, String url, Bitmap bitmap) {
-        try {
-            /**
-             * 首先检查当前系统版本信息，当系统版本大于等于6.0时，检查程序是否获取写入存储卡的权限
-             * 如果未获取，则不执行
-             */
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (mContext.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        == PackageManager.PERMISSION_GRANTED) {
-                    File file = new File(CACHE_PATH, url);
-                    //通过得到文件的父文件,判断父文件是否存在
-                    File parentFile = file.getParentFile();
-                    if (!parentFile.exists()) {
-                        parentFile.mkdirs();
-                    }
-                    //把图片保存至本地
-
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(file));
-
-                } else {
-                    Log.w(TAG, "setBitmapFromLocal: Permission Denied");
-                }
-
-            } else {
-                File file = new File(CACHE_PATH, url);
-                //通过得到文件的父文件,判断父文件是否存在
-                File parentFile = file.getParentFile();
-                if (!parentFile.exists()) {
-                    parentFile.mkdirs();
-                }
-
-                //把图片保存至本地
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(file));
-            }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-    }
-
     private class BitmapTask1 extends AsyncTask<String, Void, Bitmap> {
         private Bitmap bitmap;
 
@@ -242,6 +158,9 @@ public class LocalCacheUtils {
             if (bitmap !=null) {
                 ivPic.setImageBitmap(bitmap);
                 ivPic.setTag("done");
+            } else {
+                NetCacheUtils netCacheUtils = new NetCacheUtils(new LocalCacheUtils(),null);
+                netCacheUtils.getBitmapFromNet(ivPic, url);
             }
         }
     }

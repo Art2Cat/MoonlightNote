@@ -1,35 +1,42 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    xmlns:ads="http://schemas.android.com/apk/res-auto">
-
-    <com.google.android.gms.ads.NativeExpressAdView
-        android:id="@+id/adView"
-        android:layout_gravity="center_horizontal"
-        android:background="@color/colorPrimary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        ads:adUnitId="ca-app-pub-5043396164425122/9918900095"
-        ads:adSize="360x400">
-    </com.google.android.gms.ads.NativeExpressAdView>
+    android:orientation="vertical"
+    android:theme="@style/AppTheme.NoActionBar">
 
     <android.support.v7.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_gravity="bottom|center_horizontal"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_gravity="bottom|center_horizontal"
         android:orientation="horizontal">
+
         <android.support.v7.widget.AppCompatImageView
             android:layout_width="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_app_icon"/>
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_app_icon" />
+
         <android.support.v7.widget.AppCompatTextView
-            android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="36sp"
-            android:text="@string/app_name"/>
+            android:layout_gravity="center"
+            android:text="@string/app_name"
+            android:textSize="36sp" />
     </android.support.v7.widget.LinearLayoutCompat>
 
-</FrameLayout>
+    <com.google.android.gms.ads.NativeExpressAdView
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/colorPrimary"
+        ads:adSize="360x360"
+        ads:adUnitId="ca-app-pub-5043396164425122/9918900095" />
+
+</RelativeLayout>

@@ -27,13 +27,12 @@ import static android.content.ContentValues.TAG;
  * Created by art2cat
  * on 9/17/16.
  */
-class MoonlightsViewHolder extends RecyclerView.ViewHolder {
+public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
     private Context context;
-    private CardView mCardView;
-    private AppCompatTextView titleAppCompatTextView;
-    private AppCompatTextView contentAppCompatTextView;
-    private AppCompatImageView photoAppCompatImageView;
-    private AppCompatButton mDeletePhoto;
+    public CardView mCardView;
+    public AppCompatTextView titleAppCompatTextView;
+    public AppCompatTextView contentAppCompatTextView;
+    public AppCompatImageView photoAppCompatImageView;
 
     public MoonlightsViewHolder(View itemView) {
         super(itemView);
@@ -41,7 +40,6 @@ class MoonlightsViewHolder extends RecyclerView.ViewHolder {
         titleAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_title);
         contentAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_content);
         photoAppCompatImageView = (AppCompatImageView) itemView.findViewById(R.id.moonlight_photo);
-        mDeletePhoto = (AppCompatButton) itemView.findViewById(R.id.delete_image);
     }
 
     void onBindMoonlight(final Context context, final String userid, final Moonlight moonlight, boolean delete) {
@@ -75,30 +73,6 @@ class MoonlightsViewHolder extends RecyclerView.ViewHolder {
             photoAppCompatImageView.setVisibility(View.GONE);
         }
 
-        if (delete) {
-            mDeletePhoto.setVisibility(View.VISIBLE);
-            mDeletePhoto.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    StorageReference photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE)
-                            .child(userid).child("photos")
-                            .child(moonlight.getPhotoName());
-                    Log.d(TAG, "onClick: " + moonlight.getPhotoName());
-                    photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "onSuccess: ");
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "onFailure: " + e.toString());
-                        }
-                    });
-                }
-            });
-
-        }
     }
 
 }

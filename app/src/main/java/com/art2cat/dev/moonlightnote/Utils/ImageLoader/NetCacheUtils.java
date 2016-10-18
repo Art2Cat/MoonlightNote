@@ -3,6 +3,7 @@ package com.art2cat.dev.moonlightnote.Utils.ImageLoader;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -19,7 +20,7 @@ public class NetCacheUtils {
     private MemoryCacheUtils mMemoryCacheUtils;
     private static final String TAG = "NetCacheUtils";
 
-    public NetCacheUtils(LocalCacheUtils localCacheUtils, MemoryCacheUtils memoryCacheUtils) {
+    public NetCacheUtils(LocalCacheUtils localCacheUtils, @Nullable MemoryCacheUtils memoryCacheUtils) {
         mLocalCacheUtils = localCacheUtils;
         mMemoryCacheUtils = memoryCacheUtils;
     }
@@ -117,7 +118,7 @@ public class NetCacheUtils {
                 //从网络获取图片后,保存至本地缓存
                 mLocalCacheUtils.setBitmapToLocal(url, result);
                 //保存至内存中
-                mMemoryCacheUtils.setBitmapToMemory(url, result);
+                //mMemoryCacheUtils.setBitmapToMemory(url, result);
 
             }
         }

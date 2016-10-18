@@ -6,21 +6,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.Constants;
-import com.art2cat.dev.moonlightnote.Model.UserConfig;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
-import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,15 +24,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
-    private AppBarLayout mAppBarLayout;
-    private Toolbar mToolbar;
     private FragmentManager mFragmentManager;
     private boolean mLoginState = false;
 
@@ -57,12 +47,8 @@ public class LoginActivity extends AppCompatActivity {
             signIn();
         }
 
-        mAppBarLayout = (AppBarLayout) findViewById(R.id.login_appbarLayout);
-
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-
         mFragmentManager = getSupportFragmentManager();
-        Fragment fragment = mFragmentManager.findFragmentById(R.id.login_fragmentContainer);
+        Fragment fragment = mFragmentManager.findFragmentById(R.id.login_container);
 
         //这里判断是否是重新登陆，如果是，则直接进入登陆界面，如果不是则，加载广告页面
         boolean reLogin = getIntent().getBooleanExtra("reLogin", false);
@@ -70,9 +56,8 @@ public class LoginActivity extends AppCompatActivity {
             if (fragment == null) {
                 fragment = new LoginFragment();
                 mFragmentManager.beginTransaction()
-                        .add(R.id.login_fragmentContainer, fragment)
+                        .add(R.id.login_container, fragment)
                         .commit();
-                mToolbar.setVisibility(View.VISIBLE);
             }
         } else {
             //在这里首先加载一个含有广告的fragment
@@ -80,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 fragment = new AdFragment();
                 mFragmentManager.beginTransaction()
-                        .add(R.id.login_fragmentContainer, fragment)
+                        .add(R.id.login_container, fragment)
                         .commit();
             }
 
@@ -129,10 +114,8 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 Fragment fragment = new LoginFragment();
                 mFragmentManager.beginTransaction()
-                        .replace(R.id.login_fragmentContainer, fragment)
+                        .replace(R.id.login_container, fragment)
                         .commit();
-                mAppBarLayout.setVisibility(View.VISIBLE);
-                mToolbar.setVisibility(View.VISIBLE);
             }
         }
 

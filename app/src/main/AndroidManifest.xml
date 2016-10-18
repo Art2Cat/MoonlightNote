@@ -26,11 +26,12 @@
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.art2cat.dev.moonlightnote.fileprovider"
             android:exported="false"
-            android:grantUriPermissions="true" >
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
         <activity
             android:name=".Controller.Moonlight.MoonlightActivity"
             android:label="@string/app_name"
@@ -38,7 +39,6 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Controller.Login.LoginActivity"
-            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,14 +46,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Controller.MoonlightDetail.MoonlightDetailActivity"
+        <activity
+            android:name=".Controller.MoonlightDetail.MoonlightDetailActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateVisible|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Controller.Moonlight.MoonlightActivity" />
         </activity>
-        <activity android:name=".Controller.User.UserActivity" >
+        <activity android:name=".Controller.User.UserActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Controller.Moonlight.MoonlightActivity" />

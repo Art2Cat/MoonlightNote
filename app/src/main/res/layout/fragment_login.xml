@@ -1,113 +1,136 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:scrollbars="none"
+    android:orientation="vertical"
     tools:context=".Controller.Login.LoginActivity">
 
-    <android.support.v7.widget.LinearLayoutCompat
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/login_appbarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <ProgressBar
-            android:id="@+id/login_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone" />
-
-        <android.support.v7.widget.ContentFrameLayout
-            android:id="@+id/login_form"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:theme="@style/AppTheme.NoActionBar" />
 
-            <android.support.v7.widget.LinearLayoutCompat
-                android:id="@+id/email_login_form"
-                android:layout_width="match_parent"
+    </android.support.design.widget.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:scrollbars="none">
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/login_progress"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_gravity="center"
+                android:visibility="gone" />
 
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.v7.widget.AppCompatEditText
-                        android:id="@+id/email"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/prompt_email"
-                        android:inputType="textEmailAddress"
-                        android:maxLines="1" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.v7.widget.AppCompatEditText
-                        android:id="@+id/password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/prompt_password"
-                        android:imeActionId="@+id/login"
-                        android:imeActionLabel="@string/action_sign_in_short"
-                        android:imeOptions="actionUnspecified"
-                        android:inputType="textPassword"
-                        android:maxLines="1" />
-
-                </android.support.design.widget.TextInputLayout>
+            <android.support.v7.widget.ContentFrameLayout
+                android:id="@+id/login_form"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <android.support.v7.widget.LinearLayoutCompat
+                    android:id="@+id/email_login_form"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
-                    <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/reset_password"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/login_reset_password"
-                        android:textColor="@color/colorAccent" />
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                    <android.support.v7.widget.AppCompatButton
-                        android:id="@+id/email_sign_up_button"
-                        style="?android:textAppearanceSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        android:background="@drawable/button_style"
-                        android:text="@string/action_sign_up"
-                        android:textStyle="bold" />
+                        <android.support.v7.widget.AppCompatEditText
+                            android:id="@+id/email"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_email"
+                            android:inputType="textEmailAddress"
+                            android:maxLines="1" />
 
-                    <android.support.v7.widget.AppCompatButton
-                        android:id="@+id/email_sign_in_button"
-                        style="?android:textAppearanceSmall"
-                        android:layout_width="wrap_content"
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <android.support.v7.widget.AppCompatEditText
+                            android:id="@+id/password"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_password"
+                            android:imeActionId="@+id/login"
+                            android:imeActionLabel="@string/action_sign_in_short"
+                            android:imeOptions="actionUnspecified"
+                            android:inputType="textPassword"
+                            android:maxLines="1" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.v7.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
+                        android:gravity="end"
+                        android:orientation="horizontal">
+
+                        <android.support.v7.widget.AppCompatTextView
+                            android:id="@+id/reset_password"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="@string/login_reset_password"
+                            android:textColor="@color/colorAccent" />
+
+                        <android.support.v7.widget.AppCompatButton
+                            android:id="@+id/email_sign_up_button"
+                            style="?android:textAppearanceSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            android:background="@drawable/button_style"
+                            android:text="@string/action_sign_up"
+                            android:textAllCaps="false"
+                            android:textStyle="bold" />
+
+                        <android.support.v7.widget.AppCompatButton
+                            android:id="@+id/email_sign_in_button"
+                            style="?android:textAppearanceSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            android:background="@drawable/button_style"
+                            android:text="@string/action_sign_in"
+                            android:textAllCaps="false"
+                            android:textStyle="bold" />
+                    </android.support.v7.widget.LinearLayoutCompat>
+
+                    <android.support.v7.widget.AppCompatImageButton
+                        android:id="@+id/login_google_btn"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
                         android:layout_marginTop="16dp"
-                        android:background="@drawable/button_style"
-                        android:text="@string/action_sign_in"
-                        android:textStyle="bold" />
+                        android:background="@drawable/google_icon" />
+
                 </android.support.v7.widget.LinearLayoutCompat>
+            </android.support.v7.widget.ContentFrameLayout>
+        </android.support.v7.widget.LinearLayoutCompat>
 
-                <android.support.v7.widget.AppCompatImageButton
-                    android:id="@+id/login_google_btn"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/google_icon" />
-
-            </android.support.v7.widget.LinearLayoutCompat>
-        </android.support.v7.widget.ContentFrameLayout>
-    </android.support.v7.widget.LinearLayoutCompat>
-
-
-</ScrollView>
+    </ScrollView>
+</android.support.v7.widget.LinearLayoutCompat>

@@ -50,9 +50,13 @@ public class BitmapUtils {
         }
 
         //本地缓存
-        bitmap = mLocalCacheUtils.getBitmapFromLocal1(url);
-        //boolean local = mLocalCacheUtils.getBitmapFromLocal(ivPic, url);
-
+        bitmap = mLocalCacheUtils.getBitmapFromLocal(url);
+        //mLocalCacheUtils.getBitmapFromLocal(ivPic, url);
+        if (ivPic.getTag() != null) {
+            Log.d(TAG, "display: " + "从本地获取图片啦.....");
+            return;
+        }
+        //
         if (bitmap != null) {
             ivPic.setImageBitmap(bitmap);
             Log.d(TAG, "display: " + "从本地获取图片啦.....");
@@ -60,8 +64,11 @@ public class BitmapUtils {
             mMemoryCacheUtils.setBitmapToMemory(url, bitmap);
             return;
         }
+
+        //if (ivPic.getTag() == null) {
         //网络缓存
         mNetCacheUtils.getBitmapFromNet(ivPic, url);
+        //}
     }
 
     public Bitmap getBitmap(String url) {
