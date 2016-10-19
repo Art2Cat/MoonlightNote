@@ -122,16 +122,16 @@ public class MoonlightAdapter extends RecyclerView.Adapter<MoonlightAdapter.Moon
                 Log.d("ViewHolder", "content" + moonlight.getContent());
                 contentAppCompatTextView.setText(moonlight.getContent());
             }
-            if (moonlight.getPhotoUrl() != null) {
-                photoAppCompatImageView.setTag(moonlight.getPhotoUrl());
+            if (moonlight.getImageUrl() != null) {
+                photoAppCompatImageView.setTag(moonlight.getImageUrl());
                 BitmapUtils bitmapUtils = new BitmapUtils();
-                bitmapUtils.display(photoAppCompatImageView, moonlight.getPhotoUrl());
+                bitmapUtils.display(photoAppCompatImageView, moonlight.getImageUrl());
                 photoAppCompatImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //网页浏览图片。。。
                         Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse(moonlight.getPhotoUrl()));
+                        intent.setData(Uri.parse(moonlight.getImageUrl()));
                         context.startActivity(intent);
                     }
                 });
@@ -144,8 +144,8 @@ public class MoonlightAdapter extends RecyclerView.Adapter<MoonlightAdapter.Moon
                     public void onClick(View v) {
                         StorageReference photoRef = FirebaseStorage.getInstance().getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE)
                                 .child(userid).child("photos")
-                                .child(moonlight.getPhotoName());
-                        Log.d(TAG, "onClick: " + moonlight.getPhotoName());
+                                .child(moonlight.getImageName());
+                        Log.d(TAG, "onClick: " + moonlight.getImageName());
                         photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {

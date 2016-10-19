@@ -52,10 +52,6 @@ public class BitmapUtils {
         //本地缓存
         bitmap = mLocalCacheUtils.getBitmapFromLocal(url);
         //mLocalCacheUtils.getBitmapFromLocal(ivPic, url);
-        if (ivPic.getTag() != null) {
-            Log.d(TAG, "display: " + "从本地获取图片啦.....");
-            return;
-        }
         //
         if (bitmap != null) {
             ivPic.setImageBitmap(bitmap);

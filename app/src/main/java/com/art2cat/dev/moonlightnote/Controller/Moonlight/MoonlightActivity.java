@@ -294,7 +294,7 @@ public class MoonlightActivity extends AppCompatActivity
     }
 
     private void displayUserInfo() {
-        // Name, email address, and profile photoUrl Url
+        // Name, email address, and profile imageUrl Url
         if (mFirebaseUser != null) {
             for (UserInfo profile : mFirebaseUser.getProviderData()) {
                 // Id of the provider (ex: google.com)
@@ -303,7 +303,7 @@ public class MoonlightActivity extends AppCompatActivity
                 // UID specific to the provider
                 String uid = profile.getUid();
 
-                // Name, email address, and profile photoUrl Url
+                // Name, email address, and profile imageUrl Url
                 if (profile.getDisplayName() != null) {
                     nickTV.setText(profile.getDisplayName());
                 }

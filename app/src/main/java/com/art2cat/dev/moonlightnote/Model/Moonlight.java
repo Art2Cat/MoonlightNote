@@ -11,24 +11,24 @@ public class Moonlight {
     public String id;
     public String title;
     public String content;
-    public String photoUrl;
+    public String imageUrl;
     public long date;
     public String label;
-    public String photoName;
+    public String imageName;
 
     public Moonlight() {
 
     }
 
-    public Moonlight(String id, String title, String content, String photoUrl, long date,
-                     String label, String photoName) {
+    public Moonlight(String id, String title, String content, String imageUrl, long date,
+                     String label, String imageName) {
         this.id= id;
         this.title = title;
         this.content = content;
-        this.photoUrl = photoUrl;
+        this.imageUrl = imageUrl;
         this.date = date;
         this.label = label;
-        this.photoName = photoName;
+        this.imageName = imageName;
     }
 
     public String getLabel() {
@@ -54,8 +54,8 @@ public class Moonlight {
     public void setContent(String content) {
         this.content = content;
     }
-    public String getPhotoUrl() {
-        return photoUrl;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     public String getId() {
@@ -66,8 +66,8 @@ public class Moonlight {
         this.id = id;
     }
 
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
     public String getTitle() {
         return title;
@@ -78,12 +78,12 @@ public class Moonlight {
     }
 
 
-    public String getPhotoName() {
-        return photoName;
+    public String getImageName() {
+        return imageName;
     }
 
-    public void setPhotoName(String photoName) {
-        this.photoName = photoName;
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
     }
 
     public Map<String, Object> toMap() {
@@ -91,10 +91,10 @@ public class Moonlight {
         moonlight.put("id", id);
         moonlight.put("title", title);
         moonlight.put("content", content);
-        moonlight.put("photoUrl", photoUrl);
+        moonlight.put("imageUrl", imageUrl);
         moonlight.put("date", date);
         moonlight.put("label", label);
-        moonlight.put("photoname", photoName);
+        moonlight.put("imageName", imageName);
         return moonlight;
     }
 }

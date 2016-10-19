@@ -162,9 +162,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             if (moonlight.getContent() != null) {
                 mContent.setText(moonlight.getContent());
             }
-            if (moonlight.getPhotoUrl() != null) {
+            if (moonlight.getImageUrl() != null) {
                 BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
-                bitmapUtils.display(mPhoto, moonlight.getPhotoUrl());
+                bitmapUtils.display(mPhoto, moonlight.getImageUrl());
                 mCardView.setVisibility(View.VISIBLE);
             }
             if (moonlight.getLabel() != null) {
@@ -377,7 +377,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         switch (item.getItemId()) {
             case R.id.menu_done:
                 //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
-                if (moonlight.getPhotoUrl() != null || moonlight.getContent() != null
+                if (moonlight.getImageUrl() != null || moonlight.getContent() != null
                         || moonlight.getTitle() != null) {
                     addMoonlight(moonlight);
                     getActivity().startActivity(new Intent(getActivity(), MoonlightActivity.class));
@@ -522,13 +522,13 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             case R.id.moonlight_photo:
                 //网页浏览图片。。。
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(moonlight.getPhotoUrl()));
+                intent.setData(Uri.parse(moonlight.getImageUrl()));
                 startActivity(intent);
                 break;
             case R.id.delete_image:
                 //
                 removePhoto();
-                moonlight.setPhotoUrl(null);
+                moonlight.setImageUrl(null);
                 mCardView.setVisibility(View.GONE);
                 break;
         }
@@ -571,7 +571,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             return;
         }
         // Choose file storage location, must be listed in res/xml/file_paths.xml
-        File dir = new File(Environment.getExternalStorageDirectory() + "/Pictures/MoonlightNote");
+        File dir = new File(Environment.getExternalStorageDirectory() + "/Pictures/.MoonlightNote");
         mFile = new File(dir, UUID.randomUUID().toString() + ".jpg");
         try {
             // Create directory if it does not exist.
@@ -613,7 +613,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
 
         // Choose file storage location, must be listed in res/xml/file_paths.xml
-        File dir = new File(Environment.getExternalStorageDirectory() + "/Pictures/MoonlightNote");
+        File dir = new File(Environment.getExternalStorageDirectory() + "/Pictures/.MoonlightNote");
         mFile = new File(dir, UUID.randomUUID().toString() + ".jpg");
         try {
             // Create directory if it does not exist.
@@ -667,8 +667,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     }
 
                     Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadUrl.toString());
-                    moonlight.setPhotoName(mFileName);
-                    moonlight.setPhotoUrl(mDownloadUrl.toString());
+                    moonlight.setImageName(mFileName);
+                    moonlight.setImageUrl(mDownloadUrl.toString());
                     mProgressBarContainer.setVisibility(View.GONE);
                     updatePhoto(fileUri);
                 }

@@ -3,8 +3,6 @@ package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
@@ -12,14 +10,10 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
-import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import static android.content.ContentValues.TAG;
 
@@ -44,28 +38,18 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
 
     void onBindMoonlight(final Context context, final String userid, final Moonlight moonlight, boolean delete) {
         Log.d(TAG, "onBindMoonlight: " + moonlight.getId());
-        if (moonlight.getTitle() != null) {
-            Log.d("ViewHolder", "title" + moonlight.getTitle());
-            titleAppCompatTextView.setText(moonlight.getTitle());
-        } else {
-            titleAppCompatTextView.setVisibility(View.GONE);
-        }
-        if (moonlight.getContent() != null) {
-            Log.d("ViewHolder", "content" + moonlight.getContent());
-            contentAppCompatTextView.setText(moonlight.getContent());
-        } else {
-            contentAppCompatTextView.setVisibility(View.GONE);
-        }
-        if (moonlight.getPhotoUrl() != null) {
-            Log.d(TAG, "moonlight.getPhotoUrl(): " + moonlight.getPhotoUrl());
+
+
+        if (moonlight.getImageUrl() != null) {
+            Log.d(TAG, "moonlight.getImageUrl(): " + moonlight.getImageUrl());
             BitmapUtils bitmapUtils = new BitmapUtils();
-            bitmapUtils.display(photoAppCompatImageView, moonlight.getPhotoUrl());
+            bitmapUtils.display(photoAppCompatImageView, moonlight.getImageUrl());
             photoAppCompatImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //网页浏览图片。。。
                     Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(moonlight.getPhotoUrl()));
+                    intent.setData(Uri.parse(moonlight.getImageUrl()));
                     context.startActivity(intent);
                 }
             });
@@ -73,6 +57,25 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
             photoAppCompatImageView.setVisibility(View.GONE);
         }
 
+    }
+
+    public void displayTitle(String title) {
+
+        titleAppCompatTextView.setText(title);
+        titleAppCompatTextView.setVisibility(View.VISIBLE);
+    }
+
+    public void displayContent(String content) {
+        contentAppCompatTextView.setText(content);
+        contentAppCompatTextView.setVisibility(View.VISIBLE);
+    }
+
+    public void displayImage(Context context, String url) {
+        if (url != null) {
+            Picasso.with(context.getApplicationContext()).load(url).into(photoAppCompatImageView);
+        } else {
+            photoAppCompatImageView.setVisibility(View.GONE);
+        }
     }
 
 }

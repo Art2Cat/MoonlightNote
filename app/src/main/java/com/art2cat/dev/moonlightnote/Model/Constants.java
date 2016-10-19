@@ -15,7 +15,7 @@ public class Constants {
     /**
      *
      */
-    public static final String STORAGE_PHOTO = "photoUrl";
+    public static final String STORAGE_PHOTO = "imageUrl";
     public static final String STORAGE_AUDIO = "audio";
     public static final String STORAGE_AVATAR = "avatar";
     public static final String STORAGE_USER_CONFIG = "user_config";

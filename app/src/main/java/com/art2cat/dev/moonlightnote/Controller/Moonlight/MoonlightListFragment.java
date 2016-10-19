@@ -3,9 +3,7 @@ package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,21 +17,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
-import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
+import com.art2cat.dev.moonlightnote.Utils.FirebaseImageLoader;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by art2cat
@@ -42,7 +35,7 @@ import static android.content.ContentValues.TAG;
 public abstract class MoonlightListFragment extends Fragment {
     private static final String TAG = "MoonlightListFragment";
     private DatabaseReference mDatabase;
-
+    private StorageReference storageReference;
     private FirebaseRecyclerAdapter<Moonlight, MoonlightsViewHolder> mAdapter;
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
@@ -73,6 +66,7 @@ public abstract class MoonlightListFragment extends Fragment {
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
 
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         return rootView;
     }
@@ -101,32 +95,24 @@ public abstract class MoonlightListFragment extends Fragment {
                     final DatabaseReference moonlightRef = getRef(position);
                     final String moonlightKey = moonlightRef.getKey();
 
-                    Log.d(TAG, "onBindMoonlight: " + model.getId());
                     if (model.getTitle() != null) {
-                        Log.d("ViewHolder", "title" + model.getTitle());
-                        viewHolder.titleAppCompatTextView.setText(model.getTitle());
+                        viewHolder.displayTitle(model.getTitle());
                     } else {
                         viewHolder.titleAppCompatTextView.setVisibility(View.GONE);
                     }
+
                     if (model.getContent() != null) {
-                        Log.d("ViewHolder", "content" + model.getContent());
-                        viewHolder.contentAppCompatTextView.setText(model.getContent());
+                        viewHolder.displayContent(model.getContent());
                     } else {
                         viewHolder.contentAppCompatTextView.setVisibility(View.GONE);
                     }
-                    if (model.getPhotoUrl() != null) {
-                        Log.d(TAG, "moonlight.getPhotoUrl(): " + model.getPhotoUrl());
-                        BitmapUtils bitmapUtils = new BitmapUtils();
-                        bitmapUtils.display(viewHolder.photoAppCompatImageView, model.getPhotoUrl());
-                        viewHolder.photoAppCompatImageView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                //网页浏览图片。。。
-                                //Intent intent = new Intent(Intent.ACTION_VIEW);
-                                //intent.setData(Uri.parse(model.getPhotoUrl()));
-                                //startActivity(intent);
-                            }
-                        });
+                    //viewHolder.displayImage(getActivity(), model.getImageUrl());
+
+                    if (model.getImageName() != null) {
+                        Log.i(TAG, "populateViewHolder: " + model.getImageName());
+                        viewHolder.photoAppCompatImageView.setTag(model.getImageName());
+                        FirebaseImageLoader firebaseImageLoader = new FirebaseImageLoader(getActivity(), storageReference, viewHolder.photoAppCompatImageView);
+                        firebaseImageLoader.disPlayImage(getUid(), model.getImageName());
                     } else {
                         viewHolder.photoAppCompatImageView.setVisibility(View.GONE);
                     }

@@ -126,6 +126,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .addTestDevice("0ACA1878D607E6C4360F91E0A0379C2F")
+                .addTestDevice("4DA2263EDB49C1F2C00F9D130B823096")
                 .build();
         mAdView.loadAd(adRequest);
 
@@ -160,12 +161,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     }
 
     private void initView() {
-        String photoUri = mUser.getAvatarUrl();
-        if (photoUri != null) {
-            mCircleImageView.setTag(photoUri);
-            BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
-            bitmapUtils.display(mCircleImageView, photoUri);
-        }
         String nickname = mUser.getUsername();
         if (nickname != null) {
             mNickname.setText(nickname);
@@ -285,8 +280,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             return;
         }
         // Choose file storage location, must be listed in res/xml/file_paths.xml
-        File dir = new File(Environment.getExternalStorageDirectory() + "/photos");
+        File dir = new File(Environment.getExternalStorageDirectory() + "/Pictures/.MoonlightNote");
         File file = new File(dir, UUID.randomUUID().toString() + ".jpg");
+
         try {
             // Create directory if it does not exist.
             if (!dir.exists()) {
@@ -325,7 +321,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         }
 
         // Choose file storage location, must be listed in res/xml/file_paths.xml
-        File dir = new File(Environment.getExternalStorageDirectory() + "/photos");
+        File dir = new File(Environment.getExternalStorageDirectory() + "/Pictures/.MoonlightNote");
         File file = new File(dir, UUID.randomUUID().toString() + ".jpg");
         try {
             // Create directory if it does not exist.
