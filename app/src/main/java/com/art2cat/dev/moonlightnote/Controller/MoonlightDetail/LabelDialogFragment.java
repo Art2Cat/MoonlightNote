@@ -46,6 +46,7 @@ public class LabelDialogFragment extends DialogFragment {
                             {
                                 String label = label_TIET.getText().toString().trim();
                                 BusAction busAction = new BusAction();
+                                busAction.setInt(4);
                                 busAction.setString(label);
                                 BusProvider.getInstance().post(busAction);
                             }

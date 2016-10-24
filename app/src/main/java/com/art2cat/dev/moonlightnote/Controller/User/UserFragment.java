@@ -177,7 +177,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         if (mDownloadUrl != null) {
             BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
             bitmapUtils.display(mCircleImageView, mDownloadUrl.toString());
-
         } else {
             mFileName = null;
         }

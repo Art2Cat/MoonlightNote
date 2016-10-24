@@ -129,7 +129,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private static final int STORAGE_PERMS = 101;
     private static final int TAKE_PICTURE = 102;
     private static final int ALBUM_CHOOSE = 103;
-    private static final int CROP_PIC = 104;
+    private static final int RECORD_AUDIO = 104;
 
 
     private static final String KEY_FILE_URI = "key_file_uri";
@@ -475,13 +475,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     //这个注解一定要有,表示订阅了TestAction,并且方法的用 public 修饰的.方法名可以随意取,重点是参数,它是根据你的参数进行判断
     @Subscribe
     public void busAction(BusAction busAction) {
-        //这里更新视图或者后台操作,从TestAction获取传递参数.
-        if (busAction.getString() != null) {
-            //
-            mArrayAdapter = null;
-            addNewLabelToList(busAction.getString());
-            displaySpinner(mLabelSpinner);
-        }
 
         if (busAction.getInt() != 0) {
             switch (busAction.getInt()) {
@@ -491,8 +484,26 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 case 2:
                     onAlbumClick();
                     break;
+                case 1:
+                    Log.d(TAG, "busAction: " + busAction.getString());
+                    if (busAction.getString() != null) {
+                        Log.d(TAG, "busAction: " + busAction.getString());
+                        uploadFromUri(Uri.parse(busAction.getString()), mUserId, 3);
+                    }
+                    break;
+                case 4:
+                    //这里更新视图或者后台操作,从TestAction获取传递参数.
+                    if (busAction.getString() != null) {
+                        //
+                        mArrayAdapter = null;
+                        addNewLabelToList(busAction.getString());
+                        displaySpinner(mLabelSpinner);
+                    }
+                    break;
             }
         }
+
+
     }
 
     @Override
@@ -518,6 +529,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 });
                 break;
             case R.id.bottomBar_audio:
+                onAudioClick();
                 break;
             case R.id.moonlight_photo:
                 //网页浏览图片。。。
@@ -638,6 +650,44 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
     }
 
+    @AfterPermissionGranted(RECORD_AUDIO)
+    private void onAudioClick() {
+        // Check that we have permission to read images from external storage.
+        String perm = Manifest.permission.RECORD_AUDIO;
+        String perm1 = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        //if (!EasyPermissions.hasPermissions(getActivity(), perm1)) {
+        //    EasyPermissions.requestPermissions(getActivity(), "If you want to do this continue, " +
+        //                    "you should give App storage permission ",
+        //            STORAGE_PERMS, perm);
+        //    return;
+        //}
+        if (!EasyPermissions.hasPermissions(getActivity(), perm) &&
+                !EasyPermissions.hasPermissions(getActivity(), perm1)) {
+            EasyPermissions.requestPermissions(getActivity(), "If you want to do this continue, " +
+                            "you should give App Record Audio permission ",
+                    RECORD_AUDIO, perm);
+            EasyPermissions.requestPermissions(getActivity(), "If you want to do this continue, " +
+                            "you should give App storage permission ",
+                    STORAGE_PERMS, perm1);
+            return;
+        }
+
+        File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/audio/");
+        // Create directory if it does not exist.
+        if (!dir.exists()) {
+            dir.mkdirs();
+            Log.d(TAG, "onAudioClick: " + dir.mkdirs());
+        } else {
+            Log.d(TAG, "onAudioClick: " + dir.getAbsolutePath() + ": is existed");
+            AudioRecordFragment audioRecordFragment = new AudioRecordFragment();
+            audioRecordFragment.show(getFragmentManager(), "Record Audio");
+        }
+        if (dir.mkdirs()) {
+            AudioRecordFragment audioRecordFragment = new AudioRecordFragment();
+            audioRecordFragment.show(getFragmentManager(), "Record Audio");
+        }
+    }
+
     private void uploadFromUri(final Uri fileUri, String userId, final int type) {
 
         mProgressBarContainer.setVisibility(View.VISIBLE);
@@ -653,6 +703,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             uploadTask = photoRef.putFile(fileUri);
         } else if (type == 1) {
             StorageReference storageReference = mStorageReference.child(userId).child("userconfig")
+                    .child(fileUri.getLastPathSegment());
+            uploadTask = storageReference.putFile(fileUri);
+        } else if (type == 3) {
+            StorageReference storageReference = mStorageReference.child(userId).child("audios")
                     .child(fileUri.getLastPathSegment());
             uploadTask = storageReference.putFile(fileUri);
         }

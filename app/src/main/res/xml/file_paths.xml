@@ -3,4 +3,8 @@
     <external-path
         name="external"
         path="Pictures/" />
+
+    <external-path
+        name="external"
+        path="Moonlight/" />
 </paths>

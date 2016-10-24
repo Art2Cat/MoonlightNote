@@ -56,5 +56,8 @@
     <string name="moonlight_detail_note">Note</string>
     <string name="prograssBar_uploading">Uploading...</string>
     <string name="menu_about_app">About App</string>
+    <string name="fragment_audio_play">Play</string>
+    <string name="fragment_audio_record">Record</string>
+    <string name="fragment_audio_stop">Stop</string>
 
 </resources>
