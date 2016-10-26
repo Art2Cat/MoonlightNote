@@ -44,22 +44,6 @@ public class Utils {
         return formatter.format(date);
     }
 
-    public static User getUserInfo(FirebaseUser firebaseUser) {
-        User user;
-        if (firebaseUser != null) {
-            user = new User();
-            if (firebaseUser.getPhotoUrl() != null) {
-                user.setAvatarUrl(firebaseUser.getPhotoUrl().toString());
-
-            }
-            user.setEmail(firebaseUser.getEmail());
-            user.setUsername(firebaseUser.getDisplayName());
-
-            return user;
-        }
-        return null;
-    }
-
     public static void showToast(Context context, String content, int type) {
         if (type == 0) {
             Toast.makeText(context, content, Toast.LENGTH_SHORT).show();

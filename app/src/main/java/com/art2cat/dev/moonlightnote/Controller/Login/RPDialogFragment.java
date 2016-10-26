@@ -10,9 +10,11 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.art2cat.dev.moonlightnote.Model.BusEvent;
+import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.Bus.BusAction;
-import com.art2cat.dev.moonlightnote.Utils.Bus.BusProvider;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created by art2cat
@@ -33,9 +35,10 @@ public class RPDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        BusAction busAction = new BusAction();
-                        busAction.setString(email.getText().toString());
-                        BusProvider.getInstance().post(busAction);
+                        BusEvent busEvent = new BusEvent();
+                        busEvent.setFlag(Constants.BUS_FLAG_EMAIL);
+                        busEvent.setMessage(email.getText().toString());
+                        EventBus.getDefault().post(busEvent);
                     }
                 }).setNegativeButton(R.string.dialog_cancel, null);
         return builder.create();

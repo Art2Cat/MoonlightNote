@@ -45,11 +45,10 @@ import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Firebase.DatabaseTools;
+import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.Bus.BusAction;
-import com.art2cat.dev.moonlightnote.Utils.Bus.BusProvider;
 import com.art2cat.dev.moonlightnote.Utils.CustomSpinner;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.LocalCacheUtils;
@@ -70,7 +69,10 @@ import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.otto.Subscribe;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -192,7 +194,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         //设置显示OptionsMenu
         setHasOptionsMenu(true);
         //获取Bus单例，并注册
-        BusProvider.getInstance().register(this);
+        //BusProvider.getInstance().register(this);
+        EventBus.getDefault().register(this);
         //获取用户id
         mUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         //新建DatabaseTools对象
@@ -326,8 +329,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
     @Override
     public void onDestroy() {
-        //取消对Bus的注册
-        BusProvider.getInstance().unregister(this);
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
 
@@ -472,39 +474,24 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         labelDialogFragment.show(getFragmentManager(), "labelDialog");
     }
 
-    //这个注解一定要有,表示订阅了TestAction,并且方法的用 public 修饰的.方法名可以随意取,重点是参数,它是根据你的参数进行判断
-    @Subscribe
-    public void busAction(BusAction busAction) {
-
-        if (busAction.getInt() != 0) {
-            switch (busAction.getInt()) {
-                case 3:
-                    onCameraClick();
-                    break;
-                case 2:
-                    onAlbumClick();
-                    break;
-                case 1:
-                    Log.d(TAG, "busAction: " + busAction.getString());
-                    if (busAction.getString() != null) {
-                        Log.d(TAG, "busAction: " + busAction.getString());
-                        uploadFromUri(Uri.parse(busAction.getString()), mUserId, 3);
-                    }
-                    break;
-                case 4:
-                    //这里更新视图或者后台操作,从TestAction获取传递参数.
-                    if (busAction.getString() != null) {
-                        //
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void handleMessage(BusEvent busEvent) {
+        if (busEvent != null) {
+            switch (busEvent.getFlag()) {
+                case Constants.BUS_FLAG_LABEL:
+                    if (busEvent.getMessage() != null) {
+                        Log.d(TAG, "busEvent: " + busEvent.getMessage());
                         mArrayAdapter = null;
-                        addNewLabelToList(busAction.getString());
+                        addNewLabelToList(busEvent.getMessage());
                         displaySpinner(mLabelSpinner);
                     }
                     break;
+                case Constants.BUS_FLAG_AUDIO_URL:
+                    break;
             }
         }
-
-
     }
+
 
     @Override
     public void onClick(View v) {
@@ -583,7 +570,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             return;
         }
         // Choose file storage location, must be listed in res/xml/file_paths.xml
-        File dir = new File(Environment.getExternalStorageDirectory() + "/Pictures/.MoonlightNote");
+        File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.image");
         mFile = new File(dir, UUID.randomUUID().toString() + ".jpg");
         try {
             // Create directory if it does not exist.
@@ -625,7 +612,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
 
         // Choose file storage location, must be listed in res/xml/file_paths.xml
-        File dir = new File(Environment.getExternalStorageDirectory() + "/Pictures/.MoonlightNote");
+        File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.image");
         mFile = new File(dir, UUID.randomUUID().toString() + ".jpg");
         try {
             // Create directory if it does not exist.
@@ -672,7 +659,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             return;
         }
 
-        File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/audio/");
+        File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.audio/");
         // Create directory if it does not exist.
         if (!dir.exists()) {
             dir.mkdirs();

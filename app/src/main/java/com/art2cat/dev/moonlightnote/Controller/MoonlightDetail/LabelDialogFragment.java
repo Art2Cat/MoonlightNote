@@ -11,9 +11,11 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.Bus.BusAction;
-import com.art2cat.dev.moonlightnote.Utils.Bus.BusProvider;
+import com.art2cat.dev.moonlightnote.Model.BusEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created by art2cat
@@ -45,10 +47,11 @@ public class LabelDialogFragment extends DialogFragment {
                             public void onClick(DialogInterface dialog, int id)
                             {
                                 String label = label_TIET.getText().toString().trim();
-                                BusAction busAction = new BusAction();
-                                busAction.setInt(4);
-                                busAction.setString(label);
-                                BusProvider.getInstance().post(busAction);
+                                BusEvent busEvent = new BusEvent();
+                                busEvent.setFlag(Constants.BUS_FLAG_LABEL);
+                                busEvent.setMessage(label);
+                                EventBus.getDefault().post(busEvent);
+                                //BusProvider.getInstance().post(busEvent);
                             }
                         }).setNegativeButton("Cancel", null);
         return builder.create();

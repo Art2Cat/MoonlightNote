@@ -16,11 +16,12 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ToggleButton;
 
+import com.art2cat.dev.moonlightnote.Model.BusEvent;
+import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.Bus.BusAction;
-import com.art2cat.dev.moonlightnote.Utils.Bus.BusProvider;
 
-import java.io.File;
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.IOException;
 import java.util.UUID;
 
@@ -86,11 +87,10 @@ public class AudioRecordFragment extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //send data
-                        BusAction busAction = new BusAction();
-                        busAction.setInt(1);
-                        busAction.setString(mFileName);
-                        BusProvider.getInstance().post(busAction);
-                        Log.d(TAG, "onClick: ");
+                        BusEvent busEvent = new BusEvent();
+                        busEvent.setFlag(Constants.BUS_FLAG_AUDIO_URL);
+                        busEvent.setMessage(mFileName);
+                        EventBus.getDefault().post(busEvent);
                         dismiss();
                     }
                 }).setNegativeButton("Cancel", null);

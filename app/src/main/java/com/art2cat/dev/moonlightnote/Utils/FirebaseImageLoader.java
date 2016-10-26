@@ -30,7 +30,7 @@ import java.io.IOException;
 public class FirebaseImageLoader {
     private static final String TAG = "FirebaseImageLoader";
     private static final String CACHE_PATH = Environment
-            .getExternalStorageDirectory().getAbsolutePath() + "/Pictures/.MoonlightNote";
+            .getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.image";
     private Context mContext;
     private StorageReference storageReference;
     private ImageView imageView;

@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
+package com.art2cat.dev.moonlightnote.Controller.User;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -9,9 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import com.art2cat.dev.moonlightnote.Model.BusEvent;
+import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.Bus.BusAction;
-import com.art2cat.dev.moonlightnote.Utils.Bus.BusProvider;
+
+import org.greenrobot.eventbus.EventBus;
 
 
 /**
@@ -33,9 +35,9 @@ public class PickPicFragment extends DialogFragment {
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BusAction busAction = new BusAction();
-                busAction.setInt(3);
-                BusProvider.getInstance().post(busAction);
+                BusEvent busEvent = new BusEvent();
+                busEvent.setFlag(Constants.BUS_FLAG_CAMERA);
+                EventBus.getDefault().post(busEvent);
                 dismiss();
             }
         });
@@ -43,9 +45,9 @@ public class PickPicFragment extends DialogFragment {
         album.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BusAction busAction = new BusAction();
-                busAction.setInt(2);
-                BusProvider.getInstance().post(busAction);
+                BusEvent busEvent = new BusEvent();
+                busEvent.setFlag(Constants.BUS_FLAG_ALBUM);
+                EventBus.getDefault().post(busEvent);
                 dismiss();
             }
         });

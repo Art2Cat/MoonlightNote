@@ -23,11 +23,10 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.Model.UserConfig;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.Bus.BusAction;
-import com.art2cat.dev.moonlightnote.Utils.Bus.BusProvider;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
@@ -46,7 +45,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.squareup.otto.Subscribe;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,7 +94,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         myReference = FirebaseDatabase.getInstance().getReference();
-        BusProvider.getInstance().register(this);
+        EventBus.getDefault().register(this);
         signIn();
     }
 
@@ -169,7 +170,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
 
     @Override
     public void onDestroy() {
-        BusProvider.getInstance().unregister(this);
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
 
@@ -432,9 +433,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     }
 
     @Subscribe
-    public void busAction(BusAction busAction) {
-        if (busAction.getString().contains("@")) {
-            sendRPEmail(busAction.getString());
+    public void busAction(BusEvent busEvent) {
+        if (busEvent.getMessage().contains("@")) {
+            sendRPEmail(busEvent.getMessage());
         } else {
             SnackBarUtils.shortSnackBar(mView, "Invalid email address",
                     SnackBarUtils.TYPE_WARNING).show();

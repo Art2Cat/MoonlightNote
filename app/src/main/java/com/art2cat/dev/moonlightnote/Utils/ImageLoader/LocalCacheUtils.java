@@ -24,7 +24,7 @@ public class LocalCacheUtils {
 
     private Context mContext;
     private static final String CACHE_PATH = Environment
-            .getExternalStorageDirectory().getAbsolutePath() + "/Pictures/.MoonlightNote";
+            .getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.image";
     private static final String TAG = "LocalCacheUtils";
 
     public LocalCacheUtils() {

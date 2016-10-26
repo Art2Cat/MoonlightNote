@@ -30,6 +30,19 @@ public class Constants {
      */
     public static final String FB_STORAGE_REFERENCE = "gs://isjianxue.appspot.com";
 
+    /**
+     * EventBus
+     */
+    public static final int BUS_FLAG_LABEL = 801;
+    public static final int BUS_FLAG_USERNAME = 802;
+    public static final int BUS_FLAG_AUDIO_URL = 803;
+    public static final int BUS_FLAG_EMAIL = 804;
+    public static final int BUS_FLAG_CAMERA = 805;
+    public static final int BUS_FLAG_ALBUM = 806;
+
+    /**
+     * File Provider
+     */
     public static final String FILE_PROVIDER = "com.art2cat.dev.moonlightnote.fileprovider";
     /**
      * 此为AESKey（可修改）
