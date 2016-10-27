@@ -12,23 +12,28 @@ public class Moonlight {
     public String title;
     public String content;
     public String imageUrl;
+    public String audioUrl;
     public long date;
     public String label;
     public String imageName;
+    public String audioName;
 
     public Moonlight() {
 
     }
 
-    public Moonlight(String id, String title, String content, String imageUrl, long date,
-                     String label, String imageName) {
+    public Moonlight(String id, String title, String content, String imageUrl, String audioUrl,
+                     long date,
+                     String label, String imageName, String audioName) {
         this.id= id;
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
+        this.audioUrl = audioUrl;
         this.date = date;
         this.label = label;
         this.imageName = imageName;
+        this.audioName = audioName;
     }
 
     public String getLabel() {
@@ -77,7 +82,6 @@ public class Moonlight {
         this.title = title;
     }
 
-
     public String getImageName() {
         return imageName;
     }
@@ -86,15 +90,33 @@ public class Moonlight {
         this.imageName = imageName;
     }
 
+    public String getAudioUrl() {
+        return audioUrl;
+    }
+
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
+    }
+
+    public String getAudioName() {
+        return audioName;
+    }
+
+    public void setAudioName(String audioName) {
+        this.audioName = audioName;
+    }
+
     public Map<String, Object> toMap() {
         HashMap<String, Object> moonlight = new HashMap<>();
         moonlight.put("id", id);
         moonlight.put("title", title);
         moonlight.put("content", content);
         moonlight.put("imageUrl", imageUrl);
+        moonlight.put("audioUrl", audioUrl);
         moonlight.put("date", date);
         moonlight.put("label", label);
         moonlight.put("imageName", imageName);
+        moonlight.put("audioName", audioName);
         return moonlight;
     }
 }

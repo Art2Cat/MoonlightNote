@@ -39,9 +39,9 @@ public class StorageTools {
 
     }
 
-    private void uploadFromUri(Uri fileUri, String userId, String type) {
+    public static void uploadImage(Context mContext, StorageReference storageReference, Uri fileUri, String userId) {
         // Get a reference to store file at photos/<FILENAME>.jpg
-        final StorageReference photoRef = mStorageRef.child(userId)
+        final StorageReference photoRef = storageReference.child(userId).child("photos")
                 .child(fileUri.getLastPathSegment());
 
 
@@ -50,7 +50,6 @@ public class StorageTools {
                 .addOnProgressListener((Activity) mContext, new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                        mValue = taskSnapshot.getBytesTransferred() / taskSnapshot.getTotalByteCount();
                     }
                 })
                 .addOnSuccessListener((Activity) mContext, new OnSuccessListener<UploadTask.TaskSnapshot>() {

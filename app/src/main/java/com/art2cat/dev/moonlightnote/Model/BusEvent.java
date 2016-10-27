@@ -10,6 +10,7 @@ public class BusEvent {
     private String message;
 
     private int flag;
+
     public BusEvent() {}
 
     public String getMessage() {

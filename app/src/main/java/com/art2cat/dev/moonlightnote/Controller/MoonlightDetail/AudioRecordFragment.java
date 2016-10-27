@@ -8,6 +8,7 @@ import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +23,9 @@ import com.art2cat.dev.moonlightnote.R;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -34,14 +38,19 @@ public class AudioRecordFragment extends DialogFragment {
     private MediaRecorder mRecorder = null;
     private static String mFileName = null;
     private MediaPlayer mPlayer = null;
+    private String mFile;
 
     private static final String TAG = "AudioRecordFragment";
 
     public AudioRecordFragment() {
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/audio";
-        //mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        String file = "/" + UUID.randomUUID().toString() + ".aac";
-        mFileName += file;
+        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
+        mFile = UUID.randomUUID().toString() + ".aac";
+        mFileName += mFile;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @NonNull
@@ -89,20 +98,15 @@ public class AudioRecordFragment extends DialogFragment {
                         //send data
                         BusEvent busEvent = new BusEvent();
                         busEvent.setFlag(Constants.BUS_FLAG_AUDIO_URL);
-                        busEvent.setMessage(mFileName);
+                        busEvent.setMessage(mFile);
                         EventBus.getDefault().post(busEvent);
                         dismiss();
                     }
                 }).setNegativeButton("Cancel", null);
-
         return builder.create();
     }
 
     private void startRecording() {
-
-        //mFileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Moonlight/audio" ;
-        //mFileName += "/" + UUID.randomUUID().toString() + ".aac";
-
         //新建MediaRecorder对象
         mRecorder = new MediaRecorder();
         //设置音频源

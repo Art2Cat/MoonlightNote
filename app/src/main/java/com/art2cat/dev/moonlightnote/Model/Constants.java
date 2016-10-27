@@ -41,6 +41,14 @@ public class Constants {
     public static final int BUS_FLAG_ALBUM = 806;
 
     /**
+     * Permission request and  user action
+     */
+    public static final int STORAGE_PERMS = 101;
+    public static final int TAKE_PICTURE = 102;
+    public static final int ALBUM_CHOOSE = 103;
+    public static final int RECORD_AUDIO = 104;
+    public static final int CAMERA_PERMS = 105;
+    /**
      * File Provider
      */
     public static final String FILE_PROVIDER = "com.art2cat.dev.moonlightnote.fileprovider";

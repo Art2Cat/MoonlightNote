@@ -19,11 +19,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
+import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.google.android.gms.ads.AdRequest;
@@ -57,6 +57,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.app.Activity.RESULT_OK;
+import static com.art2cat.dev.moonlightnote.Model.Constants.*;
 
 
 /**
@@ -80,9 +81,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private String mFileName;
 
 
-    private static final int STORAGE_PERMS = 101;
-    private static final int TAKE_PICTURE = 102;
-    private static final int ALBUM_CHOOSE = 103;
     private static final String TAG = "UserFragment";
 
     public UserFragment() {
@@ -99,7 +97,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         mUser = new User();
         //获取firebaseStorage实例
         mStorageReference = FirebaseStorage.getInstance()
-                .getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE);
+                .getReferenceFromUrl(FB_STORAGE_REFERENCE);
 
         myReference = FirebaseDatabase.getInstance().getReference();
     }
@@ -169,6 +167,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         if (mDownloadUrl != null) {
             BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
             bitmapUtils.display(mCircleImageView, mDownloadUrl.toString());
+            mUser.setAvatarUrl(mDownloadUrl.toString());
         } else {
             mFileName = null;
         }
@@ -205,15 +204,15 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         //这里更新视图或者后台操作,从busAction获取传递参数.
         if (busEvent != null) {
             switch (busEvent.getFlag()) {
-                case Constants.BUS_FLAG_CAMERA:
+                case BUS_FLAG_CAMERA:
                     Log.d(TAG, "busEvent: " + busEvent.getFlag());
                     onCameraClick();
                     break;
-                case Constants.BUS_FLAG_ALBUM:
+                case BUS_FLAG_ALBUM:
                     Log.d(TAG, "busEvent: " + busEvent.getFlag());
                     onAlbumClick();
                     break;
-                case Constants.BUS_FLAG_USERNAME:
+                case BUS_FLAG_USERNAME:
                     if (busEvent.getMessage() != null) {
                         mNickname.setText(busEvent.getMessage());
                         mUser.setUsername(busEvent.getMessage());
@@ -258,14 +257,13 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             case TAKE_PICTURE:
                 if (resultCode == RESULT_OK && mFileUri != null) {
                     Log.d(TAG, "mFileUri:" + mFileUri);
-                    uploadFromUri(data.getData(), user.getUid(), 0);
+                    uploadFromUri(data.getData(), user.getUid());
                 }
                 break;
             case ALBUM_CHOOSE:
                 if (resultCode == RESULT_OK && mFileUri != null) {
                     Log.d(TAG, "mFileUri:" + mFileUri);
-                    uploadFromUri(data.getData(), user.getUid(), 0);
-
+                    uploadFromUri(data.getData(), user.getUid());
                 }
                 break;
             default:
@@ -274,13 +272,23 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @AfterPermissionGranted(STORAGE_PERMS)
+    @AfterPermissionGranted(CAMERA_PERMS)
     private void onCameraClick() {
         // Check that we have permission to read images from external storage.
         String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        String perm1 = Manifest.permission.CAMERA;
+        if (!EasyPermissions.hasPermissions(getActivity(), perm) &&
+                !EasyPermissions.hasPermissions(getActivity(), perm1)) {
+            PermissionUtils.requestStorage(getActivity(), perm);
+            PermissionUtils.requestCamera(getActivity(), perm1);
+            return;
+        }
         if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
-            EasyPermissions.requestPermissions(getActivity(), "If you want to do this continue, you should give App storage permission ",
-                    STORAGE_PERMS, perm);
+            PermissionUtils.requestStorage(getActivity(), perm);
+            return;
+        }
+        if (!EasyPermissions.hasPermissions(getActivity(), perm1)) {
+            PermissionUtils.requestCamera(getActivity(), perm1);
             return;
         }
         // Choose file storage location, must be listed in res/xml/file_paths.xml
@@ -301,7 +309,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         // Create content:// URI for file, required since Android N
         // See: https://developer.android.com/reference/android/support/v4/content/FileProvider.html
 
-        mFileUri = FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, file);
+        mFileUri = FileProvider.getUriForFile(getActivity(), FILE_PROVIDER, file);
         Log.i(TAG, "file: " + mFileName);
         // Create and launch the intent
         Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -319,8 +327,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         // Check that we have permission to read images from external storage.
         String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
         if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
-            EasyPermissions.requestPermissions(getActivity(), "If you want to do this continue, you should give App storage permission ",
-                    STORAGE_PERMS, perm);
+            PermissionUtils.requestStorage(getActivity(), perm);
             return;
         }
 
@@ -338,7 +345,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             Log.e(TAG, "file.createNewFile" + file.getAbsolutePath() + ":FAILED", e);
         }
 
-        mFileUri = FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, file);
+        mFileUri = FileProvider.getUriForFile(getActivity(), FILE_PROVIDER, file);
         Log.i(TAG, "file: " + mFileName);
         Intent albumIntent = new Intent(Intent.ACTION_PICK);
         albumIntent.setType("image/*");
@@ -351,7 +358,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void uploadFromUri(Uri fileUri, final String userId, int type) {
+    private void uploadFromUri(Uri fileUri, final String userId) {
 
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -364,7 +371,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
         // Upload file to Firebase Storage
         uploadTask = photoRef.putFile(fileUri);
-
 
         uploadTask.addOnSuccessListener(getActivity(), new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override

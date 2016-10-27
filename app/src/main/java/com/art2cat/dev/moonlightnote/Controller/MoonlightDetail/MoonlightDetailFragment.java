@@ -53,6 +53,7 @@ import com.art2cat.dev.moonlightnote.Utils.CustomSpinner;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.LocalCacheUtils;
 import com.art2cat.dev.moonlightnote.Utils.MenuUtils;
+import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
@@ -77,6 +78,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -88,12 +91,18 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.app.Activity.RESULT_OK;
+import static com.art2cat.dev.moonlightnote.Model.Constants.ALBUM_CHOOSE;
+import static com.art2cat.dev.moonlightnote.Model.Constants.CAMERA_PERMS;
+import static com.art2cat.dev.moonlightnote.Model.Constants.RECORD_AUDIO;
+import static com.art2cat.dev.moonlightnote.Model.Constants.STORAGE_PERMS;
+import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public abstract class MoonlightDetailFragment extends Fragment implements AdapterView.OnItemSelectedListener
         , View.OnClickListener, FragmentManager.OnBackStackChangedListener {
+    private static final String TAG = "MoonlightDetailFragment";
     private View mView;
     private TextInputLayout mTitleTextInputLayout;
     private TextInputLayout mContentTextInputLayout;
@@ -108,7 +117,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private ProgressBar mProgressBar;
     private LinearLayoutCompat mProgressBarContainer;
     private ArrayAdapter<String> mArrayAdapter;
-
     private Moonlight moonlight;
     private DatabaseTools mDatabaseTools;
     private boolean mEditFlag;
@@ -122,24 +130,12 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private DatabaseReference myReference;
     private StorageReference mStorageRef;
     private StorageReference mStorageReference;
-    private String mFileName;
-    private Uri mDownloadUrl;
+    private String mImageFileName;
+    private String mAudioFileName;
+    private Uri mDownloadIUrl;
+    private Uri mDownloadAUrl;
+    private Uri mAudioUri;
     private File mFile;
-
-    private static final String REQUIRED = "Required";
-
-    private static final int STORAGE_PERMS = 101;
-    private static final int TAKE_PICTURE = 102;
-    private static final int ALBUM_CHOOSE = 103;
-    private static final int RECORD_AUDIO = 104;
-
-
-    private static final String KEY_FILE_URI = "key_file_uri";
-    private static final String KEY_DOWNLOAD_URL = "key_download_url";
-    private static final String KEY_LINK = "key_link";
-
-    private static final String TAG = "MoonlightDetailFragment";
-
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -149,38 +145,13 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
     private MyRunnable myRunnable = new MyRunnable();
 
+    public MoonlightDetailFragment() {
+        // Required empty public constructor
+    }
+
     @Override
     public void onBackStackChanged() {
         Log.d(TAG, "onBackStackChanged: ");
-    }
-
-    private class MyRunnable implements Runnable {
-
-        @Override
-        public void run() {
-            if (moonlight.getTitle() != null) {
-                mTitle.setText(moonlight.getTitle());
-            }
-            if (moonlight.getContent() != null) {
-                mContent.setText(moonlight.getContent());
-            }
-            if (moonlight.getImageUrl() != null) {
-                BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
-                bitmapUtils.display(mPhoto, moonlight.getImageUrl());
-                mCardView.setVisibility(View.VISIBLE);
-            }
-            if (moonlight.getLabel() != null) {
-                List<String> data;
-                //从本地读取用户配置
-                data = UserConfigUtils.readLabelFromUserConfig(getActivity());
-                int index = data.indexOf(moonlight.getLabel());
-                mLabelSpinner.setSelection(index);
-            }
-        }
-    }
-
-    public MoonlightDetailFragment() {
-        // Required empty public constructor
     }
 
     public abstract MoonlightDetailFragment newInstance();
@@ -347,10 +318,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 if (bitmap != null) {
                     mPhoto.setImageBitmap(bitmap);
                     LocalCacheUtils localCacheUtils = new LocalCacheUtils();
-                    localCacheUtils.setBitmapToLocal(mDownloadUrl.toString(), bitmap);
+                    localCacheUtils.setBitmapToLocal(mDownloadIUrl.toString(), bitmap);
                 } else {
                     BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
-                    bitmapUtils.display(mPhoto, mDownloadUrl.toString());
+                    bitmapUtils.display(mPhoto, mDownloadIUrl.toString());
                 }
                 mCardView.setVisibility(View.VISIBLE);
 
@@ -358,7 +329,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 Log.d(TAG, "load local file failed" + e.toString());
             }
         } else {
-            mFileName = null;
+            mImageFileName = null;
             mCardView.setVisibility(View.GONE);
         }
     }
@@ -487,11 +458,17 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     }
                     break;
                 case Constants.BUS_FLAG_AUDIO_URL:
+                    if (busEvent.getMessage() != null) {
+                        Log.d(TAG, "handleMessage: " + busEvent.getMessage());
+                        File file = new File(new File(Environment.getExternalStorageDirectory()
+                                + "/MoonlightNote/.audio"), busEvent.getMessage());
+                        mAudioUri = FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, file);
+                        uploadFromUri(mAudioUri, mUserId, 3);
+                    }
                     break;
             }
         }
     }
-
 
     @Override
     public void onClick(View v) {
@@ -533,7 +510,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -559,19 +535,28 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @AfterPermissionGranted(STORAGE_PERMS)
+    @AfterPermissionGranted(CAMERA_PERMS)
     private void onCameraClick() {
         // Check that we have permission to read images from external storage.
         String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        String perm1 = Manifest.permission.CAMERA;
+        if (!EasyPermissions.hasPermissions(getActivity(), perm) &&
+                !EasyPermissions.hasPermissions(getActivity(), perm1)) {
+            PermissionUtils.requestStorage(getActivity(), perm);
+            PermissionUtils.requestCamera(getActivity(), perm1);
+            return;
+        }
         if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
-            EasyPermissions.requestPermissions(getActivity(), "If you want to do this continue, " +
-                            "you should give App storage permission ",
-                    STORAGE_PERMS, perm);
+            PermissionUtils.requestStorage(getActivity(), perm);
+            return;
+        }
+        if (!EasyPermissions.hasPermissions(getActivity(), perm1)) {
+            PermissionUtils.requestCamera(getActivity(), perm1);
             return;
         }
         // Choose file storage location, must be listed in res/xml/file_paths.xml
         File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.image");
-        mFile = new File(dir, UUID.randomUUID().toString() + ".jpg");
+        //mFile = new File(dir, UUID.randomUUID().toString() + ".jpg");
         try {
             // Create directory if it does not exist.
             if (!dir.exists()) {
@@ -588,9 +573,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
         mFileUri = FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, mFile);
         Log.i(TAG, "file: " + mFileUri);
-        // Create and launch the intent
+
         Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        //takePicIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
 
         if (takePicIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivityForResult(takePicIntent, TAKE_PICTURE);
@@ -605,9 +589,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         // Check that we have permission to read images from external storage.
         String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
         if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
-            EasyPermissions.requestPermissions(getActivity(), "If you want to do this continue, " +
-                            "you should give App storage permission ",
-                    STORAGE_PERMS, perm);
+            PermissionUtils.requestStorage(getActivity(), perm);
             return;
         }
 
@@ -642,24 +624,24 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         // Check that we have permission to read images from external storage.
         String perm = Manifest.permission.RECORD_AUDIO;
         String perm1 = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        //if (!EasyPermissions.hasPermissions(getActivity(), perm1)) {
-        //    EasyPermissions.requestPermissions(getActivity(), "If you want to do this continue, " +
-        //                    "you should give App storage permission ",
-        //            STORAGE_PERMS, perm);
-        //    return;
-        //}
         if (!EasyPermissions.hasPermissions(getActivity(), perm) &&
                 !EasyPermissions.hasPermissions(getActivity(), perm1)) {
-            EasyPermissions.requestPermissions(getActivity(), "If you want to do this continue, " +
-                            "you should give App Record Audio permission ",
-                    RECORD_AUDIO, perm);
-            EasyPermissions.requestPermissions(getActivity(), "If you want to do this continue, " +
-                            "you should give App storage permission ",
-                    STORAGE_PERMS, perm1);
+            PermissionUtils.requestStorage(getActivity(), perm1);
+            PermissionUtils.requestRecAudio(getActivity(), perm1);
             return;
+        } else if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
+            PermissionUtils.requestStorage(getActivity(), perm1);
+        } else if (!EasyPermissions.hasPermissions(getActivity(), perm1)) {
+            PermissionUtils.requestRecAudio(getActivity(), perm1);
         }
 
-        File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.audio/");
+        // Choose file storage location, must be listed in res/xml/file_paths.xml
+        File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.audio");
+        mFile = new File(dir, UUID.randomUUID().toString() + ".aac");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
         // Create directory if it does not exist.
         if (!dir.exists()) {
             dir.mkdirs();
@@ -675,49 +657,34 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
     }
 
-    private void uploadFromUri(final Uri fileUri, String userId, final int type) {
-
-        mProgressBarContainer.setVisibility(View.VISIBLE);
-
+    private void uploadFromUri(final Uri fileUri, String userId, int type) {
         StorageTask<UploadTask.TaskSnapshot> uploadTask = null;
 
         if (type == 0) {
+            mProgressBarContainer.setVisibility(View.VISIBLE);
             // Get a reference to store file at photos/<FILENAME>.jpg
             StorageReference photoRef = mStorageReference.child(userId).child("photos")
                     .child(fileUri.getLastPathSegment());
             Log.d(TAG, "uploadFromUri: " + fileUri.getLastPathSegment());
             // Upload file to Firebase Storage
             uploadTask = photoRef.putFile(fileUri);
-        } else if (type == 1) {
-            StorageReference storageReference = mStorageReference.child(userId).child("userconfig")
-                    .child(fileUri.getLastPathSegment());
-            uploadTask = storageReference.putFile(fileUri);
-        } else if (type == 3) {
-            StorageReference storageReference = mStorageReference.child(userId).child("audios")
-                    .child(fileUri.getLastPathSegment());
-            uploadTask = storageReference.putFile(fileUri);
-        }
-
-        if (uploadTask != null) {
             uploadTask.addOnSuccessListener(getActivity(), new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    mDownloadUrl = taskSnapshot.getDownloadUrl();
-                    if (type == 0) {
-                        mFileName = taskSnapshot.getMetadata().getName();
-                    }
+                    mDownloadIUrl = taskSnapshot.getDownloadUrl();
+                    mImageFileName = taskSnapshot.getMetadata().getName();
 
-                    Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadUrl.toString());
-                    moonlight.setImageName(mFileName);
-                    moonlight.setImageUrl(mDownloadUrl.toString());
+                    Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadIUrl.toString());
+                    moonlight.setImageName(mImageFileName);
+                    moonlight.setImageUrl(mDownloadIUrl.toString());
                     mProgressBarContainer.setVisibility(View.GONE);
                     updatePhoto(fileUri);
                 }
             }).addOnFailureListener(getActivity(), new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    mFileName = null;
-                    mDownloadUrl = null;
+                    mImageFileName = null;
+                    mDownloadIUrl = null;
                     mProgressBarContainer.setVisibility(View.GONE);
                     updatePhoto(fileUri);
                 }
@@ -729,10 +696,59 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     SnackBarUtils.shortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO).show();
                 }
             });
-        } else {
-            Log.w(TAG, "uploadFromUri: failed");
-        }
+        } else if (type == 1) {
+            StorageReference storageReference = mStorageReference.child(userId).child("userconfig")
+                    .child(fileUri.getLastPathSegment());
+            uploadTask = storageReference.putFile(fileUri);
+            uploadTask.addOnSuccessListener(getActivity(), new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.d(TAG, "onSuccess: upload userConfig");
+                }
+            }).addOnFailureListener(getActivity(), new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.w(TAG, "onFailure: upload userConfig");
+                }
+            }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.d(TAG, "onPaused: upload userConfig");
+                }
+            });
+        } else if (type == 3) {
+            mProgressBarContainer.setVisibility(View.VISIBLE);
+            StorageReference storageReference = mStorageReference.child(userId).child("audios")
+                    .child(fileUri.getLastPathSegment());
+            uploadTask = storageReference.putFile(fileUri);
+            uploadTask.addOnSuccessListener(getActivity(), new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    mDownloadAUrl = taskSnapshot.getDownloadUrl();
+                    mAudioFileName = taskSnapshot.getMetadata().getName();
 
+                    Log.d(TAG, "onSuccess: downloadUrl:  " + mAudioFileName.toString());
+                    moonlight.setAudioName(mAudioFileName);
+                    moonlight.setAudioUrl(mDownloadAUrl.toString());
+                    mProgressBarContainer.setVisibility(View.GONE);
+                }
+            }).addOnFailureListener(getActivity(), new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    mAudioFileName = null;
+                    mDownloadAUrl = null;
+                    mProgressBarContainer.setVisibility(View.GONE);
+                    updatePhoto(fileUri);
+                }
+            }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.d(TAG, "onPaused: ");
+                    mProgressBarContainer.setVisibility(View.GONE);
+                    SnackBarUtils.shortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO).show();
+                }
+            });
+        }
     }
 
     private void addMoonlight(final Moonlight moonlight) {
@@ -804,8 +820,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
     private void removePhoto() {
         StorageReference photoRef = mStorageReference.child(mUserId).child("photos")
-                .child(mFileName);
-        Log.d(TAG, "onClick: " + mFileName);
+                .child(mImageFileName);
+        Log.d(TAG, "onClick: " + mImageFileName);
         photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -843,4 +859,28 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
     }
 
+    private class MyRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            if (moonlight.getTitle() != null) {
+                mTitle.setText(moonlight.getTitle());
+            }
+            if (moonlight.getContent() != null) {
+                mContent.setText(moonlight.getContent());
+            }
+            if (moonlight.getImageUrl() != null) {
+                BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
+                bitmapUtils.display(mPhoto, moonlight.getImageUrl());
+                mCardView.setVisibility(View.VISIBLE);
+            }
+            if (moonlight.getLabel() != null) {
+                List<String> data;
+                //从本地读取用户配置
+                data = UserConfigUtils.readLabelFromUserConfig(getActivity());
+                int index = data.indexOf(moonlight.getLabel());
+                mLabelSpinner.setSelection(index);
+            }
+        }
+    }
 }
