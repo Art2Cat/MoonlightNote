@@ -44,16 +44,17 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
-import com.art2cat.dev.moonlightnote.Firebase.DatabaseTools;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.Utils.AudioPlayerUtils;
 import com.art2cat.dev.moonlightnote.Utils.CustomSpinner;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.LocalCacheUtils;
 import com.art2cat.dev.moonlightnote.Utils.MenuUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
+import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
@@ -78,8 +79,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -109,6 +108,11 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private TextInputEditText mTitle;
     private TextInputEditText mContent;
     private AppCompatTextView mDate;
+    private AppCompatImageButton mCamera;
+    private AppCompatImageButton mAudio;
+    private AppCompatButton mDeleteImage;
+    private AppCompatButton mDeleteAudio;
+    private AppCompatButton mPlayingAudio;
     private CardView mCardView;
     private AppCompatImageView mPhoto;
     private CustomSpinner mLabelSpinner;
@@ -118,7 +122,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private LinearLayoutCompat mProgressBarContainer;
     private ArrayAdapter<String> mArrayAdapter;
     private Moonlight moonlight;
-    private DatabaseTools mDatabaseTools;
     private boolean mEditFlag;
     private String mUserId;
     private String mKeyId;
@@ -142,7 +145,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             super.handleMessage(msg);
         }
     };
-
+    private AudioPlayerUtils mAudioPlayerUtils;
     private MyRunnable myRunnable = new MyRunnable();
 
     public MoonlightDetailFragment() {
@@ -169,8 +172,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         EventBus.getDefault().register(this);
         //获取用户id
         mUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        //新建DatabaseTools对象
-        mDatabaseTools = new DatabaseTools(getActivity(), mUserId);
+        //获取FirebaseDatabase实例
         myReference = FirebaseDatabase.getInstance().getReference();
         //新建moonlight对象
         moonlight = new Moonlight();
@@ -180,6 +182,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         //获取系统当前时间
         long date = System.currentTimeMillis();
         moonlight.setDate(date);
+        //
+        mAudioPlayerUtils = new AudioPlayerUtils();
 
         //当能argument不为空时，从argument中获取keyId，同时调用getMoonlight方法获取moonlight信息，editFlag设为true
         if (getArguments() != null) {
@@ -200,20 +204,25 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mView = inflater.inflate(R.layout.fragment_moonlight_detail, null);
         mTitle = (TextInputEditText) mView.findViewById(R.id.title_TIET);
         mContent = (TextInputEditText) mView.findViewById(R.id.content_TIET);
-        mPhoto = (AppCompatImageView) mView.findViewById(R.id.moonlight_photo);
-        mProgressBar = (ProgressBar) mView.findViewById(R.id.moonlight_photo_progressBar);
+        mPhoto = (AppCompatImageView) mView.findViewById(R.id.moonlight_image);
+        mProgressBar = (ProgressBar) mView.findViewById(R.id.moonlight_image_progressBar);
         mProgressBarContainer = (LinearLayoutCompat) mView.findViewById(R.id.progressBar_container);
         mLabelSpinner = (CustomSpinner) mView.findViewById(R.id.bottomBar_label);
-        AppCompatImageButton mCamera = (AppCompatImageButton) mView.findViewById(R.id.bottomBar_camera);
-        AppCompatImageButton mAudio = (AppCompatImageButton) mView.findViewById(R.id.bottomBar_audio);
-        mCardView = (CardView) mView.findViewById(R.id.photo_container);
-        AppCompatButton mDeletePhoto = (AppCompatButton) mView.findViewById(R.id.delete_image);
+        mCamera = (AppCompatImageButton) mView.findViewById(R.id.bottomBar_camera);
+        mAudio = (AppCompatImageButton) mView.findViewById(R.id.bottomBar_audio);
+        mCardView = (CardView) mView.findViewById(R.id.image_container);
+        mDeleteImage = (AppCompatButton) mView.findViewById(R.id.delete_image);
+        mDeleteAudio = (AppCompatButton) mView.findViewById(R.id.delete_audio);
+        mPlayingAudio = (AppCompatButton) mView.findViewById(R.id.playing_audio_button);
+
 
         displaySpinner(mLabelSpinner);
 
         mCamera.setOnClickListener(this);
         mAudio.setOnClickListener(this);
-        mDeletePhoto.setOnClickListener(this);
+        mDeleteImage.setOnClickListener(this);
+        mDeleteAudio.setOnClickListener(this);
+        mPlayingAudio.setOnClickListener(this);
         mLabelSpinner.setOnItemSelectedListener(this);
 
         mTitle.addTextChangedListener(new TextWatcher() {
@@ -301,6 +310,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     @Override
     public void onDestroy() {
         EventBus.getDefault().unregister(this);
+        mAudioPlayerUtils.releasePlayer();
         super.onDestroy();
     }
 
@@ -495,17 +505,29 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             case R.id.bottomBar_audio:
                 onAudioClick();
                 break;
-            case R.id.moonlight_photo:
+            case R.id.moonlight_image:
                 //网页浏览图片。。。
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(moonlight.getImageUrl()));
                 startActivity(intent);
                 break;
             case R.id.delete_image:
-                //
+                //删除图片
                 removePhoto();
                 moonlight.setImageUrl(null);
                 mCardView.setVisibility(View.GONE);
+                break;
+            case R.id.playing_audio_button:
+
+                if (moonlight.getAudioName() != null) {
+                    String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
+                    Log.i(TAG, "onClick: " + dirPath + moonlight.getAudioName());
+                    mAudioPlayerUtils.startPlaying(dirPath + moonlight.getAudioName());
+                }
+                break;
+            case R.id.delete_audio:
+                //删除录音
+
                 break;
         }
     }
@@ -556,7 +578,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
         // Choose file storage location, must be listed in res/xml/file_paths.xml
         File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.image");
-        //mFile = new File(dir, UUID.randomUUID().toString() + ".jpg");
+        mFile = new File(dir, UUID.randomUUID().toString() + ".jpg");
         try {
             // Create directory if it does not exist.
             if (!dir.exists()) {

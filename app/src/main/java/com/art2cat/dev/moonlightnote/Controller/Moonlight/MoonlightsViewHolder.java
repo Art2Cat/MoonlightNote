@@ -33,7 +33,7 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
         mCardView = (CardView) itemView.findViewById(R.id.item_main);
         titleAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_title);
         contentAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_content);
-        photoAppCompatImageView = (AppCompatImageView) itemView.findViewById(R.id.moonlight_photo);
+        photoAppCompatImageView = (AppCompatImageView) itemView.findViewById(R.id.moonlight_image);
     }
 
     void onBindMoonlight(final Context context, final String userid, final Moonlight moonlight, boolean delete) {

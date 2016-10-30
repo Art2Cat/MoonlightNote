@@ -22,6 +22,7 @@ import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.FirebaseImageLoader;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -198,12 +199,13 @@ public abstract class MoonlightListFragment extends Fragment {
     }
 
     public String getUid() {
-        String uid = SPUtils.getString(getActivity(), "User", "Id", null);
-        if (uid == null) {
-            return null;
-        } else {
-            return uid;
-        }
+        return FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //String uid = SPUtils.getString(getActivity(), "User", "Id", null);
+        //if (uid == null) {
+        //    return null;
+        //} else {
+        //    return uid;
+        //}
     }
 
     public abstract Query getQuery(DatabaseReference databaseReference);

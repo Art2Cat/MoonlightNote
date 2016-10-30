@@ -15,19 +15,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.ToggleButton;
 
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.Utils.AudioPlayerUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.UUID;
+
+import static com.art2cat.dev.moonlightnote.R.drawable.ic_action_record;
 
 /**
  * Created by Rorschach
@@ -39,6 +40,10 @@ public class AudioRecordFragment extends DialogFragment {
     private static String mFileName = null;
     private MediaPlayer mPlayer = null;
     private String mFile;
+    private ToggleButton record;
+    private ToggleButton play;
+    private ProgressBar mProgressBar;
+    private AudioPlayerUtils audioPlayerUtils;
 
     private static final String TAG = "AudioRecordFragment";
 
@@ -51,6 +56,7 @@ public class AudioRecordFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        audioPlayerUtils = new AudioPlayerUtils();
     }
 
     @NonNull
@@ -58,36 +64,40 @@ public class AudioRecordFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Builder builder = new Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View view = inflater.inflate(R.layout.fragment_audio_record, null);
-        ToggleButton toggleButton = (ToggleButton) view.findViewById(R.id.record_audio);
-        Button start = (Button) view.findViewById(R.id.play_audio_button);
-        Button stop = (Button) view.findViewById(R.id.stop_audio_button);
+        View view = inflater.inflate(R.layout.dialog_audio_record, null);
+        record = (ToggleButton) view.findViewById(R.id.record_audio);
+        record.setBackground(getResources().getDrawable(R.drawable.ic_action_record, null));
+        play = (ToggleButton) view.findViewById(R.id.play_audio_button);
+        play.setBackground(getResources().getDrawable(R.drawable.ic_play_circle_outline_cyan_400_48dp, null));
+        mProgressBar = (ProgressBar) view.findViewById(R.id.dialog_AR_progressBar);
 
-        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        record.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     //start record voice
                     startRecording();
+                    record.setBackground(getResources().getDrawable(R.drawable.ic_action_stop, null));
                 } else {
                     //stop record voice
                     stopRecording();
+                    record.setBackground(getResources().getDrawable(R.drawable.ic_action_record, null));
+                    play.setVisibility(View.VISIBLE);
+
                 }
             }
         });
 
-        start.setOnClickListener(new View.OnClickListener() {
+        play.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                //play record voice
-                startPlaying();
-            }
-        });
-
-        stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stopPlaying();
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    audioPlayerUtils.startPlaying(mFileName);
+                    play.setBackground(getResources().getDrawable(R.drawable.ic_action_stop, null));
+                } else {
+                    audioPlayerUtils.stopPlaying();
+                    play.setBackground(getResources().getDrawable(R.drawable.ic_play_circle_outline_cyan_400_48dp, null));
+                }
             }
         });
 
@@ -127,6 +137,7 @@ public class AudioRecordFragment extends DialogFragment {
 
         //开始录音
         mRecorder.start();
+        displayProgressBar();
     }
 
     private void stopRecording() {
@@ -147,6 +158,8 @@ public class AudioRecordFragment extends DialogFragment {
             mPlayer.prepare();
             //开始播放
             mPlayer.start();
+            mProgressBar.setMax(mPlayer.getDuration());
+            mProgressBar.setProgress(mPlayer.getCurrentPosition());
         } catch (IOException e) {
             Log.e(TAG, "prepare() failed");
         }
@@ -158,6 +171,10 @@ public class AudioRecordFragment extends DialogFragment {
         mPlayer = null;
     }
 
+    private void displayProgressBar() {
+        mProgressBar.setProgress(mRecorder.getMaxAmplitude());
+    }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -166,10 +183,7 @@ public class AudioRecordFragment extends DialogFragment {
             mRecorder = null;
         }
 
-        if (mPlayer != null) {
-            mPlayer.release();
-            mPlayer = null;
-        }
+        audioPlayerUtils.releasePlayer();
     }
 }
 

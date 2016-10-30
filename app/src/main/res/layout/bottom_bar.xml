@@ -20,12 +20,6 @@
         android:layout_marginStart="8dp"
         android:background="@drawable/ic_keyboard_voice_cyan_400_48dp" />
 
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/bottomBar_color"
-        android:layout_toRightOf="@+id/bottomBar_audio"
-        android:layout_width="40dp"
-        android:layout_height="40dp" />
-
     <com.art2cat.dev.moonlightnote.Utils.CustomSpinner
         android:id="@+id/bottomBar_label"
         android:layout_width="wrap_content"

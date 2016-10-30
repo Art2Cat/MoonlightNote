@@ -74,12 +74,6 @@ public class MoonlightActivity extends AppCompatActivity
         //signIn();
         mUserId = mAuth.getCurrentUser().getUid();
 
-        //mUserId = SPUtils.getString(this, "User", "Id", null);
-        //当userId等于null时，启动匿名登陆模式
-        //if (mUserId == null) {
-        //    anonymousSignIn();
-        //}
-
         initView();
 
     }
@@ -107,7 +101,7 @@ public class MoonlightActivity extends AppCompatActivity
 
     @Override
     protected void onRestart() {
-        displayUserInfo();
+        //displayUserInfo();
         Log.d(TAG, "onRestart: ");
         super.onRestart();
     }

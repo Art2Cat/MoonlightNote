@@ -91,7 +91,7 @@ public class MoonlightAdapter extends RecyclerView.Adapter<MoonlightAdapter.Moon
             mCardView = (CardView) itemView.findViewById(R.id.item_main);
             titleAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_title);
             contentAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_content);
-            photoAppCompatImageView = (AppCompatImageView) itemView.findViewById(R.id.moonlight_photo);
+            photoAppCompatImageView = (AppCompatImageView) itemView.findViewById(R.id.moonlight_image);
             mDeletePhoto = (AppCompatButton) itemView.findViewById(R.id.delete_image);
         }
 
