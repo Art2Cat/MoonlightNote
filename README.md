@@ -1,4 +1,4 @@
 # MoonlightNote
-StudyJams进阶班作业
+StudyJams进阶赛参赛项目（未完成）
 
-Learning Android base Firebase
+本项目基于Google Firebase，按照Material Design进行开发。
