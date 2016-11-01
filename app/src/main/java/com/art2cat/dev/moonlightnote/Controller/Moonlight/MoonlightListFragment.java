@@ -115,6 +115,7 @@ public abstract class MoonlightListFragment extends Fragment {
                         viewHolder.photoAppCompatImageView.setTag(model.getImageName());
                         //FirebaseImageLoader firebaseImageLoader = new FirebaseImageLoader(getActivity(), storageReference, viewHolder.photoAppCompatImageView);
                         //firebaseImageLoader.disPlayImage(getUid(), model.getImageName());
+                        viewHolder.displayImage(getActivity(), model.getImageUrl());
                     } else {
                         viewHolder.photoAppCompatImageView.setVisibility(View.GONE);
                     }

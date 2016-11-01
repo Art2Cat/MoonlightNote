@@ -15,7 +15,6 @@ import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.squareup.picasso.Picasso;
 
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by art2cat
@@ -27,6 +26,7 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
     public AppCompatTextView titleAppCompatTextView;
     public AppCompatTextView contentAppCompatTextView;
     public AppCompatImageView photoAppCompatImageView;
+    private static final String TAG = "MoonlightsViewHolder";
 
     public MoonlightsViewHolder(View itemView) {
         super(itemView);
@@ -71,8 +71,10 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void displayImage(Context context, String url) {
-        if (url != null) {
-            Picasso.with(context.getApplicationContext()).load(url).into(photoAppCompatImageView);
+        if (url != null && photoAppCompatImageView.getTag() != null) {
+            Log.d(TAG, "displayImage: succeed" );
+            photoAppCompatImageView.setVisibility(View.VISIBLE);
+            Picasso.with(context.getApplicationContext()).load(Uri.parse(url)).into(photoAppCompatImageView);
         } else {
             photoAppCompatImageView.setVisibility(View.GONE);
         }

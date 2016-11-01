@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,10 +39,12 @@ import static com.art2cat.dev.moonlightnote.R.drawable.ic_action_record;
 public class AudioRecordFragment extends DialogFragment {
     private MediaRecorder mRecorder = null;
     private static String mFileName = null;
+    private boolean isRecord = true;
+    private boolean isPlay = true;
     private MediaPlayer mPlayer = null;
     private String mFile;
-    private ToggleButton record;
-    private ToggleButton play;
+    private AppCompatButton record;
+    private AppCompatButton play;
     private ProgressBar mProgressBar;
     private AudioPlayerUtils audioPlayerUtils;
 
@@ -56,7 +59,7 @@ public class AudioRecordFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        audioPlayerUtils = new AudioPlayerUtils();
+
     }
 
     @NonNull
@@ -65,16 +68,16 @@ public class AudioRecordFragment extends DialogFragment {
         Builder builder = new Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         View view = inflater.inflate(R.layout.dialog_audio_record, null);
-        record = (ToggleButton) view.findViewById(R.id.record_audio);
+        record = (AppCompatButton) view.findViewById(R.id.record_audio);
         record.setBackground(getResources().getDrawable(R.drawable.ic_action_record, null));
-        play = (ToggleButton) view.findViewById(R.id.play_audio_button);
+        play = (AppCompatButton) view.findViewById(R.id.play_audio_button);
         play.setBackground(getResources().getDrawable(R.drawable.ic_play_circle_outline_cyan_400_48dp, null));
         mProgressBar = (ProgressBar) view.findViewById(R.id.dialog_AR_progressBar);
-
-        record.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        audioPlayerUtils = new AudioPlayerUtils(mProgressBar);
+        record.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
+            public void onClick(View view) {
+                if (isRecord) {
                     //start record voice
                     startRecording();
                     record.setBackground(getResources().getDrawable(R.drawable.ic_action_stop, null));
@@ -83,21 +86,23 @@ public class AudioRecordFragment extends DialogFragment {
                     stopRecording();
                     record.setBackground(getResources().getDrawable(R.drawable.ic_action_record, null));
                     play.setVisibility(View.VISIBLE);
-
                 }
+                isRecord = !isRecord;
             }
         });
 
-        play.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        play.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
+            public void onClick(View view) {
+                if (isPlay) {
+                    audioPlayerUtils.prepare(mFileName);
                     audioPlayerUtils.startPlaying(mFileName);
                     play.setBackground(getResources().getDrawable(R.drawable.ic_action_stop, null));
                 } else {
                     audioPlayerUtils.stopPlaying();
                     play.setBackground(getResources().getDrawable(R.drawable.ic_play_circle_outline_cyan_400_48dp, null));
                 }
+                isPlay = !isPlay;
             }
         });
 

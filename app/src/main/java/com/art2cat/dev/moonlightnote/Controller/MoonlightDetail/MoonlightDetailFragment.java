@@ -14,6 +14,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -50,11 +51,8 @@ import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.AudioPlayerUtils;
 import com.art2cat.dev.moonlightnote.Utils.CustomSpinner;
-import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
-import com.art2cat.dev.moonlightnote.Utils.ImageLoader.LocalCacheUtils;
 import com.art2cat.dev.moonlightnote.Utils.MenuUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
-import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
@@ -71,6 +69,7 @@ import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -102,6 +101,7 @@ import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
 public abstract class MoonlightDetailFragment extends Fragment implements AdapterView.OnItemSelectedListener
         , View.OnClickListener, FragmentManager.OnBackStackChangedListener {
     private static final String TAG = "MoonlightDetailFragment";
+    private static final int SPEECH_REQUEST_CODE = 0;
     private View mView;
     private TextInputLayout mTitleTextInputLayout;
     private TextInputLayout mContentTextInputLayout;
@@ -113,16 +113,19 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private AppCompatButton mDeleteImage;
     private AppCompatButton mDeleteAudio;
     private AppCompatButton mPlayingAudio;
-    private CardView mCardView;
+    private CardView mImageCardView;
+    private CardView mAudioCardView;
     private AppCompatImageView mPhoto;
     private CustomSpinner mLabelSpinner;
     private AppCompatSpinner mColor;
     private ProgressDialog progressDialog;
     private ProgressBar mProgressBar;
+    private ProgressBar mAudioPlayerPB;
     private LinearLayoutCompat mProgressBarContainer;
     private ArrayAdapter<String> mArrayAdapter;
     private Moonlight moonlight;
     private boolean mEditFlag;
+    private boolean mStartPlaying = true;
     private String mUserId;
     private String mKeyId;
     private String mLabel;
@@ -183,7 +186,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         long date = System.currentTimeMillis();
         moonlight.setDate(date);
         //
-        mAudioPlayerUtils = new AudioPlayerUtils();
+
 
         //当能argument不为空时，从argument中获取keyId，同时调用getMoonlight方法获取moonlight信息，editFlag设为true
         if (getArguments() != null) {
@@ -210,12 +213,14 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mLabelSpinner = (CustomSpinner) mView.findViewById(R.id.bottomBar_label);
         mCamera = (AppCompatImageButton) mView.findViewById(R.id.bottomBar_camera);
         mAudio = (AppCompatImageButton) mView.findViewById(R.id.bottomBar_audio);
-        mCardView = (CardView) mView.findViewById(R.id.image_container);
+        mImageCardView = (CardView) mView.findViewById(R.id.image_container);
+        mAudioCardView = (CardView) mView.findViewById(R.id.audio_container);
         mDeleteImage = (AppCompatButton) mView.findViewById(R.id.delete_image);
         mDeleteAudio = (AppCompatButton) mView.findViewById(R.id.delete_audio);
         mPlayingAudio = (AppCompatButton) mView.findViewById(R.id.playing_audio_button);
+        mAudioPlayerPB = (ProgressBar) mView.findViewById(R.id.moonlight_audio_progressBar);
 
-
+        mAudioPlayerUtils = new AudioPlayerUtils(mAudioPlayerPB);
         displaySpinner(mLabelSpinner);
 
         mCamera.setOnClickListener(this);
@@ -327,20 +332,22 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 Bitmap bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(mFileUri));
                 if (bitmap != null) {
                     mPhoto.setImageBitmap(bitmap);
-                    LocalCacheUtils localCacheUtils = new LocalCacheUtils();
-                    localCacheUtils.setBitmapToLocal(mDownloadIUrl.toString(), bitmap);
+                    //LocalCacheUtils localCacheUtils = new LocalCacheUtils();
+                    //localCacheUtils.setBitmapToLocal(mDownloadIUrl.toString(), bitmap);
+                    Picasso.with(getActivity()).load(mFileUri).into(mPhoto);
                 } else {
-                    BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
-                    bitmapUtils.display(mPhoto, mDownloadIUrl.toString());
+                    //BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
+                    //bitmapUtils.display(mPhoto, mDownloadIUrl.toString());
+                    Picasso.with(getActivity()).load(mDownloadIUrl).into(mPhoto);
                 }
-                mCardView.setVisibility(View.VISIBLE);
+                mImageCardView.setVisibility(View.VISIBLE);
 
             } catch (FileNotFoundException e) {
                 Log.d(TAG, "load local file failed" + e.toString());
             }
         } else {
             mImageFileName = null;
-            mCardView.setVisibility(View.GONE);
+            mImageCardView.setVisibility(View.GONE);
         }
     }
 
@@ -422,7 +429,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         List<String> data = UserConfigUtils.readLabelFromUserConfig(getActivity());
         if (data != null) {
             data.add(label);
-            Log.d(TAG, "addNewLabelToList: ");
             UserConfigUtils.writeLabelToUserConfig(getActivity(), data);
             mLabel = "label";
         }
@@ -515,15 +521,19 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 //删除图片
                 removePhoto();
                 moonlight.setImageUrl(null);
-                mCardView.setVisibility(View.GONE);
+                mImageCardView.setVisibility(View.GONE);
                 break;
             case R.id.playing_audio_button:
-
-                if (moonlight.getAudioName() != null) {
+                if (moonlight.getAudioName() != null && mStartPlaying) {
                     String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
                     Log.i(TAG, "onClick: " + dirPath + moonlight.getAudioName());
                     mAudioPlayerUtils.startPlaying(dirPath + moonlight.getAudioName());
+                    mPlayingAudio.setBackgroundResource(R.drawable.ic_pause_circle_filled_lime_a700_48dp);
+                } else {
+                    mAudioPlayerUtils.stopPlaying();
+                    mPlayingAudio.setBackgroundResource(R.drawable.ic_play_circle_outline_cyan_400_48dp);
                 }
+                mStartPlaying = !mStartPlaying;
                 break;
             case R.id.delete_audio:
                 //删除录音
@@ -550,6 +560,25 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     uploadFromUri(fileUri, mUserId, 0);
                 }
                 break;
+            case SPEECH_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    List<String> results = data.getStringArrayListExtra(
+                            RecognizerIntent.EXTRA_RESULTS);
+                    String spokenText = results.get(0);
+                    // Do something with spokenText
+                    mContent.setText(spokenText);
+                    // the recording url is in getData:
+                    //if (data.getData() != null) {
+                    //    Uri audioUri = data.getData();
+                    //    ContentResolver contentResolver = getActivity().getContentResolver();
+                    //    try {
+                    //        InputStream filestream = contentResolver.openInputStream(audioUri);
+                    //    } catch (FileNotFoundException e) {
+                    //        e.printStackTrace();
+                    //    }
+                    //}
+
+                }
             default:
                 break;
         }
@@ -670,12 +699,14 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             Log.d(TAG, "onAudioClick: " + dir.mkdirs());
         } else {
             Log.d(TAG, "onAudioClick: " + dir.getAbsolutePath() + ": is existed");
-            AudioRecordFragment audioRecordFragment = new AudioRecordFragment();
-            audioRecordFragment.show(getFragmentManager(), "Record Audio");
+            //AudioRecordFragment audioRecordFragment = new AudioRecordFragment();
+            //audioRecordFragment.show(getFragmentManager(), "Record Audio");
+            displaySpeechRecognizer();
         }
         if (dir.mkdirs()) {
-            AudioRecordFragment audioRecordFragment = new AudioRecordFragment();
-            audioRecordFragment.show(getFragmentManager(), "Record Audio");
+            //AudioRecordFragment audioRecordFragment = new AudioRecordFragment();
+            //audioRecordFragment.show(getFragmentManager(), "Record Audio");
+            displaySpeechRecognizer();
         }
     }
 
@@ -771,6 +802,18 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 }
             });
         }
+    }
+
+    // Create an intent that can start the Speech Recognizer activity
+    private void displaySpeechRecognizer() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        // secret parameters that when added provide audio url in the result
+        //intent.putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR");
+        //intent.putExtra("android.speech.extra.GET_AUDIO", true);
+        // Start the activity, the intent will be populated with the speech text
+        startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 
     private void addMoonlight(final Moonlight moonlight) {
@@ -892,9 +935,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 mContent.setText(moonlight.getContent());
             }
             if (moonlight.getImageUrl() != null) {
-                BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
-                bitmapUtils.display(mPhoto, moonlight.getImageUrl());
-                mCardView.setVisibility(View.VISIBLE);
+                //BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
+                //bitmapUtils.display(mPhoto, moonlight.getImageUrl());
+                Picasso.with(getActivity()).load(Uri.parse(moonlight.getImageUrl())).into(mPhoto);
+                mImageCardView.setVisibility(View.VISIBLE);
             }
             if (moonlight.getLabel() != null) {
                 List<String> data;
@@ -902,6 +946,11 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 data = UserConfigUtils.readLabelFromUserConfig(getActivity());
                 int index = data.indexOf(moonlight.getLabel());
                 mLabelSpinner.setSelection(index);
+            }
+            if (moonlight.getAudioUrl() != null) {
+                String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
+                mAudioPlayerUtils.prepare(dirPath + moonlight.getAudioName());
+                mAudioCardView.setVisibility(View.VISIBLE);
             }
         }
     }

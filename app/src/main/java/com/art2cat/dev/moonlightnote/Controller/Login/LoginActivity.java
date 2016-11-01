@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
 
             //创建handler对象，调用postDelayed()方法，使广告显示3秒钟
             Handler handler = new Handler();
-            handler.postDelayed(new UpdateUI(), 5000);
+            handler.postDelayed(new UpdateUI(), 3000);
         }
 
     }
