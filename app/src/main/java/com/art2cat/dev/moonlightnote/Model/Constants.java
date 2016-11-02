@@ -48,6 +48,9 @@ public class Constants {
     public static final int ALBUM_CHOOSE = 103;
     public static final int RECORD_AUDIO = 104;
     public static final int CAMERA_PERMS = 105;
+
+    public static final String GET_AUDIO_FORMAT = "android.speech.extra.GET_AUDIO_FORMAT";
+    public static final String GET_AUDIO = "android.speech.extra.GET_AUDIO";
     /**
      * File Provider
      */

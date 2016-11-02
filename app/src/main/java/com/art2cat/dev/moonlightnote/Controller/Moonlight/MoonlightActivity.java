@@ -51,15 +51,15 @@ public class MoonlightActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private CircleImageView mCircleImageView;
+    private boolean isHome;
     private boolean userIsInteracting;
     private TextView emailTV;
     private TextView nickTV;
-    private CustomSpinner spinner;
-    private OnItemSelectedListener listener;
     private static final String TAG = "MoonlightActivity";
     private ArrayAdapter<String> adapter;
     private String mUserId;
     private FirebaseUser mFirebaseUser;
+    private FragmentManager mFragmentManager = getFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,8 +128,47 @@ public class MoonlightActivity extends AppCompatActivity
         // Handle navigation mView item clicks here.
         int id = item.getItemId();
         switch (id) {
-
-            case R.id.nav_setting:
+            case R.id.nav_home:
+                if (mUserId != null) {
+                    Fragment fragment = mFragmentManager.findFragmentById(R.id.main_fragment_container);
+                    if (!isHome) {
+                        if (fragment == null) {
+                            fragment = new MoonlightFragment();
+                            mFragmentManager.beginTransaction()
+                                    .add(R.id.main_fragment_container, fragment)
+                                    .commit();
+                            setTitle(R.string.app_name);
+                            isHome = !isHome;
+                        } else {
+                            fragment = new MoonlightFragment();
+                            mFragmentManager.beginTransaction()
+                                    .replace(R.id.main_fragment_container, fragment)
+                                    .commit();
+                            setTitle(R.string.app_name);
+                            isHome = !isHome;
+                        }
+                    }
+                }
+                break;
+            case R.id.nav_trash:
+                if (mUserId != null) {
+                    Fragment fragment = mFragmentManager.findFragmentById(R.id.main_fragment_container);
+                    if (fragment == null) {
+                        fragment = new TrashFragment();
+                        mFragmentManager.beginTransaction()
+                                .add(R.id.main_fragment_container, fragment)
+                                .commit();
+                        setTitle("Trash");
+                        isHome = !isHome;
+                    } else {
+                        fragment = new TrashFragment();
+                        mFragmentManager.beginTransaction()
+                                .replace(R.id.main_fragment_container, fragment)
+                                .commit();
+                        setTitle("Trash");
+                        isHome = !isHome;
+                    }
+                }
                 break;
             case R.id.nav_share:
                 //启动Intent分享
@@ -225,16 +264,14 @@ public class MoonlightActivity extends AppCompatActivity
         nickTV = (TextView) headerView.findViewById(R.id.nav_header_nickname);
 
         if (mUserId != null) {
-            FragmentManager fm = getFragmentManager();
-            Fragment fragment = fm.findFragmentById(R.id.main_fragment_container);
+            Fragment fragment = mFragmentManager.findFragmentById(R.id.main_fragment_container);
             int flag = 0;
             if (fragment == null) {
-                //fragment = BlankFragment.newInstance(mUserId);
                 fragment = new MoonlightFragment();
-                fm.beginTransaction()
+                mFragmentManager.beginTransaction()
                         .add(R.id.main_fragment_container, fragment)
                         .commit();
-                Log.d(TAG, "Fragment commit");
+                isHome = true;
             }
         }
     }

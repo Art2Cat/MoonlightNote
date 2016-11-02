@@ -4,9 +4,12 @@ package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -71,13 +74,21 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import org.apache.commons.io.FileUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -218,9 +229,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mDeleteImage = (AppCompatButton) mView.findViewById(R.id.delete_image);
         mDeleteAudio = (AppCompatButton) mView.findViewById(R.id.delete_audio);
         mPlayingAudio = (AppCompatButton) mView.findViewById(R.id.playing_audio_button);
+        AppCompatTextView duration = (AppCompatTextView) mView.findViewById(R.id.moonlight_audio_duration);
         mAudioPlayerPB = (ProgressBar) mView.findViewById(R.id.moonlight_audio_progressBar);
 
-        mAudioPlayerUtils = new AudioPlayerUtils(mAudioPlayerPB);
+        mAudioPlayerUtils = new AudioPlayerUtils(mAudioPlayerPB, duration);
         displaySpinner(mLabelSpinner);
 
         mCamera.setOnClickListener(this);
@@ -567,16 +579,15 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     String spokenText = results.get(0);
                     // Do something with spokenText
                     mContent.setText(spokenText);
+                    Log.d(TAG, "onActivityResult: " + spokenText);
                     // the recording url is in getData:
-                    //if (data.getData() != null) {
-                    //    Uri audioUri = data.getData();
-                    //    ContentResolver contentResolver = getActivity().getContentResolver();
-                    //    try {
-                    //        InputStream filestream = contentResolver.openInputStream(audioUri);
-                    //    } catch (FileNotFoundException e) {
-                    //        e.printStackTrace();
-                    //    }
-                    //}
+                    if (data.getData() != null) {
+                        Uri audioUri = data.getData();
+                        Log.d(TAG, "onActivityResult: " + audioUri.toString());
+                        if (copyAudioFile(audioUri) != null) {
+                            uploadFromUri(copyAudioFile(audioUri), mUserId, 3);
+                        }
+                    }
 
                 }
             default:
@@ -584,6 +595,39 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private Uri copyAudioFile(Uri uri) {
+        ContentResolver contentResolver = getActivity().getContentResolver();
+        File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.audio");
+        File file = new File(dir, UUID.randomUUID().toString() + ".amr");
+        FileOutputStream fos = null;
+        InputStream inputStream = null;
+        try {
+            inputStream = contentResolver.openInputStream(uri);
+            fos = new FileOutputStream(file);
+            try {
+
+                byte[] buffer = new byte[4*1024];
+                int length;
+                while ((length = inputStream.read(buffer)) != -1) {
+                    fos.write(buffer, 0, length);
+                }
+                fos.flush();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                fos.close();
+                assert inputStream != null;
+                inputStream.close();
+            }
+            return FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @AfterPermissionGranted(CAMERA_PERMS)
@@ -810,8 +854,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         // secret parameters that when added provide audio url in the result
-        //intent.putExtra("android.speech.extra.GET_AUDIO_FORMAT", "audio/AMR");
-        //intent.putExtra("android.speech.extra.GET_AUDIO", true);
+        intent.putExtra(Constants.GET_AUDIO_FORMAT, "audio/AMR");
+        intent.putExtra(Constants.GET_AUDIO, true);
         // Start the activity, the intent will be populated with the speech text
         startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }

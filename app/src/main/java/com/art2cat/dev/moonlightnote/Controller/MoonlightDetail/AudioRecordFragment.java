@@ -73,7 +73,7 @@ public class AudioRecordFragment extends DialogFragment {
         play = (AppCompatButton) view.findViewById(R.id.play_audio_button);
         play.setBackground(getResources().getDrawable(R.drawable.ic_play_circle_outline_cyan_400_48dp, null));
         mProgressBar = (ProgressBar) view.findViewById(R.id.dialog_AR_progressBar);
-        audioPlayerUtils = new AudioPlayerUtils(mProgressBar);
+        //audioPlayerUtils = new AudioPlayerUtils(mProgressBar);
         record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

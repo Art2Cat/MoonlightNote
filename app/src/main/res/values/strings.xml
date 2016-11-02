@@ -59,5 +59,7 @@
     <string name="fragment_audio_play">Play</string>
     <string name="fragment_audio_record">Record</string>
     <string name="fragment_audio_stop">Stop</string>
+    <string name="action_trash">Trash</string>
+    <string name="action_home">Home</string>
 
 </resources>

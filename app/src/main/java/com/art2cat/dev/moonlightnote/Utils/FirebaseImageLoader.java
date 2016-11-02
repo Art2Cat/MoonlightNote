@@ -1,8 +1,6 @@
 package com.art2cat.dev.moonlightnote.Utils;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -19,8 +17,6 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * Created by rorschach
@@ -55,7 +51,7 @@ public class FirebaseImageLoader {
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                     // Local temp file has been created
                     Log.i(TAG, "onSuccess: ");
-                    disPlayImage(userID, imageName);
+                    displayImage(userID, imageName);
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -67,19 +63,19 @@ public class FirebaseImageLoader {
         }
     }
 
-    public void disPlayImage(String userID, String imageName) {
+    public void displayImage(String userID, String imageName) {
         File dir = new File(CACHE_PATH);
         localFile = new File(dir, imageName + ".jpg");
 
         if (localFile.exists()) {
             Uri mFileUri = FileProvider.getUriForFile(mContext, Constants.FILE_PROVIDER, localFile);
-            Log.i(TAG, "disPlayImage: local file");
+            Log.i(TAG, "displayImage: local file");
             if (imageName.equals(imageView.getTag())) {
                 //imageView.setImageBitmap(bitmap);
                 imageView.setVisibility(View.VISIBLE);
                 Picasso.with(mContext).load(mFileUri).into(imageView);
             } else {
-                Log.d(TAG, "disPlayImage: failed");
+                Log.d(TAG, "displayImage: failed");
             }
         } else {
             DownloadImage(userID, imageName);
