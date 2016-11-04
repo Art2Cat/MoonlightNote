@@ -21,13 +21,13 @@ public class BitmapUtils {
 
     public BitmapUtils() {
         mMemoryCacheUtils = new MemoryCacheUtils();
-        mLocalCacheUtils = new LocalCacheUtils();
+        //mLocalCacheUtils = new LocalCacheUtils(mMemoryCacheUtils);
         mNetCacheUtils = new NetCacheUtils(mLocalCacheUtils, mMemoryCacheUtils);
     }
 
     public BitmapUtils(Context context) {
         mMemoryCacheUtils = new MemoryCacheUtils();
-        mLocalCacheUtils = new LocalCacheUtils();
+        mLocalCacheUtils = new LocalCacheUtils(context, mMemoryCacheUtils);
         mNetCacheUtils = new NetCacheUtils(mLocalCacheUtils, mMemoryCacheUtils);
         this.context = context;
     }
@@ -50,21 +50,7 @@ public class BitmapUtils {
         }
 
         //本地缓存
-        bitmap = mLocalCacheUtils.getBitmapFromLocal(url);
-        //mLocalCacheUtils.getBitmapFromLocal(ivPic, url);
-        //
-        if (bitmap != null) {
-            ivPic.setImageBitmap(bitmap);
-            Log.d(TAG, "display: " + "从本地获取图片啦.....");
-            //从本地获取图片后,保存至内存中
-            mMemoryCacheUtils.setBitmapToMemory(url, bitmap);
-            return;
-        }
-
-        //if (ivPic.getTag() == null) {
-        //网络缓存
-        mNetCacheUtils.getBitmapFromNet(ivPic, url);
-        //}
+        mLocalCacheUtils.getBitmapFromLocal(mNetCacheUtils, ivPic, url);
     }
 
     public Bitmap getBitmap(String url) {

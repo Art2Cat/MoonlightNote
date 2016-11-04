@@ -20,6 +20,10 @@ public class NetCacheUtils {
     private MemoryCacheUtils mMemoryCacheUtils;
     private static final String TAG = "NetCacheUtils";
 
+    public NetCacheUtils() {
+
+    }
+
     public NetCacheUtils(LocalCacheUtils localCacheUtils, @Nullable MemoryCacheUtils memoryCacheUtils) {
         mLocalCacheUtils = localCacheUtils;
         mMemoryCacheUtils = memoryCacheUtils;
@@ -32,7 +36,9 @@ public class NetCacheUtils {
      * @param url   下载图片的网络地址
      */
     public void getBitmapFromNet(ImageView ivPic, String url) {
-        new BitmapTask().execute(ivPic, url);//启动AsyncTask
+        BitmapTask bitmapTask = new BitmapTask();
+        Log.d(TAG, "getBitmapFromNet: ");
+        bitmapTask.execute(ivPic, url);//启动AsyncTask
 
     }
 
@@ -54,9 +60,10 @@ public class NetCacheUtils {
             if (responseCode == 200) {
                 //图片压缩
                 BitmapFactory.Options options = new BitmapFactory.Options();
+                //options.inJustDecodeBounds = true;
                 options.inSampleSize = 2;//宽高压缩为原来的1/2
-                options.inPreferredConfig = Bitmap.Config.ARGB_4444;
-                Bitmap bitmap = BitmapFactory.decodeStream(conn.getInputStream(), null, null);
+                //options.inPreferredConfig = Bitmap.Config.ARGB_4444;
+                Bitmap bitmap = BitmapFactory.decodeStream(conn.getInputStream(), null, options);
                 return bitmap;
             }
         } catch (IOException e) {
@@ -76,7 +83,7 @@ public class NetCacheUtils {
      * 第二个泛型:更新进度的泛型
      * 第三个泛型:onPostExecute的返回结果
      */
-    class BitmapTask extends AsyncTask<Object, Void, Bitmap> {
+    private class BitmapTask extends AsyncTask<Object, Void, Bitmap> {
 
         private ImageView ivPic;
         private String url;
@@ -118,7 +125,7 @@ public class NetCacheUtils {
                 //从网络获取图片后,保存至本地缓存
                 mLocalCacheUtils.setBitmapToLocal(url, result);
                 //保存至内存中
-                //mMemoryCacheUtils.setBitmapToMemory(url, result);
+                mMemoryCacheUtils.setBitmapToMemory(url, result);
 
             }
         }

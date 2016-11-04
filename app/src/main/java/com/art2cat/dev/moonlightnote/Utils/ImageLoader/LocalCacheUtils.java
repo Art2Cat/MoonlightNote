@@ -8,6 +8,8 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -23,23 +25,26 @@ import java.io.FileOutputStream;
 public class LocalCacheUtils {
 
     private Context mContext;
-    private static final String CACHE_PATH = Environment
+    private NetCacheUtils mNetCacheUtils;
+    private MemoryCacheUtils mMemoryCacheUtils;
+    private String mCachePath;
+    private static final String mCachePath2 = Environment
             .getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.image";
     private static final String TAG = "LocalCacheUtils";
 
     public LocalCacheUtils() {
     }
 
-    public Bitmap getBitmapFromLocal1(String url) {
-        LocalThread local = new LocalThread(url);
-        local.run();
-        return local.getBitmap();
+    public LocalCacheUtils(Context context, @Nullable MemoryCacheUtils memoryCacheUtils) {
+        mMemoryCacheUtils = memoryCacheUtils;
+        mContext = context;
+        getCachePath();
     }
 
-    public void getBitmapFromLocal(ImageView imageView, String url) {
+    public void getBitmapFromLocal(NetCacheUtils netCacheUtils, ImageView imageView, String url) {
+        mNetCacheUtils = netCacheUtils;
         BitmapTask bitmapTask = new BitmapTask();
         bitmapTask.execute(imageView, url);
-        Log.d(TAG, "getBitmapFromLocal: " + imageView.getTag());
     }
 
     /**
@@ -49,10 +54,18 @@ public class LocalCacheUtils {
      * @return bitmap图片
      */
     public Bitmap getBitmapFromLocal(String url) {
+        if (mCachePath == null) {
+            getCachePath();
+        }
         Bitmap bitmap = null;
-        File file = new File(CACHE_PATH, url);
+        File file = new File(mCachePath, url);
         try {
+            //BitmapFactory.Options options = new BitmapFactory.Options();
+            //options.inJustDecodeBounds = true;
+            //options.inSampleSize = 2;//宽高压缩为原来的1/2
+
             bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+            //bitmap = BitmapFactory.decodeStream(new FileInputStream(file), null, options);
             return bitmap;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -61,41 +74,6 @@ public class LocalCacheUtils {
         return null;
     }
 
-    public Bitmap getBitmapFromLocal2(String url) {
-        Bitmap bitmap = null;
-        File file = new File(CACHE_PATH, url);
-        try {
-            bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-            return bitmap;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private class LocalThread extends java.lang.Thread {
-        String url;
-        Bitmap bitmap;
-
-        public LocalThread(String url) {
-            this.url = url;
-        }
-
-        public Bitmap getBitmap() {
-            return bitmap;
-        }
-
-        @Override
-        public void run() {
-            super.run();
-            File file = new File(CACHE_PATH, url);
-            try {
-                bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     /**
      * 从网络获取图片后,保存至本地缓存
@@ -105,8 +83,10 @@ public class LocalCacheUtils {
      */
     public void setBitmapToLocal(String url, Bitmap bitmap) {
         try {
-
-            File file = new File(CACHE_PATH, url);
+            if (mCachePath == null) {
+                getCachePath();
+            }
+            File file = new File(mCachePath, url);
             //通过得到文件的父文件,判断父文件是否存在
             File parentFile = file.getParentFile();
             if (!parentFile.exists()) {
@@ -121,21 +101,15 @@ public class LocalCacheUtils {
 
     }
 
-    public void setBitmapLocal(String url, String file) {
-
-    }
-
-    private class BitmapTask1 extends AsyncTask<String, Void, Bitmap> {
-        private Bitmap bitmap;
-
-        public Bitmap getBitmap() {
-            return bitmap;
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... params) {
-            bitmap = getBitmapFromLocal(params[0]);
-            return bitmap;
+    private void getCachePath() {
+        File dir = mContext.getCacheDir().getAbsoluteFile();
+        File file = new File(dir, "imageCache");
+        if (!file.exists()) {
+            if (file.mkdirs()) {
+                mCachePath = file.getAbsolutePath();
+            }
+        } else {
+            mCachePath = file.getAbsolutePath();
         }
     }
 
@@ -155,12 +129,14 @@ public class LocalCacheUtils {
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             super.onPostExecute(bitmap);
-            if (bitmap !=null) {
+            if (bitmap != null) {
                 ivPic.setImageBitmap(bitmap);
-                ivPic.setTag("done");
+                Log.d(TAG, "display: " + "从本地获取图片啦.....");
+                mMemoryCacheUtils.setBitmapToMemory(url, bitmap);
             } else {
-                NetCacheUtils netCacheUtils = new NetCacheUtils(new LocalCacheUtils(),null);
-                netCacheUtils.getBitmapFromNet(ivPic, url);
+                Log.d(TAG, "onPostExecute: ");
+                //mNetCacheUtils = new NetCacheUtils(new LocalCacheUtils(mContext, mMemoryCacheUtils), mMemoryCacheUtils);
+                mNetCacheUtils.getBitmapFromNet(ivPic, url);
             }
         }
     }

@@ -8,8 +8,6 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.AudioFormat;
-import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,8 +50,11 @@ import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.AudioPlayerUtils;
+import com.art2cat.dev.moonlightnote.Utils.AudioPlayer;
 import com.art2cat.dev.moonlightnote.Utils.CustomSpinner;
+import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
+import com.art2cat.dev.moonlightnote.Utils.ImageLoader.LocalCacheUtils;
+import com.art2cat.dev.moonlightnote.Utils.ImageLoader.MemoryCacheUtils;
 import com.art2cat.dev.moonlightnote.Utils.MenuUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
@@ -74,21 +75,15 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-import org.apache.commons.io.FileUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -159,7 +154,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             super.handleMessage(msg);
         }
     };
-    private AudioPlayerUtils mAudioPlayerUtils;
+    private AudioPlayer mAudioPlayer;
+    private BitmapUtils mBitmapUtils;
     private MyRunnable myRunnable = new MyRunnable();
 
     public MoonlightDetailFragment() {
@@ -232,7 +228,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         AppCompatTextView duration = (AppCompatTextView) mView.findViewById(R.id.moonlight_audio_duration);
         mAudioPlayerPB = (ProgressBar) mView.findViewById(R.id.moonlight_audio_progressBar);
 
-        mAudioPlayerUtils = new AudioPlayerUtils(mAudioPlayerPB, duration);
+        mBitmapUtils = new BitmapUtils(getActivity());
+        mAudioPlayer = new AudioPlayer(mAudioPlayerPB, duration);
         displaySpinner(mLabelSpinner);
 
         mCamera.setOnClickListener(this);
@@ -327,7 +324,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     @Override
     public void onDestroy() {
         EventBus.getDefault().unregister(this);
-        mAudioPlayerUtils.releasePlayer();
+        mAudioPlayer.releasePlayer();
         super.onDestroy();
     }
 
@@ -341,16 +338,20 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         //图片地址为空则不加载图片
         if (mFileUri != null) {
             try {
-                Bitmap bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(mFileUri));
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                //options.inJustDecodeBounds = true;
+                options.inSampleSize = 2;//宽高压缩为原来的1/2
+                //options.inPreferredConfig = Bitmap.Config.ARGB_4444;
+                Bitmap bitmap = BitmapFactory.decodeStream(
+                        getActivity().getContentResolver().openInputStream(mFileUri), null, options);
                 if (bitmap != null) {
                     mPhoto.setImageBitmap(bitmap);
-                    //LocalCacheUtils localCacheUtils = new LocalCacheUtils();
-                    //localCacheUtils.setBitmapToLocal(mDownloadIUrl.toString(), bitmap);
-                    Picasso.with(getActivity()).load(mFileUri).into(mPhoto);
+                    LocalCacheUtils localCacheUtils = new LocalCacheUtils(getActivity(), new MemoryCacheUtils());
+                    localCacheUtils.setBitmapToLocal(mDownloadIUrl.toString(), bitmap);
+                    //Picasso.with(getActivity()).load(mFileUri).into(mPhoto);
                 } else {
-                    //BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
-                    //bitmapUtils.display(mPhoto, mDownloadIUrl.toString());
-                    Picasso.with(getActivity()).load(mDownloadIUrl).into(mPhoto);
+                    mBitmapUtils.display(mPhoto, mDownloadIUrl.toString());
+                    //Picasso.with(getActivity()).load(mDownloadIUrl).into(mPhoto);
                 }
                 mImageCardView.setVisibility(View.VISIBLE);
 
@@ -539,10 +540,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 if (moonlight.getAudioName() != null && mStartPlaying) {
                     String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
                     Log.i(TAG, "onClick: " + dirPath + moonlight.getAudioName());
-                    mAudioPlayerUtils.startPlaying(dirPath + moonlight.getAudioName());
+                    mAudioPlayer.startPlaying(dirPath + moonlight.getAudioName());
                     mPlayingAudio.setBackgroundResource(R.drawable.ic_pause_circle_filled_lime_a700_48dp);
                 } else {
-                    mAudioPlayerUtils.stopPlaying();
+                    mAudioPlayer.stopPlaying();
                     mPlayingAudio.setBackgroundResource(R.drawable.ic_play_circle_outline_cyan_400_48dp);
                 }
                 mStartPlaying = !mStartPlaying;
@@ -556,12 +557,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        Log.d(TAG, "onActivityResult: ");
         switch (requestCode) {
             case TAKE_PICTURE:
                 if (resultCode == RESULT_OK) {
-                    Log.d(TAG, "take Picture");
+                    Log.d(TAG, "take Picture" + mFileUri.toString());
                     uploadFromUri(mFileUri, mUserId, 0);
                 }
                 break;
@@ -608,7 +607,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             fos = new FileOutputStream(file);
             try {
 
-                byte[] buffer = new byte[4*1024];
+                byte[] buffer = new byte[4 * 1024];
                 int length;
                 while ((length = inputStream.read(buffer)) != -1) {
                     fos.write(buffer, 0, length);
@@ -670,6 +669,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         Log.i(TAG, "file: " + mFileUri);
 
         Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        takePicIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
 
         if (takePicIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivityForResult(takePicIntent, TAKE_PICTURE);
@@ -722,12 +722,14 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         if (!EasyPermissions.hasPermissions(getActivity(), perm) &&
                 !EasyPermissions.hasPermissions(getActivity(), perm1)) {
             PermissionUtils.requestStorage(getActivity(), perm1);
-            PermissionUtils.requestRecAudio(getActivity(), perm1);
+            PermissionUtils.requestRecAudio(getActivity(), perm);
+            return;
+        } else if (!EasyPermissions.hasPermissions(getActivity(), perm1)) {
+            PermissionUtils.requestStorage(getActivity(), perm1);
             return;
         } else if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
-            PermissionUtils.requestStorage(getActivity(), perm1);
-        } else if (!EasyPermissions.hasPermissions(getActivity(), perm1)) {
-            PermissionUtils.requestRecAudio(getActivity(), perm1);
+            PermissionUtils.requestRecAudio(getActivity(), perm);
+            return;
         }
 
         // Choose file storage location, must be listed in res/xml/file_paths.xml
@@ -979,9 +981,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 mContent.setText(moonlight.getContent());
             }
             if (moonlight.getImageUrl() != null) {
-                //BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
-                //bitmapUtils.display(mPhoto, moonlight.getImageUrl());
-                Picasso.with(getActivity()).load(Uri.parse(moonlight.getImageUrl())).into(mPhoto);
+                mBitmapUtils.display(mPhoto, moonlight.getImageUrl());
+                //Picasso.with(getActivity()).load(Uri.parse(moonlight.getImageUrl())).into(mPhoto);
                 mImageCardView.setVisibility(View.VISIBLE);
             }
             if (moonlight.getLabel() != null) {
@@ -993,7 +994,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             }
             if (moonlight.getAudioUrl() != null) {
                 String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
-                mAudioPlayerUtils.prepare(dirPath + moonlight.getAudioName());
+                mAudioPlayer.prepare(dirPath + moonlight.getAudioName());
                 mAudioCardView.setVisibility(View.VISIBLE);
             }
         }

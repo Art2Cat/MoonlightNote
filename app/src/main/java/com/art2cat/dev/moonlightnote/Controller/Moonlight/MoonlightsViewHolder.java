@@ -26,6 +26,7 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
     public AppCompatTextView titleAppCompatTextView;
     public AppCompatTextView contentAppCompatTextView;
     public AppCompatImageView photoAppCompatImageView;
+    private BitmapUtils bitmapUtils;
     private static final String TAG = "MoonlightsViewHolder";
 
     public MoonlightsViewHolder(View itemView) {
@@ -34,28 +35,7 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
         titleAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_title);
         contentAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_content);
         photoAppCompatImageView = (AppCompatImageView) itemView.findViewById(R.id.moonlight_image);
-    }
-
-    void onBindMoonlight(final Context context, final String userid, final Moonlight moonlight, boolean delete) {
-        Log.d(TAG, "onBindMoonlight: " + moonlight.getId());
-
-
-        if (moonlight.getImageUrl() != null) {
-            Log.d(TAG, "moonlight.getImageUrl(): " + moonlight.getImageUrl());
-            BitmapUtils bitmapUtils = new BitmapUtils();
-            bitmapUtils.display(photoAppCompatImageView, moonlight.getImageUrl());
-            photoAppCompatImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //网页浏览图片。。。
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(moonlight.getImageUrl()));
-                    context.startActivity(intent);
-                }
-            });
-        } else {
-            photoAppCompatImageView.setVisibility(View.GONE);
-        }
+        //bitmapUtils = new BitmapUtils();
 
     }
 
@@ -73,8 +53,12 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
     public void displayImage(Context context, String url) {
         if (url != null && photoAppCompatImageView.getTag() != null) {
             Log.d(TAG, "displayImage: succeed" );
+            if (bitmapUtils == null) {
+                bitmapUtils = new BitmapUtils(context);
+            }
+            bitmapUtils.display(photoAppCompatImageView, url);
+            //Picasso.with(context).load(Uri.parse(url)).into(photoAppCompatImageView);
             photoAppCompatImageView.setVisibility(View.VISIBLE);
-            Picasso.with(context.getApplicationContext()).load(Uri.parse(url)).into(photoAppCompatImageView);
         } else {
             photoAppCompatImageView.setVisibility(View.GONE);
         }

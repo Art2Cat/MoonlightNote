@@ -72,9 +72,9 @@ public class SnackBarUtils {
      * @param backgroundColor 背景颜色
      * @return SnackBar
      */
-    public static Snackbar indefiniteSnackBar(View view, String content,
-                                              int duration, @ColorInt int messageColor,
-                                              @ColorInt int backgroundColor) {
+    public static Snackbar customSnackBar(View view, String content,
+                                          int duration, @ColorInt int messageColor,
+                                          @ColorInt int backgroundColor) {
         Snackbar snackbar = Snackbar.make(view, content, Snackbar.LENGTH_INDEFINITE)
                 .setDuration(duration);
         setSnackBarColor(snackbar, messageColor, backgroundColor);
@@ -117,8 +117,8 @@ public class SnackBarUtils {
      * @param type    显示类型
      * @return SnackBar
      */
-    public static Snackbar indefiniteSnackBar(View view, String content,
-                                              int duration, int type) {
+    public static Snackbar customSnackBar(View view, String content,
+                                          int duration, int type) {
         Snackbar snackbar = Snackbar.make(view, content, Snackbar.LENGTH_INDEFINITE)
                 .setDuration(duration);
         switchType(snackbar, type);

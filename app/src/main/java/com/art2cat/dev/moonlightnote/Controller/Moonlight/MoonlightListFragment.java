@@ -107,14 +107,11 @@ public abstract class MoonlightListFragment extends Fragment {
                     } else {
                         viewHolder.contentAppCompatTextView.setVisibility(View.GONE);
                     }
-                    //viewHolder.displayImage(getActivity(), model.getImageUrl());
 
                     if (model.getImageName() != null) {
                         Log.i(TAG, "populateViewHolder: " + model.getImageName());
                         viewHolder.photoAppCompatImageView.setImageResource(R.drawable.ic_app_icon);
                         viewHolder.photoAppCompatImageView.setTag(model.getImageName());
-                        //FirebaseImageLoader firebaseImageLoader = new FirebaseImageLoader(getActivity(), storageReference, viewHolder.photoAppCompatImageView);
-                        //firebaseImageLoader.displayImage(getUid(), model.getImageName());
                         viewHolder.displayImage(getActivity(), model.getImageUrl());
                     } else {
                         viewHolder.photoAppCompatImageView.setVisibility(View.GONE);

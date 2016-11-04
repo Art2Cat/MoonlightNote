@@ -14,22 +14,17 @@ import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ProgressBar;
-import android.widget.ToggleButton;
 
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.AudioPlayerUtils;
+import com.art2cat.dev.moonlightnote.Utils.AudioPlayer;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 import java.util.UUID;
-
-import static com.art2cat.dev.moonlightnote.R.drawable.ic_action_record;
 
 /**
  * Created by Rorschach
@@ -46,7 +41,7 @@ public class AudioRecordFragment extends DialogFragment {
     private AppCompatButton record;
     private AppCompatButton play;
     private ProgressBar mProgressBar;
-    private AudioPlayerUtils audioPlayerUtils;
+    private AudioPlayer audioPlayer;
 
     private static final String TAG = "AudioRecordFragment";
 
@@ -73,7 +68,7 @@ public class AudioRecordFragment extends DialogFragment {
         play = (AppCompatButton) view.findViewById(R.id.play_audio_button);
         play.setBackground(getResources().getDrawable(R.drawable.ic_play_circle_outline_cyan_400_48dp, null));
         mProgressBar = (ProgressBar) view.findViewById(R.id.dialog_AR_progressBar);
-        //audioPlayerUtils = new AudioPlayerUtils(mProgressBar);
+        //audioPlayer = new AudioPlayer(mProgressBar);
         record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -95,11 +90,11 @@ public class AudioRecordFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 if (isPlay) {
-                    audioPlayerUtils.prepare(mFileName);
-                    audioPlayerUtils.startPlaying(mFileName);
+                    audioPlayer.prepare(mFileName);
+                    audioPlayer.startPlaying(mFileName);
                     play.setBackground(getResources().getDrawable(R.drawable.ic_action_stop, null));
                 } else {
-                    audioPlayerUtils.stopPlaying();
+                    audioPlayer.stopPlaying();
                     play.setBackground(getResources().getDrawable(R.drawable.ic_play_circle_outline_cyan_400_48dp, null));
                 }
                 isPlay = !isPlay;
@@ -188,7 +183,7 @@ public class AudioRecordFragment extends DialogFragment {
             mRecorder = null;
         }
 
-        audioPlayerUtils.releasePlayer();
+        audioPlayer.releasePlayer();
     }
 }
 

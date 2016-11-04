@@ -343,7 +343,7 @@ public class MoonlightActivity extends AppCompatActivity
                 }
                 if (profile.getPhotoUrl() != null) {
                     String photoUrl = profile.getPhotoUrl().toString();
-                    BitmapUtils bitmapUtils = new BitmapUtils();
+                    BitmapUtils bitmapUtils = new BitmapUtils(this);
                     Log.d(TAG, "displayUserInfo: " + photoUrl);
                     bitmapUtils.display(mCircleImageView, photoUrl);
                 }

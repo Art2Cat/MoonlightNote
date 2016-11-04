@@ -13,9 +13,9 @@ import java.io.IOException;
  * on 2016/10/29 19:13.
  */
 
-public class AudioPlayerUtils {
+public class AudioPlayer {
 
-    private static final String TAG = "AudioPlayerUtils";
+    private static final String TAG = "AudioPlayer";
     private MediaPlayer mPlayer;
     private ProgressBar mProgressBar;
     private AppCompatTextView mDuration;
@@ -31,7 +31,7 @@ public class AudioPlayerUtils {
         }
     };
 
-    public AudioPlayerUtils(ProgressBar progressBar, AppCompatTextView duration) {
+    public AudioPlayer(ProgressBar progressBar, AppCompatTextView duration) {
         //新建音频播放器
         mPlayer = new MediaPlayer();
         mProgressBar = progressBar;
@@ -42,8 +42,8 @@ public class AudioPlayerUtils {
         try {
             //设置数据源
             mPlayer.setDataSource(mFileName);
-            //准备播放
-            mPlayer.prepare();
+            //采用异步的方式同步
+            mPlayer.prepareAsync();
             //开始播放
             int duration = mPlayer.getDuration();
             Log.d(TAG, "prepare: " + duration);
