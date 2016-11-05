@@ -73,12 +73,24 @@ public abstract class MoonlightListFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mLinearLayoutManager.setReverseLayout(true);
         mLinearLayoutManager.setStackFromEnd(true);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
+
+        setAdapter();
+    }
+
+    private void setAdapter() {
 
         Query moonlightsQuery = getQuery(mDatabase);
         if (moonlightsQuery != null) {
@@ -121,9 +133,18 @@ public abstract class MoonlightListFragment extends Fragment {
                         @Override
                         public void onClick(View v) {
                             Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
-                            intent.putExtra("writeoredit", 1);
-                            intent.putExtra("keyid", moonlightKey);
-                            startActivity(intent);
+                            if (model.isTrash()) {
+                                Log.d(TAG, "onClick: trash");
+                                intent.putExtra("writeoredit", 2);
+                                intent.putExtra("keyid", moonlightKey);
+                                startActivity(intent);
+                            } else {
+                                Log.d(TAG, "onClick: edit");
+                                intent.putExtra("writeoredit", 1);
+                                intent.putExtra("keyid", moonlightKey);
+                                startActivity(intent);
+                            }
+
                         }
                     });
                     viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -135,6 +156,7 @@ public abstract class MoonlightListFragment extends Fragment {
                     });
 
                 }
+
             };
 
             mAdapter.notifyDataSetChanged();
@@ -143,7 +165,6 @@ public abstract class MoonlightListFragment extends Fragment {
             Log.d(TAG, "setAdapter");
         }
     }
-
     @Override
     public void onDestroy() {
         super.onDestroy();

@@ -41,6 +41,12 @@ public class Constants {
     public static final int BUS_FLAG_ALBUM = 806;
 
     /**
+     *
+     */
+    public static final int EXTRA_TYPE_MOONLIGHT = 201;
+    public static final int EXTRA_TYPE_TRASH = 202;
+
+    /**
      * Permission request and  user action
      */
     public static final int STORAGE_PERMS = 101;

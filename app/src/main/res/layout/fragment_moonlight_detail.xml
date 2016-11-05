@@ -5,7 +5,7 @@
     android:fitsSystemWindows="true"
     tools:context="com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailFragment">
 
-    <android.support.v7.widget.LinearLayoutCompat
+    <android.support.v7.widget.FitWindowsLinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -14,13 +14,13 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:padding="16dp"
             android:scrollbars="none">
 
             <android.support.v7.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="16dp">
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
@@ -56,8 +56,8 @@
                     android:id="@+id/audio_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:layout_marginTop="16dp">
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone">
 
                     <android.support.v7.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
@@ -87,8 +87,8 @@
                         <android.support.v7.widget.AppCompatButton
                             android:id="@+id/delete_audio"
                             android:layout_width="24dp"
-                            android:layout_gravity="center_vertical"
                             android:layout_height="24dp"
+                            android:layout_gravity="center_vertical"
                             android:background="@drawable/ic_clear_black_24dp" />
                     </android.support.v7.widget.LinearLayoutCompat>
                 </android.support.v7.widget.CardView>
@@ -133,7 +133,7 @@
             android:layout_width="match_parent"
             android:layout_height="40dp" />
 
-    </android.support.v7.widget.LinearLayoutCompat>
+    </android.support.v7.widget.FitWindowsLinearLayout>
 
     <android.support.v7.widget.LinearLayoutCompat
         android:id="@+id/progressBar_container"
@@ -155,6 +155,5 @@
             android:layout_marginStart="16dp"
             android:text="@string/prograssBar_uploading" />
     </android.support.v7.widget.LinearLayoutCompat>
-
 
 </android.support.v7.widget.ContentFrameLayout>

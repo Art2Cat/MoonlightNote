@@ -60,8 +60,10 @@ import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -131,6 +133,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private ArrayAdapter<String> mArrayAdapter;
     private Moonlight moonlight;
     private boolean mEditFlag;
+    private boolean mEditable = true;
     private boolean mStartPlaying = true;
     private String mUserId;
     private String mKeyId;
@@ -139,7 +142,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private DatabaseReference mMoonlightRef;
     private ValueEventListener mMoonlightListener;
     private ValueEventListener moonlightListener;
-    private DatabaseReference myReference;
+    private DatabaseReference mDatabaseReference;
     private StorageReference mStorageRef;
     private StorageReference mStorageReference;
     private String mImageFileName;
@@ -183,7 +186,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         //获取用户id
         mUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         //获取FirebaseDatabase实例
-        myReference = FirebaseDatabase.getInstance().getReference();
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
         //新建moonlight对象
         moonlight = new Moonlight();
         //获取firebaseStorage实例
@@ -194,12 +197,18 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         moonlight.setDate(date);
         //
 
-
         //当能argument不为空时，从argument中获取keyId，同时调用getMoonlight方法获取moonlight信息，editFlag设为true
         if (getArguments() != null) {
             mKeyId = getArguments().getString("keyId");
-            getMoonlight(mKeyId);
-            mEditFlag = true;
+            int trashTag = getArguments().getInt("trash");
+            if (trashTag == 0) {
+                getMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
+                mEditFlag = true;
+            } else {
+                getMoonlight(mKeyId, Constants.EXTRA_TYPE_TRASH);
+                mEditFlag = true;
+                mEditable = false;
+            }
         }
     }
 
@@ -291,6 +300,12 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         if (mEditFlag) {
             mHandler.postDelayed(myRunnable, 500);
         }
+
+        if (!mEditable) {
+            mCamera.setClickable(false);
+            mAudio.setClickable(false);
+            mLabelSpinner.setClickable(false);
+        }
     }
 
     @Override
@@ -298,9 +313,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         super.onPause();
         Log.d(TAG, "onPause: ");
         //当editFlag为true且moonlight不为空时更新moonlight信息到服务器
-        if (mEditFlag && moonlight != null) {
+        if (mEditFlag && moonlight != null && !moonlight.isTrash()) {
             Log.d(TAG, "mKeyId" + mKeyId);
-            updateMoonlight(mKeyId, moonlight);
+            updateMoonlight(mKeyId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
         }
     }
 
@@ -382,7 +397,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
                 if (moonlight.getImageUrl() != null || moonlight.getContent() != null
                         || moonlight.getTitle() != null) {
-                    addMoonlight(moonlight);
+                    addMoonlight(moonlight, 0);
                     getActivity().startActivity(new Intent(getActivity(), MoonlightActivity.class));
                 } else {
                     Utils.showToast(getContext(), "Empty! Can't add it!", 0);
@@ -390,8 +405,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 break;
             case R.id.menu_delete:
                 //将moonlight设置为空，删除服务器中指定的moonlight数据
-                moonlight = null;
-                removeMoonlight(mKeyId);
+                //moonlight = null;
+                moonlight.setTrash(true);
+                moveToTrash(moonlight);
+                //removeMoonlight(mKeyId);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -654,7 +671,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         try {
             // Create directory if it does not exist.
             if (!dir.exists()) {
-                dir.mkdir();
+                dir.mkdirs();
             }
             boolean created = mFile.createNewFile();
             Log.d(TAG, "file.createNewFile:" + mFile.getAbsolutePath() + ":" + created);
@@ -694,7 +711,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         try {
             // Create directory if it does not exist.
             if (!dir.exists()) {
-                dir.mkdir();
+                dir.mkdirs();
             }
             boolean created = mFile.createNewFile();
             Log.d(TAG, "file.createNewFile:" + mFile.getAbsolutePath() + ":" + created);
@@ -862,55 +879,74 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 
-    private void addMoonlight(final Moonlight moonlight) {
-        // [START single_value_read]
+    private void addMoonlight(final Moonlight moonlight, final int type) {
 
-        myReference.child(mUserId).addListenerForSingleValueEvent(
+        mDatabaseReference.child(mUserId).addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        updateMoonlight(null, moonlight);
+                        updateMoonlight(null, moonlight, type);
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.w(TAG, "getUser:onCancelled", databaseError.toException());
+                        Log.e(TAG, "getUser:onCancelled", databaseError.toException());
                     }
                 });
     }
-
-    private void updateMoonlight(@Nullable String keyId, Moonlight moonlight) {
-        String mKey;
+    private void updateMoonlight(@Nullable String keyId, Moonlight moonlight, final int type) {
+        final String mKey;
+        String oldKey = null;
         if (keyId == null) {
-            mKey = myReference.child("moonlight").push().getKey();
+            mKey = mDatabaseReference.child("moonlight").push().getKey();
         } else {
             mKey = keyId;
         }
+
+        oldKey = moonlight.getId();
+
         moonlight.setId(mKey);
         Map<String, Object> moonlightValues = moonlight.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
 
-        childUpdates.put("/users-moonlight/" + mUserId + "/note/" + mKey, moonlightValues);
+        if (type == 201) {
+            childUpdates.put("/users-moonlight/" + mUserId + "/note/" + mKey, moonlightValues);
+        } else if (type == 202) {
+            childUpdates.put("/users-moonlight/" + mUserId + "/trash/" + mKey, moonlightValues);
+        }
 
+        final String finalOldKey = oldKey;
+        mDatabaseReference.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (type == 202) {
+                    Log.d(TAG, "onComplete: update" + finalOldKey);
+                    removeMoonlight(finalOldKey);
+                }
+            }
+        });
 
-        myReference.updateChildren(childUpdates);
     }
 
     /**
      * 从firebase的database获取moonlight
-     *
      * @param keyId 当前读取moonlight的keyId
      */
-    private void getMoonlight(String keyId) {
-        mMoonlightRef = FirebaseDatabase.getInstance().getReference()
-                .child("users-moonlight").child(mUserId).child("note").child(keyId);
+    private void getMoonlight(String keyId, int type) {
+        if (type == 201) {
+            mMoonlightRef = FirebaseDatabase.getInstance().getReference()
+                    .child("users-moonlight").child(mUserId).child("note").child(keyId);
+        } else if (type == 202) {
+            mMoonlightRef = FirebaseDatabase.getInstance().getReference()
+                    .child("users-moonlight").child(mUserId).child("trash").child(keyId);
+        }
+
         moonlightListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 try {
                     if (dataSnapshot.exists()) {
                         moonlight = dataSnapshot.getValue(Moonlight.class);
-
                     }
 
                     Log.d(TAG, "moonlight.getTitle: " + moonlight.getTitle());
@@ -954,6 +990,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
     }
 
+    private void moveToTrash(Moonlight moonlight) {
+        addMoonlight(moonlight, Constants.EXTRA_TYPE_TRASH);
+    }
     public void removeMoonlight(String keyId) {
         try {
             FirebaseDatabase.getInstance().getReference().child("users-moonlight")
@@ -974,11 +1013,21 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
         @Override
         public void run() {
+                initView(mEditable);
+        }
+
+        private void initView(boolean editable) {
             if (moonlight.getTitle() != null) {
                 mTitle.setText(moonlight.getTitle());
+                if (!editable) {
+                    mTitle.setEnabled(false);
+                }
             }
             if (moonlight.getContent() != null) {
                 mContent.setText(moonlight.getContent());
+                if (!editable) {
+                    mContent.setEnabled(false);
+                }
             }
             if (moonlight.getImageUrl() != null) {
                 mBitmapUtils.display(mPhoto, moonlight.getImageUrl());

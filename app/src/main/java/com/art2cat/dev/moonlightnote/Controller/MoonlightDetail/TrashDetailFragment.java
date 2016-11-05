@@ -2,12 +2,14 @@ package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
 
 import android.os.Bundle;
 
+import com.art2cat.dev.moonlightnote.Model.Constants;
+
 /**
- * Created by art2cat
- * on 10/1/16.
+ * Created by rorschach
+ * on 11/5/16 7:08 PM.
  */
 
-public class EditMoonlightFragment extends MoonlightDetailFragment {
+public class TrashDetailFragment extends MoonlightDetailFragment {
     @Override
     public MoonlightDetailFragment newInstance() {
         return null;
@@ -18,6 +20,7 @@ public class EditMoonlightFragment extends MoonlightDetailFragment {
         MoonlightDetailFragment moonlightDetailFragment = new EditMoonlightFragment();
         Bundle args = new Bundle();
         args.putString("keyId", keyId);
+        args.putInt("trash", Constants.EXTRA_TYPE_TRASH);
         moonlightDetailFragment.setArguments(args);
         return moonlightDetailFragment;
     }

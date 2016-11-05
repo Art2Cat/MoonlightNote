@@ -22,13 +22,25 @@ import org.greenrobot.eventbus.EventBus;
  */
 
 public class RPDialogFragment extends DialogFragment {
+
+    public RPDialogFragment newInstance(String email) {
+        RPDialogFragment dialogFragment = new RPDialogFragment();
+        Bundle args = new Bundle();
+        args.putString("email", email);
+        dialogFragment.setArguments(args);
+        return dialogFragment;
+    }
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_editext, null);
+
         final TextInputEditText email = (TextInputEditText) view.findViewById(R.id.dialog_edittext);
+        if (getArguments() != null) {
+            email.setText(getArguments().getString("email"));
+        }
         email.setHint(R.string.dialog_enter_your_register_email);
         builder.setView(view)
                 .setTitle(R.string.dialog_reset_password)

@@ -17,6 +17,7 @@ public class Moonlight {
     public String label;
     public String imageName;
     public String audioName;
+    public boolean trash;
 
     public Moonlight() {
 
@@ -24,7 +25,7 @@ public class Moonlight {
 
     public Moonlight(String id, String title, String content, String imageUrl, String audioUrl,
                      long date,
-                     String label, String imageName, String audioName) {
+                     String label, String imageName, String audioName, boolean trash) {
         this.id= id;
         this.title = title;
         this.content = content;
@@ -34,6 +35,7 @@ public class Moonlight {
         this.label = label;
         this.imageName = imageName;
         this.audioName = audioName;
+        this.trash = trash;
     }
 
     public String getLabel() {
@@ -106,6 +108,14 @@ public class Moonlight {
         this.audioName = audioName;
     }
 
+    public boolean isTrash() {
+        return trash;
+    }
+
+    public void setTrash(boolean trash) {
+        this.trash = trash;
+    }
+
     public Map<String, Object> toMap() {
         HashMap<String, Object> moonlight = new HashMap<>();
         moonlight.put("id", id);
@@ -117,6 +127,7 @@ public class Moonlight {
         moonlight.put("label", label);
         moonlight.put("imageName", imageName);
         moonlight.put("audioName", audioName);
+        moonlight.put("trash", trash);
         return moonlight;
     }
 }

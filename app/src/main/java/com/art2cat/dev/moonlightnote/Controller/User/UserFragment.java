@@ -3,6 +3,7 @@ package com.art2cat.dev.moonlightnote.Controller.User;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.art2cat.dev.moonlightnote.Controller.Login.RPDialogFragment;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
@@ -184,6 +186,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 showDialog(1);
                 break;
             case R.id.user_change_password:
+                //showDialog(2);
+                sendRPEmail(user.getEmail());
                 break;
         }
     }
@@ -195,6 +199,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 setNicknameFragment.show(getFragmentManager(), "labelDialog");
                 break;
             case 2:
+                RPDialogFragment rpDialogFragment = new RPDialogFragment();
+                rpDialogFragment.show(getFragmentManager(), "resetDialog");
                 break;
         }
     }
@@ -404,5 +410,33 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         childUpdates.put("/user/" + userId, userValues);
 
         myReference.updateChildren(childUpdates);
+    }
+
+    private void sendRPEmail(String emailAddress) {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        auth.sendPasswordResetEmail(emailAddress)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            SnackBarUtils.longSnackBar(mView, getString(R.string.login_send_email_succeed),
+                                    SnackBarUtils.TYPE_INFO).setAction("Check your email", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                                    intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+                                    try {
+                                        startActivity(intent);
+                                        startActivity(Intent.createChooser(intent,
+                                                getString(R.string.ChoseEmailClient)));
+                                    } catch (ActivityNotFoundException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }).show();
+                        }
+                    }
+                });
     }
 }
