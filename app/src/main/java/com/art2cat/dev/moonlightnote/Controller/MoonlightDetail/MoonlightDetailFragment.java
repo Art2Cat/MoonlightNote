@@ -5,6 +5,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,19 +19,18 @@ import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.AppCompatButton;
-import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutCompat;
-import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -38,12 +38,14 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
@@ -51,11 +53,9 @@ import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.AudioPlayer;
-import com.art2cat.dev.moonlightnote.Utils.CustomSpinner;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.LocalCacheUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.MemoryCacheUtils;
-import com.art2cat.dev.moonlightnote.Utils.MenuUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
@@ -75,7 +75,6 @@ import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -86,7 +85,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -107,29 +105,29 @@ import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
  * A simple {@link Fragment} subclass.
  */
 public abstract class MoonlightDetailFragment extends Fragment implements AdapterView.OnItemSelectedListener
-        , View.OnClickListener, FragmentManager.OnBackStackChangedListener {
+        , View.OnClickListener, FragmentManager.OnBackStackChangedListener, View.OnFocusChangeListener {
     private static final String TAG = "MoonlightDetailFragment";
-    private static final int SPEECH_REQUEST_CODE = 0;
     private View mView;
     private TextInputLayout mTitleTextInputLayout;
     private TextInputLayout mContentTextInputLayout;
     private TextInputEditText mTitle;
     private TextInputEditText mContent;
-    private AppCompatTextView mDate;
-    private AppCompatImageButton mCamera;
-    private AppCompatImageButton mAudio;
+    private AppCompatTextView mDisplayTime;
+    private AppCompatButton mBottomBarLeft;
+    private AppCompatButton mBottomBarRight;
     private AppCompatButton mDeleteImage;
     private AppCompatButton mDeleteAudio;
     private AppCompatButton mPlayingAudio;
     private CardView mImageCardView;
     private CardView mAudioCardView;
     private AppCompatImageView mPhoto;
-    private CustomSpinner mLabelSpinner;
-    private AppCompatSpinner mColor;
     private ProgressDialog progressDialog;
     private ProgressBar mProgressBar;
     private ProgressBar mAudioPlayerPB;
     private LinearLayoutCompat mProgressBarContainer;
+    private CoordinatorLayout mCoordinatorLayout;
+    private BottomSheetBehavior mBottomSheetBehavior;
+    private InputMethodManager mInputMethodManager;
     private ArrayAdapter<String> mArrayAdapter;
     private Moonlight moonlight;
     private boolean mEditFlag;
@@ -197,6 +195,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         moonlight.setDate(date);
         //
 
+        mInputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
         //当能argument不为空时，从argument中获取keyId，同时调用getMoonlight方法获取moonlight信息，editFlag设为true
         if (getArguments() != null) {
             mKeyId = getArguments().getString("keyId");
@@ -226,9 +226,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mPhoto = (AppCompatImageView) mView.findViewById(R.id.moonlight_image);
         mProgressBar = (ProgressBar) mView.findViewById(R.id.moonlight_image_progressBar);
         mProgressBarContainer = (LinearLayoutCompat) mView.findViewById(R.id.progressBar_container);
-        mLabelSpinner = (CustomSpinner) mView.findViewById(R.id.bottomBar_label);
-        mCamera = (AppCompatImageButton) mView.findViewById(R.id.bottomBar_camera);
-        mAudio = (AppCompatImageButton) mView.findViewById(R.id.bottomBar_audio);
         mImageCardView = (CardView) mView.findViewById(R.id.image_container);
         mAudioCardView = (CardView) mView.findViewById(R.id.audio_container);
         mDeleteImage = (AppCompatButton) mView.findViewById(R.id.delete_image);
@@ -236,17 +233,23 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mPlayingAudio = (AppCompatButton) mView.findViewById(R.id.playing_audio_button);
         AppCompatTextView duration = (AppCompatTextView) mView.findViewById(R.id.moonlight_audio_duration);
         mAudioPlayerPB = (ProgressBar) mView.findViewById(R.id.moonlight_audio_progressBar);
+        mDisplayTime = (AppCompatTextView) mView.findViewById(R.id.bottom_bar_display_time);
+        mCoordinatorLayout = (CoordinatorLayout) mView.findViewById(R.id.bottom_sheet_container);
+        mBottomBarLeft = (AppCompatButton) mView.findViewById(R.id.bottom_bar_left);
+        mBottomBarRight = (AppCompatButton) mView.findViewById(R.id.bottom_bar_right);
 
+        mTitle.setOnFocusChangeListener(this);
+        mContent.setOnFocusChangeListener(this);
         mBitmapUtils = new BitmapUtils(getActivity());
         mAudioPlayer = new AudioPlayer(mAudioPlayerPB, duration);
-        displaySpinner(mLabelSpinner);
 
-        mCamera.setOnClickListener(this);
-        mAudio.setOnClickListener(this);
+        showBottomSheet();
+        onCheckSoftKeyboardState(mView);
         mDeleteImage.setOnClickListener(this);
         mDeleteAudio.setOnClickListener(this);
         mPlayingAudio.setOnClickListener(this);
-        mLabelSpinner.setOnItemSelectedListener(this);
+        mBottomBarLeft.setOnClickListener(this);
+        mBottomBarRight.setOnClickListener(this);
 
         mTitle.addTextChangedListener(new TextWatcher() {
             @Override
@@ -300,12 +303,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         if (mEditFlag) {
             mHandler.postDelayed(myRunnable, 500);
         }
-
-        if (!mEditable) {
-            mCamera.setClickable(false);
-            mAudio.setClickable(false);
-            mLabelSpinner.setClickable(false);
-        }
     }
 
     @Override
@@ -330,10 +327,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         super.onStop();
         Log.i(TAG, "onStop");
         removeListener();
-        //mLabel不为空时，上传用户配置到服务器
-        if (mLabel != null) {
-            uploadUserConfig();
-        }
     }
 
     @Override
@@ -343,40 +336,17 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         super.onDestroy();
     }
 
-    /**
-     * 更新显示图片信息
-     *
-     * @param mFileUri 图片地址
-     */
-    private void updatePhoto(Uri mFileUri) {
-        //当图片地址不为空时，首先从本地读取bitmap设置图片，bitmap为空，则从网络加载
-        //图片地址为空则不加载图片
-        if (mFileUri != null) {
-            try {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                //options.inJustDecodeBounds = true;
-                options.inSampleSize = 2;//宽高压缩为原来的1/2
-                //options.inPreferredConfig = Bitmap.Config.ARGB_4444;
-                Bitmap bitmap = BitmapFactory.decodeStream(
-                        getActivity().getContentResolver().openInputStream(mFileUri), null, options);
-                if (bitmap != null) {
-                    mPhoto.setImageBitmap(bitmap);
-                    LocalCacheUtils localCacheUtils = new LocalCacheUtils(getActivity(), new MemoryCacheUtils());
-                    localCacheUtils.setBitmapToLocal(mDownloadIUrl.toString(), bitmap);
-                    //Picasso.with(getActivity()).load(mFileUri).into(mPhoto);
-                } else {
-                    mBitmapUtils.display(mPhoto, mDownloadIUrl.toString());
-                    //Picasso.with(getActivity()).load(mDownloadIUrl).into(mPhoto);
-                }
-                mImageCardView.setVisibility(View.VISIBLE);
-
-            } catch (FileNotFoundException e) {
-                Log.d(TAG, "load local file failed" + e.toString());
-            }
-        } else {
-            mImageFileName = null;
-            mImageCardView.setVisibility(View.GONE);
+    @Override
+    public void onFocusChange(View view, boolean b) {
+        switch (view.getId()) {
+            case R.id.title_TIET:
+                Log.d(TAG, "onFocusChange: title " + b);
+                break;
+            case R.id.content_TIET:
+                Log.d(TAG, "onFocusChange: content " + b);
+                break;
         }
+
     }
 
     @Override
@@ -397,7 +367,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
                 if (moonlight.getImageUrl() != null || moonlight.getContent() != null
                         || moonlight.getTitle() != null) {
-                    addMoonlight(moonlight, 0);
+                    addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
                     getActivity().startActivity(new Intent(getActivity(), MoonlightActivity.class));
                 } else {
                     Utils.showToast(getContext(), "Empty! Can't add it!", 0);
@@ -405,49 +375,13 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 break;
             case R.id.menu_delete:
                 //将moonlight设置为空，删除服务器中指定的moonlight数据
-                //moonlight = null;
                 moonlight.setTrash(true);
                 moveToTrash(moonlight);
-                //removeMoonlight(mKeyId);
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * 显示Spinner
-     *
-     * @param spinner spinner对象
-     */
-    private void displaySpinner(CustomSpinner spinner) {
-
-        try {
-            List<String> data;
-            //从本地读取用户配置
-            data = UserConfigUtils.readLabelFromUserConfig(getActivity());
-            //如果本地读取信息不为空，则设置spinner适配器
-            if (data != null) {
-                mArrayAdapter = new ArrayAdapter<String>(getActivity(),
-                        android.R.layout.simple_spinner_item, data);
-                mArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                spinner.setAdapter(mArrayAdapter);
-                spinner.setSelection(1);
-            } else {
-                data = new ArrayList<String>();
-                data.add("Default");
-                data.add("New Label");
-                UserConfigUtils.writeLabelToUserConfig(getActivity(), data);
-                mArrayAdapter = new ArrayAdapter<String>(getActivity(),
-                        android.R.layout.simple_spinner_item, data);
-                mArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                Log.d(TAG, "displaySpinner: " + data.size());
-                spinner.setAdapter(mArrayAdapter);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * 添加新标签到标签列表中
@@ -462,11 +396,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             UserConfigUtils.writeLabelToUserConfig(getActivity(), data);
             mLabel = "label";
         }
-    }
-
-    private void uploadUserConfig() {
-        Uri file = Uri.fromFile(new File(getActivity().getFilesDir().getPath() + "/UserConfig.json"));
-        uploadFromUri(file, mUserId, 1);
     }
 
     @Override
@@ -495,14 +424,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     public void handleMessage(BusEvent busEvent) {
         if (busEvent != null) {
             switch (busEvent.getFlag()) {
-                case Constants.BUS_FLAG_LABEL:
-                    if (busEvent.getMessage() != null) {
-                        Log.d(TAG, "busEvent: " + busEvent.getMessage());
-                        mArrayAdapter = null;
-                        addNewLabelToList(busEvent.getMessage());
-                        displaySpinner(mLabelSpinner);
-                    }
-                    break;
                 case Constants.BUS_FLAG_AUDIO_URL:
                     if (busEvent.getMessage() != null) {
                         Log.d(TAG, "handleMessage: " + busEvent.getMessage());
@@ -519,24 +440,35 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.bottom_bar_left:
+                hideSoftKeyboard();
+                break;
+            case R.id.bottom_bar_right:
+                break;
             case R.id.bottomBar_camera:
                 //使用PopupMenu选择使用相机还是相册添加图片
-                MenuUtils.showPopupMenu(getActivity(), v, R.menu.photo_choose_menu, new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.popup_camera:
-                                onCameraClick();
-                                Toast.makeText(getActivity(), "camera chose", Toast.LENGTH_SHORT).show();
-                                break;
-                            case R.id.popup_album:
-                                onAlbumClick();
-                                Toast.makeText(getActivity(), "album chose", Toast.LENGTH_SHORT).show();
-                                break;
-                        }
-                        return true;
-                    }
-                });
+                //MenuUtils.showPopupMenu(getActivity(), v, R.menu.photo_choose_menu, new PopupMenu.OnMenuItemClickListener() {
+                //    @Override
+                //    public boolean onMenuItemClick(MenuItem item) {
+                //        switch (item.getItemId()) {
+                //            case R.id.popup_camera:
+                //                onCameraClick();
+                //                Toast.makeText(getActivity(), "camera chose", Toast.LENGTH_SHORT).show();
+                //                break;
+                //            case R.id.popup_album:
+                //                onAlbumClick();
+                //                Toast.makeText(getActivity(), "album chose", Toast.LENGTH_SHORT).show();
+                //                break;
+                //        }
+                //        return true;
+                //    }
+                //});
+
+                if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                } else {
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
                 break;
             case R.id.bottomBar_audio:
                 onAudioClick();
@@ -569,6 +501,15 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 //删除录音
 
                 break;
+            case R.id.bottom_sheet_item_take_photo:
+                onCameraClick();
+                break;
+            case R.id.bottom_sheet_item_choose_image:
+                onAlbumClick();
+                break;
+            case R.id.bottom_sheet_item_recording:
+                onAudioClick();
+                break;
         }
     }
 
@@ -588,7 +529,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     uploadFromUri(fileUri, mUserId, 0);
                 }
                 break;
-            case SPEECH_REQUEST_CODE:
+            case RECORD_AUDIO:
                 if (resultCode == RESULT_OK) {
                     List<String> results = data.getStringArrayListExtra(
                             RecognizerIntent.EXTRA_RESULTS);
@@ -653,8 +594,12 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         String perm1 = Manifest.permission.CAMERA;
         if (!EasyPermissions.hasPermissions(getActivity(), perm) &&
                 !EasyPermissions.hasPermissions(getActivity(), perm1)) {
-            PermissionUtils.requestStorage(getActivity(), perm);
-            PermissionUtils.requestCamera(getActivity(), perm1);
+            if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
+                PermissionUtils.requestStorage(getActivity(), perm);
+            }
+            if (!EasyPermissions.hasPermissions(getActivity(), perm1)) {
+                PermissionUtils.requestCamera(getActivity(), perm1);
+            }
             return;
         }
         if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
@@ -731,24 +676,14 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
     }
 
-    @AfterPermissionGranted(RECORD_AUDIO)
+    @AfterPermissionGranted(STORAGE_PERMS)
     private void onAudioClick() {
         // Check that we have permission to read images from external storage.
-        String perm = Manifest.permission.RECORD_AUDIO;
         String perm1 = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        if (!EasyPermissions.hasPermissions(getActivity(), perm) &&
-                !EasyPermissions.hasPermissions(getActivity(), perm1)) {
+        if (!EasyPermissions.hasPermissions(getActivity(), perm1)) {
             PermissionUtils.requestStorage(getActivity(), perm1);
-            PermissionUtils.requestRecAudio(getActivity(), perm);
-            return;
-        } else if (!EasyPermissions.hasPermissions(getActivity(), perm1)) {
-            PermissionUtils.requestStorage(getActivity(), perm1);
-            return;
-        } else if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
-            PermissionUtils.requestRecAudio(getActivity(), perm);
             return;
         }
-
         // Choose file storage location, must be listed in res/xml/file_paths.xml
         File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.audio");
         mFile = new File(dir, UUID.randomUUID().toString() + ".aac");
@@ -762,13 +697,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             Log.d(TAG, "onAudioClick: " + dir.mkdirs());
         } else {
             Log.d(TAG, "onAudioClick: " + dir.getAbsolutePath() + ": is existed");
-            //AudioRecordFragment audioRecordFragment = new AudioRecordFragment();
-            //audioRecordFragment.show(getFragmentManager(), "Record Audio");
-            displaySpeechRecognizer();
-        }
-        if (dir.mkdirs()) {
-            //AudioRecordFragment audioRecordFragment = new AudioRecordFragment();
-            //audioRecordFragment.show(getFragmentManager(), "Record Audio");
             displaySpeechRecognizer();
         }
     }
@@ -869,6 +797,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
     // Create an intent that can start the Speech Recognizer activity
     private void displaySpeechRecognizer() {
+        Log.d(TAG, "displaySpeechRecognizer: ");
+        loseFocus();
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
@@ -876,7 +806,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         intent.putExtra(Constants.GET_AUDIO_FORMAT, "audio/AMR");
         intent.putExtra(Constants.GET_AUDIO, true);
         // Start the activity, the intent will be populated with the speech text
-        startActivityForResult(intent, SPEECH_REQUEST_CODE);
+        startActivityForResult(intent, RECORD_AUDIO);
     }
 
     private void addMoonlight(final Moonlight moonlight, final int type) {
@@ -894,6 +824,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     }
                 });
     }
+
     private void updateMoonlight(@Nullable String keyId, Moonlight moonlight, final int type) {
         final String mKey;
         String oldKey = null;
@@ -930,6 +861,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
     /**
      * 从firebase的database获取moonlight
+     *
      * @param keyId 当前读取moonlight的keyId
      */
     private void getMoonlight(String keyId, int type) {
@@ -993,6 +925,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private void moveToTrash(Moonlight moonlight) {
         addMoonlight(moonlight, Constants.EXTRA_TYPE_TRASH);
     }
+
     public void removeMoonlight(String keyId) {
         try {
             FirebaseDatabase.getInstance().getReference().child("users-moonlight")
@@ -1013,7 +946,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
         @Override
         public void run() {
-                initView(mEditable);
+            initView(mEditable);
         }
 
         private void initView(boolean editable) {
@@ -1034,18 +967,141 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 //Picasso.with(getActivity()).load(Uri.parse(moonlight.getImageUrl())).into(mPhoto);
                 mImageCardView.setVisibility(View.VISIBLE);
             }
-            if (moonlight.getLabel() != null) {
-                List<String> data;
-                //从本地读取用户配置
-                data = UserConfigUtils.readLabelFromUserConfig(getActivity());
-                int index = data.indexOf(moonlight.getLabel());
-                mLabelSpinner.setSelection(index);
-            }
             if (moonlight.getAudioUrl() != null) {
                 String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
                 mAudioPlayer.prepare(dirPath + moonlight.getAudioName());
                 mAudioCardView.setVisibility(View.VISIBLE);
             }
+        }
+    }
+
+    public void showBottomSheet() {
+        initBottomSheetItem();
+        // The View with the BottomSheetBehavior
+
+        View bottomSheet = mCoordinatorLayout.findViewById(R.id.bottom_sheet_left);
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                //这里是bottomSheet 状态的改变，根据slideOffset可以做一些动画
+//                ViewCompat.setScaleX(bottomSheet,1);
+//                ViewCompat.setScaleY(bottomSheet,1);
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                //这里是拖拽中的回调，根据slideOffset可以做一些动画
+//                ViewCompat.setScaleX(bottomSheet,slideOffset);
+//                ViewCompat.setScaleY(bottomSheet,slideOffset);
+            }
+        });
+    }
+
+    private void initBottomSheetItem() {
+        LinearLayoutCompat takePhoto = (LinearLayoutCompat) mView.findViewById(R.id.bottom_sheet_item_take_photo);
+        LinearLayoutCompat chooseImage = (LinearLayoutCompat) mView.findViewById(R.id.bottom_sheet_item_choose_image);
+        LinearLayoutCompat recording = (LinearLayoutCompat) mView.findViewById(R.id.bottom_sheet_item_recording);
+        takePhoto.setOnClickListener(this);
+        chooseImage.setOnClickListener(this);
+        recording.setOnClickListener(this);
+    }
+
+    private void hideSoftKeyboard() {
+        if (mInputMethodManager != null) {
+            mInputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getWindowToken(), 0);
+            mHandler.postDelayed(new BottomSheet(), 500);
+        }
+    }
+
+    private void showSoftKeyboard() {
+        if (mInputMethodManager != null) {
+            mInputMethodManager.showSoftInput(getActivity().getWindow().getDecorView(), 0);
+        }
+    }
+
+    private void changeBottomSheetState() {
+        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            loseFocus();
+        } else {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        }
+    }
+
+    private class BottomSheet implements Runnable {
+
+        @Override
+        public void run() {
+            changeBottomSheetState();
+        }
+    }
+
+    private void loseFocus() {
+        Log.d(TAG, "loseFocus: ");
+        mTitle.clearFocus();
+        mContent.clearFocus();
+    }
+
+    /**
+     * 用监听软键盘是否弹出
+     * @param view 主视图布局
+     */
+    private void onCheckSoftKeyboardState(final View view) {
+        //先主视图布局设置监听，监听其布局发生变化事件
+        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            @Override
+            public void onGlobalLayout() {
+
+                //比较主视图布局与当前布局的大小
+                int heightDiff = mView.getRootView().getHeight() - view.getHeight();
+                if (heightDiff > 100) {
+                    //大小超过100时，一般为显示虚拟键盘事件
+                    if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    }
+                } else {
+                    //大小小于100时，为不显示虚拟键盘或虚拟键盘隐藏
+                    Log.d(TAG, "onGlobalLayout: ");
+                }
+            }
+        });
+    }
+
+    /**
+     * 更新显示图片信息
+     *
+     * @param mFileUri 图片地址
+     */
+    private void updatePhoto(Uri mFileUri) {
+        //当图片地址不为空时，首先从本地读取bitmap设置图片，bitmap为空，则从网络加载
+        //图片地址为空则不加载图片
+        if (mFileUri != null) {
+            try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                //options.inJustDecodeBounds = true;
+                options.inSampleSize = 2;//宽高压缩为原来的1/2
+                //options.inPreferredConfig = Bitmap.Config.ARGB_4444;
+                Bitmap bitmap = BitmapFactory.decodeStream(
+                        getActivity().getContentResolver().openInputStream(mFileUri), null, options);
+                if (bitmap != null) {
+                    mPhoto.setImageBitmap(bitmap);
+                    LocalCacheUtils localCacheUtils = new LocalCacheUtils(getActivity(), new MemoryCacheUtils());
+                    localCacheUtils.setBitmapToLocal(mDownloadIUrl.toString(), bitmap);
+                    //Picasso.with(getActivity()).load(mFileUri).into(mPhoto);
+                } else {
+                    mBitmapUtils.display(mPhoto, mDownloadIUrl.toString());
+                    //Picasso.with(getActivity()).load(mDownloadIUrl).into(mPhoto);
+                }
+                mImageCardView.setVisibility(View.VISIBLE);
+
+            } catch (FileNotFoundException e) {
+                Log.d(TAG, "load local file failed" + e.toString());
+            }
+        } else {
+            mImageFileName = null;
+            mImageCardView.setVisibility(View.GONE);
         }
     }
 }

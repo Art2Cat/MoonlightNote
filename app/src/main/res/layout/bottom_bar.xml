@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
-    android:background="@color/bottomBar"
+    android:layout_height="48dp"
+    android:layout_gravity="bottom"
+    android:background="@android:drawable/bottom_bar"
     android:orientation="horizontal">
 
     <android.support.v7.widget.AppCompatImageButton

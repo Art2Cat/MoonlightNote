@@ -49,7 +49,6 @@ public class MoonlightActivity extends AppCompatActivity
     private NavigationView mNavigationView;
     private ToggleButton mToggleButton;
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private CircleImageView mCircleImageView;
     private boolean isHome;
     private boolean userIsInteracting;
@@ -71,7 +70,6 @@ public class MoonlightActivity extends AppCompatActivity
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         //获取FirebaseAuth实例
         mAuth = getInstance();
-        //signIn();
         mUserId = mAuth.getCurrentUser().getUid();
 
         initView();
@@ -91,7 +89,6 @@ public class MoonlightActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        //mAuth.addAuthStateListener(mAuthListener);
     }
 
     @Override
@@ -101,7 +98,6 @@ public class MoonlightActivity extends AppCompatActivity
 
     @Override
     protected void onRestart() {
-        //displayUserInfo();
         Log.d(TAG, "onRestart: ");
         super.onRestart();
     }
@@ -109,17 +105,12 @@ public class MoonlightActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         displayUserInfo();
-        Log.i(TAG, "onResume: ");
         super.onResume();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.i(TAG, "onStop: ");
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -283,45 +274,6 @@ public class MoonlightActivity extends AppCompatActivity
     public void onUserInteraction() {
         super.onUserInteraction();
         userIsInteracting = true;
-    }
-
-    /**
-     * 设置firebase登陆监听
-     */
-    private void signIn() {
-
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    SPUtils.putString(MoonlightActivity.this, "User", "Id", user.getUid());
-                } else {
-                    Log.d(TAG, "onAuthStateChanged:signed_out:");
-                }
-            }
-        };
-    }
-
-    /**
-     * 匿名登陆
-     */
-    public void anonymousSignIn() {
-        mAuth.signInAnonymously()
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInAnonymously:onComplete:" + task.isSuccessful());
-                        Snackbar snackbar = SnackBarUtils.shortSnackBar(mView,
-                                "SignIn Anonymously successful!", SnackBarUtils.TYPE_INFO);
-                        snackbar.show();
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "signInAnonymously", task.getException());
-                        }
-                    }
-                });
-
     }
 
     private void displayUserInfo() {

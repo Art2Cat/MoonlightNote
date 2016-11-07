@@ -36,18 +36,12 @@ import com.google.firebase.storage.StorageReference;
 public abstract class MoonlightListFragment extends Fragment {
     private static final String TAG = "MoonlightListFragment";
     private DatabaseReference mDatabase;
-    private StorageReference storageReference;
     private FirebaseRecyclerAdapter<Moonlight, MoonlightsViewHolder> mAdapter;
     private RecyclerView mRecyclerView;
-    private LinearLayoutManager mLinearLayoutManager;
-    private StaggeredGridLayoutManager mStaggeredGridLayoutManager;
     private Menu menu;
     private int index;
     private boolean deleteFlag;
-    private int[] drawableArray = new int[]{
-            R.drawable.ic_view_stream_white_24dp,
-            R.drawable.ic_view_quilt_white_24dp
-    };
+
 
     public MoonlightListFragment() {
     }
@@ -67,8 +61,6 @@ public abstract class MoonlightListFragment extends Fragment {
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
 
-        storageReference = FirebaseStorage.getInstance().getReference();
-
         return rootView;
     }
 
@@ -77,12 +69,10 @@ public abstract class MoonlightListFragment extends Fragment {
         super.onResume();
     }
 
-
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mLinearLayoutManager.setReverseLayout(true);
         mLinearLayoutManager.setStackFromEnd(true);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
@@ -122,7 +112,7 @@ public abstract class MoonlightListFragment extends Fragment {
 
                     if (model.getImageName() != null) {
                         Log.i(TAG, "populateViewHolder: " + model.getImageName());
-                        viewHolder.photoAppCompatImageView.setImageResource(R.drawable.ic_app_icon);
+                        viewHolder.photoAppCompatImageView.setImageResource(R.drawable.ic_cloud_download_white_48dp);
                         viewHolder.photoAppCompatImageView.setTag(model.getImageName());
                         viewHolder.displayImage(getActivity(), model.getImageUrl());
                     } else {
@@ -177,54 +167,24 @@ public abstract class MoonlightListFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.main, menu);
-        this.menu = menu;
-        setLayoutManager();
+        //inflater.inflate(R.menu.main, menu);
+        //this.menu = menu;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_layout:
-                index = (index + 1) % 2;
-                setLayoutManager();
-                break;
-        }
+        //switch (item.getItemId()) {
+        //    case R.id.menu_layout:
+        //        index = (index + 1) % 2;
+        //        setLayoutManager();
+        //        break;
+        //}
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void setLayoutManager() {
-        menu.findItem(R.id.menu_layout).setIcon(drawableArray[index]);
-        switch (index) {
-            case 0:
-                mLinearLayoutManager = new LinearLayoutManager(getActivity());
-                mLinearLayoutManager.setReverseLayout(true);
-                mLinearLayoutManager.setStackFromEnd(true);
-                mRecyclerView.setLayoutManager(mLinearLayoutManager);
-                break;
-            case 1:
-                int orientation = this.getResources().getConfiguration().orientation;
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(3, 1);
-                    mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
-                } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
-                    mStaggeredGridLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
-                }
-                mRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
-                break;
-        }
-    }
-
     public String getUid() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
-        //String uid = SPUtils.getString(getActivity(), "User", "Id", null);
-        //if (uid == null) {
-        //    return null;
-        //} else {
-        //    return uid;
-        //}
     }
 
     public abstract Query getQuery(DatabaseReference databaseReference);

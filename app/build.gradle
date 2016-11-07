@@ -10,7 +10,7 @@ android {
         }
     }
     compileSdkVersion 25
-    buildToolsVersion "24.0.3"
+    buildToolsVersion "25"
     defaultConfig {
         applicationId "com.art2cat.dev.moonlightnote"
         minSdkVersion 21
@@ -29,6 +29,7 @@ android {
         }
         debug {
             signingConfig signingConfigs.config
+            debuggable true
         }
     }
     dexOptions {

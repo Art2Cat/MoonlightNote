@@ -24,6 +24,7 @@ import com.art2cat.dev.moonlightnote.Controller.Login.RPDialogFragment;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
+import com.art2cat.dev.moonlightnote.Utils.AuthUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
@@ -186,8 +187,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 showDialog(1);
                 break;
             case R.id.user_change_password:
-                //showDialog(2);
-                sendRPEmail(user.getEmail());
+                AuthUtils.sendRPEmail(getActivity(), mView, user.getEmail());
                 break;
         }
     }
@@ -304,7 +304,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         try {
             // Create directory if it does not exist.
             if (!dir.exists()) {
-                dir.mkdir();
+                dir.mkdirs();
             }
             boolean created = file.createNewFile();
             Log.d(TAG, "file.createNewFile:" + file.getAbsolutePath() + ":" + created);
@@ -343,7 +343,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         try {
             // Create directory if it does not exist.
             if (!dir.exists()) {
-                dir.mkdir();
+                dir.mkdirs();
             }
             boolean created = file.createNewFile();
             Log.d(TAG, "file.createNewFile:" + file.getAbsolutePath() + ":" + created);
@@ -410,33 +410,5 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         childUpdates.put("/user/" + userId, userValues);
 
         myReference.updateChildren(childUpdates);
-    }
-
-    private void sendRPEmail(String emailAddress) {
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-
-        auth.sendPasswordResetEmail(emailAddress)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            SnackBarUtils.longSnackBar(mView, getString(R.string.login_send_email_succeed),
-                                    SnackBarUtils.TYPE_INFO).setAction("Check your email", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                                    intent.addCategory(Intent.CATEGORY_APP_EMAIL);
-                                    try {
-                                        startActivity(intent);
-                                        startActivity(Intent.createChooser(intent,
-                                                getString(R.string.ChoseEmailClient)));
-                                    } catch (ActivityNotFoundException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }).show();
-                        }
-                    }
-                });
     }
 }

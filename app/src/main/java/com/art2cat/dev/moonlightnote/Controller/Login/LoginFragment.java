@@ -27,6 +27,7 @@ import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.Model.UserConfig;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.Utils.AuthUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
@@ -276,7 +277,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                     RPDialogFragment rpDialogFragment = new RPDialogFragment();
                     rpDialogFragment.show(getFragmentManager(), "resetPassword");
                 } else {
-                    sendRPEmail(email);
+                    AuthUtils.sendRPEmail(getActivity(), mView, email);
                 }
                 break;
             case R.id.email_sign_in_button:
@@ -436,39 +437,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void busAction(BusEvent busEvent) {
         if (busEvent.getMessage().contains("@")) {
-            sendRPEmail(busEvent.getMessage());
+            AuthUtils.sendRPEmail(getActivity(), mView, busEvent.getMessage());
         } else {
             SnackBarUtils.shortSnackBar(mView, "Invalid email address",
                     SnackBarUtils.TYPE_WARNING).show();
         }
-    }
-
-
-    private void sendRPEmail(String emailAddress) {
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-
-        auth.sendPasswordResetEmail(emailAddress)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            SnackBarUtils.longSnackBar(mView, getString(R.string.login_send_email_succeed),
-                                    SnackBarUtils.TYPE_INFO).setAction("Check your email", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                                    intent.addCategory(Intent.CATEGORY_APP_EMAIL);
-                                    try {
-                                        startActivity(intent);
-                                        startActivity(Intent.createChooser(intent,
-                                                getString(R.string.ChoseEmailClient)));
-                                    } catch (ActivityNotFoundException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }).show();
-                        }
-                    }
-                });
     }
 }
