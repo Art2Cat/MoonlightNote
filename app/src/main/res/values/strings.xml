@@ -61,8 +61,12 @@
     <string name="fragment_audio_stop">Stop</string>
     <string name="action_trash">Trash</string>
     <string name="action_home">Home</string>
-    <string name="bottom_sheet_left_take_photo">Take Photo</string>
+    <string name="bottom_sheet_left_take_photo">Take photo</string>
     <string name="bottom_sheet_left_choose_image">Choose image</string>
     <string name="bottom_sheet_left_recording">Recording</string>
+    <string name="bottom_sheet_right_permanent_delete">Permanent delete</string>
+    <string name="bottom_sheet_right_move_to_trash">Move to trash</string>
+    <string name="bottom_sheet_right_make_a_copy">Make a copy</string>
+    <string name="bottom_sheet_right_send">Send</string>
 
 </resources>

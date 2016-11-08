@@ -135,11 +135,11 @@
             android:layout_height="wrap_content"
             android:background="@android:color/background_light"
             android:orientation="vertical"
-            app:behavior_hideable="true"
-            android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
+            android:paddingTop="8dp"
+            app:behavior_hideable="true"
             app:behavior_peekHeight="48dp"
             app:layout_behavior="@string/bottom_sheet_behavior">
 
@@ -158,16 +158,16 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
-                        android:background="@mipmap/ic_launcher"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/ic_camera_alt_black_24dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="16dp"
-                        android:textAllCaps="false"
-                        android:text="@string/bottom_sheet_left_take_photo" />
+                        android:text="@string/bottom_sheet_left_take_photo"
+                        android:textAllCaps="false" />
                 </android.support.v7.widget.LinearLayoutCompat>
 
                 <android.support.v7.widget.LinearLayoutCompat
@@ -180,16 +180,16 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
-                        android:background="@mipmap/ic_launcher"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/ic_photo_album_black_24dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="16dp"
-                        android:textAllCaps="false"
-                        android:text="@string/bottom_sheet_left_choose_image" />
+                        android:text="@string/bottom_sheet_left_choose_image"
+                        android:textAllCaps="false" />
                 </android.support.v7.widget.LinearLayoutCompat>
 
                 <android.support.v7.widget.LinearLayoutCompat
@@ -202,16 +202,16 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
-                        android:background="@mipmap/ic_launcher"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/ic_settings_voice_black_24dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="16dp"
-                        android:textAllCaps="false"
-                        android:text="@string/bottom_sheet_left_recording" />
+                        android:text="@string/bottom_sheet_left_recording"
+                        android:textAllCaps="false" />
                 </android.support.v7.widget.LinearLayoutCompat>
 
                 <android.support.v7.widget.LinearLayoutCompat
@@ -224,8 +224,138 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
-                        android:background="@mipmap/ic_launcher"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:background="@mipmap/ic_launcher" />
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="16dp"
+                        android:text="隐藏栏" />
+                </android.support.v7.widget.LinearLayoutCompat>
+            </android.support.v7.widget.LinearLayoutCompat>
+        </android.support.v4.widget.NestedScrollView>
+
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/bottom_sheet_right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/background_light"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp"
+            app:behavior_hideable="true"
+            app:behavior_peekHeight="48dp"
+            app:layout_behavior="@string/bottom_sheet_behavior">
+
+            <android.support.v7.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.LinearLayoutCompat
+                    android:id="@+id/bottom_sheet_item_move_to_trash"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/ic_camera_alt_black_24dp" />
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/bottom_sheet_right_move_to_trash"
+                        android:textAllCaps="false" />
+                </android.support.v7.widget.LinearLayoutCompat>
+
+                <android.support.v7.widget.LinearLayoutCompat
+                    android:id="@+id/bottom_sheet_item_permanent_delete"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/ic_photo_album_black_24dp" />
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/bottom_sheet_right_permanent_delete"
+                        android:textAllCaps="false" />
+                </android.support.v7.widget.LinearLayoutCompat>
+
+                <android.support.v7.widget.LinearLayoutCompat
+                    android:id="@+id/bottom_sheet_item_make_a_copy"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/ic_settings_voice_black_24dp" />
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/bottom_sheet_right_make_a_copy"
+                        android:textAllCaps="false" />
+                </android.support.v7.widget.LinearLayoutCompat>
+
+                <android.support.v7.widget.LinearLayoutCompat
+                    android:id="@+id/bottom_sheet_item_send"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/ic_settings_voice_black_24dp" />
+
+                    <android.support.v7.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/bottom_sheet_right_send"
+                        android:textAllCaps="false" />
+                </android.support.v7.widget.LinearLayoutCompat>
+
+                <android.support.v7.widget.LinearLayoutCompat
+                    android:id="@+id/bottom_sheet_selection_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.AppCompatImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="16dp"
+                        android:background="@mipmap/ic_launcher" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -239,28 +369,36 @@
 
         <include
             layout="@layout/bottom_bar"
-            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="48dp" />
+            android:layout_height="48dp"
+            android:visibility="gone" />
 
         <android.support.v7.widget.LinearLayoutCompat
-            android:layout_gravity="bottom"
             android:layout_width="match_parent"
-            android:background="@android:drawable/bottom_bar"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@android:drawable/bottom_bar">
+
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/bottom_bar_left"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:background="@drawable/ic_add_black_24dp"
+                android:padding="16dp" />
+
             <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/bottom_bar_display_time"
                 android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
             <android.support.v7.widget.AppCompatButton
                 android:id="@+id/bottom_bar_right"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/ic_more_horiz_black_24dp"
+                android:padding="16dp" />
         </android.support.v7.widget.LinearLayoutCompat>
 
     </android.support.design.widget.CoordinatorLayout>

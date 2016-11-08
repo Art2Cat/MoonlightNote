@@ -20,6 +20,7 @@ import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -38,7 +39,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -126,13 +126,15 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private ProgressBar mAudioPlayerPB;
     private LinearLayoutCompat mProgressBarContainer;
     private CoordinatorLayout mCoordinatorLayout;
-    private BottomSheetBehavior mBottomSheetBehavior;
+    private BottomSheetBehavior mRightBottomSheetBehavior;
+    private BottomSheetBehavior mLeftBottomSheetBehavior;
     private InputMethodManager mInputMethodManager;
     private ArrayAdapter<String> mArrayAdapter;
     private Moonlight moonlight;
     private boolean mEditFlag;
     private boolean mEditable = true;
     private boolean mStartPlaying = true;
+    private boolean isLeftOrRight;
     private String mUserId;
     private String mKeyId;
     private String mLabel;
@@ -244,6 +246,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mAudioPlayer = new AudioPlayer(mAudioPlayerPB, duration);
 
         showBottomSheet();
+        initBottomSheetItem();
         onCheckSoftKeyboardState(mView);
         mDeleteImage.setOnClickListener(this);
         mDeleteAudio.setOnClickListener(this);
@@ -441,9 +444,12 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bottom_bar_left:
+                isLeftOrRight = true;
                 hideSoftKeyboard();
                 break;
             case R.id.bottom_bar_right:
+                isLeftOrRight = false;
+                hideSoftKeyboard();
                 break;
             case R.id.bottomBar_camera:
                 //使用PopupMenu选择使用相机还是相册添加图片
@@ -464,10 +470,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 //    }
                 //});
 
-                if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                    mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 } else {
-                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
                 break;
             case R.id.bottomBar_audio:
@@ -509,6 +515,14 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 break;
             case R.id.bottom_sheet_item_recording:
                 onAudioClick();
+                break;
+            case R.id.bottom_sheet_item_move_to_trash:
+                break;
+            case R.id.bottom_sheet_item_permanent_delete:
+                break;
+            case R.id.bottom_sheet_item_make_a_copy:
+                break;
+            case R.id.bottom_sheet_item_send:
                 break;
         }
     }
@@ -594,12 +608,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         String perm1 = Manifest.permission.CAMERA;
         if (!EasyPermissions.hasPermissions(getActivity(), perm) &&
                 !EasyPermissions.hasPermissions(getActivity(), perm1)) {
-            if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
-                PermissionUtils.requestStorage(getActivity(), perm);
-            }
-            if (!EasyPermissions.hasPermissions(getActivity(), perm1)) {
-                PermissionUtils.requestCamera(getActivity(), perm1);
-            }
+            PermissionUtils.requestStorage(getActivity(), perm);
+            PermissionUtils.requestCamera(getActivity(), perm1);
             return;
         }
         if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
@@ -676,29 +686,34 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
     }
 
-    @AfterPermissionGranted(STORAGE_PERMS)
+    @AfterPermissionGranted(RECORD_AUDIO)
     private void onAudioClick() {
         // Check that we have permission to read images from external storage.
+        String perm = Manifest.permission.RECORD_AUDIO;
         String perm1 = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        if (!EasyPermissions.hasPermissions(getActivity(), perm) &&
+                !EasyPermissions.hasPermissions(getActivity(), perm1)) {
+            PermissionUtils.requestStorage(getActivity(), perm1);
+            PermissionUtils.requestRecAudio(getActivity(), perm);
+            return;
+        }
         if (!EasyPermissions.hasPermissions(getActivity(), perm1)) {
             PermissionUtils.requestStorage(getActivity(), perm1);
             return;
         }
+
+        if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
+            PermissionUtils.requestRecAudio(getActivity(), perm);
+            return;
+        }
         // Choose file storage location, must be listed in res/xml/file_paths.xml
         File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.audio");
-        mFile = new File(dir, UUID.randomUUID().toString() + ".aac");
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
 
-        // Create directory if it does not exist.
         if (!dir.exists()) {
             dir.mkdirs();
             Log.d(TAG, "onAudioClick: " + dir.mkdirs());
-        } else {
-            Log.d(TAG, "onAudioClick: " + dir.getAbsolutePath() + ": is existed");
-            displaySpeechRecognizer();
         }
+        displaySpeechRecognizer();
     }
 
     private void uploadFromUri(final Uri fileUri, String userId, int type) {
@@ -979,12 +994,20 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         initBottomSheetItem();
         // The View with the BottomSheetBehavior
 
-        View bottomSheet = mCoordinatorLayout.findViewById(R.id.bottom_sheet_left);
-        mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+        final View bottomSheetLeft = mCoordinatorLayout.findViewById(R.id.bottom_sheet_left);
+        final View bottomSheetRight = mCoordinatorLayout.findViewById(R.id.bottom_sheet_right);
+        mLeftBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLeft);
+        mRightBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetRight);
+        BottomSheetCallback bottomSheetCallback = new BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 //这里是bottomSheet 状态的改变，根据slideOffset可以做一些动画
+                if (bottomSheet == bottomSheetLeft) {
+                    Log.d(TAG, "left onStateChanged: " + newState);
+                }
+                if (bottomSheet == bottomSheetRight) {
+                    Log.d(TAG, "right onStateChanged: " + newState);
+                }
 //                ViewCompat.setScaleX(bottomSheet,1);
 //                ViewCompat.setScaleY(bottomSheet,1);
             }
@@ -995,22 +1018,36 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 //                ViewCompat.setScaleX(bottomSheet,slideOffset);
 //                ViewCompat.setScaleY(bottomSheet,slideOffset);
             }
-        });
+        };
+
+        mLeftBottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
+        mRightBottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
+
     }
+
+
 
     private void initBottomSheetItem() {
         LinearLayoutCompat takePhoto = (LinearLayoutCompat) mView.findViewById(R.id.bottom_sheet_item_take_photo);
         LinearLayoutCompat chooseImage = (LinearLayoutCompat) mView.findViewById(R.id.bottom_sheet_item_choose_image);
         LinearLayoutCompat recording = (LinearLayoutCompat) mView.findViewById(R.id.bottom_sheet_item_recording);
+        LinearLayoutCompat moveToTrash = (LinearLayoutCompat) mView.findViewById(R.id.bottom_sheet_item_move_to_trash);
+        LinearLayoutCompat permanentDelete = (LinearLayoutCompat) mView.findViewById(R.id.bottom_sheet_item_permanent_delete);
+        LinearLayoutCompat makeACopy = (LinearLayoutCompat) mView.findViewById(R.id.bottom_sheet_item_make_a_copy);
+        LinearLayoutCompat send = (LinearLayoutCompat) mView.findViewById(R.id.bottom_sheet_item_send);
         takePhoto.setOnClickListener(this);
         chooseImage.setOnClickListener(this);
         recording.setOnClickListener(this);
+        moveToTrash.setOnClickListener(this);
+        permanentDelete.setOnClickListener(this);
+        makeACopy.setOnClickListener(this);
+        send.setOnClickListener(this);
     }
 
     private void hideSoftKeyboard() {
         if (mInputMethodManager != null) {
             mInputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getWindowToken(), 0);
-            mHandler.postDelayed(new BottomSheet(), 500);
+            mHandler.postDelayed(new BottomSheet(), 100);
         }
     }
 
@@ -1021,11 +1058,43 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     }
 
     private void changeBottomSheetState() {
-        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            loseFocus();
+        // isLeftOrRight值为真是左，假则是右
+        if (isLeftOrRight) {
+            // 首先检查RightBottomSheet是否启用，如果是则隐藏
+            if (mRightBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED
+                    || mRightBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
+            //检查LeftBottomSheet是否为隐藏，如果是则直接展开，否则进入下一步判断
+            if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
+                mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }else {
+                //检查LeftBottomSheet是否展开或者收缩，进行相应操作
+                if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                    mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    loseFocus();
+                } else {
+                    mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            }
         } else {
-            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            // 首先检查LeftBottomSheet是否启用，如果是则隐藏
+            if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED
+                    || mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            }
+            //检查RightBottomSheet是否为隐藏，如果是则直接展开，否则进入下一步判断
+            if (mRightBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
+                mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }else {
+                //检查RightBottomSheet是否展开或者收缩，进行相应操作
+                if (mRightBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                    mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    loseFocus();
+                } else {
+                    mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
+            }
         }
     }
 
@@ -1045,6 +1114,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
     /**
      * 用监听软键盘是否弹出
+     *
      * @param view 主视图布局
      */
     private void onCheckSoftKeyboardState(final View view) {
@@ -1058,8 +1128,11 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 int heightDiff = mView.getRootView().getHeight() - view.getHeight();
                 if (heightDiff > 100) {
                     //大小超过100时，一般为显示虚拟键盘事件
-                    if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                        mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    }
+                    if (mRightBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                        mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                     }
                 } else {
                     //大小小于100时，为不显示虚拟键盘或虚拟键盘隐藏
