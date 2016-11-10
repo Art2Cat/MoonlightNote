@@ -13,7 +13,6 @@ import android.view.View;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
-import com.squareup.picasso.Picasso;
 
 
 /**

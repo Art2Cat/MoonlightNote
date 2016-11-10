@@ -14,6 +14,7 @@ public class Moonlight {
     public String imageUrl;
     public String audioUrl;
     public long date;
+    public long audioDuration;
     public String label;
     public String imageName;
     public String audioName;
@@ -24,7 +25,7 @@ public class Moonlight {
     }
 
     public Moonlight(String id, String title, String content, String imageUrl, String audioUrl,
-                     long date,
+                     long date,long audioDuration,
                      String label, String imageName, String audioName, boolean trash) {
         this.id= id;
         this.title = title;
@@ -32,6 +33,7 @@ public class Moonlight {
         this.imageUrl = imageUrl;
         this.audioUrl = audioUrl;
         this.date = date;
+        this.audioDuration = audioDuration;
         this.label = label;
         this.imageName = imageName;
         this.audioName = audioName;
@@ -108,6 +110,14 @@ public class Moonlight {
         this.audioName = audioName;
     }
 
+    public long getAudioDuration() {
+        return audioDuration;
+    }
+
+    public void setAudioDuration(long audioDuration) {
+        this.audioDuration = audioDuration;
+    }
+
     public boolean isTrash() {
         return trash;
     }
@@ -124,6 +134,7 @@ public class Moonlight {
         moonlight.put("imageUrl", imageUrl);
         moonlight.put("audioUrl", audioUrl);
         moonlight.put("date", date);
+        moonlight.put("audioDuration", audioDuration);
         moonlight.put("label", label);
         moonlight.put("imageName", imageName);
         moonlight.put("audioName", audioName);

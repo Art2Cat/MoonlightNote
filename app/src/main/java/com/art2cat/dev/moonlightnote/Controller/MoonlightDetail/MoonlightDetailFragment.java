@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -112,6 +113,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private TextInputLayout mContentTextInputLayout;
     private TextInputEditText mTitle;
     private TextInputEditText mContent;
+    private AppCompatTextView mShowDuration;
     private AppCompatTextView mDisplayTime;
     private AppCompatButton mBottomBarLeft;
     private AppCompatButton mBottomBarRight;
@@ -120,7 +122,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private AppCompatButton mPlayingAudio;
     private CardView mImageCardView;
     private CardView mAudioCardView;
-    private AppCompatImageView mPhoto;
+    private AppCompatImageView mImage;
     private ProgressDialog progressDialog;
     private ProgressBar mProgressBar;
     private ProgressBar mAudioPlayerPB;
@@ -131,7 +133,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private InputMethodManager mInputMethodManager;
     private ArrayAdapter<String> mArrayAdapter;
     private Moonlight moonlight;
-    private boolean mEditFlag;
+    private boolean mCreateFlag = true;
+    private boolean mEditFlag = false;
     private boolean mEditable = true;
     private boolean mStartPlaying = true;
     private boolean isLeftOrRight;
@@ -149,7 +152,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private String mAudioFileName;
     private Uri mDownloadIUrl;
     private Uri mDownloadAUrl;
-    private Uri mAudioUri;
     private File mFile;
     private Handler mHandler = new Handler() {
         @Override
@@ -206,9 +208,11 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             if (trashTag == 0) {
                 getMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
                 mEditFlag = true;
+                mCreateFlag = false;
             } else {
                 getMoonlight(mKeyId, Constants.EXTRA_TYPE_TRASH);
                 mEditFlag = true;
+                mCreateFlag = false;
                 mEditable = false;
             }
         }
@@ -225,7 +229,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mView = inflater.inflate(R.layout.fragment_moonlight_detail, null);
         mTitle = (TextInputEditText) mView.findViewById(R.id.title_TIET);
         mContent = (TextInputEditText) mView.findViewById(R.id.content_TIET);
-        mPhoto = (AppCompatImageView) mView.findViewById(R.id.moonlight_image);
+        mImage = (AppCompatImageView) mView.findViewById(R.id.moonlight_image);
         mProgressBar = (ProgressBar) mView.findViewById(R.id.moonlight_image_progressBar);
         mProgressBarContainer = (LinearLayoutCompat) mView.findViewById(R.id.progressBar_container);
         mImageCardView = (CardView) mView.findViewById(R.id.image_container);
@@ -233,7 +237,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mDeleteImage = (AppCompatButton) mView.findViewById(R.id.delete_image);
         mDeleteAudio = (AppCompatButton) mView.findViewById(R.id.delete_audio);
         mPlayingAudio = (AppCompatButton) mView.findViewById(R.id.playing_audio_button);
-        AppCompatTextView duration = (AppCompatTextView) mView.findViewById(R.id.moonlight_audio_duration);
+        mShowDuration = (AppCompatTextView) mView.findViewById(R.id.moonlight_audio_duration);
         mAudioPlayerPB = (ProgressBar) mView.findViewById(R.id.moonlight_audio_progressBar);
         mDisplayTime = (AppCompatTextView) mView.findViewById(R.id.bottom_bar_display_time);
         mCoordinatorLayout = (CoordinatorLayout) mView.findViewById(R.id.bottom_sheet_container);
@@ -243,7 +247,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mTitle.setOnFocusChangeListener(this);
         mContent.setOnFocusChangeListener(this);
         mBitmapUtils = new BitmapUtils(getActivity());
-        mAudioPlayer = new AudioPlayer(mAudioPlayerPB, duration);
+        mAudioPlayer = new AudioPlayer(mAudioPlayerPB, mShowDuration);
 
         showBottomSheet();
         initBottomSheetItem();
@@ -312,6 +316,13 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause: ");
+        //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
+        if (mCreateFlag) {
+            if (moonlight.getImageUrl() != null || moonlight.getContent() != null
+                    || moonlight.getTitle() != null || moonlight.getAudioUrl() != null) {
+                addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+            }
+        }
         //当editFlag为true且moonlight不为空时更新moonlight信息到服务器
         if (mEditFlag && moonlight != null && !moonlight.isTrash()) {
             Log.d(TAG, "mKeyId" + mKeyId);
@@ -377,9 +388,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 }
                 break;
             case R.id.menu_delete:
-                //将moonlight设置为空，删除服务器中指定的moonlight数据
-                moonlight.setTrash(true);
-                moveToTrash(moonlight);
+
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -432,7 +441,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                         Log.d(TAG, "handleMessage: " + busEvent.getMessage());
                         File file = new File(new File(Environment.getExternalStorageDirectory()
                                 + "/MoonlightNote/.audio"), busEvent.getMessage());
-                        mAudioUri = FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, file);
+                        Uri mAudioUri = FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, file);
                         uploadFromUri(mAudioUri, mUserId, 3);
                     }
                     break;
@@ -487,16 +496,29 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 break;
             case R.id.delete_image:
                 //删除图片
-                removePhoto();
+                if (moonlight.getImageName() != null) {
+                    removePhoto(moonlight.getImageName());
+                }
                 moonlight.setImageUrl(null);
                 mImageCardView.setVisibility(View.GONE);
                 break;
             case R.id.playing_audio_button:
                 if (moonlight.getAudioName() != null && mStartPlaying) {
-                    String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
-                    Log.i(TAG, "onClick: " + dirPath + moonlight.getAudioName());
-                    mAudioPlayer.startPlaying(dirPath + moonlight.getAudioName());
+                    if (!mAudioPlayer.isPrepared) {
+                        mAudioPlayer.prepare(moonlight.getAudioName());
+                    }
+                    mAudioPlayer.startPlaying();
                     mPlayingAudio.setBackgroundResource(R.drawable.ic_pause_circle_filled_lime_a700_48dp);
+                    mAudioPlayer.mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+                        public void onCompletion(MediaPlayer mp) {
+                            mp.reset();
+                            mAudioPlayer.mProgressBar.setProgress(0);
+                            mPlayingAudio.setBackgroundResource(R.drawable.ic_play_circle_outline_cyan_400_48dp);
+                            mAudioPlayer.isPrepared = false;
+                            mStartPlaying = !mStartPlaying;
+                        }
+                    });
                 } else {
                     mAudioPlayer.stopPlaying();
                     mPlayingAudio.setBackgroundResource(R.drawable.ic_play_circle_outline_cyan_400_48dp);
@@ -517,10 +539,18 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 onAudioClick();
                 break;
             case R.id.bottom_sheet_item_move_to_trash:
+                //将moonlight设置为空，删除服务器中指定的moonlight数据
+                moonlight.setTrash(true);
+                moveToTrash(moonlight);
                 break;
             case R.id.bottom_sheet_item_permanent_delete:
+                if (moonlight.getImageName() != null) {
+                    removePhoto(moonlight.getImageName());
+                }
+                removeMoonlight(mKeyId);
                 break;
             case R.id.bottom_sheet_item_make_a_copy:
+                addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
                 break;
             case R.id.bottom_sheet_item_send:
                 break;
@@ -737,7 +767,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     moonlight.setImageName(mImageFileName);
                     moonlight.setImageUrl(mDownloadIUrl.toString());
                     mProgressBarContainer.setVisibility(View.GONE);
-                    updatePhoto(fileUri);
+                    showImage(fileUri);
                 }
             }).addOnFailureListener(getActivity(), new OnFailureListener() {
                 @Override
@@ -745,7 +775,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     mImageFileName = null;
                     mDownloadIUrl = null;
                     mProgressBarContainer.setVisibility(View.GONE);
-                    updatePhoto(fileUri);
+                    showImage(fileUri);
                 }
             }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -789,6 +819,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     Log.d(TAG, "onSuccess: downloadUrl:  " + mAudioFileName.toString());
                     moonlight.setAudioName(mAudioFileName);
                     moonlight.setAudioUrl(mDownloadAUrl.toString());
+                    showAudio(mAudioFileName);
                     mProgressBarContainer.setVisibility(View.GONE);
                 }
             }).addOnFailureListener(getActivity(), new OnFailureListener() {
@@ -797,7 +828,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     mAudioFileName = null;
                     mDownloadAUrl = null;
                     mProgressBarContainer.setVisibility(View.GONE);
-                    updatePhoto(fileUri);
+                    showImage(fileUri);
                 }
             }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -912,10 +943,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mMoonlightRef.addValueEventListener(moonlightListener);
     }
 
-    private void removePhoto() {
+    private void removePhoto(String imageName) {
         StorageReference photoRef = mStorageReference.child(mUserId).child("photos")
-                .child(mImageFileName);
-        Log.d(TAG, "onClick: " + mImageFileName);
+                .child(imageName);
+        Log.d(TAG, "onClick: " + imageName);
         photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -978,13 +1009,13 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 }
             }
             if (moonlight.getImageUrl() != null) {
-                mBitmapUtils.display(mPhoto, moonlight.getImageUrl());
-                //Picasso.with(getActivity()).load(Uri.parse(moonlight.getImageUrl())).into(mPhoto);
+                mBitmapUtils.display(mImage, moonlight.getImageUrl());
                 mImageCardView.setVisibility(View.VISIBLE);
             }
             if (moonlight.getAudioUrl() != null) {
-                String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
-                mAudioPlayer.prepare(dirPath + moonlight.getAudioName());
+                showAudio(moonlight.getAudioName());
+                //String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
+                //mAudioPlayer.prepare(dirPath + moonlight.getAudioName());
                 mAudioCardView.setVisibility(View.VISIBLE);
             }
         }
@@ -1024,8 +1055,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mRightBottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
 
     }
-
-
 
     private void initBottomSheetItem() {
         LinearLayoutCompat takePhoto = (LinearLayoutCompat) mView.findViewById(R.id.bottom_sheet_item_take_photo);
@@ -1068,7 +1097,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             //检查LeftBottomSheet是否为隐藏，如果是则直接展开，否则进入下一步判断
             if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
                 mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            }else {
+            } else {
                 //检查LeftBottomSheet是否展开或者收缩，进行相应操作
                 if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
                     mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -1086,7 +1115,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             //检查RightBottomSheet是否为隐藏，如果是则直接展开，否则进入下一步判断
             if (mRightBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_HIDDEN) {
                 mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            }else {
+            } else {
                 //检查RightBottomSheet是否展开或者收缩，进行相应操作
                 if (mRightBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
                     mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -1147,7 +1176,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
      *
      * @param mFileUri 图片地址
      */
-    private void updatePhoto(Uri mFileUri) {
+    private void showImage(Uri mFileUri) {
         //当图片地址不为空时，首先从本地读取bitmap设置图片，bitmap为空，则从网络加载
         //图片地址为空则不加载图片
         if (mFileUri != null) {
@@ -1159,13 +1188,13 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 Bitmap bitmap = BitmapFactory.decodeStream(
                         getActivity().getContentResolver().openInputStream(mFileUri), null, options);
                 if (bitmap != null) {
-                    mPhoto.setImageBitmap(bitmap);
+                    mImage.setImageBitmap(bitmap);
                     LocalCacheUtils localCacheUtils = new LocalCacheUtils(getActivity(), new MemoryCacheUtils());
                     localCacheUtils.setBitmapToLocal(mDownloadIUrl.toString(), bitmap);
-                    //Picasso.with(getActivity()).load(mFileUri).into(mPhoto);
+                    //Picasso.with(getActivity()).load(mFileUri).into(mImage);
                 } else {
-                    mBitmapUtils.display(mPhoto, mDownloadIUrl.toString());
-                    //Picasso.with(getActivity()).load(mDownloadIUrl).into(mPhoto);
+                    mBitmapUtils.display(mImage, mDownloadIUrl.toString());
+                    //Picasso.with(getActivity()).load(mDownloadIUrl).into(mImage);
                 }
                 mImageCardView.setVisibility(View.VISIBLE);
 
@@ -1175,6 +1204,16 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         } else {
             mImageFileName = null;
             mImageCardView.setVisibility(View.GONE);
+        }
+    }
+
+    private void showAudio(String audioFileName) {
+        if (moonlight.getAudioDuration() == 0) {
+            mAudioPlayer.prepare(audioFileName);
+            moonlight.setAudioDuration((long) mAudioPlayer.mDuration);
+            mAudioCardView.setVisibility(View.VISIBLE);
+        } else {
+            mShowDuration.setText(Utils.convert(moonlight.getAudioDuration()));
         }
     }
 }

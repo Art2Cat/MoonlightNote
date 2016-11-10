@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote.Utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by art2cat
@@ -42,6 +44,16 @@ public class Utils {
         }
         SimpleDateFormat formatter = new SimpleDateFormat(pattern, Locale.getDefault());
         return formatter.format(date);
+    }
+
+    @SuppressLint("DefaultLocale")
+    public static String convert(long milliSeconds)
+    {
+        //int hrs = (int) TimeUnit.MILLISECONDS.toHours(milliSeconds) % 24;
+        int min = (int) TimeUnit.MILLISECONDS.toMinutes(milliSeconds) % 60;
+        int sec = (int) TimeUnit.MILLISECONDS.toSeconds(milliSeconds) % 60;
+        //return String.format("%02d:%02d:%02d", hrs, min, sec);
+        return String.format("%02d:%02d",min, sec);
     }
 
     public static void showToast(Context context, String content, int type) {

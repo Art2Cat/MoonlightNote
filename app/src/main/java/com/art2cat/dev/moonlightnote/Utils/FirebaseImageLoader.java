@@ -14,7 +14,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
@@ -73,7 +72,7 @@ public class FirebaseImageLoader {
             if (imageName.equals(imageView.getTag())) {
                 //imageView.setImageBitmap(bitmap);
                 imageView.setVisibility(View.VISIBLE);
-                Picasso.with(mContext).load(mFileUri).into(imageView);
+                //Picasso.with(mContext).load(mFileUri).into(imageView);
             } else {
                 Log.d(TAG, "displayImage: failed");
             }
