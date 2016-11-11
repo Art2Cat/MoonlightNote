@@ -23,6 +23,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -32,6 +33,7 @@ import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -40,6 +42,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -47,6 +50,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
@@ -76,6 +80,8 @@ import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.turkialkhateeb.materialcolorpicker.ColorChooserDialog;
+import com.turkialkhateeb.materialcolorpicker.ColorListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -109,6 +115,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         , View.OnClickListener, FragmentManager.OnBackStackChangedListener, View.OnFocusChangeListener {
     private static final String TAG = "MoonlightDetailFragment";
     private View mView;
+    private ContentFrameLayout mContentFrameLayout;
     private TextInputLayout mTitleTextInputLayout;
     private TextInputLayout mContentTextInputLayout;
     private TextInputEditText mTitle;
@@ -161,7 +168,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     };
     private AudioPlayer mAudioPlayer;
     private BitmapUtils mBitmapUtils;
-    private MyRunnable myRunnable = new MyRunnable();
+    private initView myRunnable = new initView();
 
     public MoonlightDetailFragment() {
         // Required empty public constructor
@@ -227,6 +234,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         getActivity().setTitle(Utils.dateFormat(date));
         //视图初始化
         mView = inflater.inflate(R.layout.fragment_moonlight_detail, null);
+        mContentFrameLayout = (ContentFrameLayout) mView.findViewById(R.id.view_parent);
         mTitle = (TextInputEditText) mView.findViewById(R.id.title_TIET);
         mContent = (TextInputEditText) mView.findViewById(R.id.content_TIET);
         mImage = (AppCompatImageView) mView.findViewById(R.id.moonlight_image);
@@ -249,14 +257,17 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mBitmapUtils = new BitmapUtils(getActivity());
         mAudioPlayer = new AudioPlayer(mAudioPlayerPB, mShowDuration);
 
-        showBottomSheet();
-        initBottomSheetItem();
-        onCheckSoftKeyboardState(mView);
+        if (mEditable) {
+            showBottomSheet();
+            initBottomSheetItem();
+            onCheckSoftKeyboardState(mView);
+        }
         mDeleteImage.setOnClickListener(this);
         mDeleteAudio.setOnClickListener(this);
         mPlayingAudio.setOnClickListener(this);
         mBottomBarLeft.setOnClickListener(this);
         mBottomBarRight.setOnClickListener(this);
+        touchListener(mView);
 
         mTitle.addTextChangedListener(new TextWatcher() {
             @Override
@@ -367,28 +378,27 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         //如mEditFlag为true，加载edit_moonlight_menu，反之则加载create_moonlight_menu
-        if (mEditFlag) {
-            inflater.inflate(R.menu.edit_moontlight_menu, menu);
-        } else {
-            inflater.inflate(R.menu.create_moonlight_menu, menu);
+        if (mCreateFlag || mEditFlag) {
+            inflater.inflate(R.menu.moonlight_menu, menu);
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_done:
-                //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
-                if (moonlight.getImageUrl() != null || moonlight.getContent() != null
-                        || moonlight.getTitle() != null) {
-                    addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
-                    getActivity().startActivity(new Intent(getActivity(), MoonlightActivity.class));
-                } else {
-                    Utils.showToast(getContext(), "Empty! Can't add it!", 0);
-                }
-                break;
-            case R.id.menu_delete:
-
+            case R.id.menu_color_picker:
+                ColorChooserDialog dialog = new ColorChooserDialog(getActivity());
+                dialog.setTitle("Color Picker");
+                dialog.setColorListener(new ColorListener() {
+                    @Override
+                    public void OnColorClick(View v, int color) {
+                        //do whatever you want to with the values
+                        moonlight.setColor(color);
+                        mContentFrameLayout.setBackgroundColor(color);
+                    }
+                });
+                //customize the dialog however you want
+                dialog.show();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -547,12 +557,19 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 if (moonlight.getImageName() != null) {
                     removePhoto(moonlight.getImageName());
                 }
-                removeMoonlight(mKeyId);
+                removeMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
+                moonlight = null;
                 break;
             case R.id.bottom_sheet_item_make_a_copy:
                 addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
                 break;
             case R.id.bottom_sheet_item_send:
+                //启动Intent分享
+                Intent in = new Intent(Intent.ACTION_SEND);
+                in.setType("text/plain");
+                //设置分享选择器
+                in = Intent.createChooser(in, "Send to");
+                startActivity(in);
                 break;
         }
     }
@@ -898,7 +915,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             public void onComplete(@NonNull Task<Void> task) {
                 if (type == 202) {
                     Log.d(TAG, "onComplete: update" + finalOldKey);
-                    removeMoonlight(finalOldKey);
+                    removeMoonlight(finalOldKey, type);
+                } else if (type == 201) {
+                    removeMoonlight(finalOldKey, type);
                 }
             }
         });
@@ -972,23 +991,25 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         addMoonlight(moonlight, Constants.EXTRA_TYPE_TRASH);
     }
 
-    public void removeMoonlight(String keyId) {
-        try {
-            FirebaseDatabase.getInstance().getReference().child("users-moonlight")
-                    .child(mUserId).child("note").child(keyId).removeValue(
-                    new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                            Utils.showToast(getContext(), "Delete completed!", 0);
-                            getActivity().startActivity(new Intent(getActivity(), MoonlightActivity.class));
-                        }
-                    });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void removeMoonlight(String keyId, int type) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users-moonlight")
+                .child(mUserId);
+            if (type ==  201) {
+                databaseReference.child("trash").child(keyId);
+            } else if (type == 202) {
+                databaseReference.child("note").child(keyId);
+
+            }
+            databaseReference.removeValue( new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    Utils.showToast(getContext(), "Delete completed!", 0);
+                    getActivity().startActivity(new Intent(getActivity(), MoonlightActivity.class));
+                }
+            });
     }
 
-    private class MyRunnable implements Runnable {
+    private class initView implements Runnable {
 
         @Override
         public void run() {
@@ -1011,12 +1032,22 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             if (moonlight.getImageUrl() != null) {
                 mBitmapUtils.display(mImage, moonlight.getImageUrl());
                 mImageCardView.setVisibility(View.VISIBLE);
+                if (!editable) {
+                    mDeleteImage.setClickable(false);
+                }
             }
             if (moonlight.getAudioUrl() != null) {
                 showAudio(moonlight.getAudioName());
                 //String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
                 //mAudioPlayer.prepare(dirPath + moonlight.getAudioName());
                 mAudioCardView.setVisibility(View.VISIBLE);
+                if (!editable) {
+                    mDeleteAudio.setClickable(false);
+                }
+            }
+
+            if (moonlight.getColor() != 0) {
+                mContentFrameLayout.setBackgroundColor(moonlight.getColor());
             }
         }
     }
@@ -1215,5 +1246,26 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         } else {
             mShowDuration.setText(Utils.convert(moonlight.getAudioDuration()));
         }
+    }
+
+    private void touchListener(final View view) {
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (!mEditable) {
+                    if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                        SnackBarUtils.longSnackBar(view, getString(R.string.trash_retore),
+                                SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_retore_action,
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                                    }
+                                }).show();
+                    }
+                }
+                return true;
+            }
+        });
     }
 }

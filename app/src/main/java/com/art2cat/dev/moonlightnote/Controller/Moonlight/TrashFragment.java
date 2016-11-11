@@ -14,4 +14,9 @@ public class TrashFragment extends MoonlightListFragment {
         return databaseReference.child("users-moonlight")
                 .child(getUid()).child("trash");
     }
+
+    @Override
+    public boolean isTrash() {
+        return true;
+    }
 }

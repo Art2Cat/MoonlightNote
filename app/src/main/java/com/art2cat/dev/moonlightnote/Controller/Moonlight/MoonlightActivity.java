@@ -112,7 +112,7 @@ public class MoonlightActivity extends AppCompatActivity
         // Handle navigation mView item clicks here.
         int id = item.getItemId();
         switch (id) {
-            case R.id.nav_home:
+            case R.id.nav_notes:
                 if (mUserId != null) {
                     Fragment fragment = mFragmentManager.findFragmentById(R.id.main_fragment_container);
                     if (!isHome) {
@@ -294,7 +294,5 @@ public class MoonlightActivity extends AppCompatActivity
                 }
             }
         }
-
     }
-
 }

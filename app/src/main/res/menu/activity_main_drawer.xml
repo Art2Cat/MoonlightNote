@@ -4,8 +4,8 @@
     <group android:checkableBehavior="single"
         android:id="@+id/group_main">
         <item
-            android:id="@+id/nav_home"
-            android:title="@string/action_home" />
+            android:id="@+id/nav_notes"
+            android:title="@string/action_notes" />
         <item
             android:id="@+id/nav_trash"
             android:title="@string/action_trash" />

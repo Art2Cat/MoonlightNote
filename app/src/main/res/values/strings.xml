@@ -60,7 +60,7 @@
     <string name="fragment_audio_record">Record</string>
     <string name="fragment_audio_stop">Stop</string>
     <string name="action_trash">Trash</string>
-    <string name="action_home">Home</string>
+    <string name="action_notes">Notes</string>
     <string name="bottom_sheet_left_take_photo">Take photo</string>
     <string name="bottom_sheet_left_choose_image">Choose image</string>
     <string name="bottom_sheet_left_recording">Recording</string>
@@ -68,5 +68,11 @@
     <string name="bottom_sheet_right_move_to_trash">Move to trash</string>
     <string name="bottom_sheet_right_make_a_copy">Make a copy</string>
     <string name="bottom_sheet_right_send">Send</string>
+    <string name="menu_empty_trash">Empty Trash</string>
+    <string name="dialog_empty_trash_title">Empty Trash</string>
+    <string name="dialog_empty_trash_content">All notes in Trash will be permanently deleted.</string>
+    <string name="trash_retore">Can\'t edit in Trash</string>
+    <string name="trash_retore_action">Restore</string>
+
 
 </resources>

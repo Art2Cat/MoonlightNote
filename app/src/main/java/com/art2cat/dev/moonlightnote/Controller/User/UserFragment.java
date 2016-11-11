@@ -370,13 +370,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Uploading...");
         progressDialog.show();
-        StorageTask<UploadTask.TaskSnapshot> uploadTask = null;
 
         StorageReference photoRef = mStorageReference.child(userId).child("avatar")
                 .child(fileUri.getLastPathSegment());
 
         // Upload file to Firebase Storage
-        uploadTask = photoRef.putFile(fileUri);
+        StorageTask<UploadTask.TaskSnapshot> uploadTask = photoRef.putFile(fileUri);
 
         uploadTask.addOnSuccessListener(getActivity(), new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -397,7 +396,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 }
             }
         });
-
     }
 
     public void addUser(String userId, User user) {

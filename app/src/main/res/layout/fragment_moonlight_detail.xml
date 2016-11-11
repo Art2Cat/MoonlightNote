@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/view_parent"
     android:fitsSystemWindows="true"
     tools:context="com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailFragment">
 
@@ -160,7 +161,7 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="16dp"
-                        android:background="@drawable/ic_camera_alt_black_24dp" />
+                        android:background="@drawable/ic_camera_black_24dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -268,7 +269,7 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="16dp"
-                        android:background="@drawable/ic_camera_alt_black_24dp" />
+                        android:background="@drawable/ic_delete_black_24dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -290,7 +291,7 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="16dp"
-                        android:background="@drawable/ic_photo_album_black_24dp" />
+                        android:background="@drawable/ic_delete_forever_black_24dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -312,7 +313,7 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="16dp"
-                        android:background="@drawable/ic_settings_voice_black_24dp" />
+                        android:background="@drawable/ic_content_copy_black_24dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -334,7 +335,7 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="16dp"
-                        android:background="@drawable/ic_settings_voice_black_24dp" />
+                        android:background="@drawable/ic_send_black_24dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"

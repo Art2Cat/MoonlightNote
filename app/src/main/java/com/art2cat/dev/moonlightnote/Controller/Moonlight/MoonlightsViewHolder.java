@@ -63,4 +63,8 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
+    public void setColor(int color) {
+        mCardView.setBackgroundColor(color);
+    }
+
 }

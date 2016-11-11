@@ -1,10 +1,13 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -15,14 +18,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.FirebaseImageLoader;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
+import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -52,7 +58,9 @@ public abstract class MoonlightListFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.d(TAG, "onCreateView: ");
         View rootView = inflater.inflate(R.layout.fragment_moonlight, container, false);
-        setHasOptionsMenu(true);
+        if (isTrash()) {
+            setHasOptionsMenu(true);
+        }
 
         // [START create_database_reference]
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -119,11 +127,17 @@ public abstract class MoonlightListFragment extends Fragment {
                         viewHolder.photoAppCompatImageView.setVisibility(View.GONE);
                     }
 
+                    if (!model.isTrash() && model.getColor() != 0) {
+                        viewHolder.setColor(model.getColor());
+                    } else {
+                        viewHolder.setColor(0);
+                    }
+
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
-                            if (model.isTrash()) {
+                            if (isTrash()) {
                                 Log.d(TAG, "onClick: trash");
                                 intent.putExtra("writeoredit", 2);
                                 intent.putExtra("keyid", moonlightKey);
@@ -155,6 +169,7 @@ public abstract class MoonlightListFragment extends Fragment {
             Log.d(TAG, "setAdapter");
         }
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -167,18 +182,25 @@ public abstract class MoonlightListFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        //inflater.inflate(R.menu.main, menu);
+        inflater.inflate(R.menu.trash_menu, menu);
         //this.menu = menu;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        //switch (item.getItemId()) {
-        //    case R.id.menu_layout:
-        //        index = (index + 1) % 2;
-        //        setLayoutManager();
-        //        break;
-        //}
+        switch (item.getItemId()) {
+            case R.id.menu_empty_trash:
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_empty_trash, null);
+                builder.setTitle(R.string.dialog_empty_trash_title).setView(view)
+                        .setPositiveButton("Empty Trash", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                emptyTrash();
+                            }
+                        }).setNegativeButton("Cancel", null).create().show();
+                break;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -188,4 +210,21 @@ public abstract class MoonlightListFragment extends Fragment {
     }
 
     public abstract Query getQuery(DatabaseReference databaseReference);
+
+    public abstract boolean isTrash();
+
+    public void emptyTrash() {
+        try {
+            FirebaseDatabase.getInstance().getReference().child("users-moonlight")
+                    .child(getUid()).child("trash").removeValue(
+                    new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            Log.d(TAG, "emptyTrash onComplete: ");
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

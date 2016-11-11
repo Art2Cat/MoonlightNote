@@ -18,6 +18,7 @@ public class Moonlight {
     public String label;
     public String imageName;
     public String audioName;
+    public int color;
     public boolean trash;
 
     public Moonlight() {
@@ -25,9 +26,9 @@ public class Moonlight {
     }
 
     public Moonlight(String id, String title, String content, String imageUrl, String audioUrl,
-                     long date,long audioDuration,
-                     String label, String imageName, String audioName, boolean trash) {
-        this.id= id;
+                     long date, long audioDuration,
+                     String label, String imageName, String audioName, int color, boolean trash) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
@@ -37,6 +38,7 @@ public class Moonlight {
         this.label = label;
         this.imageName = imageName;
         this.audioName = audioName;
+        this.color = color;
         this.trash = trash;
     }
 
@@ -63,8 +65,13 @@ public class Moonlight {
     public void setContent(String content) {
         this.content = content;
     }
+
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getId() {
@@ -75,9 +82,6 @@ public class Moonlight {
         this.id = id;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
     public String getTitle() {
         return title;
     }
@@ -114,6 +118,14 @@ public class Moonlight {
         return audioDuration;
     }
 
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
     public void setAudioDuration(long audioDuration) {
         this.audioDuration = audioDuration;
     }
@@ -138,6 +150,7 @@ public class Moonlight {
         moonlight.put("label", label);
         moonlight.put("imageName", imageName);
         moonlight.put("audioName", audioName);
+        moonlight.put("color", color);
         moonlight.put("trash", trash);
         return moonlight;
     }
