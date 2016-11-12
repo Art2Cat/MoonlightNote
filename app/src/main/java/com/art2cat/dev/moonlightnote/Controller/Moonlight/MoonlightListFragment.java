@@ -127,7 +127,7 @@ public abstract class MoonlightListFragment extends Fragment {
                         viewHolder.photoAppCompatImageView.setVisibility(View.GONE);
                     }
 
-                    if (!model.isTrash() && model.getColor() != 0) {
+                    if (model.getColor() != 0) {
                         viewHolder.setColor(model.getColor());
                     } else {
                         viewHolder.setColor(0);

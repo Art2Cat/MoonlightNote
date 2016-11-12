@@ -50,7 +50,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
@@ -112,7 +111,8 @@ import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
  * A simple {@link Fragment} subclass.
  */
 public abstract class MoonlightDetailFragment extends Fragment implements AdapterView.OnItemSelectedListener
-        , View.OnClickListener, FragmentManager.OnBackStackChangedListener, View.OnFocusChangeListener {
+        , View.OnClickListener, FragmentManager.OnBackStackChangedListener, View.OnFocusChangeListener,
+View.OnTouchListener{
     private static final String TAG = "MoonlightDetailFragment";
     private View mView;
     private ContentFrameLayout mContentFrameLayout;
@@ -233,7 +233,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         //标题栏设置编辑时间
         getActivity().setTitle(Utils.dateFormat(date));
         //视图初始化
-        mView = inflater.inflate(R.layout.fragment_moonlight_detail, null);
+        mView = inflater.inflate(R.layout.fragment_moonlight_detail, container, false);
         mContentFrameLayout = (ContentFrameLayout) mView.findViewById(R.id.view_parent);
         mTitle = (TextInputEditText) mView.findViewById(R.id.title_TIET);
         mContent = (TextInputEditText) mView.findViewById(R.id.content_TIET);
@@ -257,17 +257,16 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mBitmapUtils = new BitmapUtils(getActivity());
         mAudioPlayer = new AudioPlayer(mAudioPlayerPB, mShowDuration);
 
-        if (mEditable) {
-            showBottomSheet();
-            initBottomSheetItem();
-            onCheckSoftKeyboardState(mView);
-        }
+        showBottomSheet();
+        onCheckSoftKeyboardState(mView);
+
         mDeleteImage.setOnClickListener(this);
         mDeleteAudio.setOnClickListener(this);
         mPlayingAudio.setOnClickListener(this);
         mBottomBarLeft.setOnClickListener(this);
         mBottomBarRight.setOnClickListener(this);
-        touchListener(mView);
+        //touchListener(mView);
+        mView.setOnTouchListener(this);
 
         mTitle.addTextChangedListener(new TextWatcher() {
             @Override
@@ -888,7 +887,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 });
     }
 
-    private void updateMoonlight(@Nullable String keyId, Moonlight moonlight, final int type) {
+    private void updateMoonlight(@Nullable String keyId, final Moonlight moonlight, final int type) {
         final String mKey;
         String oldKey = null;
         if (keyId == null) {
@@ -917,7 +916,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     Log.d(TAG, "onComplete: update" + finalOldKey);
                     removeMoonlight(finalOldKey, type);
                 } else if (type == 201) {
-                    removeMoonlight(finalOldKey, type);
+                    if (moonlight.isTrash()) {
+                        removeMoonlight(finalOldKey, type);
+                    }
                 }
             }
         });
@@ -992,21 +993,23 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     }
 
     public void removeMoonlight(String keyId, int type) {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("users-moonlight")
-                .child(mUserId);
-            if (type ==  201) {
-                databaseReference.child("trash").child(keyId);
-            } else if (type == 202) {
-                databaseReference.child("note").child(keyId);
-
-            }
-            databaseReference.removeValue( new DatabaseReference.CompletionListener() {
+        DatabaseReference databaseReference = null;
+        if (type == 201) {
+            databaseReference = FirebaseDatabase.getInstance().getReference()
+                    .child("users-moonlight").child(mUserId).child("trash").child(keyId);
+        } else if (type == 202) {
+            databaseReference = FirebaseDatabase.getInstance().getReference()
+                    .child("users-moonlight").child(mUserId).child("note").child(keyId);
+        }
+        if (databaseReference != null) {
+            databaseReference.removeValue(new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    Utils.showToast(getContext(), "Delete completed!", 0);
+                    Utils.showToast(getActivity(), "Delete completed!", 0);
                     getActivity().startActivity(new Intent(getActivity(), MoonlightActivity.class));
                 }
             });
+        }
     }
 
     private class initView implements Runnable {
@@ -1043,6 +1046,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 mAudioCardView.setVisibility(View.VISIBLE);
                 if (!editable) {
                     mDeleteAudio.setClickable(false);
+                    mBottomBarLeft.setClickable(false);
+                    mBottomBarRight.setClickable(false);
                 }
             }
 
@@ -1058,32 +1063,37 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
         final View bottomSheetLeft = mCoordinatorLayout.findViewById(R.id.bottom_sheet_left);
         final View bottomSheetRight = mCoordinatorLayout.findViewById(R.id.bottom_sheet_right);
-        mLeftBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLeft);
-        mRightBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetRight);
-        BottomSheetCallback bottomSheetCallback = new BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                //这里是bottomSheet 状态的改变，根据slideOffset可以做一些动画
-                if (bottomSheet == bottomSheetLeft) {
-                    Log.d(TAG, "left onStateChanged: " + newState);
-                }
-                if (bottomSheet == bottomSheetRight) {
-                    Log.d(TAG, "right onStateChanged: " + newState);
-                }
+        if (mEditable) {
+            mLeftBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLeft);
+            mRightBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetRight);
+            BottomSheetCallback bottomSheetCallback = new BottomSheetCallback() {
+                @Override
+                public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                    //这里是bottomSheet 状态的改变，根据slideOffset可以做一些动画
+                    if (bottomSheet == bottomSheetLeft) {
+                        Log.d(TAG, "left onStateChanged: " + newState);
+                    }
+                    if (bottomSheet == bottomSheetRight) {
+                        Log.d(TAG, "right onStateChanged: " + newState);
+                    }
 //                ViewCompat.setScaleX(bottomSheet,1);
 //                ViewCompat.setScaleY(bottomSheet,1);
-            }
+                }
 
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                //这里是拖拽中的回调，根据slideOffset可以做一些动画
+                @Override
+                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                    //这里是拖拽中的回调，根据slideOffset可以做一些动画
 //                ViewCompat.setScaleX(bottomSheet,slideOffset);
 //                ViewCompat.setScaleY(bottomSheet,slideOffset);
-            }
-        };
+                }
+            };
 
-        mLeftBottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
-        mRightBottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
+            mLeftBottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
+            mRightBottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
+        } else {
+            bottomSheetLeft.setVisibility(View.GONE);
+            bottomSheetRight.setVisibility(View.GONE);
+        }
 
     }
 
@@ -1188,15 +1198,17 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 int heightDiff = mView.getRootView().getHeight() - view.getHeight();
                 if (heightDiff > 100) {
                     //大小超过100时，一般为显示虚拟键盘事件
-                    if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                        mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    if (mEditable) {
+                        if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                            mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        }
+                        if (mRightBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                            mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                        }
+                    } else {
+                        //大小小于100时，为不显示虚拟键盘或虚拟键盘隐藏
+                        Log.d(TAG, "onGlobalLayout: ");
                     }
-                    if (mRightBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                        mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    }
-                } else {
-                    //大小小于100时，为不显示虚拟键盘或虚拟键盘隐藏
-                    Log.d(TAG, "onGlobalLayout: ");
                 }
             }
         });
@@ -1248,24 +1260,24 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
     }
 
-    private void touchListener(final View view) {
-        view.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (!mEditable) {
-                    if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                        SnackBarUtils.longSnackBar(view, getString(R.string.trash_retore),
-                                SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_retore_action,
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
-                                    }
-                                }).show();
-                    }
-                }
-                return true;
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        if (!mEditable) {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                Log.d(TAG, "onTouch: ACTION_DOWN");
+                SnackBarUtils.longSnackBar(mView, getString(R.string.trash_retore),
+                        SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_retore_action,
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                            }
+                        }).show();
             }
-        });
+        }
+        if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+            Log.d(TAG, "onTouch: ACTION_MOVE");
+        }
+        return false;
     }
 }
