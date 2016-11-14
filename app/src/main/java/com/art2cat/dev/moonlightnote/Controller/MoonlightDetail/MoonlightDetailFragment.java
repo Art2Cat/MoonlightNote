@@ -57,6 +57,7 @@ import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.AudioPlayer;
+import com.art2cat.dev.moonlightnote.Utils.DatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.LocalCacheUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.MemoryCacheUtils;
@@ -148,6 +149,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private String mKeyId;
     private String mLabel;
     private Uri mFileUri = null;
+    private DatabaseUtils mDatabaseUtils;
     private DatabaseReference mMoonlightRef;
     private ValueEventListener mMoonlightListener;
     private ValueEventListener moonlightListener;
@@ -196,6 +198,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         //获取FirebaseDatabase实例
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mDatabaseUtils = new DatabaseUtils(getActivity(),mDatabaseReference, mUserId);
+
         //新建moonlight对象
         moonlight = new Moonlight();
         //获取firebaseStorage实例
@@ -323,7 +327,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                            mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
                         }
                     });
 
@@ -332,7 +336,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 public boolean onTouch(MotionEvent ev) {
 
                     if (snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {
-
                         snackbar.show();
                     }
                     return false;
@@ -350,13 +353,13 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         if (mCreateFlag) {
             if (moonlight.getImageUrl() != null || moonlight.getContent() != null
                     || moonlight.getTitle() != null || moonlight.getAudioUrl() != null) {
-                addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
             }
         }
         //当editFlag为true且moonlight不为空时更新moonlight信息到服务器
         if (mEditFlag && moonlight != null && !moonlight.isTrash()) {
             Log.d(TAG, "mKeyId" + mKeyId);
-            updateMoonlight(mKeyId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+            mDatabaseUtils.updateMoonlight(mKeyId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
         }
     }
 
@@ -491,34 +494,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 isLeftOrRight = false;
                 hideSoftKeyboard();
                 break;
-            case R.id.bottomBar_camera:
-                //使用PopupMenu选择使用相机还是相册添加图片
-                //MenuUtils.showPopupMenu(getActivity(), v, R.menu.photo_choose_menu, new PopupMenu.OnMenuItemClickListener() {
-                //    @Override
-                //    public boolean onMenuItemClick(MenuItem item) {
-                //        switch (item.getItemId()) {
-                //            case R.id.popup_camera:
-                //                onCameraClick();
-                //                Toast.makeText(getActivity(), "camera chose", Toast.LENGTH_SHORT).show();
-                //                break;
-                //            case R.id.popup_album:
-                //                onAlbumClick();
-                //                Toast.makeText(getActivity(), "album chose", Toast.LENGTH_SHORT).show();
-                //                break;
-                //        }
-                //        return true;
-                //    }
-                //});
-
-                if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-                    mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                } else {
-                    mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                }
-                break;
-            case R.id.bottomBar_audio:
-                onAudioClick();
-                break;
             case R.id.moonlight_image:
                 //网页浏览图片。。。
                 Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -572,17 +547,17 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             case R.id.bottom_sheet_item_move_to_trash:
                 //将moonlight设置为空，删除服务器中指定的moonlight数据
                 moonlight.setTrash(true);
-                moveToTrash(moonlight);
+                mDatabaseUtils.moveToTrash(moonlight);
                 break;
             case R.id.bottom_sheet_item_permanent_delete:
                 if (moonlight.getImageName() != null) {
                     removePhoto(moonlight.getImageName());
                 }
-                removeMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
+                mDatabaseUtils.removeMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
                 moonlight = null;
                 break;
             case R.id.bottom_sheet_item_make_a_copy:
-                addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
                 break;
             case R.id.bottom_sheet_item_send:
                 //启动Intent分享
@@ -653,8 +628,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     fos.write(buffer, 0, length);
                 }
                 fos.flush();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -893,59 +866,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         startActivityForResult(intent, RECORD_AUDIO);
     }
 
-    private void addMoonlight(final Moonlight moonlight, final int type) {
 
-        mDatabaseReference.child(mUserId).addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        updateMoonlight(null, moonlight, type);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.e(TAG, "getUser:onCancelled", databaseError.toException());
-                    }
-                });
-    }
-
-    private void updateMoonlight(@Nullable String keyId, final Moonlight moonlight, final int type) {
-        final String mKey;
-        String oldKey = null;
-        if (keyId == null) {
-            mKey = mDatabaseReference.child("moonlight").push().getKey();
-        } else {
-            mKey = keyId;
-        }
-
-        oldKey = moonlight.getId();
-
-        moonlight.setId(mKey);
-        Map<String, Object> moonlightValues = moonlight.toMap();
-        Map<String, Object> childUpdates = new HashMap<>();
-
-        if (type == 201) {
-            childUpdates.put("/users-moonlight/" + mUserId + "/note/" + mKey, moonlightValues);
-        } else if (type == 202) {
-            childUpdates.put("/users-moonlight/" + mUserId + "/trash/" + mKey, moonlightValues);
-        }
-
-        final String finalOldKey = oldKey;
-        mDatabaseReference.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (type == 202) {
-                    Log.d(TAG, "onComplete: update" + finalOldKey);
-                    removeMoonlight(finalOldKey, type);
-                } else if (type == 201) {
-                    if (moonlight.isTrash()) {
-                        removeMoonlight(finalOldKey, type);
-                    }
-                }
-            }
-        });
-
-    }
 
     /**
      * 从firebase的database获取moonlight
@@ -1007,30 +928,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         // Remove mMoonlight value event listener
         if (mMoonlightListener != null) {
             mMoonlightRef.removeEventListener(mMoonlightListener);
-        }
-    }
-
-    private void moveToTrash(Moonlight moonlight) {
-        addMoonlight(moonlight, Constants.EXTRA_TYPE_TRASH);
-    }
-
-    public void removeMoonlight(String keyId, int type) {
-        DatabaseReference databaseReference = null;
-        if (type == 201) {
-            databaseReference = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight").child(mUserId).child("trash").child(keyId);
-        } else if (type == 202) {
-            databaseReference = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight").child(mUserId).child("note").child(keyId);
-        }
-        if (databaseReference != null) {
-            databaseReference.removeValue(new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    Utils.showToast(getActivity(), "Delete completed!", 0);
-                    getActivity().startActivity(new Intent(getActivity(), MoonlightActivity.class));
-                }
-            });
         }
     }
 
