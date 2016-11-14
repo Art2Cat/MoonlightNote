@@ -111,8 +111,7 @@ import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
  * A simple {@link Fragment} subclass.
  */
 public abstract class MoonlightDetailFragment extends Fragment implements AdapterView.OnItemSelectedListener
-        , View.OnClickListener, FragmentManager.OnBackStackChangedListener, View.OnFocusChangeListener,
-View.OnTouchListener{
+        , View.OnClickListener, FragmentManager.OnBackStackChangedListener, View.OnFocusChangeListener {
     private static final String TAG = "MoonlightDetailFragment";
     private View mView;
     private ContentFrameLayout mContentFrameLayout;
@@ -169,6 +168,7 @@ View.OnTouchListener{
     private AudioPlayer mAudioPlayer;
     private BitmapUtils mBitmapUtils;
     private initView myRunnable = new initView();
+    private MoonlightDetailActivity.FragmentOnTouchListener fragmentOnTouchListener;
 
     public MoonlightDetailFragment() {
         // Required empty public constructor
@@ -256,18 +256,15 @@ View.OnTouchListener{
         mContent.setOnFocusChangeListener(this);
         mBitmapUtils = new BitmapUtils(getActivity());
         mAudioPlayer = new AudioPlayer(mAudioPlayerPB, mShowDuration);
-
         showBottomSheet();
-        onCheckSoftKeyboardState(mView);
-
-        mDeleteImage.setOnClickListener(this);
-        mDeleteAudio.setOnClickListener(this);
-        mPlayingAudio.setOnClickListener(this);
-        mBottomBarLeft.setOnClickListener(this);
-        mBottomBarRight.setOnClickListener(this);
-        //touchListener(mView);
-        mView.setOnTouchListener(this);
-
+        if (mEditable) {
+            onCheckSoftKeyboardState(mView);
+            mDeleteImage.setOnClickListener(this);
+            mDeleteAudio.setOnClickListener(this);
+            mPlayingAudio.setOnClickListener(this);
+            mBottomBarLeft.setOnClickListener(this);
+            mBottomBarRight.setOnClickListener(this);
+        }
         mTitle.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -319,6 +316,29 @@ View.OnTouchListener{
         //当editFlag为true时延时0.5秒更新UI（防止UI已更新，moonlight数据未载入）
         if (mEditFlag) {
             mHandler.postDelayed(myRunnable, 500);
+        }
+        if (!mEditable) {
+            final Snackbar snackbar = SnackBarUtils.longSnackBar(mView, getString(R.string.trash_retore),
+                    SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_retore_action,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                        }
+                    });
+
+            fragmentOnTouchListener = new MoonlightDetailActivity.FragmentOnTouchListener() {
+                @Override
+                public boolean onTouch(MotionEvent ev) {
+
+                    if (snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {
+
+                        snackbar.show();
+                    }
+                    return false;
+                }
+            };
+            ((MoonlightDetailActivity) getActivity()).registerFragmentOnTouchListener(fragmentOnTouchListener);
         }
     }
 
@@ -386,18 +406,20 @@ View.OnTouchListener{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_color_picker:
-                ColorChooserDialog dialog = new ColorChooserDialog(getActivity());
-                dialog.setTitle("Color Picker");
-                dialog.setColorListener(new ColorListener() {
-                    @Override
-                    public void OnColorClick(View v, int color) {
-                        //do whatever you want to with the values
-                        moonlight.setColor(color);
-                        mContentFrameLayout.setBackgroundColor(color);
-                    }
-                });
-                //customize the dialog however you want
-                dialog.show();
+                if (mEditable) {
+                    ColorChooserDialog dialog = new ColorChooserDialog(getActivity());
+                    dialog.setTitle("Color Picker");
+                    dialog.setColorListener(new ColorListener() {
+                        @Override
+                        public void OnColorClick(View v, int color) {
+                            //do whatever you want to with the values
+                            moonlight.setColor(color);
+                            mContentFrameLayout.setBackgroundColor(color);
+                        }
+                    });
+                    //customize the dialog however you want
+                    dialog.show();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -1012,88 +1034,40 @@ View.OnTouchListener{
         }
     }
 
-    private class initView implements Runnable {
-
-        @Override
-        public void run() {
-            initView(mEditable);
-        }
-
-        private void initView(boolean editable) {
-            if (moonlight.getTitle() != null) {
-                mTitle.setText(moonlight.getTitle());
-                if (!editable) {
-                    mTitle.setEnabled(false);
-                }
-            }
-            if (moonlight.getContent() != null) {
-                mContent.setText(moonlight.getContent());
-                if (!editable) {
-                    mContent.setEnabled(false);
-                }
-            }
-            if (moonlight.getImageUrl() != null) {
-                mBitmapUtils.display(mImage, moonlight.getImageUrl());
-                mImageCardView.setVisibility(View.VISIBLE);
-                if (!editable) {
-                    mDeleteImage.setClickable(false);
-                }
-            }
-            if (moonlight.getAudioUrl() != null) {
-                showAudio(moonlight.getAudioName());
-                //String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
-                //mAudioPlayer.prepare(dirPath + moonlight.getAudioName());
-                mAudioCardView.setVisibility(View.VISIBLE);
-                if (!editable) {
-                    mDeleteAudio.setClickable(false);
-                    mBottomBarLeft.setClickable(false);
-                    mBottomBarRight.setClickable(false);
-                }
-            }
-
-            if (moonlight.getColor() != 0) {
-                mContentFrameLayout.setBackgroundColor(moonlight.getColor());
-            }
-        }
-    }
-
     public void showBottomSheet() {
         initBottomSheetItem();
         // The View with the BottomSheetBehavior
 
         final View bottomSheetLeft = mCoordinatorLayout.findViewById(R.id.bottom_sheet_left);
         final View bottomSheetRight = mCoordinatorLayout.findViewById(R.id.bottom_sheet_right);
-        if (mEditable) {
-            mLeftBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLeft);
-            mRightBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetRight);
-            BottomSheetCallback bottomSheetCallback = new BottomSheetCallback() {
-                @Override
-                public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                    //这里是bottomSheet 状态的改变，根据slideOffset可以做一些动画
-                    if (bottomSheet == bottomSheetLeft) {
-                        Log.d(TAG, "left onStateChanged: " + newState);
-                    }
-                    if (bottomSheet == bottomSheetRight) {
-                        Log.d(TAG, "right onStateChanged: " + newState);
-                    }
+        mLeftBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLeft);
+        mRightBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetRight);
+        mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        BottomSheetCallback bottomSheetCallback = new BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                //这里是bottomSheet 状态的改变，根据slideOffset可以做一些动画
+                if (bottomSheet == bottomSheetLeft) {
+                    Log.d(TAG, "left onStateChanged: " + newState);
+                }
+                if (bottomSheet == bottomSheetRight) {
+                    Log.d(TAG, "right onStateChanged: " + newState);
+                }
 //                ViewCompat.setScaleX(bottomSheet,1);
 //                ViewCompat.setScaleY(bottomSheet,1);
-                }
+            }
 
-                @Override
-                public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                    //这里是拖拽中的回调，根据slideOffset可以做一些动画
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                //这里是拖拽中的回调，根据slideOffset可以做一些动画
 //                ViewCompat.setScaleX(bottomSheet,slideOffset);
 //                ViewCompat.setScaleY(bottomSheet,slideOffset);
-                }
-            };
+            }
+        };
 
-            mLeftBottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
-            mRightBottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
-        } else {
-            bottomSheetLeft.setVisibility(View.GONE);
-            bottomSheetRight.setVisibility(View.GONE);
-        }
+        mLeftBottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
+        mRightBottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
 
     }
 
@@ -1165,14 +1139,6 @@ View.OnTouchListener{
                     mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 }
             }
-        }
-    }
-
-    private class BottomSheet implements Runnable {
-
-        @Override
-        public void run() {
-            changeBottomSheetState();
         }
     }
 
@@ -1260,24 +1226,56 @@ View.OnTouchListener{
         }
     }
 
-    @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
-        if (!mEditable) {
-            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                Log.d(TAG, "onTouch: ACTION_DOWN");
-                SnackBarUtils.longSnackBar(mView, getString(R.string.trash_retore),
-                        SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_retore_action,
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
-                            }
-                        }).show();
+    private class initView implements Runnable {
+
+        @Override
+        public void run() {
+            initView(mEditable);
+        }
+
+        private void initView(boolean editable) {
+            if (moonlight.getTitle() != null) {
+                mTitle.setText(moonlight.getTitle());
+                if (!editable) {
+                    mTitle.setEnabled(false);
+                }
+            }
+            if (moonlight.getContent() != null) {
+                mContent.setText(moonlight.getContent());
+                if (!editable) {
+                    mContent.setEnabled(false);
+                }
+            }
+            if (moonlight.getImageUrl() != null) {
+                mBitmapUtils.display(mImage, moonlight.getImageUrl());
+                mImageCardView.setVisibility(View.VISIBLE);
+                if (!editable) {
+                    mDeleteImage.setClickable(false);
+                }
+            }
+            if (moonlight.getAudioUrl() != null) {
+                showAudio(moonlight.getAudioName());
+                //String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
+                //mAudioPlayer.prepare(dirPath + moonlight.getAudioName());
+                mAudioCardView.setVisibility(View.VISIBLE);
+                if (!editable) {
+                    mDeleteAudio.setClickable(false);
+                    mBottomBarLeft.setClickable(false);
+                    mBottomBarRight.setClickable(false);
+                }
+            }
+
+            if (moonlight.getColor() != 0) {
+                mContentFrameLayout.setBackgroundColor(moonlight.getColor());
             }
         }
-        if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-            Log.d(TAG, "onTouch: ACTION_MOVE");
+    }
+
+    private class BottomSheet implements Runnable {
+
+        @Override
+        public void run() {
+            changeBottomSheetState();
         }
-        return false;
     }
 }
