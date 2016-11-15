@@ -154,17 +154,19 @@ public abstract class MoonlightListFragment extends Fragment {
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
-                            if (isTrash()) {
-                                Log.d(TAG, "onClick: trash");
-                                intent.putExtra("writeoredit", 2);
-                                intent.putExtra("keyid", moonlightKey);
-                                startActivity(intent);
-                            } else {
-                                Log.d(TAG, "onClick: edit");
-                                intent.putExtra("writeoredit", 1);
-                                intent.putExtra("keyid", moonlightKey);
-                                startActivity(intent);
+                            if (isLogin) {
+                                Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
+                                if (isTrash()) {
+                                    Log.d(TAG, "onClick: trash");
+                                    intent.putExtra("writeoredit", 2);
+                                    intent.putExtra("keyid", moonlightKey);
+                                    startActivity(intent);
+                                } else {
+                                    Log.d(TAG, "onClick: edit");
+                                    intent.putExtra("writeoredit", 1);
+                                    intent.putExtra("keyid", moonlightKey);
+                                    startActivity(intent);
+                                }
                             }
 
                         }
@@ -251,7 +253,8 @@ public abstract class MoonlightListFragment extends Fragment {
     public void busAction(BusEvent busEvent) {
         //这里更新视图或者后台操作,从busAction获取传递参数.
         if (busEvent != null) {
-            if (busEvent.getFlag() == Constants.BUS_FLAG_SIGNOUT); {
+            if (busEvent.getFlag() == Constants.BUS_FLAG_SIGNOUT) ;
+            {
                 isLogin = false;
             }
         }
