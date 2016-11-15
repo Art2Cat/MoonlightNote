@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -23,6 +24,8 @@ import android.widget.ToggleButton;
 import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
 import com.art2cat.dev.moonlightnote.Controller.User.UserActivity;
+import com.art2cat.dev.moonlightnote.Model.BusEvent;
+import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
@@ -30,6 +33,8 @@ import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+
+import org.greenrobot.eventbus.EventBus;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -40,10 +45,12 @@ public class MoonlightActivity extends AppCompatActivity
 
     private View mView;
     private NavigationView mNavigationView;
-    private ToggleButton mToggleButton;
+    private Button mSortButton;
     private FirebaseAuth mAuth;
     private CircleImageView mCircleImageView;
     private boolean isHome;
+    private boolean isClicked = false;
+    private boolean isLogin = true;
     private boolean userIsInteracting;
     private TextView emailTV;
     private TextView nickTV;
@@ -170,6 +177,10 @@ public class MoonlightActivity extends AppCompatActivity
                 break;
             case R.id.nav_logout:
                 mAuth.signOut();
+                isLogin = false;
+                BusEvent busEvent = new BusEvent();
+                busEvent.setFlag(Constants.BUS_FLAG_SIGNOUT);
+                EventBus.getDefault().post(busEvent);
                 SPUtils.clear(this, "User");
                 SnackBarUtils.shortSnackBar(mView, "Your account have been remove!",
                         SnackBarUtils.TYPE_ALERT).show();
@@ -197,9 +208,14 @@ public class MoonlightActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
-                intent.putExtra("writeoredit", 0);
-                startActivity(intent);
+                if (isLogin) {
+                    Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
+                    intent.putExtra("writeoredit", 0);
+                    startActivity(intent);
+                } else {
+                    SnackBarUtils.shortSnackBar(mView, getString(R.string.login_request),
+                            SnackBarUtils.TYPE_INFO).show();
+                }
             }
         });
 
@@ -218,16 +234,26 @@ public class MoonlightActivity extends AppCompatActivity
         //获取headerView
         View headerView = mNavigationView.getHeaderView(0);
 
-        mToggleButton = (ToggleButton) headerView.findViewById(R.id.toggle_btn);
-        mToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mSortButton = (Button) headerView.findViewById(R.id.sort_up_or_down_btn);
+        mSortButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    mNavigationView.getMenu().clear();
-                    mNavigationView.inflateMenu(R.menu.activity_main_drawer_account);
+            public void onClick(View view) {
+
+                if (isLogin) {
+                    if (!isClicked) {
+                        mNavigationView.getMenu().clear();
+                        mNavigationView.inflateMenu(R.menu.activity_main_drawer_account);
+                        mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_sort_up, null));
+                        isClicked = !isClicked;
+                    } else {
+                        mNavigationView.getMenu().clear();
+                        mNavigationView.inflateMenu(R.menu.activity_main_drawer);
+                        mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_sort_down, null));
+                        isClicked = !isClicked;
+                    }
                 } else {
-                    mNavigationView.getMenu().clear();
-                    mNavigationView.inflateMenu(R.menu.activity_main_drawer);
+                    SnackBarUtils.shortSnackBar(mView, getString(R.string.login_request),
+                            SnackBarUtils.TYPE_INFO).show();
                 }
             }
         });
@@ -238,8 +264,12 @@ public class MoonlightActivity extends AppCompatActivity
         mCircleImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MoonlightActivity.this, UserActivity.class));
-                //Toast.makeText(MoonlightActivity.this, "None Action here Now!", Toast.LENGTH_SHORT).show();
+                if (isLogin) {
+                    startActivity(new Intent(MoonlightActivity.this, UserActivity.class));
+                } else {
+                    SnackBarUtils.shortSnackBar(mView, getString(R.string.login_request),
+                            SnackBarUtils.TYPE_INFO).show();
+                }
             }
         });
 
@@ -249,7 +279,6 @@ public class MoonlightActivity extends AppCompatActivity
 
         if (mUserId != null) {
             Fragment fragment = mFragmentManager.findFragmentById(R.id.main_fragment_container);
-            int flag = 0;
             if (fragment == null) {
                 fragment = new MoonlightFragment();
                 mFragmentManager.beginTransaction()

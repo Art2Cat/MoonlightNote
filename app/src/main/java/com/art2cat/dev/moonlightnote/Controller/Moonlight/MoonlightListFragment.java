@@ -21,6 +21,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
+import com.art2cat.dev.moonlightnote.Model.BusEvent;
+import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.FirebaseImageLoader;
@@ -35,6 +37,14 @@ import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import static com.art2cat.dev.moonlightnote.Model.Constants.BUS_FLAG_ALBUM;
+import static com.art2cat.dev.moonlightnote.Model.Constants.BUS_FLAG_CAMERA;
+import static com.art2cat.dev.moonlightnote.Model.Constants.BUS_FLAG_USERNAME;
+
 /**
  * Created by art2cat
  * on 9/17/16.
@@ -47,9 +57,17 @@ public abstract class MoonlightListFragment extends Fragment {
     private Menu menu;
     private int index;
     private boolean deleteFlag;
+    private boolean isLogin = true;
 
 
     public MoonlightListFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //获取Bus单例，并注册
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -188,20 +206,21 @@ public abstract class MoonlightListFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_empty_trash:
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_empty_trash, null);
-                builder.setTitle(R.string.dialog_empty_trash_title).setView(view)
-                        .setPositiveButton("Empty Trash", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                emptyTrash();
-                            }
-                        }).setNegativeButton("Cancel", null).create().show();
-                break;
+        if (isLogin) {
+            switch (item.getItemId()) {
+                case R.id.menu_empty_trash:
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_empty_trash, null);
+                    builder.setTitle(R.string.dialog_empty_trash_title).setView(view)
+                            .setPositiveButton("Empty Trash", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    emptyTrash();
+                                }
+                            }).setNegativeButton("Cancel", null).create().show();
+                    break;
+            }
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -225,6 +244,16 @@ public abstract class MoonlightListFragment extends Fragment {
                     });
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void busAction(BusEvent busEvent) {
+        //这里更新视图或者后台操作,从busAction获取传递参数.
+        if (busEvent != null) {
+            if (busEvent.getFlag() == Constants.BUS_FLAG_SIGNOUT); {
+                isLogin = false;
+            }
         }
     }
 }

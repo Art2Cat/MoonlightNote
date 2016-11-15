@@ -51,7 +51,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 
-import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
@@ -65,10 +64,8 @@ import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -93,9 +90,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -169,7 +164,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     };
     private AudioPlayer mAudioPlayer;
     private BitmapUtils mBitmapUtils;
-    private initView myRunnable = new initView();
+    private InitView myRunnable = new InitView();
     private MoonlightDetailActivity.FragmentOnTouchListener fragmentOnTouchListener;
 
     public MoonlightDetailFragment() {
@@ -198,17 +193,13 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         //获取FirebaseDatabase实例
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mDatabaseUtils = new DatabaseUtils(getActivity(),mDatabaseReference, mUserId);
+        mDatabaseUtils = new DatabaseUtils(getActivity(), mDatabaseReference, mUserId);
 
         //新建moonlight对象
         moonlight = new Moonlight();
         //获取firebaseStorage实例
         FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
         mStorageReference = firebaseStorage.getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE);
-        //获取系统当前时间
-        long date = System.currentTimeMillis();
-        moonlight.setDate(date);
-        //
 
         mInputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -232,10 +223,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //新建日期对象
-        Date date = new Date(moonlight.getDate());
-        //标题栏设置编辑时间
-        getActivity().setTitle(Utils.dateFormat(date));
         //视图初始化
         mView = inflater.inflate(R.layout.fragment_moonlight_detail, container, false);
         mContentFrameLayout = (ContentFrameLayout) mView.findViewById(R.id.view_parent);
@@ -255,13 +242,17 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mCoordinatorLayout = (CoordinatorLayout) mView.findViewById(R.id.bottom_sheet_container);
         mBottomBarLeft = (AppCompatButton) mView.findViewById(R.id.bottom_bar_left);
         mBottomBarRight = (AppCompatButton) mView.findViewById(R.id.bottom_bar_right);
-
         mTitle.setOnFocusChangeListener(this);
         mContent.setOnFocusChangeListener(this);
         mBitmapUtils = new BitmapUtils(getActivity());
         mAudioPlayer = new AudioPlayer(mAudioPlayerPB, mShowDuration);
         showBottomSheet();
         if (mEditable) {
+            //获取系统当前时间
+            long date = System.currentTimeMillis();
+            moonlight.setDate(date);
+            String time = "Edited: " + Utils.timeFormat(getActivity(), new Date(moonlight.getDate()));
+            mDisplayTime.setText(time);
             onCheckSoftKeyboardState(mView);
             mDeleteImage.setOnClickListener(this);
             mDeleteAudio.setOnClickListener(this);
@@ -322,6 +313,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             mHandler.postDelayed(myRunnable, 500);
         }
         if (!mEditable) {
+            Log.d(TAG, "onActivityCreated: SnackBar");
             final Snackbar snackbar = SnackBarUtils.longSnackBar(mView, getString(R.string.trash_retore),
                     SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_retore_action,
                     new View.OnClickListener() {
@@ -335,7 +327,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 @Override
                 public boolean onTouch(MotionEvent ev) {
 
-                    if (snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (!snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {
                         snackbar.show();
                     }
                     return false;
@@ -867,7 +859,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     }
 
 
-
     /**
      * 从firebase的database获取moonlight
      *
@@ -1123,7 +1114,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
     }
 
-    private class initView implements Runnable {
+    private class InitView implements Runnable {
 
         @Override
         public void run() {
@@ -1131,6 +1122,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
 
         private void initView(boolean editable) {
+
             if (moonlight.getTitle() != null) {
                 mTitle.setText(moonlight.getTitle());
                 if (!editable) {

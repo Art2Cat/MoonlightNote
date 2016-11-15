@@ -14,6 +14,7 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
+            android:titleTextColor="@android:color/white"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:popupTheme="@style/AppTheme.PopupOverlay"
@@ -87,37 +88,37 @@
                         android:gravity="end"
                         android:orientation="horizontal">
 
-                        <android.support.v7.widget.AppCompatTextView
+                        <android.support.v7.widget.AppCompatButton
                             android:id="@+id/reset_password"
+                            style="@style/Widget.AppCompat.Button.Borderless"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
+                            android:padding="16dp"
                             android:text="@string/login_reset_password"
-                            android:textColor="@color/colorAccent" />
+                            android:textColor="@color/colorAccent"
+                            android:textSize="14sp"
+                            android:theme="@style/FlatButtonStyle" />
 
                         <android.support.v7.widget.AppCompatButton
                             android:id="@+id/email_sign_up_button"
-                            style="?android:textAppearanceSmall"
                             android:layout_width="wrap_content"
-                            android:layout_height="40dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="16dp"
-                            android:background="@drawable/button_style"
+                            android:padding="16dp"
                             android:text="@string/action_sign_up"
-                            android:textAllCaps="false"
-                            android:textStyle="bold" />
+                            android:theme="@style/RaiseButtonStyle" />
 
                         <android.support.v7.widget.AppCompatButton
                             android:id="@+id/email_sign_in_button"
-                            style="?android:textAppearanceSmall"
                             android:layout_width="wrap_content"
-                            android:layout_height="40dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="16dp"
-                            android:background="@drawable/button_style"
+                            android:padding="16dp"
                             android:text="@string/action_sign_in"
-                            android:textAllCaps="false"
-                            android:textStyle="bold" />
+                            android:theme="@style/RaiseButtonStyle" />
                     </android.support.v7.widget.LinearLayoutCompat>
 
                     <android.support.v7.widget.AppCompatImageButton

@@ -26,7 +26,7 @@
     <string name="menu_share">Share</string>
     <string name="menu_output">Output</string>
     <string name="menu_income">Income</string>
-    <string name="click_to_login">Click picture to login</string>
+    <string name="click_to_change_user_info">Click picture to set up you account</string>
     <string name="nav_header_email">your@email.com</string>
     <string name="nav_spinner_login">Login</string>
     <string name="nav_spinner_sign_out">Sign Out</string>
@@ -73,6 +73,7 @@
     <string name="dialog_empty_trash_content">All notes in Trash will be permanently deleted.</string>
     <string name="trash_retore">Can\'t edit in Trash</string>
     <string name="trash_retore_action">Restore</string>
+    <string name="login_request">Please sign in!</string>
 
 
 </resources>

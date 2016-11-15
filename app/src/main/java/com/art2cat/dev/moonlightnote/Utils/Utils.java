@@ -1,6 +1,7 @@
 package com.art2cat.dev.moonlightnote.Utils;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
@@ -46,14 +47,31 @@ public class Utils {
         return formatter.format(date);
     }
 
+    public static String timeFormat(Context context, Date date) {
+        String pattern = null;
+        ContentResolver cv = context.getContentResolver();
+        // 获取当前系统设置
+        String strTimeFormat = android.provider.Settings.System.getString(cv,
+                android.provider.Settings.System.TIME_12_24);
+        if (strTimeFormat.equals("24")) {
+            pattern = "HH:mm";
+        } else if (strTimeFormat.equals("12")) {
+            pattern = "hh:mm a";
+        }
+        if (pattern != null) {
+            SimpleDateFormat formatter = new SimpleDateFormat(pattern, Locale.getDefault());
+            return formatter.format(date);
+        }
+        return null;
+    }
+
     @SuppressLint("DefaultLocale")
-    public static String convert(long milliSeconds)
-    {
+    public static String convert(long milliSeconds) {
         //int hrs = (int) TimeUnit.MILLISECONDS.toHours(milliSeconds) % 24;
         int min = (int) TimeUnit.MILLISECONDS.toMinutes(milliSeconds) % 60;
         int sec = (int) TimeUnit.MILLISECONDS.toSeconds(milliSeconds) % 60;
         //return String.format("%02d:%02d:%02d", hrs, min, sec);
-        return String.format("%02d:%02d",min, sec);
+        return String.format("%02d:%02d", min, sec);
     }
 
     public static void showToast(Context context, String content, int type) {

@@ -126,7 +126,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
             }
         });
 
-        AppCompatTextView reset = (AppCompatTextView) mView.findViewById(R.id.reset_password);
+        AppCompatButton reset = (AppCompatButton) mView.findViewById(R.id.reset_password);
         mRegister = (AppCompatButton) mView.findViewById(R.id.email_sign_in_button);
         mLogin = (AppCompatButton) mView.findViewById(R.id.email_sign_up_button);
         mLogin_Google = (AppCompatImageButton) mView.findViewById(R.id.login_google_btn);
@@ -195,7 +195,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (TextUtils.isEmpty(password) ) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
+            cancel = true;
+        } else if (!isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
