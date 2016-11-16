@@ -1,8 +1,12 @@
 package com.art2cat.dev.moonlightnote.Controller.Login;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -62,7 +66,6 @@ import java.util.Map;
  */
 public class LoginFragment extends Fragment implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
     protected View mView;
-    private Toolbar mToolbar;
     private AppCompatEditText mEmailView;
     private AppCompatEditText mPasswordView;
     private AppCompatButton mRegister;
@@ -78,11 +81,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     private boolean signUp_state;
     private static final int RC_SIGN_IN = 9001;
     private static final String USER_G = "google";
-
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
-    private static final int REQUEST_READ_CONTACTS = 0;
 
     private static final String TAG = "LoginFragment";
 
@@ -104,15 +102,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mView = inflater.inflate(R.layout.fragment_login, null);
+        mView = inflater.inflate(R.layout.fragment_login, container, false);
         mEmailView = (AppCompatEditText) mView.findViewById(R.id.email);
 
-        mToolbar = (Toolbar) mView.findViewById(R.id.toolbar);
-        if (mToolbar != null) {
-            ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
-            mToolbar.setTitle("Login");
-            Log.i(TAG, "onCreateView: ");
-        }
+        Toolbar toolbar = (Toolbar) mView.findViewById(R.id.toolbar);
+        ((LoginActivity) getActivity()).setSupportActionBar(toolbar);
+        toolbar.setTitle(R.string.fragment_login);
 
         mPasswordView = (AppCompatEditText) mView.findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -245,11 +240,39 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     /**
      * Shows the progress UI and hides the login form.
      */
-    private void showProgress(boolean show) {
-        if (show) {
-            mProgressView.setVisibility(View.VISIBLE);
+    /**
+     * Shows the progress UI and hides the login form.
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
         } else {
-            mProgressView.setVisibility(View.GONE);
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
 
@@ -265,6 +288,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
+                showProgress(false);
                 SnackBarUtils.shortSnackBar(mView, "Google Sign In failed", SnackBarUtils.TYPE_INFO).show();
                 Log.d(TAG, "Google Sign In failed");
             }
@@ -378,7 +402,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                 });
     }
 
-    public void signUp(String email, String password) {
+    public void signUp(final String email, final String password) {
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -388,7 +412,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                             showProgress(false);
                             SnackBarUtils.longSnackBar(mView, "Sign Up succeed!",
                                     SnackBarUtils.TYPE_WARNING).show();
-
+                            signInWithEmail(email, password);
                             signUp_state = true;
                         } else {
                             showProgress(false);

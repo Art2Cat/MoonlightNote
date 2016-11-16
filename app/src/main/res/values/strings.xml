@@ -74,6 +74,7 @@
     <string name="trash_retore">Can\'t edit in Trash</string>
     <string name="trash_retore_action">Restore</string>
     <string name="login_request">Please sign in!</string>
+    <string name="fragment_login">Login</string>
 
 
 </resources>
