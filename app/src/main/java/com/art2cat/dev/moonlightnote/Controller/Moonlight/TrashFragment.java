@@ -11,7 +11,7 @@ import com.google.firebase.database.Query;
 public class TrashFragment extends MoonlightListFragment {
     @Override
     public Query getQuery(DatabaseReference databaseReference) {
-        return databaseReference.child("users-moonlight")
+        return databaseReference.child("users-moonlight_menu")
                 .child(getUid()).child("trash");
     }
 

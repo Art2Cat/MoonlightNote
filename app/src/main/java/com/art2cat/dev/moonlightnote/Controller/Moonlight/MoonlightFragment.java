@@ -1,4 +1,5 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
@@ -9,7 +10,7 @@ import com.google.firebase.database.Query;
 public class MoonlightFragment extends MoonlightListFragment {
     @Override
     public Query getQuery(DatabaseReference databaseReference) {
-        return databaseReference.child("users-moonlight")
+        return databaseReference.child("users-moonlight_menu")
                 .child(getUid()).child("note");
     }
 

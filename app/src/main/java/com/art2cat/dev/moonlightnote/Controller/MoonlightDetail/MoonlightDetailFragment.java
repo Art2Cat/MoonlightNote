@@ -56,7 +56,7 @@ import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.AudioPlayer;
-import com.art2cat.dev.moonlightnote.Utils.DatabaseUtils;
+import com.art2cat.dev.moonlightnote.Utils.Firebase.DatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.LocalCacheUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.MemoryCacheUtils;
@@ -208,11 +208,13 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             mKeyId = getArguments().getString("keyId");
             int trashTag = getArguments().getInt("trash");
             if (trashTag == 0) {
-                getMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
+                mDatabaseUtils.getDataFromDatabase(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
+                //getMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
                 mEditFlag = true;
                 mCreateFlag = false;
             } else {
-                getMoonlight(mKeyId, Constants.EXTRA_TYPE_TRASH);
+                mDatabaseUtils.getDataFromDatabase(mKeyId, Constants.EXTRA_TYPE_TRASH);
+                //getMoonlight(mKeyId, Constants.EXTRA_TYPE_TRASH);
                 mEditFlag = true;
                 mCreateFlag = false;
                 mEditable = false;
@@ -310,6 +312,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         super.onActivityCreated(savedInstanceState);
         //当editFlag为true时延时0.5秒更新UI（防止UI已更新，moonlight数据未载入）
         if (mEditFlag) {
+            //moonlight_menu = mDatabaseUtils.getMoonlight();
             mHandler.postDelayed(myRunnable, 500);
         }
         if (!mEditable) {
@@ -365,7 +368,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     public void onStop() {
         super.onStop();
         Log.i(TAG, "onStop");
-        removeListener();
+        mDatabaseUtils.removeListener();
+        //removeListener();
     }
 
     @Override
@@ -393,7 +397,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         super.onCreateOptionsMenu(menu, inflater);
         //如mEditFlag为true，加载edit_moonlight_menu，反之则加载create_moonlight_menu
         if (mCreateFlag || mEditFlag) {
-            inflater.inflate(R.menu.moonlight_menu, menu);
+            inflater.inflate(R.menu.moonlight_detail_menu, menu);
         }
     }
 
@@ -410,6 +414,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                             //do whatever you want to with the values
                             moonlight.setColor(color);
                             mContentFrameLayout.setBackgroundColor(color);
+                            mEditable = true;
                         }
                     });
                     //customize the dialog however you want
@@ -877,10 +882,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private void getMoonlight(String keyId, int type) {
         if (type == 201) {
             mMoonlightRef = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight").child(mUserId).child("note").child(keyId);
+                    .child("users-moonlight_menu").child(mUserId).child("note").child(keyId);
         } else if (type == 202) {
             mMoonlightRef = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight").child(mUserId).child("trash").child(keyId);
+                    .child("users-moonlight_menu").child(mUserId).child("trash").child(keyId);
         }
 
         moonlightListener = new ValueEventListener() {
@@ -891,7 +896,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                         moonlight = dataSnapshot.getValue(Moonlight.class);
                     }
 
-                    Log.d(TAG, "moonlight.getId: " + moonlight.getId());
+                    Log.d(TAG, "moonlight_menu.getId: " + moonlight.getId());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -900,7 +905,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "loadMoonlight:onCancelled", databaseError.toException());
-                SnackBarUtils.shortSnackBar(mView, "Failed to load moonlight.", SnackBarUtils.TYPE_WARNING).show();
+                SnackBarUtils.shortSnackBar(mView, "Failed to load moonlight_menu.", SnackBarUtils.TYPE_WARNING).show();
 
             }
         };
@@ -1133,6 +1138,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
         private void initView(boolean editable) {
 
+            moonlight = mDatabaseUtils.getMoonlight();
             if (moonlight.getTitle() != null) {
                 mTitle.setText(moonlight.getTitle());
                 if (!editable) {
@@ -1155,7 +1161,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             if (moonlight.getAudioUrl() != null) {
                 showAudio(moonlight.getAudioName());
                 //String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
-                //mAudioPlayer.prepare(dirPath + moonlight.getAudioName());
+                //mAudioPlayer.prepare(dirPath + moonlight_menu.getAudioName());
                 mAudioCardView.setVisibility(View.VISIBLE);
                 if (!editable) {
                     mDeleteAudio.setClickable(false);

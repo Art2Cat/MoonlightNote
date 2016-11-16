@@ -20,15 +20,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.art2cat.dev.moonlightnote.Controller.Login.RPDialogFragment;
+import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
-import com.art2cat.dev.moonlightnote.Utils.AuthUtils;
+import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.Utils.Firebase.AuthUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
-import com.art2cat.dev.moonlightnote.Utils.Utils;
+import com.art2cat.dev.moonlightnote.Utils.UserUtils;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -38,8 +40,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
@@ -51,8 +51,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -67,6 +65,7 @@ import static com.art2cat.dev.moonlightnote.Model.Constants.*;
  * A simple {@link Fragment} subclass.
  */
 public class UserFragment extends Fragment implements View.OnClickListener {
+    private static final String TAG = "UserFragment";
     private View mView;
     private CircleImageView mCircleImageView;
     private AppCompatTextView mNickname;
@@ -77,15 +76,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private FirebaseUser user;
     private User mUser;
     private BitmapUtils mBitmapUtils;
-
     private Uri mFileUri = null;
-
-    private DatabaseReference myReference;
     private StorageReference mStorageReference;
     private String mFileName;
-
-
-    private static final String TAG = "UserFragment";
 
     public UserFragment() {
         // Required empty public constructor
@@ -98,14 +91,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         EventBus.getDefault().register(this);
         //获取FirebaseUser对象
         user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            mUser = Utils.getUserInfo(user);
-        }
         //获取firebaseStorage实例
         mStorageReference = FirebaseStorage.getInstance()
                 .getReferenceFromUrl(FB_STORAGE_REFERENCE);
-
-        myReference = FirebaseDatabase.getInstance().getReference();
 
         mBitmapUtils = new BitmapUtils(getActivity());
     }
@@ -121,6 +109,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         mChangePassword = (AppCompatButton) mView.findViewById(R.id.user_change_password);
         mAdView = (AdView) mView.findViewById(R.id.banner_adView);
 
+        mUser = UserUtils.getUserFromCache(getActivity().getApplicationContext());
+        Log.d(TAG, "displayUserInfo: " + mUser.getUid());
+
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .addTestDevice("0ACA1878D607E6C4360F91E0A0379C2F")
@@ -129,7 +120,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         mAdView.loadAd(adRequest);
 
         initView();
-        //updateUI(mUser.getAvatarUrl());
+        //updateUI(mUser.getPhotoUrl());
         return mView;
     }
 
@@ -150,6 +141,11 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
     public void onDestroy() {
         EventBus.getDefault().unregister(this);
         mAdView.destroy();
@@ -157,20 +153,23 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     }
 
     private void initView() {
-        String nickname = mUser.getUsername();
+        String nickname = mUser.getNickname();
+        Log.d(TAG, "initView: " + nickname);
         if (nickname != null) {
             mNickname.setText(nickname);
-            mUser.setUsername(nickname);
+            mUser.setNickname(nickname);
         } else {
             mNickname.setText(R.string.user_setNickname);
         }
         String email = mUser.getEmail();
+        Log.d(TAG, "initView: " + email);
         if (email != null) {
             mUser.setEmail(email);
             mEmail.setText(email);
         }
 
-        String url = mUser.getAvatarUrl();
+        String url = mUser.getPhotoUrl();
+        Log.d(TAG, "initView: " + url);
         if (url != null) {
 
             mBitmapUtils.display(mCircleImageView, url);
@@ -181,7 +180,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         if (mDownloadUrl != null) {
             BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
             bitmapUtils.display(mCircleImageView, mDownloadUrl.toString());
-            mUser.setAvatarUrl(mDownloadUrl.toString());
+            mUser.setPhotoUrl(mDownloadUrl.toString());
         } else {
             mFileName = null;
         }
@@ -232,7 +231,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 case BUS_FLAG_USERNAME:
                     if (busEvent.getMessage() != null) {
                         mNickname.setText(busEvent.getMessage());
-                        mUser.setUsername(busEvent.getMessage());
+                        mUser.setNickname(busEvent.getMessage());
+                        UserUtils.saveUserToCache(getActivity().getApplicationContext(), mUser);
                         updateProfile(busEvent.getMessage(), null);
                     }
                     break;
@@ -262,7 +262,10 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "User profile updated.");
-                                addUser(user.getUid(), mUser);
+                                if (mUser != null) {
+                                    BusEventUtils.post(Constants.BUS_FLAG_UPDATE_USER, null, null);
+                                    UserUtils.updateUser(user.getUid(), mUser);
+                                }
                             }
                         }
                     });
@@ -393,8 +396,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                mUser.setAvatarUrl(taskSnapshot.getDownloadUrl().toString());
+                mUser.setPhotoUrl(taskSnapshot.getDownloadUrl().toString());
                 updateUI(taskSnapshot.getDownloadUrl());
+                UserUtils.saveUserToCache(getActivity().getApplicationContext(), mUser);
                 updateProfile(null, taskSnapshot.getDownloadUrl());
                 progressDialog.dismiss();
             }
@@ -408,17 +412,5 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 }
             }
         });
-    }
-
-    public void addUser(String userId, User user) {
-        Log.d(TAG, "createUser: ");
-        myReference.child("user").push();
-
-        Map<String, Object> userValues = user.toMap();
-
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/user/" + userId, userValues);
-
-        myReference.updateChildren(childUpdates);
     }
 }

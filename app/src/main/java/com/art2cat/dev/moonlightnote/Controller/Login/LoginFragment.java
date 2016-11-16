@@ -3,7 +3,6 @@ package com.art2cat.dev.moonlightnote.Controller.Login;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -11,11 +10,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatImageButton;
-import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -29,12 +26,11 @@ import android.widget.TextView;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.User;
-import com.art2cat.dev.moonlightnote.Model.UserConfig;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.AuthUtils;
+import com.art2cat.dev.moonlightnote.Utils.Firebase.AuthUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
-import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
+import com.art2cat.dev.moonlightnote.Utils.UserUtils;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -55,16 +51,14 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class LoginFragment extends Fragment implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
+    private static final int RC_SIGN_IN = 9001;
+    private static final String USER_G = "google";
+    private static final String TAG = "LoginFragment";
     protected View mView;
     private AppCompatEditText mEmailView;
     private AppCompatEditText mPasswordView;
@@ -79,10 +73,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     private GoogleApiClient mGoogleApiClient;
     private int flag = 0;
     private boolean signUp_state;
-    private static final int RC_SIGN_IN = 9001;
-    private static final String USER_G = "google";
-
-    private static final String TAG = "LoginFragment";
 
 
     public LoginFragment() {
@@ -190,7 +180,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (TextUtils.isEmpty(password) ) {
+        if (TextUtils.isEmpty(password)) {
             mPasswordView.setError(getString(R.string.error_field_required));
             focusView = mPasswordView;
             cancel = true;
@@ -339,12 +329,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     SPUtils.putString(getActivity(), "User", "Id", user.getUid());
                     Uri photoUrl = user.getPhotoUrl();
-                    User user1 = new User(user.getDisplayName(), user.getEmail(), user.getUid());
+                    User user1 = new User(user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString(), user.getUid());
                     if (photoUrl != null) {
-                        user1.avatarUrl = photoUrl.toString();
+                        user1.photoUrl = photoUrl.toString();
                     }
-                    createUserConfig(user.getUid());
-                    createUser(user.getUid(), user1);
+                    UserUtils.updateUser(user.getUid(), user1);
+                    UserUtils.saveUserToCache(getActivity().getApplicationContext(), user1);
                 } else {
                     Log.d(TAG, "onAuthStateChanged:signed_out:");
                 }
@@ -435,33 +425,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         }
     }
 
-    public void createUser(String userId, User user) {
-        Log.d(TAG, "createUser: ");
-        myReference.child("user").push();
 
-        Map<String, Object> userValues = user.toMap();
-
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/user/" + userId, userValues);
-
-        myReference.updateChildren(childUpdates);
-    }
-
-    private void createUserConfig(String userId) {
-        UserConfig userConfig = new UserConfig();
-        List<String> labels = new ArrayList<String>();
-        labels.add("New Label");
-        labels.add("Default");
-        Map<String, Integer> colors = new HashMap<String, Integer>();
-        colors.put("red", 0xfff44336);
-        colors.put("green", 0xff4caf50);
-        colors.put("blue", 0xff2195f3);
-        userConfig.setUserId(userId);
-        userConfig.setLabels(labels);
-        userConfig.setColors(colors);
-        UserConfigUtils.writeUserConfig(getActivity(), userConfig);
-
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void busAction(BusEvent busEvent) {

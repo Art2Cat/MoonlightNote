@@ -41,6 +41,7 @@ public class Constants {
     public static final int BUS_FLAG_ALBUM = 806;
     public static final int BUS_FLAG_SIGN_OUT = 807;
     public static final int BUS_FLAG_MOONLIGHT = 808;
+    public static final int BUS_FLAG_UPDATE_USER = 809;
 
 
     /**
@@ -48,6 +49,7 @@ public class Constants {
      */
     public static final int EXTRA_TYPE_MOONLIGHT = 201;
     public static final int EXTRA_TYPE_TRASH = 202;
+    public static final int EXTRA_TYPE_USER = 203;
 
     /**
      * Permission request and  user action

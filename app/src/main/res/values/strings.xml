@@ -75,6 +75,7 @@
     <string name="trash_restore_action">Restore</string>
     <string name="login_request">Please sign in!</string>
     <string name="fragment_login">Sign In</string>
+    <string name="action_create">Create</string>
 
 
 </resources>

@@ -27,12 +27,19 @@ import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.Utils.Firebase.DatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
-import com.art2cat.dev.moonlightnote.Utils.Utils;
+import com.art2cat.dev.moonlightnote.Utils.UserUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -41,10 +48,10 @@ import static com.google.firebase.auth.FirebaseAuth.getInstance;
 public class MoonlightActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = "MoonlightActivity";
     private View mView;
     private NavigationView mNavigationView;
     private Button mSortButton;
-    private FirebaseAuth mAuth;
     private CircleImageView mCircleImageView;
     private boolean isHome;
     private boolean isClicked = false;
@@ -52,10 +59,13 @@ public class MoonlightActivity extends AppCompatActivity
     private boolean userIsInteracting;
     private TextView emailTV;
     private TextView nickTV;
-    private static final String TAG = "MoonlightActivity";
     private ArrayAdapter<String> adapter;
     private String mUserId;
     private FirebaseUser mFirebaseUser;
+    private DatabaseUtils mDatabaseUtils;
+    private FirebaseAuth mAuth;
+    private User mUser = new User();
+    private FirebaseAuth.AuthStateListener mAuthListener;
     private FragmentManager mFragmentManager = getFragmentManager();
 
     @Override
@@ -69,9 +79,13 @@ public class MoonlightActivity extends AppCompatActivity
         //获取FirebaseAuth实例
         mAuth = getInstance();
         mUserId = mAuth.getCurrentUser().getUid();
-
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        mDatabaseUtils = new DatabaseUtils(this, databaseReference, mUserId);
+        mDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
+        //获取Bus单例，并注册
+        EventBus.getDefault().register(this);
         initView();
-
+        displayUserInfo();
     }
 
     @Override
@@ -102,13 +116,19 @@ public class MoonlightActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
-        displayUserInfo();
         super.onResume();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        mDatabaseUtils.removeListener();
+    }
+
+    @Override
+    protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -202,21 +222,21 @@ public class MoonlightActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         //FloatingActionButton实例化
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         //设置FloatingActionButton点击事件
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isLogin) {
-                    Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
-                    intent.putExtra("writeoredit", 0);
-                    startActivity(intent);
-                } else {
-                    SnackBarUtils.shortSnackBar(mView, getString(R.string.login_request),
-                            SnackBarUtils.TYPE_INFO).show();
-                }
-            }
-        });
+        //fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (isLogin) {
+//                    Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
+//                    intent.putExtra("writeoredit", 0);
+//                    startActivity(intent);
+//                } else {
+//                    SnackBarUtils.shortSnackBar(mView, getString(R.string.login_request),
+//                            SnackBarUtils.TYPE_INFO).show();
+//                }
+//            }
+//        });
 
         //DrawerLayout实例化
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -297,24 +317,40 @@ public class MoonlightActivity extends AppCompatActivity
         userIsInteracting = true;
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void busAction(BusEvent busEvent) {
+        if (busEvent != null) {
+            if (busEvent.getFlag() == 809) {
+                displayUserInfo();
+            }
+        }
+    }
+
     private void displayUserInfo() {
         // Name, email address, and profile imageUrl Url
         if (mFirebaseUser != null) {
-            User user = Utils.getUserInfo(mFirebaseUser);
-
+            //User user = Utils.getUserInfo(mFirebaseUser);
+            //if (mDatabaseUtils.getUser() != null) {
+            //User user = mDatabaseUtils.getUser();
             // Name, email address, and profile imageUrl Url
-            if (user.getUsername() != null) {
-                nickTV.setText(user.getUsername());
+            mUser = UserUtils.getUserFromCache(this.getApplicationContext());
+
+            Log.d(TAG, "displayUserInfo: " + mUser.getUid());
+            String username = mUser.getNickname();
+            if (username != null) {
+                nickTV.setText(mUser.getNickname());
             }
-            if (user.getEmail() != null) {
-                emailTV.setText(user.getEmail());
+            String email = mUser.getEmail();
+            if (email != null) {
+                emailTV.setText(email);
             }
-            if (user.getAvatarUrl() != null) {
-                String photoUrl = user.getAvatarUrl();
+            String photoUrl = mUser.getPhotoUrl();
+            if (photoUrl != null) {
                 BitmapUtils bitmapUtils = new BitmapUtils(this);
                 Log.d(TAG, "displayUserInfo: " + photoUrl);
                 bitmapUtils.display(mCircleImageView, photoUrl);
             }
+            //}
         }
     }
 }

@@ -64,9 +64,9 @@ public abstract class MoonlightListFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.d(TAG, "onCreateView: ");
         View rootView = inflater.inflate(R.layout.fragment_moonlight, container, false);
-        if (isTrash()) {
-            setHasOptionsMenu(true);
-        }
+
+        setHasOptionsMenu(true);
+
 
         // [START create_database_reference]
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -139,6 +139,12 @@ public abstract class MoonlightListFragment extends Fragment {
                         viewHolder.setColor(0);
                     }
 
+                    if (model.getAudioName() != null) {
+                        viewHolder.audioAppCompatImageView.setVisibility(View.VISIBLE);
+                    } else {
+                        viewHolder.audioAppCompatImageView.setVisibility(View.GONE);
+                    }
+
                     final Moonlight moonlight = model;
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -193,7 +199,11 @@ public abstract class MoonlightListFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.trash_menu, menu);
+        if (isTrash()) {
+            inflater.inflate(R.menu.trash_menu, menu);
+        } else {
+            inflater.inflate(R.menu.moonlight_menu, menu);
+        }
         //this.menu = menu;
     }
 
@@ -201,6 +211,13 @@ public abstract class MoonlightListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (isLogin) {
             switch (item.getItemId()) {
+                case R.id.action_create:
+                    if (isLogin) {
+                        Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
+                        intent.putExtra("writeoredit", 0);
+                        startActivity(intent);
+                    }
+                    break;
                 case R.id.menu_empty_trash:
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_empty_trash, null);
@@ -227,7 +244,7 @@ public abstract class MoonlightListFragment extends Fragment {
 
     public void emptyTrash() {
         try {
-            FirebaseDatabase.getInstance().getReference().child("users-moonlight")
+            FirebaseDatabase.getInstance().getReference().child("users-moonlight_menu")
                     .child(getUid()).child("trash").removeValue(
                     new DatabaseReference.CompletionListener() {
                         @Override

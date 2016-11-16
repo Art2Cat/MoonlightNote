@@ -1,15 +1,19 @@
-package com.art2cat.dev.moonlightnote.Utils;
+package com.art2cat.dev.moonlightnote.Utils.Firebase;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by rorschach
@@ -45,4 +49,5 @@ public class AuthUtils {
                     }
                 });
     }
+
 }

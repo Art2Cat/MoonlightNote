@@ -2,8 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_color_picker"
-        android:title="@string/done"
-        android:icon="@drawable/ic_color_lens_white_24dp"
+        android:id="@+id/action_create"
+        android:icon="@drawable/ic_action_create"
+        android:orderInCategory="100"
+        android:title="@string/action_create"
         app:showAsAction="ifRoom" />
 </menu>

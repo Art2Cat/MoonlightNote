@@ -8,36 +8,28 @@ import java.util.Map;
  * on 8/12/16.
  */
 public class User {
-    public String username;
+    public String nickname;
     public String email;
     public String uid;
-    public String avatarUrl;
-    public String userConfig;
+    public String photoUrl;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String username, String email, String uid) {
-        this.username = username;
+    public User(String nickname, String email, String photoUrl, String uid) {
+        this.nickname = nickname;
         this.email = email;
+        this.photoUrl = photoUrl;
         this.uid = uid;
     }
 
-    public String getUserConfig() {
-        return userConfig;
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 
-    public void setUserConfig(String userConfig) {
-        this.userConfig = userConfig;
-    }
-
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
     public String getUid() {
@@ -56,22 +48,20 @@ public class User {
         this.email = email;
     }
 
-    public String getUsername() {
-        return username;
+    public String getNickname() {
+        return nickname;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("nickname", username);
+        result.put("nickname", nickname);
         result.put("email", email);
         result.put("uid", uid);
-        result.put("avatarUrl", avatarUrl );
-        result.put("userConfig", userConfig);
-
+        result.put("photoUrl", photoUrl);
         return result;
     }
 }

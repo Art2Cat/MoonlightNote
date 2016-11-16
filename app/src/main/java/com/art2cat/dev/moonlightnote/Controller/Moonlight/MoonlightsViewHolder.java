@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -20,13 +21,14 @@ import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
  * on 9/17/16.
  */
 public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
-    private Context context;
+    private static final String TAG = "MoonlightsViewHolder";
     public CardView mCardView;
     public AppCompatTextView titleAppCompatTextView;
     public AppCompatTextView contentAppCompatTextView;
     public AppCompatImageView photoAppCompatImageView;
+    public LinearLayoutCompat audioAppCompatImageView;
+    private Context context;
     private BitmapUtils bitmapUtils;
-    private static final String TAG = "MoonlightsViewHolder";
 
     public MoonlightsViewHolder(View itemView) {
         super(itemView);
@@ -34,6 +36,7 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
         titleAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_title);
         contentAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_content);
         photoAppCompatImageView = (AppCompatImageView) itemView.findViewById(R.id.moonlight_image);
+        audioAppCompatImageView = (LinearLayoutCompat) itemView.findViewById(R.id.moonlight_audio);
         //bitmapUtils = new BitmapUtils();
 
     }
