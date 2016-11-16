@@ -3,7 +3,6 @@ package com.art2cat.dev.moonlightnote.Controller.User;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,6 +28,7 @@ import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
+import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -76,6 +76,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private ProgressDialog progressDialog;
     private FirebaseUser user;
     private User mUser;
+    private BitmapUtils mBitmapUtils;
 
     private Uri mFileUri = null;
 
@@ -97,12 +98,16 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         EventBus.getDefault().register(this);
         //获取FirebaseUser对象
         user = FirebaseAuth.getInstance().getCurrentUser();
-        mUser = new User();
+        if (user != null) {
+            mUser = Utils.getUserInfo(user);
+        }
         //获取firebaseStorage实例
         mStorageReference = FirebaseStorage.getInstance()
                 .getReferenceFromUrl(FB_STORAGE_REFERENCE);
 
         myReference = FirebaseDatabase.getInstance().getReference();
+
+        mBitmapUtils = new BitmapUtils(getActivity());
     }
 
     @Override
@@ -124,7 +129,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         mAdView.loadAd(adRequest);
 
         initView();
-        updateUI(user.getPhotoUrl());
+        //updateUI(mUser.getAvatarUrl());
         return mView;
     }
 
@@ -141,7 +146,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onPause() {
         super.onPause();
-        addUser(user.getUid(), mUser);
+        //addUser(user.getUid(), mUser);
     }
 
     @Override
@@ -152,17 +157,23 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     }
 
     private void initView() {
-        String nickname = user.getDisplayName();
+        String nickname = mUser.getUsername();
         if (nickname != null) {
             mNickname.setText(nickname);
             mUser.setUsername(nickname);
         } else {
             mNickname.setText(R.string.user_setNickname);
         }
-        String email = user.getEmail();
+        String email = mUser.getEmail();
         if (email != null) {
             mUser.setEmail(email);
             mEmail.setText(email);
+        }
+
+        String url = mUser.getAvatarUrl();
+        if (url != null) {
+
+            mBitmapUtils.display(mCircleImageView, url);
         }
     }
 
@@ -251,6 +262,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "User profile updated.");
+                                addUser(user.getUid(), mUser);
                             }
                         }
                     });

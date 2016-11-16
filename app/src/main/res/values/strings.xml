@@ -71,10 +71,10 @@
     <string name="menu_empty_trash">Empty Trash</string>
     <string name="dialog_empty_trash_title">Empty Trash</string>
     <string name="dialog_empty_trash_content">All notes in Trash will be permanently deleted.</string>
-    <string name="trash_retore">Can\'t edit in Trash</string>
-    <string name="trash_retore_action">Restore</string>
+    <string name="trash_restore">Can\'t edit in Trash</string>
+    <string name="trash_restore_action">Restore</string>
     <string name="login_request">Please sign in!</string>
-    <string name="fragment_login">Login</string>
+    <string name="fragment_login">Sign In</string>
 
 
 </resources>

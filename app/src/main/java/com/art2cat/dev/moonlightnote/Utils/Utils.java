@@ -82,4 +82,16 @@ public class Utils {
         }
     }
 
+    public static User getUserInfo(FirebaseUser firebaseUser) {
+        User user;
+        if (firebaseUser != null) {
+            user = new User();
+            user.setAvatarUrl(firebaseUser.getPhotoUrl().toString());
+            user.setEmail(firebaseUser.getEmail());
+            user.setUsername(firebaseUser.getDisplayName());
+
+            return user;
+        }
+        return null;
+    }
 }

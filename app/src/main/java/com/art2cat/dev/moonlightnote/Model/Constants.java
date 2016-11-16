@@ -39,7 +39,9 @@ public class Constants {
     public static final int BUS_FLAG_EMAIL = 804;
     public static final int BUS_FLAG_CAMERA = 805;
     public static final int BUS_FLAG_ALBUM = 806;
-    public static final int BUS_FLAG_SIGNOUT = 807;
+    public static final int BUS_FLAG_SIGN_OUT = 807;
+    public static final int BUS_FLAG_MOONLIGHT = 808;
+
 
     /**
      *

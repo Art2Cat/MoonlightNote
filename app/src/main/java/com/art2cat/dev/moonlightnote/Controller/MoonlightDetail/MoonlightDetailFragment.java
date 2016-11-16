@@ -314,8 +314,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         }
         if (!mEditable) {
             Log.d(TAG, "onActivityCreated: SnackBar");
-            final Snackbar snackbar = SnackBarUtils.longSnackBar(mView, getString(R.string.trash_retore),
-                    SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_retore_action,
+            final Snackbar snackbar = SnackBarUtils.longSnackBar(mView, getString(R.string.trash_restore),
+                    SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_restore_action,
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -471,6 +471,12 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                         uploadFromUri(mAudioUri, mUserId, 3);
                     }
                     break;
+                case Constants.BUS_FLAG_MOONLIGHT:
+                    if (busEvent.getMoonlight() != null) {
+                        Log.d(TAG, "1moonlight.getId: " + busEvent.getMoonlight().getId());
+                    } else {
+                        Log.d(TAG, "1moonlight.getId: " + busEvent.getMoonlight().getId());
+                    }
             }
         }
     }
@@ -570,6 +576,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     Log.d(TAG, "take Picture" + mFileUri.toString());
                     uploadFromUri(mFileUri, mUserId, 0);
                 }
+                mEditable = true;
                 break;
             case ALBUM_CHOOSE:
                 Log.d(TAG, "album choose");
@@ -577,6 +584,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     Uri fileUri = data.getData();
                     uploadFromUri(fileUri, mUserId, 0);
                 }
+                mEditable = true;
                 break;
             case RECORD_AUDIO:
                 if (resultCode == RESULT_OK) {
@@ -594,7 +602,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                             uploadFromUri(copyAudioFile(audioUri), mUserId, 3);
                         }
                     }
-
+                    mEditable = true;
                 }
             default:
                 break;
@@ -678,6 +686,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
         if (takePicIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivityForResult(takePicIntent, TAKE_PICTURE);
+            mEditable = false;
             Log.d(TAG, "onCameraClick: ");
         } else {
             SnackBarUtils.longSnackBar(mView, "No Camera!", SnackBarUtils.TYPE_WARNING).show();
@@ -714,6 +723,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
         if (albumIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivityForResult(albumIntent, ALBUM_CHOOSE);
+            mEditable = false;
         } else {
             SnackBarUtils.longSnackBar(mView, "No Album!", SnackBarUtils.TYPE_WARNING).show();
         }
@@ -751,7 +761,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
     private void uploadFromUri(final Uri fileUri, String userId, int type) {
         StorageTask<UploadTask.TaskSnapshot> uploadTask = null;
-
         if (type == 0) {
             mProgressBarContainer.setVisibility(View.VISIBLE);
             // Get a reference to store file at photos/<FILENAME>.jpg
@@ -856,6 +865,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         intent.putExtra(Constants.GET_AUDIO, true);
         // Start the activity, the intent will be populated with the speech text
         startActivityForResult(intent, RECORD_AUDIO);
+        mEditable = false;
     }
 
 
@@ -881,7 +891,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                         moonlight = dataSnapshot.getValue(Moonlight.class);
                     }
 
-                    Log.d(TAG, "moonlight.getTitle: " + moonlight.getTitle());
+                    Log.d(TAG, "moonlight.getId: " + moonlight.getId());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

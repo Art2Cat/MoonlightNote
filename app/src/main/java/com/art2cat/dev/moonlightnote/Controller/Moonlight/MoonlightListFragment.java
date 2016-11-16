@@ -3,14 +3,11 @@ package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,32 +15,23 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.FirebaseImageLoader;
-import com.art2cat.dev.moonlightnote.Utils.SPUtils;
-import com.art2cat.dev.moonlightnote.Utils.Utils;
+import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import static com.art2cat.dev.moonlightnote.Model.Constants.BUS_FLAG_ALBUM;
-import static com.art2cat.dev.moonlightnote.Model.Constants.BUS_FLAG_CAMERA;
-import static com.art2cat.dev.moonlightnote.Model.Constants.BUS_FLAG_USERNAME;
 
 /**
  * Created by art2cat
@@ -120,7 +108,7 @@ public abstract class MoonlightListFragment extends Fragment {
 
                 @Override
                 protected void populateViewHolder(MoonlightsViewHolder viewHolder,
-                                                  final Moonlight model, int position) {
+                                                  Moonlight model, int position) {
                     final DatabaseReference moonlightRef = getRef(position);
                     final String moonlightKey = moonlightRef.getKey();
 
@@ -151,11 +139,14 @@ public abstract class MoonlightListFragment extends Fragment {
                         viewHolder.setColor(0);
                     }
 
+                    final Moonlight moonlight = model;
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (isLogin) {
                                 Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
+
+                                BusEventUtils.post(Constants.BUS_FLAG_MOONLIGHT, null, moonlight);
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");
                                     intent.putExtra("writeoredit", 2);
@@ -253,8 +244,7 @@ public abstract class MoonlightListFragment extends Fragment {
     public void busAction(BusEvent busEvent) {
         //这里更新视图或者后台操作,从busAction获取传递参数.
         if (busEvent != null) {
-            if (busEvent.getFlag() == Constants.BUS_FLAG_SIGNOUT) ;
-            {
+            if (busEvent.getFlag() == Constants.BUS_FLAG_SIGN_OUT) {
                 isLogin = false;
             }
         }

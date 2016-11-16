@@ -13,6 +13,7 @@ import android.view.View;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -36,10 +37,11 @@ public class SetNicknameFragment extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String nickname = nicknameTIET.getText().toString();
-                        BusEvent busEvent = new BusEvent();
-                        busEvent.setFlag(Constants.BUS_FLAG_USERNAME);
-                        busEvent.setMessage(nickname);
-                        EventBus.getDefault().post(busEvent);
+                        BusEventUtils.post(Constants.BUS_FLAG_USERNAME, nickname, null);
+                        //BusEvent busEvent = new BusEvent();
+                        //busEvent.setFlag(Constants.BUS_FLAG_USERNAME);
+                       // busEvent.setMessage(nickname);
+                       // EventBus.getDefault().post(busEvent);
                     }
                 }).setNegativeButton("Cancel", null);
         return builder.create();

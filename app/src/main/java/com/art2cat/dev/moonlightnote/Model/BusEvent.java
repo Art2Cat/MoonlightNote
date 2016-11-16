@@ -11,6 +11,8 @@ public class BusEvent {
 
     private int flag;
 
+    private Moonlight moonlight;
+
     public BusEvent() {}
 
     public String getMessage() {
@@ -27,5 +29,13 @@ public class BusEvent {
 
     public void setFlag(int flag) {
         this.flag = flag;
+    }
+
+    public Moonlight getMoonlight() {
+        return moonlight;
+    }
+
+    public void setMoonlight(Moonlight moonlight) {
+        this.moonlight = moonlight;
     }
 }

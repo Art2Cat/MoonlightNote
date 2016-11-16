@@ -395,6 +395,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                             getActivity().finish();
                             Log.d(TAG, "signIn:onComplete:" + task.isSuccessful());
                         } else {
+                            showProgress(false);
                             SnackBarUtils.shortSnackBar(mView, "Sign In Failed",
                                     SnackBarUtils.TYPE_WARNING).show();
                         }

@@ -13,6 +13,7 @@ import android.view.View;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -47,10 +48,7 @@ public class RPDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        BusEvent busEvent = new BusEvent();
-                        busEvent.setFlag(Constants.BUS_FLAG_EMAIL);
-                        busEvent.setMessage(email.getText().toString());
-                        EventBus.getDefault().post(busEvent);
+                        BusEventUtils.post(Constants.BUS_FLAG_EMAIL,email.getText().toString(), null );
                     }
                 }).setNegativeButton(R.string.dialog_cancel, null);
         return builder.create();

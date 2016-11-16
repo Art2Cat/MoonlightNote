@@ -17,24 +17,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
 import com.art2cat.dev.moonlightnote.Controller.User.UserActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
+import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
+import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
-
-import org.greenrobot.eventbus.EventBus;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -179,8 +177,9 @@ public class MoonlightActivity extends AppCompatActivity
                 mAuth.signOut();
                 isLogin = false;
                 BusEvent busEvent = new BusEvent();
-                busEvent.setFlag(Constants.BUS_FLAG_SIGNOUT);
-                EventBus.getDefault().post(busEvent);
+                BusEventUtils.post(Constants.BUS_FLAG_SIGN_OUT, null, null);
+                //busEvent.setFlag(Constants.BUS_FLAG_SIGN_OUT);
+                //EventBus.getDefault().post(busEvent);
                 SPUtils.clear(this, "User");
                 SnackBarUtils.shortSnackBar(mView, "Your account have been remove!",
                         SnackBarUtils.TYPE_ALERT).show();
@@ -301,26 +300,20 @@ public class MoonlightActivity extends AppCompatActivity
     private void displayUserInfo() {
         // Name, email address, and profile imageUrl Url
         if (mFirebaseUser != null) {
-            for (UserInfo profile : mFirebaseUser.getProviderData()) {
-                // Id of the provider (ex: google.com)
-                String providerId = profile.getProviderId();
+            User user = Utils.getUserInfo(mFirebaseUser);
 
-                // UID specific to the provider
-                String uid = profile.getUid();
-
-                // Name, email address, and profile imageUrl Url
-                if (profile.getDisplayName() != null) {
-                    nickTV.setText(profile.getDisplayName());
-                }
-                if (profile.getEmail() != null) {
-                    emailTV.setText(profile.getEmail());
-                }
-                if (profile.getPhotoUrl() != null) {
-                    String photoUrl = profile.getPhotoUrl().toString();
-                    BitmapUtils bitmapUtils = new BitmapUtils(this);
-                    Log.d(TAG, "displayUserInfo: " + photoUrl);
-                    bitmapUtils.display(mCircleImageView, photoUrl);
-                }
+            // Name, email address, and profile imageUrl Url
+            if (user.getUsername() != null) {
+                nickTV.setText(user.getUsername());
+            }
+            if (user.getEmail() != null) {
+                emailTV.setText(user.getEmail());
+            }
+            if (user.getAvatarUrl() != null) {
+                String photoUrl = user.getAvatarUrl();
+                BitmapUtils bitmapUtils = new BitmapUtils(this);
+                Log.d(TAG, "displayUserInfo: " + photoUrl);
+                bitmapUtils.display(mCircleImageView, photoUrl);
             }
         }
     }

@@ -103,10 +103,10 @@ public class DatabaseUtils {
         DatabaseReference databaseReference = null;
         if (type == 201) {
             databaseReference = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight").child(mUserId).child("trash").child(keyId);
+                    .child("users-moonlight").child(mUserId).child("note").child(keyId);
         } else if (type == 202) {
             databaseReference = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight").child(mUserId).child("note").child(keyId);
+                    .child("users-moonlight").child(mUserId).child("trash").child(keyId);
         }
         if (databaseReference != null) {
             databaseReference.removeValue(new DatabaseReference.CompletionListener() {
