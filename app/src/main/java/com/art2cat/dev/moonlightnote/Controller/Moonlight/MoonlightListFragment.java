@@ -3,6 +3,7 @@ package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
+import com.art2cat.dev.moonlightnote.CustomView.CustomRecyclerView;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
@@ -43,6 +45,7 @@ public abstract class MoonlightListFragment extends Fragment {
     private DatabaseReference mDatabase;
     private FirebaseRecyclerAdapter<Moonlight, MoonlightsViewHolder> mAdapter;
     private RecyclerView mRecyclerView;
+    //    private CustomRecyclerView mRecyclerView;
     private FloatingActionButton mFAB;
     private Menu menu;
     private int index;
@@ -75,6 +78,7 @@ public abstract class MoonlightListFragment extends Fragment {
         // [END create_database_reference]
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+//        mRecyclerView = (CustomRecyclerView) rootView.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
 
         return rootView;
@@ -138,7 +142,11 @@ public abstract class MoonlightListFragment extends Fragment {
                     if (model.getColor() != 0) {
                         viewHolder.setColor(model.getColor());
                     } else {
-                        viewHolder.setColor(0);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            viewHolder.setColor(getActivity().getResources().getColor(R.color.white, null));
+                        } else {
+                            viewHolder.setColor(getActivity().getResources().getColor(R.color.white));
+                        }
                     }
 
                     if (model.getAudioName() != null) {
@@ -151,6 +159,7 @@ public abstract class MoonlightListFragment extends Fragment {
                         @Override
                         public void onClick(View v) {
                             if (isLogin) {
+                                Log.d(TAG, "onClick: " + isLogin);
                                 Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");

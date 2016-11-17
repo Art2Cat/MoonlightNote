@@ -42,14 +42,16 @@ public class Utils {
         // 获取当前系统设置
         String strTimeFormat = android.provider.Settings.System.getString(cv,
                 android.provider.Settings.System.TIME_12_24);
-        if (strTimeFormat.equals("24")) {
-            pattern = "HH:mm";
-        } else if (strTimeFormat.equals("12")) {
-            pattern = "hh:mm a";
-        }
-        if (pattern != null) {
-            SimpleDateFormat formatter = new SimpleDateFormat(pattern, Locale.getDefault());
-            return formatter.format(date);
+        if (strTimeFormat != null) {
+            if (strTimeFormat.equals("24")) {
+                pattern = "HH:mm";
+            } else if (strTimeFormat.equals("12")) {
+                pattern = "hh:mm a";
+            }
+            if (pattern != null) {
+                SimpleDateFormat formatter = new SimpleDateFormat(pattern, Locale.getDefault());
+                return formatter.format(date);
+            }
         }
         return null;
     }

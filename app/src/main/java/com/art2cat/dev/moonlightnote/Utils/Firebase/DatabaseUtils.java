@@ -103,6 +103,7 @@ public class DatabaseUtils {
     }
 
     public void moveToTrash(Moonlight moonlight) {
+        moonlight.setTrash(true);
         addMoonlight(moonlight, Constants.EXTRA_TYPE_TRASH);
     }
 
@@ -125,7 +126,7 @@ public class DatabaseUtils {
             databaseReference.removeValue(new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    Utils.showToast(mContext, "Delete completed!", 0);
+//                    Utils.showToast(mContext, "Delete completed!", 0);
                     mContext.startActivity(new Intent(mContext, MoonlightActivity.class));
                 }
             });

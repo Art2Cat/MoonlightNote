@@ -21,7 +21,6 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 
-import com.art2cat.dev.moonlightnote.AppCompatPreferenceActivity;
 import com.art2cat.dev.moonlightnote.R;
 
 import java.util.List;

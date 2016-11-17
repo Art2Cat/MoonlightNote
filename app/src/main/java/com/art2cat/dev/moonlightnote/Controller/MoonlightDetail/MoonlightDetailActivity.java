@@ -35,7 +35,6 @@ public class MoonlightDetailActivity extends AppCompatActivity {
             } else if (flag == 2) {
                 String keyid = getIntent().getStringExtra("keyid");
                 fragment = new TrashDetailFragment().newInstance(keyid);
-                //view.setOnTouchListener((MoonlightDetailFragment)fragment);
             }
             fm.beginTransaction().add(R.id.detail_fragmentContainer, fragment).commit();
         }

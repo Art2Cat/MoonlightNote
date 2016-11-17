@@ -87,9 +87,6 @@ public class MoonlightActivity extends AppCompatActivity
         initView();
         displayUserInfo();
 
-        // Custom criteria: 3 days and 5 launches
-        RateThisApp.Config config = new RateThisApp.Config(10, 5);
-        RateThisApp.init(config);
     }
 
     @Override
@@ -104,10 +101,6 @@ public class MoonlightActivity extends AppCompatActivity
 
     @Override
     protected void onStart() {
-        // Monitor launch times and interval from installation
-        RateThisApp.onStart(this);
-        // If the criteria is satisfied, "Rate this app" dialog will be shown
-        RateThisApp.showRateDialogIfNeeded(this);
         super.onStart();
     }
 
@@ -335,8 +328,19 @@ public class MoonlightActivity extends AppCompatActivity
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void busAction(BusEvent busEvent) {
         if (busEvent != null) {
-            if (busEvent.getFlag() == 809) {
-                displayUserInfo();
+            switch (busEvent.getFlag()) {
+                case 809:
+                    displayUserInfo();
+                    break;
+                case Constants.EXTRA_TYPE_MOONLIGHT:
+                    SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.delete_moonlight), SnackBarUtils.TYPE_INFO).show();
+                    break;
+                case Constants.EXTRA_TYPE_TRASH:
+                    SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.delete_moonlight), SnackBarUtils.TYPE_INFO).show();
+                    break;
+                case Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT:
+                    SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.restore_moonlight), SnackBarUtils.TYPE_INFO).show();
+                    break;
             }
         }
     }

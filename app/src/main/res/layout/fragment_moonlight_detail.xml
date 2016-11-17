@@ -44,6 +44,7 @@
                         android:layout_height="wrap_content"
                         android:background="@null"
                         android:hint="@string/moonlight_detail_title"
+                        android:inputType="none"
                         android:textSize="24sp"
                         android:textStyle="bold" />
                 </android.support.design.widget.TextInputLayout>

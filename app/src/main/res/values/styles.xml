@@ -18,7 +18,7 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="AppTheme.NoActionBarForLoginFragment" >
+    <style name="AppTheme.NoActionBarForLoginFragment">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:colorPrimary">@color/colorPrimary</item>
@@ -51,6 +51,7 @@
     <style name="MoonlightCardViewStyle" parent="AppTheme">
         <item name="cardCornerRadius">2dp</item>
         <item name="cardElevation">2dp</item>
+        <item name="cardBackgroundColor">@color/white</item>
     </style>
 
     <style name="AudioCardViewStyle" parent="AppTheme">

@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote;
+package com.art2cat.dev.moonlightnote.Controller.Settings;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

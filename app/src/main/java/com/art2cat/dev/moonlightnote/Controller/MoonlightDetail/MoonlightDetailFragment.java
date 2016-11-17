@@ -38,6 +38,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,6 +49,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -58,6 +61,7 @@ import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.AudioPlayer;
+import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.DatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.LocalCacheUtils;
@@ -256,8 +260,11 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             //获取系统当前时间
             long date = System.currentTimeMillis();
             moonlight.setDate(date);
-            String time = "Edited: " + Utils.timeFormat(getActivity(), new Date(moonlight.getDate()));
-            mDisplayTime.setText(time);
+            String time = Utils.timeFormat(getActivity().getApplicationContext(), new Date(date));
+            if (time != null) {
+                String timeFormat = "Edited: " + time;
+                mDisplayTime.setText(timeFormat);
+            }
             onCheckSoftKeyboardState(mView);
             //mDeleteImage.setOnClickListener(this);
             mImage.setOnLongClickListener(new View.OnLongClickListener() {
@@ -342,6 +349,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
                             mDatabaseUtils.restoreToNote(moonlight);
                         }
                     });
@@ -349,7 +357,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             fragmentOnTouchListener = new MoonlightDetailActivity.FragmentOnTouchListener() {
                 @Override
                 public boolean onTouch(MotionEvent ev) {
-
                     if (!snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {
                         snackbar.show();
                     }
@@ -555,7 +562,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 break;
             case R.id.bottom_sheet_item_move_to_trash:
                 //将moonlight设置为空，删除服务器中指定的moonlight数据
-                moonlight.setTrash(true);
+                BusEventUtils.post(Constants.EXTRA_TYPE_TRASH, null);
                 mDatabaseUtils.moveToTrash(moonlight);
                 mEditable = false;
                 break;
@@ -563,6 +570,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 if (moonlight.getImageName() != null) {
                     removePhoto(moonlight.getImageName());
                 }
+                BusEventUtils.post(Constants.EXTRA_TYPE_MOONLIGHT, null);
                 mDatabaseUtils.removeMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
                 moonlight = null;
                 break;
@@ -1011,8 +1019,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
     private void hideSoftKeyboard() {
         if (mInputMethodManager != null) {
-            mInputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getWindowToken(), 0);
-            mHandler.postDelayed(new BottomSheet(), 100);
+            if (mEditable) {
+                mInputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getWindowToken(), 0);
+                mHandler.postDelayed(new BottomSheet(), 100);
+            }
         }
     }
 
@@ -1158,10 +1168,16 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         private void initView(boolean editable) {
 
             moonlight = mDatabaseUtils.getMoonlight();
-            if (moonlight.getTitle() != null) {
-                mTitle.setText(moonlight.getTitle());
-                if (!editable) {
-                    mTitle.setEnabled(false);
+            if (editable) {
+                if (moonlight.getTitle() != null) {
+                    mTitle.setText(moonlight.getTitle());
+                }
+            } else {
+                //loseFocus();
+                //mTitle.setShowSoftInputOnFocus(false);
+                mTitle.setEnabled(false);
+                if (moonlight.getTitle() != null) {
+                    mTitle.setText(moonlight.getTitle());
                 }
             }
             if (moonlight.getContent() != null) {

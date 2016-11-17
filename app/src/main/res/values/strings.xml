@@ -31,10 +31,6 @@
     <string name="nav_spinner_login">Login</string>
     <string name="nav_spinner_sign_out">Sign Out</string>
 
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_moonlight">MoonlightActivity</string>
     <string name="menu_login">Add account</string>
     <string name="menu_logout">Remove active account</string>
     <string name="dialog_enter_new_label">Enter new label</string>
@@ -149,6 +145,7 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
-
-
+    <string name="delete_moonlight">Delete succeed!</string>
+    <string name="restore_moonlight">Restore succeed!</string>
+    <string name="title_activity_user">User</string>
 </resources>
