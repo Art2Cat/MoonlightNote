@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,6 +30,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
@@ -233,9 +235,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         mImage = (AppCompatImageView) mView.findViewById(R.id.moonlight_image);
         mProgressBar = (ProgressBar) mView.findViewById(R.id.moonlight_image_progressBar);
         mProgressBarContainer = (LinearLayoutCompat) mView.findViewById(R.id.progressBar_container);
-        mImageCardView = (CardView) mView.findViewById(R.id.image_container);
+        //mImageCardView = (CardView) mView.findViewById(R.id.image_container);
         mAudioCardView = (CardView) mView.findViewById(R.id.audio_container);
-        mDeleteImage = (AppCompatButton) mView.findViewById(R.id.delete_image);
+        //mDeleteImage = (AppCompatButton) mView.findViewById(R.id.delete_image);
+
         mDeleteAudio = (AppCompatButton) mView.findViewById(R.id.delete_audio);
         mPlayingAudio = (AppCompatButton) mView.findViewById(R.id.playing_audio_button);
         mShowDuration = (AppCompatTextView) mView.findViewById(R.id.moonlight_audio_duration);
@@ -256,7 +259,24 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             String time = "Edited: " + Utils.timeFormat(getActivity(), new Date(moonlight.getDate()));
             mDisplayTime.setText(time);
             onCheckSoftKeyboardState(mView);
-            mDeleteImage.setOnClickListener(this);
+            //mDeleteImage.setOnClickListener(this);
+            mImage.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Delete Image?").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            removePhoto(moonlight.getImageName());
+                            mImage.setVisibility(View.GONE);
+                            moonlight.setImageName(null);
+                            moonlight.setImageUrl(null);
+                        }
+                    }).setNegativeButton("Cancel", null).create();
+                    builder.show();
+                    return false;
+                }
+            });
             mDeleteAudio.setOnClickListener(this);
             mPlayingAudio.setOnClickListener(this);
             mBottomBarLeft.setOnClickListener(this);
@@ -357,7 +377,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         super.onStop();
         Log.i(TAG, "onStop");
         //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
-        if (mCreateFlag&& mEditable) {
+        if (mCreateFlag && mEditable) {
             if (moonlight.getImageUrl() != null || moonlight.getContent() != null
                     || moonlight.getTitle() != null || moonlight.getAudioUrl() != null) {
                 mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
@@ -496,14 +516,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(moonlight.getImageUrl()));
                 startActivity(intent);
-                break;
-            case R.id.delete_image:
-                //删除图片
-                if (moonlight.getImageName() != null) {
-                    removePhoto(moonlight.getImageName());
-                }
-                moonlight.setImageUrl(null);
-                mImageCardView.setVisibility(View.GONE);
                 break;
             case R.id.playing_audio_button:
                 if (moonlight.getAudioName() != null && mStartPlaying) {
@@ -1103,14 +1115,15 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     mBitmapUtils.display(mImage, mDownloadIUrl.toString());
                     //Picasso.with(getActivity()).load(mDownloadIUrl).into(mImage);
                 }
-                mImageCardView.setVisibility(View.VISIBLE);
+                //mImageCardView.setVisibility(View.VISIBLE);
+                mImage.setVisibility(View.VISIBLE);
 
             } catch (FileNotFoundException e) {
                 Log.d(TAG, "load local file failed" + e.toString());
             }
         } else {
             mImageFileName = null;
-            mImageCardView.setVisibility(View.GONE);
+            //mImageCardView.setVisibility(View.GONE);
         }
     }
 
@@ -1148,9 +1161,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
             }
             if (moonlight.getImageUrl() != null) {
                 mBitmapUtils.display(mImage, moonlight.getImageUrl());
-                mImageCardView.setVisibility(View.VISIBLE);
+                //mImageCardView.setVisibility(View.VISIBLE);
+                mImage.setVisibility(View.VISIBLE);
                 if (!editable) {
-                    mDeleteImage.setClickable(false);
+                    //mDeleteImage.setClickable(false);
                 }
             }
             if (moonlight.getAudioUrl() != null) {
