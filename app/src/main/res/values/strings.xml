@@ -76,6 +76,7 @@
     <string name="login_request">Please sign in!</string>
     <string name="fragment_login">Sign In</string>
     <string name="action_create">Create</string>
+    <string name="menu_rate_app">Rate this app</string>
 
 
 </resources>

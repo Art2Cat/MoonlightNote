@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,6 +43,7 @@ public abstract class MoonlightListFragment extends Fragment {
     private DatabaseReference mDatabase;
     private FirebaseRecyclerAdapter<Moonlight, MoonlightsViewHolder> mAdapter;
     private RecyclerView mRecyclerView;
+    private FloatingActionButton mFAB;
     private Menu menu;
     private int index;
     private boolean deleteFlag;
@@ -64,9 +66,9 @@ public abstract class MoonlightListFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.d(TAG, "onCreateView: ");
         View rootView = inflater.inflate(R.layout.fragment_moonlight, container, false);
-
-        setHasOptionsMenu(true);
-
+        if (isTrash()) {
+            setHasOptionsMenu(true);
+        }
 
         // [START create_database_reference]
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -108,8 +110,8 @@ public abstract class MoonlightListFragment extends Fragment {
 
                 @Override
                 protected void populateViewHolder(MoonlightsViewHolder viewHolder,
-                                                  Moonlight model, int position) {
-                    final DatabaseReference moonlightRef = getRef(position);
+                                                  final Moonlight model, int position) {
+                    DatabaseReference moonlightRef = getRef(position);
                     final String moonlightKey = moonlightRef.getKey();
 
                     if (model.getTitle() != null) {
@@ -145,14 +147,11 @@ public abstract class MoonlightListFragment extends Fragment {
                         viewHolder.audioAppCompatImageView.setVisibility(View.GONE);
                     }
 
-                    final Moonlight moonlight = model;
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (isLogin) {
                                 Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
-
-                                BusEventUtils.post(Constants.BUS_FLAG_MOONLIGHT, null, moonlight);
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");
                                     intent.putExtra("writeoredit", 2);
@@ -201,8 +200,6 @@ public abstract class MoonlightListFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         if (isTrash()) {
             inflater.inflate(R.menu.trash_menu, menu);
-        } else {
-            inflater.inflate(R.menu.moonlight_menu, menu);
         }
         //this.menu = menu;
     }
@@ -244,7 +241,7 @@ public abstract class MoonlightListFragment extends Fragment {
 
     public void emptyTrash() {
         try {
-            FirebaseDatabase.getInstance().getReference().child("users-moonlight_menu")
+            FirebaseDatabase.getInstance().getReference().child("users-moonlight")
                     .child(getUid()).child("trash").removeValue(
                     new DatabaseReference.CompletionListener() {
                         @Override

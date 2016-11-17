@@ -263,7 +263,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                             if (task.isSuccessful()) {
                                 Log.d(TAG, "User profile updated.");
                                 if (mUser != null) {
-                                    BusEventUtils.post(Constants.BUS_FLAG_UPDATE_USER, null, null);
+                                    BusEventUtils.post(Constants.BUS_FLAG_UPDATE_USER, null);
                                     UserUtils.updateUser(user.getUid(), mUser);
                                 }
                             }

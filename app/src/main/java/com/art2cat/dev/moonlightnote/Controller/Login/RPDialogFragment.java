@@ -48,7 +48,7 @@ public class RPDialogFragment extends DialogFragment {
                 .setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        BusEventUtils.post(Constants.BUS_FLAG_EMAIL,email.getText().toString(), null );
+                        BusEventUtils.post(Constants.BUS_FLAG_EMAIL,email.getText().toString() );
                     }
                 }).setNegativeButton(R.string.dialog_cancel, null);
         return builder.create();

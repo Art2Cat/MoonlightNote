@@ -48,9 +48,8 @@
         <item name="colorControlHighlight">@color/colorAccent</item>
     </style>
 
-    <style name="CardViewStyle" parent="AppTheme">
+    <style name="MoonlightCardViewStyle" parent="AppTheme">
         <item name="cardCornerRadius">2dp</item>
-        <item name="android:radius">2dp</item>
         <item name="cardElevation">2dp</item>
     </style>
 

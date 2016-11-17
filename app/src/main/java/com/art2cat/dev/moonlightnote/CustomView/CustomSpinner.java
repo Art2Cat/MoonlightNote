@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.View;
+package com.art2cat.dev.moonlightnote.CustomView;
 
 import android.content.Context;
 import android.util.AttributeSet;

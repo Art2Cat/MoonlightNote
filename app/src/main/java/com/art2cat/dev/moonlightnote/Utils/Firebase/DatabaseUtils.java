@@ -66,24 +66,24 @@ public class DatabaseUtils {
 
     public void updateMoonlight(@Nullable String keyId, final Moonlight moonlight, final int type) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        final String mKey;
+        String mKey;
         String oldKey = null;
+        oldKey = moonlight.getId();
         if (keyId == null) {
-            mKey = databaseReference.child("moonlight_menu").push().getKey();
+            mKey = databaseReference.child("moonlight").push().getKey();
         } else {
             mKey = keyId;
         }
-
-        oldKey = moonlight.getId();
-
         moonlight.setId(mKey);
         Map<String, Object> moonlightValues = moonlight.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
 
-        if (type == 201) {
-            childUpdates.put("/users-moonlight_menu/" + mUserId + "/note/" + mKey, moonlightValues);
+        if (type == 201 || type == 204) {
+            childUpdates.put("/users-moonlight/" + mUserId + "/note/" + mKey, moonlightValues);
+            Log.d(TAG, "updateMoonlight: " + mKey);
         } else if (type == 202) {
-            childUpdates.put("/users-moonlight_menu/" + mUserId + "/trash/" + mKey, moonlightValues);
+            childUpdates.put("/users-moonlight/" + mUserId + "/trash/" + mKey, moonlightValues);
+            Log.d(TAG, "updateMoonlight: " + mKey);
         }
 
         final String finalOldKey = oldKey;
@@ -93,10 +93,9 @@ public class DatabaseUtils {
                 if (type == 202) {
                     Log.d(TAG, "onComplete: update" + finalOldKey);
                     removeMoonlight(finalOldKey, type);
-                } else if (type == 201) {
-                    if (moonlight.isTrash()) {
-                        removeMoonlight(finalOldKey, type);
-                    }
+                } else if (type == 204) {
+                    Log.d(TAG, "onComplete: update" + finalOldKey);
+                    removeMoonlight(finalOldKey, type);
                 }
             }
         });
@@ -107,15 +106,21 @@ public class DatabaseUtils {
         addMoonlight(moonlight, Constants.EXTRA_TYPE_TRASH);
     }
 
+    public void restoreToNote(Moonlight moonlight) {
+        moonlight.setTrash(false);
+        addMoonlight(moonlight, Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT);
+    }
+
     public void removeMoonlight(String keyId, int type) {
         DatabaseReference databaseReference = null;
-        if (type == 201) {
+        if (type == 201 || type == 202) {
             databaseReference = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight_menu").child(mUserId).child("note").child(keyId);
-        } else if (type == 202) {
+                    .child("users-moonlight").child(mUserId).child("note").child(keyId);
+        } else if (type == 204) {
             databaseReference = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight_menu").child(mUserId).child("trash").child(keyId);
+                    .child("users-moonlight").child(mUserId).child("trash").child(keyId);
         }
+
         if (databaseReference != null) {
             databaseReference.removeValue(new DatabaseReference.CompletionListener() {
                 @Override
@@ -128,13 +133,13 @@ public class DatabaseUtils {
     }
 
     public void getDataFromDatabase(String keyId, final int type) {
-
+        Log.d(TAG, "getDataFromDatabase: " + keyId);
         if (type == 201) {
             mDatabaseReference = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight_menu").child(mUserId).child("note").child(keyId);
+                    .child("users-moonlight").child(mUserId).child("note").child(keyId);
         } else if (type == 202) {
             mDatabaseReference = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight_menu").child(mUserId).child("trash").child(keyId);
+                    .child("users-moonlight").child(mUserId).child("trash").child(keyId);
         } else if (type == 203) {
             mDatabaseReference = FirebaseDatabase.getInstance().getReference()
                     .child("user").child(mUserId);

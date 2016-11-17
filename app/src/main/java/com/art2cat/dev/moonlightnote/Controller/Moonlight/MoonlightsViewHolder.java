@@ -54,7 +54,7 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
 
     public void displayImage(Context context, String url) {
         if (url != null && photoAppCompatImageView.getTag() != null) {
-            Log.d(TAG, "displayImage: succeed" );
+            Log.d(TAG, "displayImage: succeed");
             if (bitmapUtils == null) {
                 bitmapUtils = new BitmapUtils(context);
             }
@@ -67,7 +67,6 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void setColor(int color) {
-        mCardView.setBackgroundColor(color);
+        mCardView.setCardBackgroundColor(color);
     }
-
 }

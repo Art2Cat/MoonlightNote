@@ -322,7 +322,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                            mDatabaseUtils.restoreToNote(moonlight);
                         }
                     });
 
@@ -344,18 +344,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause: ");
-        //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
-        if (mCreateFlag) {
-            if (moonlight.getImageUrl() != null || moonlight.getContent() != null
-                    || moonlight.getTitle() != null || moonlight.getAudioUrl() != null) {
-                mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
-            }
-        }
-        //当editFlag为true且moonlight不为空时更新moonlight信息到服务器
-        if (mEditFlag && moonlight != null && !moonlight.isTrash()) {
-            Log.d(TAG, "mKeyId" + mKeyId);
-            mDatabaseUtils.updateMoonlight(mKeyId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
-        }
     }
 
     @Override
@@ -368,6 +356,18 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     public void onStop() {
         super.onStop();
         Log.i(TAG, "onStop");
+        //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
+        if (mCreateFlag&& mEditable) {
+            if (moonlight.getImageUrl() != null || moonlight.getContent() != null
+                    || moonlight.getTitle() != null || moonlight.getAudioUrl() != null) {
+                mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+            }
+        }
+        //当editFlag为true且moonlight不为空时更新moonlight信息到服务器
+        if (mEditable && mEditFlag && moonlight != null && !moonlight.isTrash()) {
+            Log.d(TAG, "mKeyId" + mKeyId);
+            mDatabaseUtils.updateMoonlight(mKeyId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+        }
         mDatabaseUtils.removeListener();
         //removeListener();
     }
@@ -476,12 +476,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                         uploadFromUri(mAudioUri, mUserId, 3);
                     }
                     break;
-                case Constants.BUS_FLAG_MOONLIGHT:
-                    if (busEvent.getMoonlight() != null) {
-                        Log.d(TAG, "1moonlight.getId: " + busEvent.getMoonlight().getId());
-                    } else {
-                        Log.d(TAG, "1moonlight.getId: " + busEvent.getMoonlight().getId());
-                    }
             }
         }
     }
@@ -551,6 +545,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 //将moonlight设置为空，删除服务器中指定的moonlight数据
                 moonlight.setTrash(true);
                 mDatabaseUtils.moveToTrash(moonlight);
+                mEditable = false;
                 break;
             case R.id.bottom_sheet_item_permanent_delete:
                 if (moonlight.getImageName() != null) {
@@ -882,10 +877,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     private void getMoonlight(String keyId, int type) {
         if (type == 201) {
             mMoonlightRef = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight_menu").child(mUserId).child("note").child(keyId);
+                    .child("users-moonlight").child(mUserId).child("note").child(keyId);
         } else if (type == 202) {
             mMoonlightRef = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight_menu").child(mUserId).child("trash").child(keyId);
+                    .child("users-moonlight").child(mUserId).child("trash").child(keyId);
         }
 
         moonlightListener = new ValueEventListener() {

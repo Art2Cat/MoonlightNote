@@ -16,14 +16,11 @@ import org.greenrobot.eventbus.EventBus;
 
 public class BusEventUtils {
 
-    public static void post(int flag, @Nullable String message, @Nullable Moonlight moonlight) {
+    public static void post(int flag, @Nullable String message) {
         BusEvent busEvent = new BusEvent();
         busEvent.setFlag(flag);
         if (message != null) {
             busEvent.setMessage(message);
-        }
-        if (moonlight != null) {
-            busEvent.setMoonlight(moonlight);
         }
         EventBus.getDefault().post(busEvent);
     }

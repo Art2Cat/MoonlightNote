@@ -50,6 +50,7 @@ public class Constants {
     public static final int EXTRA_TYPE_MOONLIGHT = 201;
     public static final int EXTRA_TYPE_TRASH = 202;
     public static final int EXTRA_TYPE_USER = 203;
+    public static final int EXTRA_TYPE_TRASH_TO_MOONLIGHT = 204;
 
     /**
      * Permission request and  user action

@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -36,6 +37,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.kobakei.ratethisapp.RateThisApp;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -49,8 +51,9 @@ public class MoonlightActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "MoonlightActivity";
-    private View mView;
     private NavigationView mNavigationView;
+    private CoordinatorLayout mCoordinatorLayout;
+    private FloatingActionButton mFAB;
     private Button mSortButton;
     private CircleImageView mCircleImageView;
     private boolean isHome;
@@ -71,10 +74,7 @@ public class MoonlightActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // use LayoutInflater inflate mView, make SnackBar enable
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        mView = inflater.inflate(R.layout.activity_main, null);
-        setContentView(mView);
+        setContentView(R.layout.activity_moonlight);
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         //获取FirebaseAuth实例
         mAuth = getInstance();
@@ -86,6 +86,10 @@ public class MoonlightActivity extends AppCompatActivity
         EventBus.getDefault().register(this);
         initView();
         displayUserInfo();
+
+        // Custom criteria: 3 days and 5 launches
+        RateThisApp.Config config = new RateThisApp.Config(10, 5);
+        RateThisApp.init(config);
     }
 
     @Override
@@ -100,6 +104,10 @@ public class MoonlightActivity extends AppCompatActivity
 
     @Override
     protected void onStart() {
+        // Monitor launch times and interval from installation
+        RateThisApp.onStart(this);
+        // If the criteria is satisfied, "Rate this app" dialog will be shown
+        RateThisApp.showRateDialogIfNeeded(this);
         super.onStart();
     }
 
@@ -147,6 +155,7 @@ public class MoonlightActivity extends AppCompatActivity
                                     .add(R.id.main_fragment_container, fragment)
                                     .commit();
                             setTitle(R.string.app_name);
+                            mFAB.setVisibility(View.VISIBLE);
                             isHome = !isHome;
                         } else {
                             fragment = new MoonlightFragment();
@@ -154,6 +163,7 @@ public class MoonlightActivity extends AppCompatActivity
                                     .replace(R.id.main_fragment_container, fragment)
                                     .commit();
                             setTitle(R.string.app_name);
+                            mFAB.setVisibility(View.VISIBLE);
                             isHome = !isHome;
                         }
                     }
@@ -168,6 +178,7 @@ public class MoonlightActivity extends AppCompatActivity
                                 .add(R.id.main_fragment_container, fragment)
                                 .commit();
                         setTitle("Trash");
+                        mFAB.setVisibility(View.GONE);
                         isHome = !isHome;
                     } else {
                         fragment = new TrashFragment();
@@ -175,9 +186,13 @@ public class MoonlightActivity extends AppCompatActivity
                                 .replace(R.id.main_fragment_container, fragment)
                                 .commit();
                         setTitle("Trash");
+                        mFAB.setVisibility(View.GONE);
                         isHome = !isHome;
                     }
                 }
+                break;
+            case R.id.nav_rate_app:
+                RateThisApp.showRateDialog(this);
                 break;
             case R.id.nav_share:
                 //启动Intent分享
@@ -196,12 +211,9 @@ public class MoonlightActivity extends AppCompatActivity
             case R.id.nav_logout:
                 mAuth.signOut();
                 isLogin = false;
-                BusEvent busEvent = new BusEvent();
-                BusEventUtils.post(Constants.BUS_FLAG_SIGN_OUT, null, null);
-                //busEvent.setFlag(Constants.BUS_FLAG_SIGN_OUT);
-                //EventBus.getDefault().post(busEvent);
+                BusEventUtils.post(Constants.BUS_FLAG_SIGN_OUT, null);
                 SPUtils.clear(this, "User");
-                SnackBarUtils.shortSnackBar(mView, "Your account have been remove!",
+                SnackBarUtils.shortSnackBar(mCoordinatorLayout, "Your account have been remove!",
                         SnackBarUtils.TYPE_ALERT).show();
                 break;
             default:
@@ -221,22 +233,23 @@ public class MoonlightActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.snackbar_container);
         //FloatingActionButton实例化
-        //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        mFAB = (FloatingActionButton) findViewById(R.id.fab);
         //设置FloatingActionButton点击事件
-        //fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (isLogin) {
-//                    Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
-//                    intent.putExtra("writeoredit", 0);
-//                    startActivity(intent);
-//                } else {
-//                    SnackBarUtils.shortSnackBar(mView, getString(R.string.login_request),
-//                            SnackBarUtils.TYPE_INFO).show();
-//                }
-//            }
-//        });
+        mFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isLogin) {
+                    Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
+                    intent.putExtra("writeoredit", 0);
+                    startActivity(intent);
+                } else {
+                    SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
+                            SnackBarUtils.TYPE_INFO).show();
+                }
+            }
+        });
 
         //DrawerLayout实例化
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -271,7 +284,7 @@ public class MoonlightActivity extends AppCompatActivity
                         isClicked = !isClicked;
                     }
                 } else {
-                    SnackBarUtils.shortSnackBar(mView, getString(R.string.login_request),
+                    SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
                             SnackBarUtils.TYPE_INFO).show();
                 }
             }
@@ -286,7 +299,7 @@ public class MoonlightActivity extends AppCompatActivity
                 if (isLogin) {
                     startActivity(new Intent(MoonlightActivity.this, UserActivity.class));
                 } else {
-                    SnackBarUtils.shortSnackBar(mView, getString(R.string.login_request),
+                    SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
                             SnackBarUtils.TYPE_INFO).show();
                 }
             }

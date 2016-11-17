@@ -66,6 +66,7 @@ dependencies {
     compile 'pub.devrel:easypermissions:0.1.9'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.turki-alkhateeb:materialcolorpicker:1.0.7'
+    compile 'io.github.kobakei:ratethisapp:1.1.0'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
