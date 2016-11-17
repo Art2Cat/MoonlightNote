@@ -196,11 +196,13 @@ public class MoonlightActivity extends AppCompatActivity
                 break;
             case R.id.nav_share:
                 //启动Intent分享
-                Intent in = new Intent(Intent.ACTION_SEND);
-                in.setType("text/plain");
+                Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT,
+                        "Hey check out my app at: https://play.google.com/store/apps/details?id=com.art2cat.dev.moonlightnote");
+                sendIntent.setType("text/plain");
                 //设置分享选择器
-                in = Intent.createChooser(in, "Share to");
-                startActivity(in);
+                sendIntent = Intent.createChooser(sendIntent, "Share to");
+                startActivity(sendIntent);
                 break;
             case R.id.nav_login:
                 Intent reLoginIntent = new Intent(MoonlightActivity.this, LoginActivity.class);

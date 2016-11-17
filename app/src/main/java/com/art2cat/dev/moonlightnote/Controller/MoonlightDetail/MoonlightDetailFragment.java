@@ -573,6 +573,17 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 //启动Intent分享
                 Intent in = new Intent(Intent.ACTION_SEND);
                 in.setType("text/plain");
+                if (moonlight.getTitle() != null) {
+                    in.putExtra(Intent.EXTRA_TITLE, moonlight.getTitle());
+                }
+
+                if (moonlight.getContent() != null) {
+                    in.putExtra(Intent.EXTRA_TEXT, moonlight.getContent());
+                }
+
+                if (moonlight.getImageUrl() != null) {
+                    in.putExtra(Intent.EXTRA_TEXT, moonlight.getImageUrl());
+                }
                 //设置分享选择器
                 in = Intent.createChooser(in, "Send to");
                 startActivity(in);

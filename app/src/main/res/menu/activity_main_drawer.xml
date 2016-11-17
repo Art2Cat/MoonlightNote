@@ -5,9 +5,11 @@
         android:id="@+id/group_main">
         <item
             android:id="@+id/nav_notes"
+            android:icon="@drawable/ic_home_black_24dp"
             android:title="@string/action_notes" />
         <item
             android:id="@+id/nav_trash"
+            android:icon="@drawable/ic_nav_delete_black_24dp"
             android:title="@string/action_trash" />
     </group>
 
