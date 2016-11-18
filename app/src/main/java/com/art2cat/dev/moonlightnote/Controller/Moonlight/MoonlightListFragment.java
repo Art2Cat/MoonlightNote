@@ -3,6 +3,7 @@ package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.DatabaseUtils;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,14 +18,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
-import com.art2cat.dev.moonlightnote.CustomView.CustomRecyclerView;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseError;
@@ -36,6 +37,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
+
 /**
  * Created by art2cat
  * on 9/17/16.
@@ -43,14 +46,14 @@ import org.greenrobot.eventbus.ThreadMode;
 public abstract class MoonlightListFragment extends Fragment {
     private static final String TAG = "MoonlightListFragment";
     private DatabaseReference mDatabase;
-    private FirebaseRecyclerAdapter<Moonlight, MoonlightsViewHolder> mAdapter;
+    private FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder> mFirebaseRecyclerAdapter;
     private RecyclerView mRecyclerView;
-    //    private CustomRecyclerView mRecyclerView;
     private FloatingActionButton mFAB;
     private Menu menu;
     private int index;
     private boolean deleteFlag;
     private boolean isLogin = true;
+    private DatabaseUtils mDatabaseUtils;
 
 
     public MoonlightListFragment() {
@@ -76,9 +79,7 @@ public abstract class MoonlightListFragment extends Fragment {
         // [START create_database_reference]
         mDatabase = FirebaseDatabase.getInstance().getReference();
         // [END create_database_reference]
-
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
-//        mRecyclerView = (CustomRecyclerView) rootView.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
 
         return rootView;
@@ -96,25 +97,26 @@ public abstract class MoonlightListFragment extends Fragment {
         mLinearLayoutManager.setReverseLayout(true);
         mLinearLayoutManager.setStackFromEnd(true);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
-
-        setAdapter();
+        mRecyclerView.getItemAnimator().setAddDuration(1000);
+        mRecyclerView.getItemAnimator().setRemoveDuration(1000);
+        mRecyclerView.getItemAnimator().setMoveDuration(1000);
+        mRecyclerView.getItemAnimator().setChangeDuration(1000);
+        SlideInLeftAnimator animator = new SlideInLeftAnimator();
+        animator.setInterpolator(new OvershootInterpolator());
+// or recyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f));
+        mRecyclerView.setItemAnimator(animator);
+        setAdapter2();
     }
 
-    private void setAdapter() {
+    private void setAdapter2() {
 
         Query moonlightsQuery = getQuery(mDatabase);
         if (moonlightsQuery != null) {
-            mAdapter = new FirebaseRecyclerAdapter<Moonlight, MoonlightsViewHolder>
-                    (Moonlight.class, R.layout.moonlight_items, MoonlightsViewHolder.class,
-                            moonlightsQuery) {
-                @Override
-                public DatabaseReference getRef(int position) {
-                    return super.getRef(position);
-                }
+            mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder>(Moonlight.class, R.layout.moonlight_items, MoonlightViewHolder.class,
+                    moonlightsQuery) {
 
                 @Override
-                protected void populateViewHolder(MoonlightsViewHolder viewHolder,
-                                                  final Moonlight model, int position) {
+                protected void populateViewHolder(MoonlightViewHolder viewHolder, Moonlight model, int position) {
                     DatabaseReference moonlightRef = getRef(position);
                     final String moonlightKey = moonlightRef.getKey();
 
@@ -179,18 +181,15 @@ public abstract class MoonlightListFragment extends Fragment {
                     viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
-                            deleteFlag = true;
                             return deleteFlag;
                         }
                     });
-
                 }
-
             };
 
-            mAdapter.notifyDataSetChanged();
 
-            mRecyclerView.setAdapter(mAdapter);
+            //  mAdapter.notifyDataSetChanged();
+            mRecyclerView.setAdapter(mFirebaseRecyclerAdapter);
             Log.d(TAG, "setAdapter");
         }
     }
@@ -198,9 +197,9 @@ public abstract class MoonlightListFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mAdapter != null) {
+        if (mFirebaseRecyclerAdapter != null) {
             Log.d(TAG, "cleanup");
-            mAdapter.cleanup();
+            mFirebaseRecyclerAdapter.cleanup();
         }
     }
 

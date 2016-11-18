@@ -48,7 +48,6 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Controller.Login.LoginActivity"
-            android:label="@string/fragment_login"
             android:theme="@style/AppTheme.NoActionBarForLoginFragment">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

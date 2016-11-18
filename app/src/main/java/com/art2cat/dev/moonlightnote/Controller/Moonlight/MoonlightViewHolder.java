@@ -1,26 +1,28 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutCompat;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
-import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
+import com.squareup.picasso.Picasso;
 
+import jp.wasabeef.recyclerview.animators.holder.AnimateViewHolder;
 
 /**
- * Created by art2cat
- * on 9/17/16.
+ * Created by Rorschach
+ * on 2016/11/18 13:49.
  */
-public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
+
+public class MoonlightViewHolder extends AnimateViewHolder {
     private static final String TAG = "MoonlightsViewHolder";
     public CardView mCardView;
     public AppCompatTextView titleAppCompatTextView;
@@ -30,16 +32,41 @@ public class MoonlightsViewHolder extends RecyclerView.ViewHolder {
     private Context context;
     private BitmapUtils bitmapUtils;
 
-    public MoonlightsViewHolder(View itemView) {
+    public MoonlightViewHolder(View itemView) {
         super(itemView);
         mCardView = (CardView) itemView.findViewById(R.id.item_main);
         titleAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_title);
         contentAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_content);
         photoAppCompatImageView = (AppCompatImageView) itemView.findViewById(R.id.moonlight_image);
         audioAppCompatImageView = (LinearLayoutCompat) itemView.findViewById(R.id.moonlight_audio);
-        //bitmapUtils = new BitmapUtils();
-
     }
+
+    @Override
+    public void animateRemoveImpl(ViewPropertyAnimatorListener listener) {
+        ViewCompat.animate(itemView)
+                .translationY(-itemView.getHeight() * 0.3f)
+                .alpha(0)
+                .setDuration(300)
+                .setListener(listener)
+                .start();
+    }
+
+    @Override
+    public void preAnimateAddImpl() {
+        ViewCompat.setTranslationY(itemView, -itemView.getHeight() * 0.3f);
+        ViewCompat.setAlpha(itemView, 0);
+    }
+
+    @Override
+    public void animateAddImpl(ViewPropertyAnimatorListener listener) {
+        ViewCompat.animate(itemView)
+                .translationY(0)
+                .alpha(1)
+                .setDuration(300)
+                .setListener(listener)
+                .start();
+    }
+
 
     public void displayTitle(String title) {
 

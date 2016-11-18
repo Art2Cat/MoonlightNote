@@ -56,6 +56,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 
+import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
@@ -83,6 +84,7 @@ import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 import com.turkialkhateeb.materialcolorpicker.ColorChooserDialog;
 import com.turkialkhateeb.materialcolorpicker.ColorListener;
 
@@ -351,6 +353,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                         public void onClick(View view) {
                             BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
                             mDatabaseUtils.restoreToNote(moonlight);
+                            startActivity(new Intent(getActivity(), MoonlightActivity.class));
                         }
                     });
 
@@ -562,16 +565,18 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 break;
             case R.id.bottom_sheet_item_move_to_trash:
                 //将moonlight设置为空，删除服务器中指定的moonlight数据
-                BusEventUtils.post(Constants.EXTRA_TYPE_TRASH, null);
+                BusEventUtils.post(Constants.EXTRA_TYPE_TRASH, moonlight.getId());
                 mDatabaseUtils.moveToTrash(moonlight);
+                startActivity(new Intent(getActivity(), MoonlightActivity.class));
                 mEditable = false;
                 break;
             case R.id.bottom_sheet_item_permanent_delete:
                 if (moonlight.getImageName() != null) {
                     removePhoto(moonlight.getImageName());
                 }
-                BusEventUtils.post(Constants.EXTRA_TYPE_MOONLIGHT, null);
+                BusEventUtils.post(Constants.EXTRA_TYPE_MOONLIGHT, moonlight.getId());
                 mDatabaseUtils.removeMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
+                startActivity(new Intent(getActivity(), MoonlightActivity.class));
                 moonlight = null;
                 break;
             case R.id.bottom_sheet_item_make_a_copy:
@@ -1121,12 +1126,12 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         //图片地址为空则不加载图片
         if (mFileUri != null) {
             try {
-                BitmapFactory.Options options = new BitmapFactory.Options();
+                //.Options options = new BitmapFactory.Options();
                 //options.inJustDecodeBounds = true;
-                options.inSampleSize = 2;//宽高压缩为原来的1/2
+                //options.inSampleSize = 2;//宽高压缩为原来的1/2
                 //options.inPreferredConfig = Bitmap.Config.ARGB_4444;
                 Bitmap bitmap = BitmapFactory.decodeStream(
-                        getActivity().getContentResolver().openInputStream(mFileUri), null, options);
+                        getActivity().getContentResolver().openInputStream(mFileUri), null, null);
                 if (bitmap != null) {
                     mImage.setImageBitmap(bitmap);
                     LocalCacheUtils localCacheUtils = new LocalCacheUtils(getActivity(), new MemoryCacheUtils());
@@ -1187,6 +1192,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 }
             }
             if (moonlight.getImageUrl() != null) {
+                //Picasso.with(getActivity()).load(Uri.parse(moonlight.getImageUrl())).into(mImage);
                 mBitmapUtils.display(mImage, moonlight.getImageUrl());
                 //mImageCardView.setVisibility(View.VISIBLE);
                 mImage.setVisibility(View.VISIBLE);

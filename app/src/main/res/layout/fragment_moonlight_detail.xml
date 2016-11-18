@@ -31,7 +31,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingBottom="16dp"
-                    android:scaleType="center"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
                     android:visibility="gone" />
 
                 <android.support.design.widget.TextInputLayout

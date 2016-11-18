@@ -8,7 +8,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.16.11.18"
         // Enabling multidex support.
         multiDexEnabled true
     }
@@ -67,6 +67,8 @@ dependencies {
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.turki-alkhateeb:materialcolorpicker:1.0.7'
     compile 'io.github.kobakei:ratethisapp:1.1.0'
+    compile 'jp.wasabeef:recyclerview-animators:2.2.4'
+    compile 'com.squareup.picasso:picasso:2.5.2'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'

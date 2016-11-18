@@ -1,7 +1,9 @@
 package com.art2cat.dev.moonlightnote.Utils.ImageLoader;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
@@ -52,25 +54,5 @@ public class BitmapUtils {
         //本地缓存
         mLocalCacheUtils.getBitmapFromLocal(mNetCacheUtils, ivPic, url);
     }
-
-    public Bitmap getBitmap(String url) {
-        Bitmap bitmap, bitmap1, bitmap2, bitmap3;
-        bitmap = null;
-        //内存缓存
-        bitmap1 = mMemoryCacheUtils.getBitmapFromMemory(url);
-        Log.i(TAG, "从内存获取图片啦.....");
-
-        //本地缓存
-        bitmap2 = mLocalCacheUtils.getBitmapFromLocal(url);
-        Log.i(TAG, "从本地获取图片啦.....");
-
-        //网络缓存
-        if (bitmap1 != null) {
-            bitmap = bitmap1;
-        } else if (bitmap2 != null) {
-            bitmap = bitmap2;
-        }
-
-        return bitmap;
-    }
 }
+
