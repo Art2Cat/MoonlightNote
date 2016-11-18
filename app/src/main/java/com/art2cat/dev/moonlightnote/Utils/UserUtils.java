@@ -17,10 +17,31 @@ import java.util.Map;
 public class UserUtils {
 
     public static void saveUserToCache(Context context, User user) {
-        SPUtils.putString(context, "User", "Id", user.getUid());
-        SPUtils.putString(context, "User", "Username", user.getNickname());
-        SPUtils.putString(context, "User", "Email", user.getEmail());
-        SPUtils.putString(context, "User", "PhotoUrl", user.getPhotoUrl());
+        if (user != null) {
+            if (user.getUid() != null) {
+                SPUtils.putString(context, "User", "Id", user.getUid());
+            } else {
+                SPUtils.putString(context, "User", "Id", null);
+            }
+
+            if (user.getNickname() != null) {
+                SPUtils.putString(context, "User", "Username", user.getNickname());
+            } else {
+                SPUtils.putString(context, "User", "Username", null);
+            }
+
+            if (user.getEmail() != null) {
+                SPUtils.putString(context, "User", "Email", user.getEmail());
+            } else {
+                SPUtils.putString(context, "User", "Email", null);
+            }
+
+            if (user.getPhotoUrl() != null) {
+                SPUtils.putString(context, "User", "PhotoUrl", user.getPhotoUrl());
+            } else {
+                SPUtils.putString(context, "User", "PhotoUrl", null);
+            }
+        }
     }
 
     public static User getUserFromCache(Context context) {

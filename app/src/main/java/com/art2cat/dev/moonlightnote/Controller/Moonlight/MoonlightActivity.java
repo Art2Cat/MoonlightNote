@@ -33,6 +33,7 @@ import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserUtils;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -67,6 +68,7 @@ public class MoonlightActivity extends AppCompatActivity
     private FirebaseUser mFirebaseUser;
     private DatabaseUtils mDatabaseUtils;
     private FirebaseAuth mAuth;
+    private FirebaseAnalytics mFirebaseAnalytics;
     private User mUser = new User();
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FragmentManager mFragmentManager = getFragmentManager();
@@ -75,6 +77,7 @@ public class MoonlightActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moonlight);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         //获取FirebaseAuth实例
         mAuth = getInstance();
@@ -86,7 +89,22 @@ public class MoonlightActivity extends AppCompatActivity
         EventBus.getDefault().register(this);
         initView();
         displayUserInfo();
+        RateThisApp.setCallback(new RateThisApp.Callback() {
+            @Override
+            public void onYesClicked() {
+                isRateMyApp(mUserId, "Awesome, this guy rates my app!", true);
+            }
 
+            @Override
+            public void onNoClicked() {
+                isRateMyApp(mUserId, "emmmm, My app is not good enough and I need to improve it", false);
+            }
+
+            @Override
+            public void onCancelClicked() {
+                isRateMyApp(mUserId, "emmmm, My app is not good enough and I need to improve it", false);
+            }
+        });
     }
 
     @Override
@@ -193,6 +211,12 @@ public class MoonlightActivity extends AppCompatActivity
                 sendIntent.putExtra(Intent.EXTRA_TEXT,
                         "Hey check out my app at: https://play.google.com/store/apps/details?id=com.art2cat.dev.moonlightnote");
                 sendIntent.setType("text/plain");
+
+                Bundle bundle = new Bundle();
+                bundle.putString("UserId", mUserId);
+                bundle.putBoolean("Share_my_app", true);
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
                 //设置分享选择器
                 sendIntent = Intent.createChooser(sendIntent, "Share to");
                 startActivity(sendIntent);
@@ -329,17 +353,30 @@ public class MoonlightActivity extends AppCompatActivity
     public void busAction(BusEvent busEvent) {
         if (busEvent != null) {
             switch (busEvent.getFlag()) {
-                case 809:
+                case Constants.BUS_FLAG_UPDATE_USER:
                     displayUserInfo();
                     break;
                 case Constants.EXTRA_TYPE_MOONLIGHT:
-                    SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.delete_moonlight), SnackBarUtils.TYPE_INFO).show();
+                    SnackBarUtils.shortSnackBar(mCoordinatorLayout,
+                            getString(R.string.delete_moonlight), SnackBarUtils.TYPE_INFO)
+                            .setAction(getString(R.string.restore_moonlight), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                }
+                            }).show();
                     break;
                 case Constants.EXTRA_TYPE_TRASH:
-                    SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.delete_moonlight), SnackBarUtils.TYPE_INFO).show();
+                    SnackBarUtils.shortSnackBar(mCoordinatorLayout,
+                            getString(R.string.delete_moonlight), SnackBarUtils.TYPE_INFO).show();
                     break;
                 case Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT:
-                    SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.restore_moonlight), SnackBarUtils.TYPE_INFO).show();
+                    SnackBarUtils.shortSnackBar(mCoordinatorLayout,
+                            getString(R.string.restore_moonlight), SnackBarUtils.TYPE_INFO).show();
+                    break;
+                case Constants.BUS_FLAG_NULL:
+                    SnackBarUtils.shortSnackBar(mCoordinatorLayout,
+                            getString(R.string.note_binned), SnackBarUtils.TYPE_INFO).show();
                     break;
             }
         }
@@ -371,5 +408,13 @@ public class MoonlightActivity extends AppCompatActivity
             }
             //}
         }
+    }
+
+    private void isRateMyApp(String mUserId, String remarks, boolean isRate) {
+        Bundle bundle = new Bundle();
+        bundle.putString("UserId", mUserId);
+        bundle.putString("remakes", remarks);
+        bundle.putBoolean("Rate_my_app", isRate);
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 }

@@ -92,10 +92,15 @@ public class DatabaseUtils {
             public void onComplete(@NonNull Task<Void> task) {
                 if (type == 202) {
                     Log.d(TAG, "onComplete: update" + finalOldKey);
-                    removeMoonlight(finalOldKey, type);
+                    if (finalOldKey != null) {
+                        removeMoonlight(finalOldKey, type);
+                    }
                 } else if (type == 204) {
                     Log.d(TAG, "onComplete: update" + finalOldKey);
-                    removeMoonlight(finalOldKey, type);
+                    if (finalOldKey != null) {
+                        removeMoonlight(finalOldKey, type);
+                    }
+                    ;
                 }
             }
         });

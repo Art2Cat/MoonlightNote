@@ -148,4 +148,5 @@
     <string name="delete_moonlight">Delete succeed!</string>
     <string name="restore_moonlight">Restore succeed!</string>
     <string name="title_activity_user">User</string>
+    <string name="note_binned">Note binned</string>
 </resources>

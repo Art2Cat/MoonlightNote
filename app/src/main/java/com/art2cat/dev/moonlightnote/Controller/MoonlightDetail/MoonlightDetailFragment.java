@@ -390,8 +390,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         Log.i(TAG, "onStop");
         //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
         if (mCreateFlag && mEditable) {
-            if (moonlight.getImageUrl() != null || moonlight.getContent() != null
-                    || moonlight.getTitle() != null || moonlight.getAudioUrl() != null) {
+            if (isEmpty(moonlight)) {
                 mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
             }
         }
@@ -490,6 +489,11 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
 
     }
 
+    private boolean isEmpty(Moonlight moonlight) {
+        return moonlight.getImageUrl() != null || moonlight.getAudioUrl() != null || moonlight.getContent() != null
+                || moonlight.getTitle() != null;
+    }
+
     private void showLabelDialog() {
         LabelDialogFragment labelDialogFragment = new LabelDialogFragment();
         labelDialogFragment.show(getFragmentManager(), "labelDialog");
@@ -566,23 +570,37 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 onAudioClick();
                 break;
             case R.id.bottom_sheet_item_move_to_trash:
-                //将moonlight设置为空，删除服务器中指定的moonlight数据
-                BusEventUtils.post(Constants.EXTRA_TYPE_TRASH, moonlight.getId());
-                mDatabaseUtils.moveToTrash(moonlight);
+                if (isEmpty(moonlight)) {
+                    BusEventUtils.post(Constants.EXTRA_TYPE_TRASH, moonlight.getId());
+                    mDatabaseUtils.moveToTrash(moonlight);
+                } else {
+                    BusEventUtils.post(Constants.BUS_FLAG_NULL, null);
+                }
                 startActivity(new Intent(getActivity(), MoonlightActivity.class));
                 mEditable = false;
                 break;
             case R.id.bottom_sheet_item_permanent_delete:
-                if (moonlight.getImageName() != null) {
-                    removePhoto(moonlight.getImageName());
+                if (isEmpty(moonlight)) {
+                    if (moonlight.getImageName() != null) {
+                        removePhoto(moonlight.getImageName());
+                    }
+                    BusEventUtils.post(Constants.EXTRA_TYPE_MOONLIGHT, moonlight.getId());
+                    if (mKeyId != null) {
+                        mDatabaseUtils.removeMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
+                    }
+                    moonlight = null;
+                } else {
+                    BusEventUtils.post(Constants.BUS_FLAG_NULL, null);
                 }
-                BusEventUtils.post(Constants.EXTRA_TYPE_MOONLIGHT, moonlight.getId());
-                mDatabaseUtils.removeMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
                 startActivity(new Intent(getActivity(), MoonlightActivity.class));
-                moonlight = null;
                 break;
             case R.id.bottom_sheet_item_make_a_copy:
-                mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                if (isEmpty(moonlight)) {
+                    mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                } else {
+                    SnackBarUtils.shortSnackBar(mCoordinatorLayout,
+                            getString(R.string.note_binned), SnackBarUtils.TYPE_INFO).show();
+                }
                 break;
             case R.id.bottom_sheet_item_send:
                 //启动Intent分享

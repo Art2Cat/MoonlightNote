@@ -38,6 +38,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -329,10 +330,20 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     SPUtils.putString(getActivity(), "User", "Id", user.getUid());
                     Uri photoUrl = user.getPhotoUrl();
-                    User user1 = new User(user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString(), user.getUid());
+                    String nickname = user.getDisplayName();
+                    String email = user.getEmail();
+                    User user1 = new User();
+                    user1.setUid(user.getUid());
+                    if (nickname != null) {
+                        user1.setNickname(nickname);
+                    }
+                    if (email != null) {
+                        user1.setEmail(email);
+                    }
                     if (photoUrl != null) {
                         user1.photoUrl = photoUrl.toString();
                     }
+
                     UserUtils.updateUser(user.getUid(), user1);
                     UserUtils.saveUserToCache(getActivity().getApplicationContext(), user1);
                 } else {
@@ -412,7 +423,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                                     SnackBarUtils.TYPE_WARNING).show();
                         }
                     }
-                });
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "onFailure: " + e.toString());
+            }
+        });
     }
 
     public void addListener() {
@@ -424,7 +440,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
