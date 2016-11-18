@@ -4,6 +4,8 @@ import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DatabaseUtils;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -32,12 +34,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
+
+import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
+import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 
 /**
  * Created by art2cat
@@ -54,6 +60,7 @@ public abstract class MoonlightListFragment extends Fragment {
     private boolean deleteFlag;
     private boolean isLogin = true;
     private DatabaseUtils mDatabaseUtils;
+    private Object tag = new Object();
 
 
     public MoonlightListFragment() {
@@ -106,6 +113,18 @@ public abstract class MoonlightListFragment extends Fragment {
 // or recyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f));
         mRecyclerView.setItemAnimator(animator);
         setAdapter2();
+
+        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+//                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                    Picasso.with(getActivity()).resumeTag(tag);
+//                } else {
+//                    Picasso.with(getActivity()).pauseTag(tag);
+//                }
+            }
+        });
     }
 
     private void setAdapter2() {
@@ -136,6 +155,8 @@ public abstract class MoonlightListFragment extends Fragment {
                         Log.i(TAG, "populateViewHolder: " + model.getImageName());
                         viewHolder.photoAppCompatImageView.setImageResource(R.drawable.ic_cloud_download_white_48dp);
                         viewHolder.photoAppCompatImageView.setTag(model.getImageName());
+//                        Picasso.with(getActivity()).load(Uri.parse(model.getImageUrl()))
+//                                .memoryPolicy(NO_CACHE, NO_STORE).into(viewHolder.photoAppCompatImageView);
                         viewHolder.displayImage(getActivity(), model.getImageUrl());
                     } else {
                         viewHolder.photoAppCompatImageView.setVisibility(View.GONE);

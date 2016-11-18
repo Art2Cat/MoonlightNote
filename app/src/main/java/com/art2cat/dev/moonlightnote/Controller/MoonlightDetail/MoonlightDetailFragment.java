@@ -110,6 +110,8 @@ import static com.art2cat.dev.moonlightnote.Model.Constants.CAMERA_PERMS;
 import static com.art2cat.dev.moonlightnote.Model.Constants.RECORD_AUDIO;
 import static com.art2cat.dev.moonlightnote.Model.Constants.STORAGE_PERMS;
 import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
+import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
+import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -1134,12 +1136,12 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                         getActivity().getContentResolver().openInputStream(mFileUri), null, null);
                 if (bitmap != null) {
                     mImage.setImageBitmap(bitmap);
-                    LocalCacheUtils localCacheUtils = new LocalCacheUtils(getActivity(), new MemoryCacheUtils());
-                    localCacheUtils.setBitmapToLocal(mDownloadIUrl.toString(), bitmap);
-                    //Picasso.with(getActivity()).load(mFileUri).into(mImage);
+//                    LocalCacheUtils localCacheUtils = new LocalCacheUtils(getActivity(), new MemoryCacheUtils());
+//                    localCacheUtils.setBitmapToLocal(mDownloadIUrl.toString(), bitmap);
+                    Picasso.with(getActivity()).load(mFileUri).memoryPolicy(NO_CACHE, NO_STORE).into(mImage);
                 } else {
-                    mBitmapUtils.display(mImage, mDownloadIUrl.toString());
-                    //Picasso.with(getActivity()).load(mDownloadIUrl).into(mImage);
+//                    mBitmapUtils.display(mImage, mDownloadIUrl.toString());
+                    Picasso.with(getActivity()).load(mDownloadIUrl).memoryPolicy(NO_CACHE, NO_STORE).into(mImage);
                 }
                 //mImageCardView.setVisibility(View.VISIBLE);
                 mImage.setVisibility(View.VISIBLE);
@@ -1192,8 +1194,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 }
             }
             if (moonlight.getImageUrl() != null) {
-                //Picasso.with(getActivity()).load(Uri.parse(moonlight.getImageUrl())).into(mImage);
-                mBitmapUtils.display(mImage, moonlight.getImageUrl());
+                Picasso.with(getActivity()).load(Uri.parse(moonlight.getImageUrl())).memoryPolicy(NO_CACHE, NO_STORE).into(mImage);
+//                mBitmapUtils.display(mImage, moonlight.getImageUrl());
                 //mImageCardView.setVisibility(View.VISIBLE);
                 mImage.setVisibility(View.VISIBLE);
                 if (!editable) {
