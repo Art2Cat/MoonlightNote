@@ -558,7 +558,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 break;
             case R.id.delete_audio:
                 //删除录音
-
+                removeAudio(moonlight.getAudioName());
+                mAudioCardView.setVisibility(View.GONE);
+                moonlight.setAudioName(null);
+                moonlight.setAudioUrl(null);
                 break;
             case R.id.bottom_sheet_item_take_photo:
                 onCameraClick();
@@ -581,9 +584,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 break;
             case R.id.bottom_sheet_item_permanent_delete:
                 if (isEmpty(moonlight)) {
-                    if (moonlight.getImageName() != null) {
                         removePhoto(moonlight.getImageName());
-                    }
+                    removeAudio(moonlight.getAudioName());
                     BusEventUtils.post(Constants.EXTRA_TYPE_MOONLIGHT, moonlight.getId());
                     if (mKeyId != null) {
                         mDatabaseUtils.removeMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
@@ -964,22 +966,43 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
     }
 
     private void removePhoto(String imageName) {
-        StorageReference photoRef = mStorageReference.child(mUserId).child("photos")
-                .child(imageName);
-        Log.d(TAG, "onClick: " + imageName);
-        photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "onSuccess: ");
-                SnackBarUtils.shortSnackBar(mView, "Image removed!", SnackBarUtils.TYPE_INFO).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(TAG, "onFailure: " + e.toString());
-            }
-        });
+        if (imageName != null) {
+            StorageReference photoRef = mStorageReference.child(mUserId).child("photos")
+                    .child(imageName);
+            photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "onSuccess: ");
+                    SnackBarUtils.shortSnackBar(mView, "Image removed!", SnackBarUtils.TYPE_INFO).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.w(TAG, "onFailure: " + e.toString());
+                }
+            });
+        }
     }
+
+    private void removeAudio(String audioName) {
+        if (audioName != null) {
+            StorageReference photoRef = mStorageReference.child(mUserId).child("audios")
+                    .child(audioName);
+            photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "onSuccess: ");
+                    SnackBarUtils.shortSnackBar(mView, "Voice removed!", SnackBarUtils.TYPE_INFO).show();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.w(TAG, "onFailure: " + e.toString());
+                }
+            });
+        }
+    }
+
 
     private void removeListener() {
         // Remove mMoonlight value event listener

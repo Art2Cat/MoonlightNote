@@ -177,7 +177,7 @@ public class LoginActivity extends AppCompatActivity {
                 Fragment fragment = new LoginFragment();
                 mFragmentManager.beginTransaction()
                         .replace(R.id.login_container, fragment)
-                        .commit();
+                        .commitAllowingStateLoss();
             }
         }
 
