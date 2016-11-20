@@ -27,6 +27,7 @@ import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,12 +35,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import jp.wasabeef.recyclerview.animators.FadeInDownAnimator;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
@@ -104,30 +107,41 @@ public abstract class MoonlightListFragment extends Fragment {
         mLinearLayoutManager.setReverseLayout(true);
         mLinearLayoutManager.setStackFromEnd(true);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
+
+        FadeInDownAnimator animator = new FadeInDownAnimator();
+        animator.setInterpolator(new OvershootInterpolator());
+// or recyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f));
+        mRecyclerView.setItemAnimator(animator);
         mRecyclerView.getItemAnimator().setAddDuration(1000);
         mRecyclerView.getItemAnimator().setRemoveDuration(1000);
         mRecyclerView.getItemAnimator().setMoveDuration(1000);
         mRecyclerView.getItemAnimator().setChangeDuration(1000);
-        SlideInLeftAnimator animator = new SlideInLeftAnimator();
-        animator.setInterpolator(new OvershootInterpolator());
-// or recyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f));
-        mRecyclerView.setItemAnimator(animator);
-        setAdapter2();
+        setAdapter();
 
-        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            mRecyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(View view, int i, int i1, int i2, int i3) {
+
+                }
+            });
+        } else {
+            mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
 //                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
 //                    Picasso.with(getActivity()).resumeTag(tag);
 //                } else {
 //                    Picasso.with(getActivity()).pauseTag(tag);
 //                }
-            }
-        });
+                }
+            });
+        }
+
     }
 
-    private void setAdapter2() {
+    private void setAdapter() {
 
         Query moonlightsQuery = getQuery(mDatabase);
         if (moonlightsQuery != null) {
@@ -173,6 +187,7 @@ public abstract class MoonlightListFragment extends Fragment {
                     }
 
                     if (model.getAudioName() != null) {
+                        StorageUtils.downloadAudio(FirebaseStorage.getInstance().getReference(), getUid(), model.getAudioName());
                         viewHolder.audioAppCompatImageView.setVisibility(View.VISIBLE);
                     } else {
                         viewHolder.audioAppCompatImageView.setVisibility(View.GONE);
