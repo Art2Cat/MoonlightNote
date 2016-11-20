@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.art2cat.dev.moonlightnote.Controller.Login.RPDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.ProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
@@ -72,7 +73,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private AppCompatTextView mEmail;
     private AppCompatButton mChangePassword;
     private AdView mAdView;
-    private ProgressDialog progressDialog;
+    private ProgressDialogFragment mProgressDialogFragment;
     private FirebaseUser user;
     private User mUser;
     private BitmapUtils mBitmapUtils;
@@ -381,10 +382,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     private void uploadFromUri(Uri fileUri, final String userId) {
 
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage("Uploading...");
-        progressDialog.show();
+        mProgressDialogFragment.show(getFragmentManager(), "progress");
 
         StorageReference photoRef = mStorageReference.child(userId).child("avatar")
                 .child(fileUri.getLastPathSegment());
@@ -400,12 +398,13 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 updateUI(taskSnapshot.getDownloadUrl());
                 UserUtils.saveUserToCache(getActivity().getApplicationContext(), mUser);
                 updateProfile(null, taskSnapshot.getDownloadUrl());
-                progressDialog.dismiss();
+                mProgressDialogFragment.dismiss();
             }
         }).addOnFailureListener(getActivity(), new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                progressDialog.dismiss();
+                mProgressDialogFragment.dismiss();
+                Log.e(TAG, "onFailure: " + e.toString());
                 mFileName = null;
                 if (user.getPhotoUrl() != null) {
                     updateUI(user.getPhotoUrl());

@@ -10,12 +10,9 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
-
-import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created by art2cat
@@ -24,13 +21,6 @@ import org.greenrobot.eventbus.EventBus;
 
 public class RPDialogFragment extends DialogFragment {
 
-    public RPDialogFragment newInstance(String email) {
-        RPDialogFragment dialogFragment = new RPDialogFragment();
-        Bundle args = new Bundle();
-        args.putString("email", email);
-        dialogFragment.setArguments(args);
-        return dialogFragment;
-    }
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

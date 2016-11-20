@@ -141,6 +141,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                 .requestEmail()
                 .build();
 
+
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .enableAutoManage(getActivity() /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, mGoogleSignInOptions)
@@ -153,12 +154,13 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     public void onStop() {
         super.onStop();
         removeListener();
-        mGoogleApiClient.disconnect();
     }
 
     @Override
     public void onDestroy() {
         EventBus.getDefault().unregister(this);
+        mGoogleApiClient.stopAutoManage(getActivity());
+        mGoogleApiClient.disconnect();
         super.onDestroy();
     }
 

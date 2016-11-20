@@ -54,6 +54,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.Controller.ProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
@@ -61,6 +62,7 @@ import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.AudioPlayer;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.DatabaseUtils;
+import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
@@ -130,6 +132,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private CardView mAudioCardView;
     private AppCompatImageView mImage;
     private ProgressDialog progressDialog;
+    private ProgressDialogFragment mProgressDialogFragment;
     private ProgressBar mProgressBar;
     private ProgressBar mAudioPlayerPB;
     private LinearLayoutCompat mProgressBarContainer;
@@ -253,6 +256,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         mContent.setOnFocusChangeListener(this);
         mBitmapUtils = new BitmapUtils(getActivity());
         mAudioPlayer = new AudioPlayer(mAudioPlayerPB, mShowDuration);
+
+        mProgressDialogFragment = ProgressDialogFragment.newInstance();
+
         showBottomSheet();
         if (mEditable) {
             //获取系统当前时间
@@ -272,7 +278,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     builder.setTitle("Delete Image?").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            removePhoto(moonlight.getImageName());
+                            StorageUtils.removePhoto(mView, mUserId, moonlight.getImageName());
                             mImage.setVisibility(View.GONE);
                             moonlight.setImageName(null);
                             moonlight.setImageUrl(null);
@@ -514,7 +520,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 break;
             case R.id.delete_audio:
                 //删除录音
-                removeAudio(moonlight.getAudioName());
+                StorageUtils.removeAudio(mView, mUserId, moonlight.getAudioName());
                 mAudioCardView.setVisibility(View.GONE);
                 moonlight.setAudioName(null);
                 moonlight.setAudioUrl(null);
@@ -540,8 +546,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 break;
             case R.id.bottom_sheet_item_permanent_delete:
                 if (isEmpty(moonlight)) {
-                    removePhoto(moonlight.getImageName());
-                    removeAudio(moonlight.getAudioName());
+                    StorageUtils.removePhoto(mView, mUserId, moonlight.getImageName());
+                    StorageUtils.removeAudio(mView, mUserId, moonlight.getAudioName());
                     BusEventUtils.post(Constants.EXTRA_TYPE_MOONLIGHT, moonlight.getId());
                     if (mKeyId != null) {
                         mDatabaseUtils.removeMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
@@ -773,10 +779,17 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         displaySpeechRecognizer();
     }
 
-    private void uploadFromUri(final Uri fileUri, String userId, int type) {
+    public void uploadFromUri(final Uri fileUri, String userId, int type) {
+        if (mProgressDialogFragment != null) {
+            mProgressDialogFragment.show(getFragmentManager(), "progress");
+        } else {
+            mProgressDialogFragment = ProgressDialogFragment.newInstance();
+            mProgressDialogFragment.show(getFragmentManager(), "progress");
+        }
+
         StorageTask<UploadTask.TaskSnapshot> uploadTask = null;
         if (type == 0) {
-            mProgressBarContainer.setVisibility(View.VISIBLE);
+
             // Get a reference to store file at photos/<FILENAME>.jpg
             StorageReference photoRef = mStorageReference.child(userId).child("photos")
                     .child(fileUri.getLastPathSegment());
@@ -792,43 +805,24 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadIUrl.toString());
                     moonlight.setImageName(mImageFileName);
                     moonlight.setImageUrl(mDownloadIUrl.toString());
-                    mProgressBarContainer.setVisibility(View.GONE);
+                    mProgressDialogFragment.dismiss();
                     showImage(fileUri);
                 }
             }).addOnFailureListener(getActivity(), new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, "onFailure: " + e.toString());
                     mImageFileName = null;
                     mDownloadIUrl = null;
-                    mProgressBarContainer.setVisibility(View.GONE);
+                    mProgressDialogFragment.dismiss();
                     showImage(fileUri);
                 }
             }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
                     Log.d(TAG, "onPaused: ");
-                    mProgressBarContainer.setVisibility(View.GONE);
+                    mProgressDialogFragment.dismiss();
                     SnackBarUtils.shortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO).show();
-                }
-            });
-        } else if (type == 1) {
-            StorageReference storageReference = mStorageReference.child(userId).child("userconfig")
-                    .child(fileUri.getLastPathSegment());
-            uploadTask = storageReference.putFile(fileUri);
-            uploadTask.addOnSuccessListener(getActivity(), new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Log.d(TAG, "onSuccess: upload userConfig");
-                }
-            }).addOnFailureListener(getActivity(), new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.w(TAG, "onFailure: upload userConfig");
-                }
-            }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
-                    Log.d(TAG, "onPaused: upload userConfig");
                 }
             });
         } else if (type == 3) {
@@ -846,21 +840,22 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     moonlight.setAudioName(mAudioFileName);
                     moonlight.setAudioUrl(mDownloadAUrl.toString());
                     showAudio(mAudioFileName);
-                    mProgressBarContainer.setVisibility(View.GONE);
+                    mProgressDialogFragment.dismiss();
                 }
             }).addOnFailureListener(getActivity(), new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, "onFailure: " + e.toString());
                     mAudioFileName = null;
                     mDownloadAUrl = null;
-                    mProgressBarContainer.setVisibility(View.GONE);
+                    mProgressDialogFragment.dismiss();
                     showImage(fileUri);
                 }
             }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
                     Log.d(TAG, "onPaused: ");
-                    mProgressBarContainer.setVisibility(View.GONE);
+                    mProgressDialogFragment.dismiss();
                     SnackBarUtils.shortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO).show();
                 }
             });
@@ -919,44 +914,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             }
         };
         mMoonlightRef.addValueEventListener(moonlightListener);
-    }
-
-    private void removePhoto(String imageName) {
-        if (imageName != null) {
-            StorageReference photoRef = mStorageReference.child(mUserId).child("photos")
-                    .child(imageName);
-            photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(TAG, "onSuccess: ");
-                    SnackBarUtils.shortSnackBar(mView, "Image removed!", SnackBarUtils.TYPE_INFO).show();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.w(TAG, "onFailure: " + e.toString());
-                }
-            });
-        }
-    }
-
-    private void removeAudio(String audioName) {
-        if (audioName != null) {
-            StorageReference photoRef = mStorageReference.child(mUserId).child("audios")
-                    .child(audioName);
-            photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(TAG, "onSuccess: ");
-                    SnackBarUtils.shortSnackBar(mView, "Voice removed!", SnackBarUtils.TYPE_INFO).show();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.w(TAG, "onFailure: " + e.toString());
-                }
-            });
-        }
     }
 
 
