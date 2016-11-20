@@ -72,7 +72,7 @@
                 android:value=".Controller.Moonlight.MoonlightActivity" />
         </activity>
 
-        <service android:name=".NotificationService">
+        <service android:name=".Service.NotificationService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

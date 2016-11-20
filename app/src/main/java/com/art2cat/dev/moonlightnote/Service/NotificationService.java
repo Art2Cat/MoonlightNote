@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote;
+package com.art2cat.dev.moonlightnote.Service;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,6 +10,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.R;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

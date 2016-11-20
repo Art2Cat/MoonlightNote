@@ -38,7 +38,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -49,8 +48,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -65,11 +62,8 @@ import com.art2cat.dev.moonlightnote.Utils.AudioPlayer;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.DatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
-import com.art2cat.dev.moonlightnote.Utils.ImageLoader.LocalCacheUtils;
-import com.art2cat.dev.moonlightnote.Utils.ImageLoader.MemoryCacheUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
-import com.art2cat.dev.moonlightnote.Utils.UserConfigUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -116,8 +110,8 @@ import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public abstract class MoonlightDetailFragment extends Fragment implements AdapterView.OnItemSelectedListener
-        , View.OnClickListener, FragmentManager.OnBackStackChangedListener, View.OnFocusChangeListener {
+public abstract class MoonlightDetailFragment extends Fragment implements
+        View.OnClickListener, FragmentManager.OnBackStackChangedListener, View.OnFocusChangeListener {
     private static final String TAG = "MoonlightDetailFragment";
     private View mView;
     private ContentFrameLayout mContentFrameLayout;
@@ -456,47 +450,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
         return super.onOptionsItemSelected(item);
     }
 
-
-    /**
-     * 添加新标签到标签列表中
-     *
-     * @param label 需要添加的标签
-     */
-    private void addNewLabelToList(@NonNull String label) {
-        //从本地读取用户配置信息，当用户信息不为空时，将新标签写入用户配置中。
-        List<String> data = UserConfigUtils.readLabelFromUserConfig(getActivity());
-        if (data != null) {
-            data.add(label);
-            UserConfigUtils.writeLabelToUserConfig(getActivity(), data);
-            mLabel = "label";
-        }
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String item = mArrayAdapter.getItem(position);
-        if (item != null) {
-            if (item.equals("New Label")) {
-                showLabelDialog();
-            } else {
-                moonlight.setLabel(item);
-            }
-        }
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-
     private boolean isEmpty(Moonlight moonlight) {
         return moonlight.getImageUrl() != null || moonlight.getAudioUrl() != null || moonlight.getContent() != null
                 || moonlight.getTitle() != null;
-    }
-
-    private void showLabelDialog() {
-        LabelDialogFragment labelDialogFragment = new LabelDialogFragment();
-        labelDialogFragment.show(getFragmentManager(), "labelDialog");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -584,7 +540,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements Adapte
                 break;
             case R.id.bottom_sheet_item_permanent_delete:
                 if (isEmpty(moonlight)) {
-                        removePhoto(moonlight.getImageName());
+                    removePhoto(moonlight.getImageName());
                     removeAudio(moonlight.getAudioName());
                     BusEventUtils.post(Constants.EXTRA_TYPE_MOONLIGHT, moonlight.getId());
                     if (mKeyId != null) {
