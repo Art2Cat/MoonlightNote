@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote.Controller.Login;
 
+import android.Manifest;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.DatabaseUtils;
+import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,6 +29,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+
+import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
@@ -53,6 +57,12 @@ public class LoginActivity extends AppCompatActivity {
         boolean flag = SPUtils.getBoolean(this, Constants.USER_CONFIG, Constants.USER_CONFIG_AUTO_LOGIN, false);
         if (!flag) {
             signIn();
+        }
+
+        String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        if (!EasyPermissions.hasPermissions(this, perm)) {
+            PermissionUtils.requestStorage(this, perm);
+            return;
         }
 
         mFragmentManager = getSupportFragmentManager();
@@ -82,6 +92,11 @@ public class LoginActivity extends AppCompatActivity {
             handler.postDelayed(new UpdateUI(), 5000);
         }
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
