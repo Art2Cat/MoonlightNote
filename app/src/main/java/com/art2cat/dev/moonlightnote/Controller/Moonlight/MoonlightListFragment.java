@@ -1,16 +1,12 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
-import android.app.Fragment;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DatabaseUtils;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,13 +18,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 
+import com.art2cat.dev.moonlightnote.Controller.CommonFragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
-import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseError;
@@ -36,17 +32,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
-import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import jp.wasabeef.recyclerview.animators.FadeInDownAnimator;
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
-import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
-import static com.squareup.picasso.MemoryPolicy.NO_STORE;
+import static com.art2cat.dev.moonlightnote.Utils.Firebase.DatabaseUtils.*;
+
 
 /**
  * Created by art2cat
@@ -260,15 +254,9 @@ public abstract class MoonlightListFragment extends Fragment {
                     }
                     break;
                 case R.id.menu_empty_trash:
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_empty_trash, null);
-                    builder.setTitle(R.string.dialog_empty_trash_title).setView(view)
-                            .setPositiveButton("Empty Trash", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    emptyTrash();
-                                }
-                            }).setNegativeButton("Cancel", null).create().show();
+                    ConfirmationDialogFragment confirmationDialogFragment = ConfirmationDialogFragment
+                            .newInstance(getString(R.string.dialog_empty_trash_title), getString(R.string.dialog_empty_trash_content), 0);
+                    confirmationDialogFragment.show(getFragmentManager(), "Empty Trash");
                     break;
             }
         }
@@ -283,27 +271,17 @@ public abstract class MoonlightListFragment extends Fragment {
 
     public abstract boolean isTrash();
 
-    public void emptyTrash() {
-        try {
-            FirebaseDatabase.getInstance().getReference().child("users-moonlight")
-                    .child(getUid()).child("trash").removeValue(
-                    new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                            Log.d(TAG, "emptyTrash onComplete: ");
-                        }
-                    });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void busAction(BusEvent busEvent) {
         //这里更新视图或者后台操作,从busAction获取传递参数.
         if (busEvent != null) {
-            if (busEvent.getFlag() == Constants.BUS_FLAG_SIGN_OUT) {
-                isLogin = false;
+            switch (busEvent.getFlag()) {
+                case Constants.BUS_FLAG_SIGN_OUT:
+                    isLogin = false;
+                    break;
+                case Constants.BUS_FLAG_EMPTY_TRASH:
+                    emptyTrash(getUid());
+                    break;
             }
         }
     }

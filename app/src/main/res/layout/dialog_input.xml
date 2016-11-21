@@ -3,19 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/dialog_background"
+    android:paddingRight="24dp"
+    android:paddingLeft="24dp"
     android:orientation="vertical">
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/inputLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:errorEnabled="true">
+        android:layout_height="wrap_content">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/dialog_editText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:theme="@style/MyEditText" />
     </android.support.design.widget.TextInputLayout>
 
 </android.support.v7.widget.LinearLayoutCompat>

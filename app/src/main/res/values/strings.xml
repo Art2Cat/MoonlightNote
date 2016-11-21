@@ -149,4 +149,7 @@
     <string name="restore_moonlight">Restore succeed!</string>
     <string name="title_activity_user">User</string>
     <string name="note_binned">Note binned</string>
+    <string name="dialog_empty_trash_confirm">Empty Trash</string>
+    <string name="dialog_enter_your_nickname">Enter your nickname</string>
+    <string name="dialog_set_nickname">Set nickname</string>
 </resources>

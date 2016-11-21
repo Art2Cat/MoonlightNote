@@ -199,4 +199,19 @@ public class DatabaseUtils {
         return null;
     }
 
+    public static void emptyTrash(String mUserId) {
+        try {
+            FirebaseDatabase.getInstance().getReference().child("users-moonlight")
+                    .child(mUserId).child("trash").removeValue(
+                    new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            Log.d(TAG, "emptyTrash onComplete: ");
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -24,12 +24,9 @@ import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 
 public class InputDialogFragment extends DialogFragment {
     private View mView;
-    private TextInputLayout mTextInputLayout;
     TextInputEditText mTextInputEditText;
     private int mType;
     private String mTitle;
-    private String mMessage;
-    private String mEmail;
     private static final String TAG = "InputDialogFragment";
 
     public static InputDialogFragment newInstance(String title, int type) {
@@ -58,12 +55,12 @@ public class InputDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         mView = inflater.inflate(R.layout.dialog_input, null);
-        mTextInputLayout = (TextInputLayout) mView.findViewById(R.id.inputLayout);
         mTextInputEditText = (TextInputEditText) mView.findViewById(R.id.dialog_editText);
 
         if (mType == 0) {
             mTextInputEditText.setHint(R.string.dialog_enter_your_register_email);
-            mEmail = mTextInputEditText.getText().toString();
+        } else if (mType == 1) {
+            mTextInputEditText.setHint(R.string.dialog_enter_your_nickname);
         }
         builder.setView(mView);
         builder.setTitle(mTitle);
@@ -75,63 +72,13 @@ public class InputDialogFragment extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // positive button logic
-                        mEmail = mTextInputEditText.getText().toString();
+
                         if (mType == 0) {
-                            if (!mEmail.contains("@")) {
-                                mTextInputLayout.setError(getString(R.string.error_invalid_email));
-                                Log.d(TAG, "onClick: ");
-                                return;
-                            }
-                            BusEventUtils.post(Constants.BUS_FLAG_EMAIL, mEmail);
-                        }
-                    }
-                });
-
-        String negativeText = getString(android.R.string.cancel);
-        builder.setNegativeButton(negativeText,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // negative button logic
-                    }
-                });
-        return builder.create();
-    }
-
-    private AlertDialog showLocationDialog(String title, String message, final int type) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.DialogTheme);
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
-        mView = inflater.inflate(R.layout.dialog_input, null);
-        builder.setView(mView);
-        if (title != null) {
-            builder.setTitle(title);
-            Log.d(TAG, "showLocationDialog: " + title);
-        }
-        if (message != null) {
-            builder.setMessage(message);
-            Log.d(TAG, "showLocationDialog: " + message);
-        }
-
-        mTextInputLayout = (TextInputLayout) mView.findViewById(R.id.inputLayout);
-        mTextInputEditText = (TextInputEditText) mView.findViewById(R.id.dialog_editText);
-
-        if (type == 0) {
-            mTextInputEditText.setHint(R.string.dialog_enter_your_register_email);
-            mEmail = mTextInputEditText.getText().toString();
-        }
-        String positiveText = getString(android.R.string.ok);
-        builder.setPositiveButton(positiveText,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // positive button logic
-                        mEmail = mTextInputEditText.getText().toString();
-                        if (type == 0) {
-                            if (!mEmail.contains("@")) {
-                                mTextInputLayout.setError(getString(R.string.error_invalid_email));
-                                return;
-                            }
-                            BusEventUtils.post(Constants.BUS_FLAG_EMAIL, mEmail);
+                            String email = mTextInputEditText.getText().toString();
+                            BusEventUtils.post(Constants.BUS_FLAG_EMAIL, email);
+                        } else if (mType ==1) {
+                            String nickname = mTextInputEditText.getText().toString();
+                            BusEventUtils.post(Constants.BUS_FLAG_USERNAME, nickname);
                         }
                     }
                 });

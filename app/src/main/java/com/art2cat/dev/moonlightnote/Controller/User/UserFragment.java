@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonFragment.InputDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.CommonFragment.PickPicFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonFragment.ProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.User;
@@ -205,8 +206,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private void showDialog(int type) {
         switch (type) {
             case 1:
-                SetNicknameFragment setNicknameFragment = new SetNicknameFragment();
-                setNicknameFragment.show(getFragmentManager(), "labelDialog");
+                InputDialogFragment inputDialogFragment1 = InputDialogFragment
+                        .newInstance(getString(R.string.dialog_set_nickname), 1);
+                inputDialogFragment1.show(getFragmentManager(), "setNickname");
                 break;
             case 2:
                 InputDialogFragment inputDialogFragment = InputDialogFragment

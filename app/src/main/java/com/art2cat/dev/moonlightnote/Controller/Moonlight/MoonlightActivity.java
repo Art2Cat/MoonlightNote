@@ -1,19 +1,18 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -71,7 +70,7 @@ public class MoonlightActivity extends AppCompatActivity
     private FirebaseAnalytics mFirebaseAnalytics;
     private User mUser = new User();
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private FragmentManager mFragmentManager = getFragmentManager();
+    private FragmentManager mFragmentManager = getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

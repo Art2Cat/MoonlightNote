@@ -8,7 +8,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
+import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 
 /**
  * Created by Rorschach
@@ -44,26 +46,26 @@ public class ConfirmationDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return showLocationDialog(mTitle, mMessage, mType);
-    }
-
-    private AlertDialog showLocationDialog(String title, String message, final int type) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.DialogTheme);
-        if (title != null) {
-            builder.setTitle(title);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        if (mTitle != null) {
+            builder.setTitle(mTitle);
         }
-        if (message != null) {
-            builder.setMessage(message);
+        if (mMessage != null) {
+            builder.setMessage(mMessage);
         }
-
-        String positiveText = getString(android.R.string.ok);
+        String positiveText;
+        if (mType == 0) {
+            positiveText = getString(R.string.dialog_empty_trash_confirm);
+        } else {
+            positiveText = getString(android.R.string.ok);
+        }
         builder.setPositiveButton(positiveText,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // positive button logic
-                        if (type == 0) {
-
+                        if (mType == 0) {
+                            BusEventUtils.post(Constants.BUS_FLAG_EMPTY_TRASH, null);
                         }
                     }
                 });
@@ -78,4 +80,5 @@ public class ConfirmationDialogFragment extends DialogFragment {
                 });
         return builder.create();
     }
+
 }

@@ -40,6 +40,7 @@ public class Constants {
     public static final int BUS_FLAG_CAMERA = 805;
     public static final int BUS_FLAG_ALBUM = 806;
     public static final int BUS_FLAG_SIGN_OUT = 807;
+    public static final int BUS_FLAG_EMPTY_TRASH = 808;
     public static final int BUS_FLAG_UPDATE_USER = 809;
     public static final int BUS_FLAG_NULL = 810;
 
@@ -75,4 +76,5 @@ public class Constants {
      * AES偏移量 （可修改）
      */
     public static final String IV_PARAMERER = "1020304050607080";
+
 }
