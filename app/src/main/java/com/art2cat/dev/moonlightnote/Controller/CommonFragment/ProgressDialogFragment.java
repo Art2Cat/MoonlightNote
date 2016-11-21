@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller;
+package com.art2cat.dev.moonlightnote.Controller.CommonFragment;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -30,6 +30,4 @@ public class ProgressDialogFragment extends DialogFragment {
         dialog.setCancelable(false);
         return dialog;
     }
-
-
 }

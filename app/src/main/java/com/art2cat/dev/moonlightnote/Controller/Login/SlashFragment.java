@@ -2,7 +2,6 @@ package com.art2cat.dev.moonlightnote.Controller.Login;
 
 
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -18,9 +17,9 @@ import com.google.android.gms.ads.NativeExpressAdView;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AdFragment extends Fragment {
+public class SlashFragment extends Fragment {
     private static final String APP_ID = "ca-app-pub-5043396164425122~8442166898";
-    public AdFragment() {
+    public SlashFragment() {
         // Required empty public constructor
     }
 
@@ -33,7 +32,7 @@ public class AdFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_ad, null);
+        View view = inflater.inflate(R.layout.fragment_slash, null);
         MobileAds.initialize(getActivity(), APP_ID);
         NativeExpressAdView adView = (NativeExpressAdView) view.findViewById(R.id.adView);
         AdRequest request = new AdRequest.Builder()

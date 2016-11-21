@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
+import com.art2cat.dev.moonlightnote.Controller.CommonFragment.InputDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.User;
@@ -295,8 +296,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                 mEmailView.setError(null);
                 String email = mEmailView.getText().toString();
                 if (TextUtils.isEmpty(email)) {
-                    RPDialogFragment rpDialogFragment = new RPDialogFragment();
-                    rpDialogFragment.show(getFragmentManager(), "resetPassword");
+                    InputDialogFragment inputDialogFragment = InputDialogFragment
+                            .newInstance(getString(R.string.dialog_reset_password), 0);
+                    inputDialogFragment.show(getFragmentManager(), "resetPassword");
                 } else {
                     AuthUtils.sendRPEmail(getActivity(), mView, email);
                 }

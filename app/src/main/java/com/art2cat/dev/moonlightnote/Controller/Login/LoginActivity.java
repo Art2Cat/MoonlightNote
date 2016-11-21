@@ -132,7 +132,7 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
             //在这里首先加载一个含有广告的fragment
             if (fragment == null) {
 
-                fragment = new AdFragment();
+                fragment = new SlashFragment();
                 mFragmentManager.beginTransaction()
                         .add(R.id.login_container, fragment)
                         .commit();

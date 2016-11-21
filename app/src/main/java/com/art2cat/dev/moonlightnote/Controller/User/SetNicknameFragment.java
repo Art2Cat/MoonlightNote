@@ -10,12 +10,9 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
-
-import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created by art2cat
@@ -29,8 +26,8 @@ public class SetNicknameFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_editext, null);
-        final TextInputEditText nicknameTIET = (TextInputEditText) view.findViewById(R.id.dialog_edittext);
+        View view = inflater.inflate(R.layout.dialog_input, null);
+        final TextInputEditText nicknameTIET = (TextInputEditText) view.findViewById(R.id.dialog_editText);
         builder.setTitle("Set nickname")
                 .setView(view)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {

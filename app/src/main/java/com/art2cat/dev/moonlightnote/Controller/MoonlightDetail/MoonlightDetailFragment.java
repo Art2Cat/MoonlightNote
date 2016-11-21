@@ -49,12 +49,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
-import com.art2cat.dev.moonlightnote.Controller.ProgressDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.CommonFragment.ProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
@@ -131,11 +130,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private CardView mImageCardView;
     private CardView mAudioCardView;
     private AppCompatImageView mImage;
-    private ProgressDialog progressDialog;
     private ProgressDialogFragment mProgressDialogFragment;
-    private ProgressBar mProgressBar;
     private ProgressBar mAudioPlayerPB;
-    private LinearLayoutCompat mProgressBarContainer;
     private CoordinatorLayout mCoordinatorLayout;
     private BottomSheetBehavior mRightBottomSheetBehavior;
     private BottomSheetBehavior mLeftBottomSheetBehavior;
@@ -238,8 +234,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         mTitle = (TextInputEditText) mView.findViewById(R.id.title_TIET);
         mContent = (TextInputEditText) mView.findViewById(R.id.content_TIET);
         mImage = (AppCompatImageView) mView.findViewById(R.id.moonlight_image);
-        mProgressBar = (ProgressBar) mView.findViewById(R.id.moonlight_image_progressBar);
-        mProgressBarContainer = (LinearLayoutCompat) mView.findViewById(R.id.progressBar_container);
         //mImageCardView = (CardView) mView.findViewById(R.id.image_container);
         mAudioCardView = (CardView) mView.findViewById(R.id.audio_container);
         //mDeleteImage = (AppCompatButton) mView.findViewById(R.id.delete_image);
@@ -826,7 +820,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 }
             });
         } else if (type == 3) {
-            mProgressBarContainer.setVisibility(View.VISIBLE);
             StorageReference storageReference = mStorageReference.child(userId).child("audios")
                     .child(fileUri.getLastPathSegment());
             uploadTask = storageReference.putFile(fileUri);

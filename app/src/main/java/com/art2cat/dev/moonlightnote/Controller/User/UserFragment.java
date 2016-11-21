@@ -2,7 +2,6 @@ package com.art2cat.dev.moonlightnote.Controller.User;
 
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,8 +18,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.art2cat.dev.moonlightnote.Controller.Login.RPDialogFragment;
-import com.art2cat.dev.moonlightnote.Controller.ProgressDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.CommonFragment.InputDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.CommonFragment.ProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
@@ -210,8 +209,11 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 setNicknameFragment.show(getFragmentManager(), "labelDialog");
                 break;
             case 2:
-                RPDialogFragment rpDialogFragment = new RPDialogFragment();
-                rpDialogFragment.show(getFragmentManager(), "resetDialog");
+                InputDialogFragment inputDialogFragment = InputDialogFragment
+                        .newInstance(getString(R.string.dialog_reset_password), 0);
+                inputDialogFragment.show(getFragmentManager(), "resetPassword");
+                //RPDialogFragment rpDialogFragment = new RPDialogFragment();
+                //rpDialogFragment.show(getFragmentManager(), "resetDialog");
                 break;
         }
     }
@@ -235,6 +237,11 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                         mUser.setNickname(busEvent.getMessage());
                         UserUtils.saveUserToCache(getActivity().getApplicationContext(), mUser);
                         updateProfile(busEvent.getMessage(), null);
+                    }
+                    break;
+                case BUS_FLAG_EMAIL:
+                    if (busEvent.getMessage().contains("@")) {
+                        AuthUtils.sendRPEmail(getActivity(), mView, busEvent.getMessage());
                     }
                     break;
             }
