@@ -77,6 +77,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
+                        android:gravity="end"
                         android:orientation="horizontal">
 
                         <android.support.v7.widget.AppCompatButton
@@ -91,18 +92,16 @@
 
                         <android.support.v7.widget.AppCompatButton
                             android:id="@+id/email_sign_up_button"
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:text="@string/action_sign_up"
                             android:textSize="14sp"
                             android:theme="@style/RaiseButtonStyle" />
 
                         <android.support.v7.widget.AppCompatButton
                             android:id="@+id/email_sign_in_button"
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:text="@string/action_sign_in"
                             android:textSize="14sp"
                             android:theme="@style/RaiseButtonStyle" />

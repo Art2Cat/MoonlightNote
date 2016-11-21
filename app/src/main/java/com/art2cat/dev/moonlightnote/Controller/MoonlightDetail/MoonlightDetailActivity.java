@@ -1,9 +1,10 @@
 package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.Slide;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,7 +24,7 @@ public class MoonlightDetailActivity extends AppCompatActivity {
         View view = inflater.inflate(R.layout.activity_moonlight_detail, null);
         setContentView(view);
 
-        FragmentManager fm = getSupportFragmentManager();
+        FragmentManager fm = getFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.detail_fragmentContainer);
         if (fragment == null) {
             int flag = getIntent().getIntExtra("writeoredit", 0);
@@ -36,7 +37,9 @@ public class MoonlightDetailActivity extends AppCompatActivity {
                 String keyid = getIntent().getStringExtra("keyid");
                 fragment = new TrashDetailFragment().newInstance(keyid);
             }
-            fm.beginTransaction().add(R.id.detail_fragmentContainer, fragment).commit();
+            fm.beginTransaction()
+                    .add(R.id.detail_fragmentContainer, fragment)
+                    .commit();
         }
     }
 

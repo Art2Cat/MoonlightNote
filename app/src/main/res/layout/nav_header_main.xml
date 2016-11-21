@@ -19,10 +19,10 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imageView"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:gravity="center"
-            android:src="@drawable/ic_app_icon" />
+            android:src="@mipmap/ic_launcher" />
     </LinearLayout>
 
     <LinearLayout

@@ -3,13 +3,14 @@ package com.art2cat.dev.moonlightnote.Controller.Login;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatImageButton;
@@ -26,9 +27,12 @@ import android.widget.TextView;
 import com.art2cat.dev.moonlightnote.Controller.CommonFragment.InputDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
+import com.art2cat.dev.moonlightnote.Model.Constants;
+import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.AuthUtils;
+import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserUtils;
@@ -74,7 +78,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     private DatabaseReference myReference;
     private GoogleApiClient mGoogleApiClient;
     private int flag = 0;
-    private boolean signUp_state;
+    private boolean isNewUser = false;
 
 
     public LoginFragment() {
@@ -143,12 +147,14 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                 .build();
 
 
+        mGoogleApiClient = null;
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .enableAutoManage(getActivity() /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .enableAutoManage((FragmentActivity) getActivity() /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, mGoogleSignInOptions)
                 .build();
 
         Log.d(TAG, "233: " + mGoogleApiClient.toString());
+
     }
 
     @Override
@@ -160,7 +166,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     @Override
     public void onDestroy() {
         EventBus.getDefault().unregister(this);
-        mGoogleApiClient.stopAutoManage(getActivity());
+        mGoogleApiClient.stopAutoManage((FragmentActivity) getActivity());
         mGoogleApiClient.disconnect();
         super.onDestroy();
     }
@@ -281,9 +287,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
             if (result.isSuccess()) {
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
+                isNewUser = true;
             } else {
                 showProgress(false);
-                SnackBarUtils.shortSnackBar(mView, "Google Sign In failed", SnackBarUtils.TYPE_INFO).show();
+                SnackBarUtils.shortSnackBar(mView, "Google Sign In failed" + result.toString(), SnackBarUtils.TYPE_INFO).show();
                 Log.d(TAG, "Google Sign In failed");
             }
         }
@@ -348,6 +355,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                         user1.photoUrl = photoUrl.toString();
                     }
 
+                    if (isNewUser) {
+                        commitMoonlight(user.getUid());
+                    }
+
                     UserUtils.updateUser(user.getUid(), user1);
                     UserUtils.saveUserToCache(getActivity().getApplicationContext(), user1);
                 } else {
@@ -373,11 +384,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                         if (!task.isSuccessful()) {
                             showProgress(false);
                             Log.w(TAG, "signInWithCredential", task.getException());
-                            SnackBarUtils.shortSnackBar(mView, "Authentication failed.",
+                            SnackBarUtils.shortSnackBar(mView, "Authentication failed: " + task.getException(),
                                     SnackBarUtils.TYPE_WARNING).show();
                         } else {
                             showProgress(false);
                             Intent intent = new Intent(getActivity(), MoonlightActivity.class);
+                            isNewUser = true;
                             getActivity().startActivity(intent);
                             SnackBarUtils.shortSnackBar(mView, "Google Sign In successed", SnackBarUtils.TYPE_INFO).show();
                             SPUtils.putBoolean(getActivity(), "User", "google", true);
@@ -419,10 +431,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                             SnackBarUtils.longSnackBar(mView, "Sign Up succeed!",
                                     SnackBarUtils.TYPE_WARNING).show();
                             signInWithEmail(email, password);
-                            signUp_state = true;
+                            isNewUser = true;
                         } else {
                             showProgress(false);
-                            signUp_state = false;
+                            isNewUser = false;
                             SnackBarUtils.longSnackBar(mView, "Sign Up Failed: " + task.getException().toString(),
                                     SnackBarUtils.TYPE_WARNING).show();
                         }
@@ -454,5 +466,13 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
             SnackBarUtils.shortSnackBar(mView, "Invalid email address",
                     SnackBarUtils.TYPE_WARNING).show();
         }
+    }
+
+    private void commitMoonlight(String userId) {
+        Moonlight moonlight = new Moonlight();
+        moonlight.setTitle(getString(R.string.init_moonlight_title));
+        moonlight.setContent(getString(R.string.init_moonlight_content));
+        FDatabaseUtils fDatabaseUtils = FDatabaseUtils.newInstance(getActivity(), null, userId);
+        fDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
     }
 }

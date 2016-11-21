@@ -108,7 +108,9 @@ public class StorageUtils {
                 @Override
                 public void onSuccess(Void aVoid) {
                     Log.d(TAG, "onSuccess: ");
-                    SnackBarUtils.shortSnackBar(mView, "Image removed!", SnackBarUtils.TYPE_INFO).show();
+                    if (mView != null) {
+                        SnackBarUtils.shortSnackBar(mView, "Image removed!", SnackBarUtils.TYPE_INFO).show();
+                    }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -127,7 +129,9 @@ public class StorageUtils {
                 @Override
                 public void onSuccess(Void aVoid) {
                     Log.d(TAG, "onSuccess: ");
-                    SnackBarUtils.shortSnackBar(mView, "Voice removed!", SnackBarUtils.TYPE_INFO).show();
+                    if (mView != null) {
+                        SnackBarUtils.shortSnackBar(mView, "Voice removed!", SnackBarUtils.TYPE_INFO).show();
+                    }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override

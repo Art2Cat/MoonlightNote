@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Moonlight Note</string>
+    <string name="app_name">MoonlightNote</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -152,4 +152,6 @@
     <string name="dialog_empty_trash_confirm">Empty Trash</string>
     <string name="dialog_enter_your_nickname">Enter your nickname</string>
     <string name="dialog_set_nickname">Set nickname</string>
+    <string name="init_moonlight_title">Welcome to MoonlightNote!</string>
+    <string name="init_moonlight_content">MoonlightNote based on Firebase, all of your datastores in Google Cloud Service are encrypted and secure.</string>
 </resources>

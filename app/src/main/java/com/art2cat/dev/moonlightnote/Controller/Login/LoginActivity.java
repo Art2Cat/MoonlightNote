@@ -1,21 +1,21 @@
 package com.art2cat.dev.moonlightnote.Controller.Login;
 
 import android.Manifest;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.Firebase.DatabaseUtils;
+import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.google.android.gms.ads.MobileAds;
@@ -39,7 +39,7 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
     private boolean mLoginState = false;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private DatabaseUtils mDatabaseUtils;
+    private FDatabaseUtils mFDatabaseUtils;
     private Fragment mFragment;
 
 
@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        mFragmentManager = getFragmentManager();
         //初始化Admob
         MobileAds.initialize(this, AD_UNIT_ID);
         //获得FirebaseAuth对象
@@ -79,8 +79,8 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
         super.onStop();
         Log.d(TAG, "onStop: ");
         removeListener();
-        if (mDatabaseUtils != null) {
-            mDatabaseUtils.removeListener();
+        if (mFDatabaseUtils != null) {
+            mFDatabaseUtils.removeListener();
         }
     }
 
@@ -92,9 +92,9 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
-                    mDatabaseUtils = new DatabaseUtils(LoginActivity.this,
+                    mFDatabaseUtils = new FDatabaseUtils(LoginActivity.this,
                             FirebaseDatabase.getInstance().getReference(), user.getUid());
-                    mDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
+                    mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
                     //downloadUserConfig(user.getUid());
 
                     mLoginState = true;
@@ -117,7 +117,6 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
     }
 
     private void startAdFragment() {
-        mFragmentManager = getSupportFragmentManager();
         Fragment fragment = mFragmentManager.findFragmentById(R.id.login_container);
         //这里判断是否是重新登陆，如果是，则直接进入登陆界面，如果不是则，加载广告页面
         boolean reLogin = getIntent().getBooleanExtra("reLogin", false);
@@ -174,7 +173,7 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
 
             File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.image");
             File dir1 = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.audio");
-            if (!dir.exists() || !dir1.exists()) {
+            if (!dir.exists() && !dir1.exists()) {
                 if (dir.mkdirs()) {
                     Log.d(TAG, "/MoonlightNote/.image: created");
                 }
@@ -220,6 +219,10 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
             } else {
                 mFragment = new LoginFragment();
                 mFragmentManager.beginTransaction()
+                        .setCustomAnimations(R.animator.fragment_slide_left_enter,
+                                R.animator.fragment_slide_left_exit,
+                                R.animator.fragment_slide_right_enter,
+                                R.animator.fragment_slide_right_exit)
                         .replace(R.id.login_container, mFragment)
                         .commitAllowingStateLoss();
             }

@@ -1,33 +1,34 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Slide;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
+import com.art2cat.dev.moonlightnote.Controller.Settings.SettingsActivity;
 import com.art2cat.dev.moonlightnote.Controller.User.UserActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
-import com.art2cat.dev.moonlightnote.Utils.Firebase.DatabaseUtils;
+import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
@@ -62,28 +63,30 @@ public class MoonlightActivity extends AppCompatActivity
     private boolean userIsInteracting;
     private TextView emailTV;
     private TextView nickTV;
-    private ArrayAdapter<String> adapter;
     private String mUserId;
     private FirebaseUser mFirebaseUser;
-    private DatabaseUtils mDatabaseUtils;
+    private FDatabaseUtils mFDatabaseUtils;
     private FirebaseAuth mAuth;
     private FirebaseAnalytics mFirebaseAnalytics;
     private User mUser = new User();
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    private FragmentManager mFragmentManager = getSupportFragmentManager();
+    private FragmentManager mFragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moonlight);
+        setupWindowAnimations();
+
+        mFragmentManager = getFragmentManager();
+
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         //获取FirebaseAuth实例
         mAuth = getInstance();
         mUserId = mAuth.getCurrentUser().getUid();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        mDatabaseUtils = new DatabaseUtils(this, databaseReference, mUserId);
-        mDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
+        mFDatabaseUtils = new FDatabaseUtils(this, databaseReference, mUserId);
+        mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
         //获取Bus单例，并注册
         EventBus.getDefault().register(this);
         initView();
@@ -104,6 +107,26 @@ public class MoonlightActivity extends AppCompatActivity
                 isRateMyApp(mUserId, "emmmm, My app is not good enough and I need to improve it", false);
             }
         });
+
+        postponeEnterTransition();
+    }
+
+    private void setupWindowAnimations() {
+        Slide slide4 = new Slide();
+        slide4.setDuration(1000);
+        getWindow().setEnterTransition(slide4);
+
+        Slide slide = new Slide();
+        slide.setDuration(1000);
+        getWindow().setReturnTransition(slide);
+
+        Slide slide2 = new Slide();
+        slide2.setDuration(1000);
+        getWindow().setExitTransition(slide2);
+
+        Slide slide3 = new Slide();
+        slide3.setDuration(1000);
+        getWindow().setReenterTransition(slide3);
     }
 
     @Override
@@ -140,7 +163,7 @@ public class MoonlightActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-        mDatabaseUtils.removeListener();
+        mFDatabaseUtils.removeListener();
     }
 
     @Override
@@ -162,6 +185,10 @@ public class MoonlightActivity extends AppCompatActivity
                         if (fragment == null) {
                             fragment = new MoonlightFragment();
                             mFragmentManager.beginTransaction()
+                                    .setCustomAnimations(R.animator.fragment_slide_left_enter,
+                                            R.animator.fragment_slide_left_exit,
+                                            R.animator.fragment_slide_right_enter,
+                                            R.animator.fragment_slide_right_exit)
                                     .add(R.id.main_fragment_container, fragment)
                                     .commit();
                             setTitle(R.string.app_name);
@@ -170,6 +197,10 @@ public class MoonlightActivity extends AppCompatActivity
                         } else {
                             fragment = new MoonlightFragment();
                             mFragmentManager.beginTransaction()
+                                    .setCustomAnimations(R.animator.fragment_slide_left_enter,
+                                            R.animator.fragment_slide_left_exit,
+                                            R.animator.fragment_slide_right_enter,
+                                            R.animator.fragment_slide_right_exit)
                                     .replace(R.id.main_fragment_container, fragment)
                                     .commit();
                             setTitle(R.string.app_name);
@@ -185,6 +216,10 @@ public class MoonlightActivity extends AppCompatActivity
                     if (fragment == null) {
                         fragment = new TrashFragment();
                         mFragmentManager.beginTransaction()
+                                .setCustomAnimations(R.animator.fragment_slide_left_enter,
+                                        R.animator.fragment_slide_left_exit,
+                                        R.animator.fragment_slide_right_enter,
+                                        R.animator.fragment_slide_right_exit)
                                 .add(R.id.main_fragment_container, fragment)
                                 .commit();
                         setTitle("Trash");
@@ -193,6 +228,10 @@ public class MoonlightActivity extends AppCompatActivity
                     } else {
                         fragment = new TrashFragment();
                         mFragmentManager.beginTransaction()
+                                .setCustomAnimations(R.animator.fragment_slide_left_enter,
+                                        R.animator.fragment_slide_left_exit,
+                                        R.animator.fragment_slide_right_enter,
+                                        R.animator.fragment_slide_right_exit)
                                 .replace(R.id.main_fragment_container, fragment)
                                 .commit();
                         setTitle("Trash");
@@ -200,6 +239,9 @@ public class MoonlightActivity extends AppCompatActivity
                         isHome = !isHome;
                     }
                 }
+                break;
+            case R.id.nav_settings:
+//               startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.nav_rate_app:
                 RateThisApp.showRateDialog(this);
@@ -332,6 +374,7 @@ public class MoonlightActivity extends AppCompatActivity
             if (fragment == null) {
                 fragment = new MoonlightFragment();
                 mFragmentManager.beginTransaction()
+                        .setCustomAnimations(R.animator.fragment_slide_left_enter, R.animator.fragment_slide_left_exit)
                         .add(R.id.main_fragment_container, fragment)
                         .commit();
                 isHome = true;
@@ -385,8 +428,8 @@ public class MoonlightActivity extends AppCompatActivity
         // Name, email address, and profile imageUrl Url
         if (mFirebaseUser != null) {
             //User user = Utils.getUserInfo(mFirebaseUser);
-            //if (mDatabaseUtils.getUser() != null) {
-            //User user = mDatabaseUtils.getUser();
+            //if (mFDatabaseUtils.getUser() != null) {
+            //User user = mFDatabaseUtils.getUser();
             // Name, email address, and profile imageUrl Url
             mUser = UserUtils.getUserFromCache(this.getApplicationContext());
 

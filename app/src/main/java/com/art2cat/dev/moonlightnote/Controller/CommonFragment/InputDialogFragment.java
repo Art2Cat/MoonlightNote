@@ -6,8 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.DialogFragment;
+import android.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,11 +22,11 @@ import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
  */
 
 public class InputDialogFragment extends DialogFragment {
-    private View mView;
+    private static final String TAG = "InputDialogFragment";
     TextInputEditText mTextInputEditText;
+    private View mView;
     private int mType;
     private String mTitle;
-    private static final String TAG = "InputDialogFragment";
 
     public static InputDialogFragment newInstance(String title, int type) {
         InputDialogFragment inputDialogFragment = new InputDialogFragment();

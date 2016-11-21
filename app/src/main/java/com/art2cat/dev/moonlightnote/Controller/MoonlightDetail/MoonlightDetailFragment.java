@@ -3,7 +3,6 @@ package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,8 +26,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
@@ -60,7 +58,7 @@ import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.AudioPlayer;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
-import com.art2cat.dev.moonlightnote.Utils.Firebase.DatabaseUtils;
+import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
@@ -112,7 +110,7 @@ import static com.squareup.picasso.MemoryPolicy.NO_STORE;
  * A simple {@link Fragment} subclass.
  */
 public abstract class MoonlightDetailFragment extends Fragment implements
-        View.OnClickListener, FragmentManager.OnBackStackChangedListener, View.OnFocusChangeListener {
+        View.OnClickListener, View.OnFocusChangeListener {
     private static final String TAG = "MoonlightDetailFragment";
     private View mView;
     private ContentFrameLayout mContentFrameLayout;
@@ -147,7 +145,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private String mKeyId;
     private String mLabel;
     private Uri mFileUri = null;
-    private DatabaseUtils mDatabaseUtils;
+    private FDatabaseUtils mFDatabaseUtils;
     private DatabaseReference mMoonlightRef;
     private ValueEventListener mMoonlightListener;
     private ValueEventListener moonlightListener;
@@ -174,11 +172,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         // Required empty public constructor
     }
 
-    @Override
-    public void onBackStackChanged() {
-        Log.d(TAG, "onBackStackChanged: ");
-    }
-
     public abstract MoonlightDetailFragment newInstance();
 
     public abstract MoonlightDetailFragment newInstance(String keyid);
@@ -196,7 +189,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         mUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         //获取FirebaseDatabase实例
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mDatabaseUtils = new DatabaseUtils(getActivity(), mDatabaseReference, mUserId);
+        mFDatabaseUtils = new FDatabaseUtils(getActivity(), mDatabaseReference, mUserId);
 
         //新建moonlight对象
         moonlight = new Moonlight();
@@ -211,12 +204,12 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             mKeyId = getArguments().getString("keyId");
             int trashTag = getArguments().getInt("trash");
             if (trashTag == 0) {
-                mDatabaseUtils.getDataFromDatabase(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
+                mFDatabaseUtils.getDataFromDatabase(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
                 //getMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
                 mEditFlag = true;
                 mCreateFlag = false;
             } else {
-                mDatabaseUtils.getDataFromDatabase(mKeyId, Constants.EXTRA_TYPE_TRASH);
+                mFDatabaseUtils.getDataFromDatabase(mKeyId, Constants.EXTRA_TYPE_TRASH);
                 //getMoonlight(mKeyId, Constants.EXTRA_TYPE_TRASH);
                 mEditFlag = true;
                 mCreateFlag = false;
@@ -322,6 +315,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements
 
             }
         });
+
+        getActivity().postponeEnterTransition();
+
         return mView;
     }
 
@@ -337,7 +333,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         super.onActivityCreated(savedInstanceState);
         //当editFlag为true时延时0.5秒更新UI（防止UI已更新，moonlight数据未载入）
         if (mEditFlag) {
-            //moonlight_menu = mDatabaseUtils.getMoonlight();
+            //moonlight_menu = mFDatabaseUtils.getMoonlight();
             mHandler.postDelayed(myRunnable, 500);
         }
         if (!mEditable) {
@@ -348,7 +344,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                         @Override
                         public void onClick(View view) {
                             BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
-                            mDatabaseUtils.restoreToNote(moonlight);
+                            mFDatabaseUtils.restoreToNote(moonlight);
                             startActivity(new Intent(getActivity(), MoonlightActivity.class));
                         }
                     });
@@ -385,15 +381,15 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
         if (mCreateFlag && mEditable) {
             if (isEmpty(moonlight)) {
-                mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                mFDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
             }
         }
         //当editFlag为true且moonlight不为空时更新moonlight信息到服务器
         if (mEditable && mEditFlag && moonlight != null && !moonlight.isTrash()) {
             Log.d(TAG, "mKeyId" + mKeyId);
-            mDatabaseUtils.updateMoonlight(mKeyId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+            mFDatabaseUtils.updateMoonlight(mKeyId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
         }
-        mDatabaseUtils.removeListener();
+        mFDatabaseUtils.removeListener();
         //removeListener();
     }
 
@@ -530,8 +526,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 break;
             case R.id.bottom_sheet_item_move_to_trash:
                 if (isEmpty(moonlight)) {
-                    BusEventUtils.post(Constants.EXTRA_TYPE_TRASH, moonlight.getId());
-                    mDatabaseUtils.moveToTrash(moonlight);
+                    mFDatabaseUtils.moveToTrash(moonlight);
                 } else {
                     BusEventUtils.post(Constants.BUS_FLAG_NULL, null);
                 }
@@ -542,9 +537,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 if (isEmpty(moonlight)) {
                     StorageUtils.removePhoto(mView, mUserId, moonlight.getImageName());
                     StorageUtils.removeAudio(mView, mUserId, moonlight.getAudioName());
-                    BusEventUtils.post(Constants.EXTRA_TYPE_MOONLIGHT, moonlight.getId());
                     if (mKeyId != null) {
-                        mDatabaseUtils.removeMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
+                        mFDatabaseUtils.removeMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
                     }
                     moonlight = null;
                 } else {
@@ -554,7 +548,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 break;
             case R.id.bottom_sheet_item_make_a_copy:
                 if (isEmpty(moonlight)) {
-                    mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                    mFDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
                 } else {
                     SnackBarUtils.shortSnackBar(mCoordinatorLayout,
                             getString(R.string.note_binned), SnackBarUtils.TYPE_INFO).show();
@@ -1121,7 +1115,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
 
         private void initView(boolean editable) {
 
-            moonlight = mDatabaseUtils.getMoonlight();
+            moonlight = mFDatabaseUtils.getMoonlight();
             if (editable) {
                 if (moonlight.getTitle() != null) {
                     mTitle.setText(moonlight.getTitle());

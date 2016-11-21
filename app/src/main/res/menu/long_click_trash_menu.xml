@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_restore"
+        android:icon="@drawable/ic_restore_white_24dp"
+        android:orderInCategory="100"
+        android:title="@string/restore_moonlight"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_trash_delete_forever"
+        android:orderInCategory="100"
+        android:title="@string/bottom_sheet_right_permanent_delete"
+        app:showAsAction="never" />
+</menu>

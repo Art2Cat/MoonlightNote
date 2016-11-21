@@ -2,6 +2,7 @@ package com.art2cat.dev.moonlightnote.Controller.User;
 
 
 import android.Manifest;
+import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,7 +10,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
@@ -19,7 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonFragment.InputDialogFragment;
-import com.art2cat.dev.moonlightnote.Controller.CommonFragment.PickPicFragment;
+import com.art2cat.dev.moonlightnote.Controller.CommonFragment.PickPicDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonFragment.ProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.User;
@@ -97,6 +97,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 .getReferenceFromUrl(FB_STORAGE_REFERENCE);
 
         mBitmapUtils = new BitmapUtils(getActivity());
+
+        mProgressDialogFragment = ProgressDialogFragment.newInstance();
     }
 
     @Override
@@ -191,7 +193,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.user_head_picture:
-                PickPicFragment pickPicFragment = new PickPicFragment();
+                PickPicDialogFragment pickPicFragment = new PickPicDialogFragment();
                 pickPicFragment.show(getFragmentManager(), "PICK_PIC");
                 break;
             case R.id.user_nickname:

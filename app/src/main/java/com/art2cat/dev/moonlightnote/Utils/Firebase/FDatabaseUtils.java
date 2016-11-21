@@ -11,7 +11,6 @@ import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.Utils.UserUtils;
-import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -28,8 +27,8 @@ import java.util.Map;
  * on 11/5/16 6:45 PM.
  */
 
-public class DatabaseUtils {
-    private static final String TAG = "DatabaseUtils";
+public class FDatabaseUtils {
+    private static final String TAG = "FDatabaseUtils";
     public User user;
     public Moonlight moonlight;
     private Context mContext;
@@ -38,14 +37,33 @@ public class DatabaseUtils {
     private DatabaseReference mDatabaseReference;
     private ValueEventListener mValueEventListener;
 
-    public DatabaseUtils() {
+    public FDatabaseUtils() {
 
     }
 
-    public DatabaseUtils(Context context, DatabaseReference databaseReference, String userId) {
+    public FDatabaseUtils(Context context, DatabaseReference databaseReference, String userId) {
         mContext = context;
         mDatabaseReference = databaseReference;
         mUserId = userId;
+    }
+
+    public static FDatabaseUtils newInstance(Context context, DatabaseReference databaseReference, String userId) {
+        return new FDatabaseUtils(context, databaseReference, userId);
+    }
+
+    public static void emptyTrash(String mUserId) {
+        try {
+            FirebaseDatabase.getInstance().getReference().child("users-moonlight")
+                    .child(mUserId).child("trash").removeValue(
+                    new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            Log.d(TAG, "emptyTrash onComplete: ");
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void addMoonlight(final Moonlight moonlight, final int type) {
@@ -117,12 +135,12 @@ public class DatabaseUtils {
         addMoonlight(moonlight, Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT);
     }
 
-    public void removeMoonlight(String keyId, int type) {
+    public void removeMoonlight(String keyId, final int type) {
         DatabaseReference databaseReference = null;
         if (type == 201 || type == 202) {
             databaseReference = FirebaseDatabase.getInstance().getReference()
                     .child("users-moonlight").child(mUserId).child("note").child(keyId);
-        } else if (type == 204) {
+        } else if (type == 204 || type == 205) {
             databaseReference = FirebaseDatabase.getInstance().getReference()
                     .child("users-moonlight").child(mUserId).child("trash").child(keyId);
         }
@@ -132,7 +150,9 @@ public class DatabaseUtils {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
 //                    Utils.showToast(mContext, "Delete completed!", 0);
-                    mContext.startActivity(new Intent(mContext, MoonlightActivity.class));
+                    if (type != 205) {
+                        mContext.startActivity(new Intent(mContext, MoonlightActivity.class));
+                    }
                 }
             });
         }
@@ -197,21 +217,6 @@ public class DatabaseUtils {
             return moonlight;
         }
         return null;
-    }
-
-    public static void emptyTrash(String mUserId) {
-        try {
-            FirebaseDatabase.getInstance().getReference().child("users-moonlight")
-                    .child(mUserId).child("trash").removeValue(
-                    new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                            Log.d(TAG, "emptyTrash onComplete: ");
-                        }
-                    });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }

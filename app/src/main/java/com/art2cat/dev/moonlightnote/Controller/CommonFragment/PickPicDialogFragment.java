@@ -4,7 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
+import android.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -21,11 +21,22 @@ import org.greenrobot.eventbus.EventBus;
  * on 2016/8/5.
  */
 
-public class PickPicFragment extends DialogFragment {
+public class PickPicDialogFragment extends DialogFragment {
+    public static final int EXTRA_TYPE_MOONLIGHT = 0;
+    private int mType;
+
+    public static PickPicDialogFragment newInstane(int type) {
+        PickPicDialogFragment pickPicDialogFragment = new PickPicDialogFragment();
+        Bundle args = new Bundle();
+        args.putInt("type", type);
+        pickPicDialogFragment.setArguments(args);
+        return pickPicDialogFragment;
+    }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_pick_pic, null);
 
         TextView camera = (TextView) view.findViewById(R.id.camera);

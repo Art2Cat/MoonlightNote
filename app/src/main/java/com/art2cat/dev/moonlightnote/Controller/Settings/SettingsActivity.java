@@ -18,6 +18,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
+import android.transition.Slide;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 
@@ -85,6 +86,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 // simple string representation.
                 preference.setSummary(stringValue);
             }
+
             return true;
         }
     };
@@ -119,10 +121,25 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         .getString(preference.getKey(), ""));
     }
 
+    private void setupWindowAnimations() {
+        Slide slide = new Slide();
+        slide.setDuration(1000);
+        getWindow().setEnterTransition(slide);
+
+        Slide slide2 = new Slide();
+        slide2.setDuration(1000);
+        getWindow().setReturnTransition(slide2);
+
+        Slide slide3 = new Slide();
+        slide3.setDuration(1000);
+        getWindow().setExitTransition(slide3);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
+        setupWindowAnimations();
     }
 
     /**

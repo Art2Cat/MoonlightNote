@@ -1,11 +1,11 @@
 package com.art2cat.dev.moonlightnote.Controller.CommonFragment;
 
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 import com.art2cat.dev.moonlightnote.Model.Constants;
