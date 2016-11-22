@@ -57,9 +57,6 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
             signIn();
         }
         startAdFragment();
-
-        requestPermission();
-
     }
 
     @Override
@@ -136,7 +133,7 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
                         .add(R.id.login_container, fragment)
                         .commit();
             }
-
+            requestPermission();
         }
 
     }

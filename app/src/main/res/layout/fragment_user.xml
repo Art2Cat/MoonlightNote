@@ -51,6 +51,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingTop="8dp"
+                        android:ellipsize="marquee"
+                        android:maxLines="1"
                         android:textSize="24sp" />
 
                     <android.support.v7.widget.AppCompatTextView
@@ -68,6 +70,8 @@
                         android:id="@+id/user_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:ellipsize="marquee"
                         android:paddingTop="8dp"
                         android:textSize="24sp" />
 

@@ -133,6 +133,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         if (!SPUtils.getBoolean(getActivity(), "User", "google", false)) {
             mCircleImageView.setOnClickListener(this);
             mChangePassword.setOnClickListener(this);
+            mChangePassword.setEnabled(false);
             mNickname.setOnClickListener(this);
         }
     }

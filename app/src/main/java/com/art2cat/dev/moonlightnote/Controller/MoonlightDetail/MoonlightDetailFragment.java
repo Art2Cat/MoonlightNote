@@ -927,10 +927,18 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 //这里是bottomSheet 状态的改变，根据slideOffset可以做一些动画
                 if (bottomSheet == bottomSheetLeft) {
                     Log.d(TAG, "left onStateChanged: " + newState);
+                    if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                        mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    }
                 }
                 if (bottomSheet == bottomSheetRight) {
                     Log.d(TAG, "right onStateChanged: " + newState);
+                    if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                        mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    }
                 }
+
+
 //                ViewCompat.setScaleX(bottomSheet,1);
 //                ViewCompat.setScaleY(bottomSheet,1);
             }
