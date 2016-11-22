@@ -2,6 +2,12 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
+        config {
+            keyAlias 'art2cat'
+            keyPassword 'fuckyou'
+            storeFile file('D:/Art2Cat.jks')
+            storePassword 'fuckyou'
+        }
     }
     compileSdkVersion 25
     buildToolsVersion "25"
@@ -21,6 +27,7 @@ android {
         }
         debug {
             debuggable true
+            signingConfig signingConfigs.config
         }
     }
     dexOptions {
@@ -64,7 +71,6 @@ dependencies {
     compile 'com.firebase:firebase-client-android:2.3.1'
     compile 'com.firebaseui:firebase-ui-database:0.4.3'
     compile 'de.hdodenhof:circleimageview:2.1.0'
-    compile 'com.google.code.gson:gson:2.6.2'
     compile 'pub.devrel:easypermissions:0.1.9'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.turki-alkhateeb:materialcolorpicker:1.0.7'

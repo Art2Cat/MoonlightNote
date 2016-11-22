@@ -75,7 +75,6 @@ public class MoonlightActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moonlight);
-        setupWindowAnimations();
 
         mFragmentManager = getFragmentManager();
 
@@ -107,27 +106,8 @@ public class MoonlightActivity extends AppCompatActivity
                 isRateMyApp(mUserId, "emmmm, My app is not good enough and I need to improve it", false);
             }
         });
-
-        postponeEnterTransition();
     }
 
-    private void setupWindowAnimations() {
-        Slide slide4 = new Slide();
-        slide4.setDuration(1000);
-        getWindow().setEnterTransition(slide4);
-
-        Slide slide = new Slide();
-        slide.setDuration(1000);
-        getWindow().setReturnTransition(slide);
-
-        Slide slide2 = new Slide();
-        slide2.setDuration(1000);
-        getWindow().setExitTransition(slide2);
-
-        Slide slide3 = new Slide();
-        slide3.setDuration(1000);
-        getWindow().setReenterTransition(slide3);
-    }
 
     @Override
     public void onBackPressed() {

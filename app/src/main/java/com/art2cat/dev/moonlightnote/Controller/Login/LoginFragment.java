@@ -141,19 +141,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        GoogleSignInOptions mGoogleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getActivity().getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
 
-
-        mGoogleApiClient = null;
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .enableAutoManage((FragmentActivity) getActivity() /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, mGoogleSignInOptions)
-                .build();
-
-        Log.d(TAG, "233: " + mGoogleApiClient.toString());
 
     }
 
@@ -166,8 +154,10 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     @Override
     public void onDestroy() {
         EventBus.getDefault().unregister(this);
-        mGoogleApiClient.stopAutoManage((FragmentActivity) getActivity());
-        mGoogleApiClient.disconnect();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.stopAutoManage((FragmentActivity) getActivity());
+            mGoogleApiClient.disconnect();
+        }
         super.onDestroy();
     }
 
@@ -320,6 +310,17 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                 break;
             case R.id.login_google_btn:
                 showProgress(true);
+                GoogleSignInOptions mGoogleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(getActivity().getString(R.string.default_web_client_id))
+                        .requestEmail()
+                        .build();
+
+
+                mGoogleApiClient = null;
+                mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                        .enableAutoManage((FragmentActivity) getActivity() /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                        .addApi(Auth.GOOGLE_SIGN_IN_API, mGoogleSignInOptions)
+                        .build();
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
                 startActivityForResult(signInIntent, RC_SIGN_IN);
                 break;
