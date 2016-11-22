@@ -90,6 +90,7 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
                     mFDatabaseUtils = new FDatabaseUtils(LoginActivity.this,
+
                             FirebaseDatabase.getInstance().getReference(), user.getUid());
                     mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
                     //downloadUserConfig(user.getUid());
