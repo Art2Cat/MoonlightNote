@@ -82,10 +82,6 @@ public abstract class MoonlightListFragment extends Fragment {
 
         setHasOptionsMenu(true);
 
-        getActivity().onUserInteraction();
-
-        getActivity().postponeEnterTransition();
-
         // [START create_database_reference]
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -235,9 +231,9 @@ public abstract class MoonlightListFragment extends Fragment {
                         public boolean onLongClick(View v) {
                             moonlight = model;
                             if (!isTrash()) {
-                                changeOptionsMenu(0, moonlightKey);
+                                changeOptionsMenu(0);
                             } else {
-                                changeOptionsMenu(1, moonlightKey);
+                                changeOptionsMenu(1);
                             }
                             return true;
                         }
@@ -272,7 +268,8 @@ public abstract class MoonlightListFragment extends Fragment {
         //this.menu = menu;
     }
 
-    private void changeOptionsMenu(int type, String keyId) {
+    private void changeOptionsMenu(int type)
+    {
         mMenu.clear();
         switch (type) {
             case 0:
@@ -285,6 +282,9 @@ public abstract class MoonlightListFragment extends Fragment {
                 break;
             case 2:
                 mMenuInflater.inflate(R.menu.trash_menu, mMenu);
+                break;
+            case 3:
+                mMenuInflater.inflate(R.menu.nil, mMenu);
                 break;
         }
     }
@@ -300,7 +300,7 @@ public abstract class MoonlightListFragment extends Fragment {
             case R.id.action_delete:
                 mDatabaseUtils.moveToTrash(moonlight);
                 getActivity().setTitle(R.string.app_name);
-                mMenu.clear();
+                changeOptionsMenu(3);
                 break;
             case R.id.action_delete_forever:
                 StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
@@ -308,12 +308,12 @@ public abstract class MoonlightListFragment extends Fragment {
                 mDatabaseUtils.removeMoonlight(moonlight.getId(), Constants.EXTRA_TYPE_MOONLIGHT);
                 moonlight = null;
                 getActivity().setTitle(R.string.app_name);
-                mMenu.clear();
+                changeOptionsMenu(3);
                 break;
             case R.id.action_make_a_copy:
                 mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
                 getActivity().setTitle(R.string.app_name);
-                mMenu.clear();
+                changeOptionsMenu(3);
                 break;
             case R.id.action_send:
                 //启动Intent分享
@@ -334,18 +334,18 @@ public abstract class MoonlightListFragment extends Fragment {
                 in = Intent.createChooser(in, "Send to");
                 startActivity(in);
                 getActivity().setTitle(R.string.app_name);
-                mMenu.clear();
+                changeOptionsMenu(3);
                 break;
             case R.id.action_restore:
                 mDatabaseUtils.restoreToNote(moonlight);
-                changeOptionsMenu(2, null);
+                changeOptionsMenu(2);
                 break;
             case R.id.action_trash_delete_forever:
                 StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
                 StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
                 mDatabaseUtils.removeMoonlight(moonlight.getId(), Constants.EXTRA_TYPE_DELETE_TRASH);
                 moonlight = null;
-                changeOptionsMenu(2, null);
+                changeOptionsMenu(2);
                 break;
         }
         return super.onOptionsItemSelected(item);

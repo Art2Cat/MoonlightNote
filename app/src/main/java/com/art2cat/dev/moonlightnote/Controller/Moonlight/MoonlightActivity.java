@@ -165,10 +165,6 @@ public class MoonlightActivity extends AppCompatActivity
                         if (fragment == null) {
                             fragment = new MoonlightFragment();
                             mFragmentManager.beginTransaction()
-                                    .setCustomAnimations(R.animator.fragment_slide_left_enter,
-                                            R.animator.fragment_slide_left_exit,
-                                            R.animator.fragment_slide_right_enter,
-                                            R.animator.fragment_slide_right_exit)
                                     .add(R.id.main_fragment_container, fragment)
                                     .commit();
                             setTitle(R.string.app_name);
@@ -177,10 +173,6 @@ public class MoonlightActivity extends AppCompatActivity
                         } else {
                             fragment = new MoonlightFragment();
                             mFragmentManager.beginTransaction()
-                                    .setCustomAnimations(R.animator.fragment_slide_left_enter,
-                                            R.animator.fragment_slide_left_exit,
-                                            R.animator.fragment_slide_right_enter,
-                                            R.animator.fragment_slide_right_exit)
                                     .replace(R.id.main_fragment_container, fragment)
                                     .commit();
                             setTitle(R.string.app_name);
@@ -196,25 +188,17 @@ public class MoonlightActivity extends AppCompatActivity
                     if (fragment == null) {
                         fragment = new TrashFragment();
                         mFragmentManager.beginTransaction()
-                                .setCustomAnimations(R.animator.fragment_slide_left_enter,
-                                        R.animator.fragment_slide_left_exit,
-                                        R.animator.fragment_slide_right_enter,
-                                        R.animator.fragment_slide_right_exit)
                                 .add(R.id.main_fragment_container, fragment)
                                 .commit();
-                        setTitle("Trash");
+                        this.setTitle("Trash");
                         mFAB.setVisibility(View.GONE);
                         isHome = !isHome;
                     } else {
                         fragment = new TrashFragment();
                         mFragmentManager.beginTransaction()
-                                .setCustomAnimations(R.animator.fragment_slide_left_enter,
-                                        R.animator.fragment_slide_left_exit,
-                                        R.animator.fragment_slide_right_enter,
-                                        R.animator.fragment_slide_right_exit)
                                 .replace(R.id.main_fragment_container, fragment)
                                 .commit();
-                        setTitle("Trash");
+                        this.setTitle("Trash");
                         mFAB.setVisibility(View.GONE);
                         isHome = !isHome;
                     }
@@ -354,7 +338,6 @@ public class MoonlightActivity extends AppCompatActivity
             if (fragment == null) {
                 fragment = new MoonlightFragment();
                 mFragmentManager.beginTransaction()
-                        .setCustomAnimations(R.animator.fragment_slide_left_enter, R.animator.fragment_slide_left_exit)
                         .add(R.id.main_fragment_container, fragment)
                         .commit();
                 isHome = true;

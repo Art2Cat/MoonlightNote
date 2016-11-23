@@ -217,10 +217,6 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
             } else {
                 mFragment = new LoginFragment();
                 mFragmentManager.beginTransaction()
-                        .setCustomAnimations(R.animator.fragment_slide_left_enter,
-                                R.animator.fragment_slide_left_exit,
-                                R.animator.fragment_slide_right_enter,
-                                R.animator.fragment_slide_right_exit)
                         .replace(R.id.login_container, mFragment)
                         .commitAllowingStateLoss();
             }
