@@ -268,8 +268,7 @@ public abstract class MoonlightListFragment extends Fragment {
         //this.menu = menu;
     }
 
-    private void changeOptionsMenu(int type)
-    {
+    private void changeOptionsMenu(int type) {
         mMenu.clear();
         switch (type) {
             case 0:
@@ -278,7 +277,7 @@ public abstract class MoonlightListFragment extends Fragment {
                 break;
             case 1:
                 mMenuInflater.inflate(R.menu.long_click_trash_menu, mMenu);
-                getActivity().setTitle(null);
+                getActivity().setTitle("Trash");
                 break;
             case 2:
                 mMenuInflater.inflate(R.menu.trash_menu, mMenu);
@@ -300,7 +299,7 @@ public abstract class MoonlightListFragment extends Fragment {
             case R.id.action_delete:
                 mDatabaseUtils.moveToTrash(moonlight);
                 getActivity().setTitle(R.string.app_name);
-                changeOptionsMenu(3);
+                //changeOptionsMenu(3);
                 break;
             case R.id.action_delete_forever:
                 StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
@@ -308,12 +307,12 @@ public abstract class MoonlightListFragment extends Fragment {
                 mDatabaseUtils.removeMoonlight(moonlight.getId(), Constants.EXTRA_TYPE_MOONLIGHT);
                 moonlight = null;
                 getActivity().setTitle(R.string.app_name);
-                changeOptionsMenu(3);
+                //changeOptionsMenu(3);
                 break;
             case R.id.action_make_a_copy:
                 mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
                 getActivity().setTitle(R.string.app_name);
-                changeOptionsMenu(3);
+                //changeOptionsMenu(3);
                 break;
             case R.id.action_send:
                 //启动Intent分享
@@ -338,6 +337,7 @@ public abstract class MoonlightListFragment extends Fragment {
                 break;
             case R.id.action_restore:
                 mDatabaseUtils.restoreToNote(moonlight);
+
                 changeOptionsMenu(2);
                 break;
             case R.id.action_trash_delete_forever:
