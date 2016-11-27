@@ -43,6 +43,8 @@ public class Constants {
     public static final int BUS_FLAG_EMPTY_TRASH = 808;
     public static final int BUS_FLAG_UPDATE_USER = 809;
     public static final int BUS_FLAG_NULL = 810;
+    public static final int BUS_FLAG_DELETE_ACCOUNT = 811;
+
 
 
     /**

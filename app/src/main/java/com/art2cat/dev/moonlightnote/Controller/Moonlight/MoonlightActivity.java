@@ -12,7 +12,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Slide;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,7 +20,6 @@ import android.widget.TextView;
 
 import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
-import com.art2cat.dev.moonlightnote.Controller.Settings.SettingsActivity;
 import com.art2cat.dev.moonlightnote.Controller.User.UserActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
@@ -190,7 +188,7 @@ public class MoonlightActivity extends AppCompatActivity
                         mFragmentManager.beginTransaction()
                                 .add(R.id.main_fragment_container, fragment)
                                 .commit();
-                        this.setTitle("Trash");
+                        setTitle(R.string.fragment_trash);
                         mFAB.setVisibility(View.GONE);
                         isHome = !isHome;
                     } else {
@@ -198,7 +196,7 @@ public class MoonlightActivity extends AppCompatActivity
                         mFragmentManager.beginTransaction()
                                 .replace(R.id.main_fragment_container, fragment)
                                 .commit();
-                        this.setTitle("Trash");
+                        setTitle(R.string.fragment_trash);
                         mFAB.setVisibility(View.GONE);
                         isHome = !isHome;
                     }

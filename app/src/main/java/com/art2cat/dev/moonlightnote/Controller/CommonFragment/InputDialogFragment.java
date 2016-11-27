@@ -60,8 +60,10 @@ public class InputDialogFragment extends DialogFragment {
             mTextInputEditText.setHint(R.string.dialog_enter_your_register_email);
         } else if (mType == 1) {
             mTextInputEditText.setHint(R.string.dialog_enter_your_nickname);
+        } else if (mType == 2) {
+            mTextInputEditText.setHint(R.string.dialog_enter_your_password);
         }
-        builder.setView(mView);
+            builder.setView(mView);
         builder.setTitle(mTitle);
         Log.d(TAG, "showLocationDialog: " + mTitle);
 
@@ -75,9 +77,12 @@ public class InputDialogFragment extends DialogFragment {
                         if (mType == 0) {
                             String email = mTextInputEditText.getText().toString();
                             BusEventUtils.post(Constants.BUS_FLAG_EMAIL, email);
-                        } else if (mType ==1) {
+                        } else if (mType == 1) {
                             String nickname = mTextInputEditText.getText().toString();
                             BusEventUtils.post(Constants.BUS_FLAG_USERNAME, nickname);
+                        } else if (mType == 2) {
+                            String password = mTextInputEditText.getText().toString();
+                            BusEventUtils.post(Constants.BUS_FLAG_DELETE_ACCOUNT, password);
                         }
                     }
                 });

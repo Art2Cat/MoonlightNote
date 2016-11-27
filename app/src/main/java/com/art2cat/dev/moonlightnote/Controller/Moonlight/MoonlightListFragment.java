@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,10 +22,8 @@ import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
-import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -52,15 +49,11 @@ public abstract class MoonlightListFragment extends Fragment {
     private DatabaseReference mDatabase;
     private FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder> mFirebaseRecyclerAdapter;
     private RecyclerView mRecyclerView;
-    private FloatingActionButton mFAB;
     private Moonlight moonlight;
     private Menu mMenu;
     private MenuInflater mMenuInflater;
-    private int index;
-    private boolean deleteFlag;
     private boolean isLogin = true;
     private FDatabaseUtils mDatabaseUtils;
-    private Object tag = new Object();
 
 
     public MoonlightListFragment() {
@@ -109,7 +102,6 @@ public abstract class MoonlightListFragment extends Fragment {
 
         FadeInDownAnimator animator = new FadeInDownAnimator();
         animator.setInterpolator(new OvershootInterpolator());
-// or recyclerView.setItemAnimator(new SlideInUpAnimator(new OvershootInterpolator(1f));
         mRecyclerView.setItemAnimator(animator);
         mRecyclerView.getItemAnimator().setAddDuration(500);
         mRecyclerView.getItemAnimator().setRemoveDuration(500);
@@ -277,10 +269,11 @@ public abstract class MoonlightListFragment extends Fragment {
                 break;
             case 1:
                 mMenuInflater.inflate(R.menu.long_click_trash_menu, mMenu);
-                getActivity().setTitle("Trash");
+                getActivity().setTitle(R.string.fragment_trash);
                 break;
             case 2:
                 mMenuInflater.inflate(R.menu.trash_menu, mMenu);
+                getActivity().setTitle(R.string.fragment_trash);
                 break;
             case 3:
                 mMenuInflater.inflate(R.menu.nil, mMenu);
@@ -295,6 +288,7 @@ public abstract class MoonlightListFragment extends Fragment {
                 ConfirmationDialogFragment confirmationDialogFragment = ConfirmationDialogFragment
                         .newInstance(getString(R.string.dialog_empty_trash_title), getString(R.string.dialog_empty_trash_content), 0);
                 confirmationDialogFragment.show(getFragmentManager(), "Empty Trash");
+                getActivity().setTitle(R.string.fragment_trash);
                 break;
             case R.id.action_delete:
                 mDatabaseUtils.moveToTrash(moonlight);
@@ -337,7 +331,7 @@ public abstract class MoonlightListFragment extends Fragment {
                 break;
             case R.id.action_restore:
                 mDatabaseUtils.restoreToNote(moonlight);
-
+                getActivity().setTitle(R.string.fragment_trash);
                 changeOptionsMenu(2);
                 break;
             case R.id.action_trash_delete_forever:
@@ -345,6 +339,7 @@ public abstract class MoonlightListFragment extends Fragment {
                 StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
                 mDatabaseUtils.removeMoonlight(moonlight.getId(), Constants.EXTRA_TYPE_DELETE_TRASH);
                 moonlight = null;
+                getActivity().setTitle(R.string.fragment_trash);
                 changeOptionsMenu(2);
                 break;
         }

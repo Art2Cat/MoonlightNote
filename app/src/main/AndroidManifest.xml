@@ -65,7 +65,8 @@
         </activity>
         <activity
             android:name=".Controller.User.UserActivity"
-            android:label="@string/title_activity_user">
+            android:label="@string/title_activity_user"
+            android:theme="@style/AppTheme.NoActionBarForLoginFragment">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Controller.Moonlight.MoonlightActivity" />

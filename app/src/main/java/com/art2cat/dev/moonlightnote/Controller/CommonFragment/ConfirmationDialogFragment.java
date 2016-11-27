@@ -56,9 +56,12 @@ public class ConfirmationDialogFragment extends DialogFragment {
         String positiveText;
         if (mType == 0) {
             positiveText = getString(R.string.dialog_empty_trash_confirm);
+        } else if (mType == 3) {
+            positiveText = getString(R.string.dialog_delete_account_confirm);
         } else {
             positiveText = getString(android.R.string.ok);
         }
+
         builder.setPositiveButton(positiveText,
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -66,6 +69,10 @@ public class ConfirmationDialogFragment extends DialogFragment {
                         // positive button logic
                         if (mType == 0) {
                             BusEventUtils.post(Constants.BUS_FLAG_EMPTY_TRASH, null);
+                        } else if (mType == 3) {
+                            InputDialogFragment inputDialogFragment =
+                                    InputDialogFragment.newInstance(getString(R.string.dialog_enter_your_password), 2);
+                            inputDialogFragment.show(getFragmentManager(), "enter password");
                         }
                     }
                 });

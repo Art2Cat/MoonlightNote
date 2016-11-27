@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.FitWindowsLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.art2cat.dev.moonlightnote.Controller.User.UserFragment">
+    tools:context="com.art2cat.dev.moonlightnote.Controller.User.UserFragment" >
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:layout_height="0dp">
+        android:layout_height="wrap_content">
 
             <android.support.v7.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
@@ -19,7 +17,7 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
+                    android:layout_height="100dp"
                     android:background="@color/colorPrimary"
                     android:orientation="vertical">
 
@@ -79,7 +77,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="@color/colorAccent" />
-
                     <android.support.v7.widget.AppCompatButton
                         android:id="@+id/user_change_password"
                         android:layout_width="match_parent"
@@ -95,9 +92,9 @@
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/banner_adView"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         ads:adSize="BANNER"
         ads:adUnitId="ca-app-pub-5043396164425122/2448908497" />
-</android.support.v7.widget.FitWindowsLinearLayout>
+</android.support.design.widget.CoordinatorLayout>

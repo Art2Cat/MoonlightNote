@@ -13,18 +13,24 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.art2cat.dev.moonlightnote.Controller.CommonFragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonFragment.InputDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonFragment.PickPicDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonFragment.ProgressDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
+import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.AuthUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
@@ -38,6 +44,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -59,7 +67,17 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.app.Activity.RESULT_OK;
-import static com.art2cat.dev.moonlightnote.Model.Constants.*;
+import static com.art2cat.dev.moonlightnote.Model.Constants.ALBUM_CHOOSE;
+import static com.art2cat.dev.moonlightnote.Model.Constants.BUS_FLAG_ALBUM;
+import static com.art2cat.dev.moonlightnote.Model.Constants.BUS_FLAG_CAMERA;
+import static com.art2cat.dev.moonlightnote.Model.Constants.BUS_FLAG_DELETE_ACCOUNT;
+import static com.art2cat.dev.moonlightnote.Model.Constants.BUS_FLAG_EMAIL;
+import static com.art2cat.dev.moonlightnote.Model.Constants.BUS_FLAG_USERNAME;
+import static com.art2cat.dev.moonlightnote.Model.Constants.CAMERA_PERMS;
+import static com.art2cat.dev.moonlightnote.Model.Constants.FB_STORAGE_REFERENCE;
+import static com.art2cat.dev.moonlightnote.Model.Constants.FILE_PROVIDER;
+import static com.art2cat.dev.moonlightnote.Model.Constants.STORAGE_PERMS;
+import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
 
 
 /**
@@ -68,6 +86,7 @@ import static com.art2cat.dev.moonlightnote.Model.Constants.*;
 public class UserFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "UserFragment";
     private View mView;
+    private LinearLayoutCompat mLinearLayoutCompat;
     private CircleImageView mCircleImageView;
     private AppCompatTextView mNickname;
     private AppCompatTextView mEmail;
@@ -79,7 +98,10 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private BitmapUtils mBitmapUtils;
     private Uri mFileUri = null;
     private StorageReference mStorageReference;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     private String mFileName;
+    private boolean isChangePwd = false;
 
     public UserFragment() {
         // Required empty public constructor
@@ -95,6 +117,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         //获取firebaseStorage实例
         mStorageReference = FirebaseStorage.getInstance()
                 .getReferenceFromUrl(FB_STORAGE_REFERENCE);
+
+        mAuth = FirebaseAuth.getInstance();
 
         mBitmapUtils = new BitmapUtils(getActivity());
 
@@ -112,6 +136,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         mChangePassword = (AppCompatButton) mView.findViewById(R.id.user_change_password);
         mAdView = (AdView) mView.findViewById(R.id.banner_adView);
 
+        //setHasOptionsMenu(true);
+
         mUser = UserUtils.getUserFromCache(getActivity().getApplicationContext());
         Log.d(TAG, "displayUserInfo: " + mUser.getUid());
 
@@ -128,20 +154,25 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (!SPUtils.getBoolean(getActivity(), "User", "google", false)) {
             mCircleImageView.setOnClickListener(this);
             mChangePassword.setOnClickListener(this);
-            mChangePassword.setEnabled(false);
             mNickname.setOnClickListener(this);
+        } else {
+            mChangePassword.setEnabled(false);
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        //addUser(user.getUid(), mUser);
     }
 
     @Override
@@ -152,8 +183,28 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onDestroy() {
         EventBus.getDefault().unregister(this);
+        removeListener();
         mAdView.destroy();
         super.onDestroy();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_user, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_close_account:
+                ConfirmationDialogFragment confirmationDialogFragment =
+                        ConfirmationDialogFragment.newInstance(getString(R.string.delete_account_title),
+                                getString(R.string.delete_account_content), 3);
+                confirmationDialogFragment.show(getFragmentManager(), "delete account");
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initView() {
@@ -201,7 +252,13 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 showDialog(1);
                 break;
             case R.id.user_change_password:
-                AuthUtils.sendRPEmail(getActivity(), mView, user.getEmail());
+                Fragment fragment = new ChangePasswordFragment();
+                getActivity().getFragmentManager()
+                        .beginTransaction()
+                        .setCustomAnimations(R.animator.fragment_slide_right_enter, R.animator.fragment_slide_right_exit)
+                        .replace(R.id.common_fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
                 break;
         }
     }
@@ -212,13 +269,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 InputDialogFragment inputDialogFragment1 = InputDialogFragment
                         .newInstance(getString(R.string.dialog_set_nickname), 1);
                 inputDialogFragment1.show(getFragmentManager(), "setNickname");
-                break;
-            case 2:
-                InputDialogFragment inputDialogFragment = InputDialogFragment
-                        .newInstance(getString(R.string.dialog_reset_password), 0);
-                inputDialogFragment.show(getFragmentManager(), "resetPassword");
-                //RPDialogFragment rpDialogFragment = new RPDialogFragment();
-                //rpDialogFragment.show(getFragmentManager(), "resetDialog");
                 break;
         }
     }
@@ -247,6 +297,33 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 case BUS_FLAG_EMAIL:
                     if (busEvent.getMessage().contains("@")) {
                         AuthUtils.sendRPEmail(getActivity(), mView, busEvent.getMessage());
+                    }
+                    break;
+                case BUS_FLAG_DELETE_ACCOUNT:
+                    if (busEvent.getMessage() != null) {
+                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        AuthCredential credential = EmailAuthProvider
+                                .getCredential(user.getEmail(), busEvent.getMessage());
+                        user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                user.delete()
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Log.d(TAG, "User account deleted.");
+                                                    startActivity(new Intent(getActivity(), LoginActivity.class));
+                                                }
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.e(TAG, "onFailure: " + e.toString());
+                                    }
+                                });
+                            }
+                        });
                     }
                     break;
             }
@@ -423,5 +500,27 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 }
             }
         });
+    }
+
+    public void signIn() {
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
+
+                } else {
+                    Log.d(TAG, "onAuthStateChanged:signed_out:");
+                }
+            }
+        };
+    }
+
+    public void removeListener() {
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 }
