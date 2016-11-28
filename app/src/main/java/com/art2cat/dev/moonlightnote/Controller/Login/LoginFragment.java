@@ -68,9 +68,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     protected View mView;
     private AppCompatEditText mEmailView;
     private AppCompatEditText mPasswordView;
-    private AppCompatButton mRegister;
-    private AppCompatButton mLogin;
-    private AppCompatImageButton mLogin_Google;
     private View mProgressView;
     private View mLoginFormView;
     private FirebaseAuth mAuth;
@@ -118,9 +115,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         });
 
         AppCompatButton reset = (AppCompatButton) mView.findViewById(R.id.reset_password);
-        mRegister = (AppCompatButton) mView.findViewById(R.id.email_sign_in_button);
-        mLogin = (AppCompatButton) mView.findViewById(R.id.email_sign_up_button);
-        mLogin_Google = (AppCompatImageButton) mView.findViewById(R.id.login_google_btn);
+        AppCompatButton mRegister = (AppCompatButton) mView.findViewById(R.id.email_sign_in_button);
+        AppCompatButton mLogin = (AppCompatButton) mView.findViewById(R.id.email_sign_up_button);
+        AppCompatImageButton mLogin_Google = (AppCompatImageButton) mView.findViewById(R.id.login_google_btn);
 
         reset.setOnClickListener(this);
         mRegister.setOnClickListener(this);

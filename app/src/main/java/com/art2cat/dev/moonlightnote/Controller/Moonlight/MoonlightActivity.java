@@ -18,9 +18,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.art2cat.dev.moonlightnote.Controller.CommonActivity;
 import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
-import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
-import com.art2cat.dev.moonlightnote.Controller.User.UserActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.User;
@@ -203,7 +202,9 @@ public class MoonlightActivity extends AppCompatActivity
                 }
                 break;
             case R.id.nav_settings:
-//               startActivity(new Intent(this, SettingsActivity.class));
+                Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
+                intent.putExtra("Fragment", Constants.EXTRA_SETTINGS_FRAGMENT);
+                startActivity(intent);
                 break;
             case R.id.nav_rate_app:
                 RateThisApp.showRateDialog(this);
@@ -263,8 +264,8 @@ public class MoonlightActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (isLogin) {
-                    Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
-                    intent.putExtra("writeoredit", 0);
+                    Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
+                    intent.putExtra("Fragment", Constants.EXTRA_CREATE_FRAGMENT);
                     startActivity(intent);
                 } else {
                     SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
@@ -319,7 +320,9 @@ public class MoonlightActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (isLogin) {
-                    startActivity(new Intent(MoonlightActivity.this, UserActivity.class));
+                    Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
+                    intent.putExtra("Fragment", Constants.EXTRA_USER_FRAGMENT);
+                    startActivity(intent);
                 } else {
                     SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
                             SnackBarUtils.TYPE_INFO).show();

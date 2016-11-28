@@ -1,7 +1,6 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
@@ -86,11 +85,6 @@ public class MoonlightViewHolder extends AnimateViewHolder {
     public void displayImage(Context context, String url) {
         if (url != null && photoAppCompatImageView.getTag() != null) {
             Log.d(TAG, "displayImage: succeed");
-//            if (bitmapUtils == null) {
-//                bitmapUtils = new BitmapUtils(context);
-//            }
-//            bitmapUtils.display(photoAppCompatImageView, url);
-//            Picasso.with(context).load(Uri.parse(url)).config(Bitmap.Config.RGB_565).into(photoAppCompatImageView);
             Picasso.with(context).load(Uri.parse(url)).memoryPolicy(NO_CACHE, NO_STORE).into(photoAppCompatImageView);
             photoAppCompatImageView.setVisibility(View.VISIBLE);
         } else {

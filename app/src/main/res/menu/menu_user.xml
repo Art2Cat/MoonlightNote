@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.art2cat.dev.moonlightnote.ScrollingActivity">
     <item
+        android:id="@+id/action_change_password"
+        android:orderInCategory="100"
+        android:title="@string/action_change_password"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_close_account"
         android:orderInCategory="100"
         android:title="@string/action_close_account"

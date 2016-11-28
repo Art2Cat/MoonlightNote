@@ -1,10 +1,10 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,8 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 
+import com.art2cat.dev.moonlightnote.Controller.CommonActivity;
 import com.art2cat.dev.moonlightnote.Controller.CommonFragment.ConfirmationDialogFragment;
-import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
@@ -37,7 +37,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import jp.wasabeef.recyclerview.animators.FadeInDownAnimator;
 
-import static com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils.*;
+import static com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils.emptyTrash;
 
 
 /**
@@ -173,8 +173,6 @@ public abstract class MoonlightListFragment extends Fragment {
                         Log.i(TAG, "populateViewHolder: " + model.getImageName());
                         viewHolder.photoAppCompatImageView.setImageResource(R.drawable.ic_cloud_download_white_48dp);
                         viewHolder.photoAppCompatImageView.setTag(model.getImageName());
-//                        Picasso.with(getActivity()).load(Uri.parse(model.getImageUrl()))
-//                                .memoryPolicy(NO_CACHE, NO_STORE).into(viewHolder.photoAppCompatImageView);
                         viewHolder.displayImage(getActivity(), model.getImageUrl());
                     } else {
                         viewHolder.photoAppCompatImageView.setVisibility(View.GONE);
@@ -202,15 +200,15 @@ public abstract class MoonlightListFragment extends Fragment {
                         public void onClick(View v) {
                             if (isLogin) {
                                 Log.d(TAG, "onClick: " + isLogin);
-                                Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
+                                Intent intent = new Intent(getActivity(), CommonActivity.class);
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");
-                                    intent.putExtra("writeoredit", 2);
+                                    intent.putExtra("Fragment", Constants.EXTRA_TRASH_FRAGMENT);
                                     intent.putExtra("keyid", moonlightKey);
                                     startActivity(intent);
                                 } else {
                                     Log.d(TAG, "onClick: edit");
-                                    intent.putExtra("writeoredit", 1);
+                                    intent.putExtra("Fragment", Constants.EXTRA_EDIT_FRAGMENT);
                                     intent.putExtra("keyid", moonlightKey);
                                     startActivity(intent);
                                 }

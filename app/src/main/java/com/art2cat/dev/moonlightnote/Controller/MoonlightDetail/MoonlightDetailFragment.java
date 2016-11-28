@@ -50,6 +50,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 
+import com.art2cat.dev.moonlightnote.Controller.CommonActivity;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Controller.CommonFragment.ProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
@@ -166,7 +167,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private AudioPlayer mAudioPlayer;
     private BitmapUtils mBitmapUtils;
     private InitView myRunnable = new InitView();
-    private MoonlightDetailActivity.FragmentOnTouchListener fragmentOnTouchListener;
+    private CommonActivity.FragmentOnTouchListener fragmentOnTouchListener;
 
     public MoonlightDetailFragment() {
         // Required empty public constructor
@@ -223,6 +224,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                              Bundle savedInstanceState) {
         //视图初始化
         mView = inflater.inflate(R.layout.fragment_moonlight_detail, container, false);
+
+        getActivity().setTitle(null);
+
         mContentFrameLayout = (ContentFrameLayout) mView.findViewById(R.id.view_parent);
         mTitle = (TextInputEditText) mView.findViewById(R.id.title_TIET);
         mContent = (TextInputEditText) mView.findViewById(R.id.content_TIET);
@@ -247,6 +251,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         mProgressDialogFragment = ProgressDialogFragment.newInstance();
 
         showBottomSheet();
+
         if (mEditable) {
             //获取系统当前时间
             long date = System.currentTimeMillis();
@@ -349,7 +354,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                         }
                     });
 
-            fragmentOnTouchListener = new MoonlightDetailActivity.FragmentOnTouchListener() {
+            fragmentOnTouchListener = new CommonActivity.FragmentOnTouchListener() {
                 @Override
                 public boolean onTouch(MotionEvent ev) {
                     if (!snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {
@@ -358,7 +363,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     return false;
                 }
             };
-            ((MoonlightDetailActivity) getActivity()).registerFragmentOnTouchListener(fragmentOnTouchListener);
+            ((CommonActivity) getActivity()).registerFragmentOnTouchListener(fragmentOnTouchListener);
         }
     }
 

@@ -11,9 +11,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
-import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -86,11 +84,9 @@ import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
 public class UserFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "UserFragment";
     private View mView;
-    private LinearLayoutCompat mLinearLayoutCompat;
     private CircleImageView mCircleImageView;
     private AppCompatTextView mNickname;
     private AppCompatTextView mEmail;
-    private AppCompatButton mChangePassword;
     private AdView mAdView;
     private ProgressDialogFragment mProgressDialogFragment;
     private FirebaseUser user;
@@ -98,8 +94,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private BitmapUtils mBitmapUtils;
     private Uri mFileUri = null;
     private StorageReference mStorageReference;
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private String mFileName;
     private boolean isChangePwd = false;
 
@@ -118,7 +112,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         mStorageReference = FirebaseStorage.getInstance()
                 .getReferenceFromUrl(FB_STORAGE_REFERENCE);
 
-        mAuth = FirebaseAuth.getInstance();
 
         mBitmapUtils = new BitmapUtils(getActivity());
 
@@ -133,10 +126,11 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         mCircleImageView = (CircleImageView) mView.findViewById(R.id.user_head_picture);
         mNickname = (AppCompatTextView) mView.findViewById(R.id.user_nickname);
         mEmail = (AppCompatTextView) mView.findViewById(R.id.user_email);
-        mChangePassword = (AppCompatButton) mView.findViewById(R.id.user_change_password);
         mAdView = (AdView) mView.findViewById(R.id.banner_adView);
 
-        //setHasOptionsMenu(true);
+        getActivity().setTitle(R.string.title_activity_user);
+
+        setHasOptionsMenu(true);
 
         mUser = UserUtils.getUserFromCache(getActivity().getApplicationContext());
         Log.d(TAG, "displayUserInfo: " + mUser.getUid());
@@ -149,7 +143,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         mAdView.loadAd(adRequest);
 
         initView();
-        //updateUI(mUser.getPhotoUrl());
         return mView;
     }
 
@@ -163,10 +156,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         super.onActivityCreated(savedInstanceState);
         if (!SPUtils.getBoolean(getActivity(), "User", "google", false)) {
             mCircleImageView.setOnClickListener(this);
-            mChangePassword.setOnClickListener(this);
             mNickname.setOnClickListener(this);
-        } else {
-            mChangePassword.setEnabled(false);
         }
     }
 
@@ -183,7 +173,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onDestroy() {
         EventBus.getDefault().unregister(this);
-        removeListener();
         mAdView.destroy();
         super.onDestroy();
     }
@@ -197,6 +186,18 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_change_password:
+                Fragment fragment = new ChangePasswordFragment();
+                getActivity().getFragmentManager()
+                        .beginTransaction()
+                        .setCustomAnimations(R.animator.fragment_slide_right_enter,
+                                R.animator.fragment_slide_right_exit,
+                                R.animator.fragment_slide_left_enter,
+                                R.animator.fragment_slide_left_exit)
+                        .replace(R.id.common_fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+                break;
             case R.id.action_close_account:
                 ConfirmationDialogFragment confirmationDialogFragment =
                         ConfirmationDialogFragment.newInstance(getString(R.string.delete_account_title),
@@ -250,15 +251,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.user_nickname:
                 showDialog(1);
-                break;
-            case R.id.user_change_password:
-                Fragment fragment = new ChangePasswordFragment();
-                getActivity().getFragmentManager()
-                        .beginTransaction()
-                        .setCustomAnimations(R.animator.fragment_slide_right_enter, R.animator.fragment_slide_right_exit)
-                        .replace(R.id.common_fragment_container, fragment)
-                        .addToBackStack(null)
-                        .commit();
                 break;
         }
     }
@@ -502,25 +494,4 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    public void signIn() {
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
-
-                } else {
-                    Log.d(TAG, "onAuthStateChanged:signed_out:");
-                }
-            }
-        };
-    }
-
-    public void removeListener() {
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
-    }
 }

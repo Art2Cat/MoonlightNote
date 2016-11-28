@@ -55,6 +55,11 @@ public class Constants {
     public static final int EXTRA_TYPE_USER = 203;
     public static final int EXTRA_TYPE_TRASH_TO_MOONLIGHT = 204;
     public static final int EXTRA_TYPE_DELETE_TRASH = 205;
+    public static final int EXTRA_USER_FRAGMENT = 206;
+    public static final int EXTRA_SETTINGS_FRAGMENT = 207;
+    public static final int EXTRA_CREATE_FRAGMENT = 208;
+    public static final int EXTRA_EDIT_FRAGMENT = 209;
+    public static final int EXTRA_TRASH_FRAGMENT = 210;
 
     /**
      * Permission request and  user action
@@ -79,5 +84,6 @@ public class Constants {
      * AES偏移量 （可修改）
      */
     public static final String IV_PARAMERER = "1020304050607080";
+
 
 }

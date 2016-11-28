@@ -4,6 +4,7 @@ package com.art2cat.dev.moonlightnote.Controller.User;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
@@ -30,6 +31,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class ChangePasswordFragment extends Fragment {
 
     private static final String TAG = "ChangePasswordFragment";
+
     public ChangePasswordFragment() {
         // Required empty public constructor
     }
@@ -40,19 +42,22 @@ public class ChangePasswordFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_change_password, container, false);
-        TextInputEditText oldET = (TextInputEditText) view.findViewById(R.id.old_password_editText);
-        TextInputEditText newET = (TextInputEditText) view.findViewById(R.id.new_password_editText);
+        final TextInputEditText oldET = (TextInputEditText)
+                view.findViewById(R.id.old_password_editText);
+        final TextInputEditText newET = (TextInputEditText)
+                view.findViewById(R.id.new_password_editText);
         AppCompatButton button = (AppCompatButton) view.findViewById(R.id.change_password);
-        final String oldPassword = oldET.getText().toString();
-        final String newPassword = newET.getText().toString();
+
 
         setHasOptionsMenu(true);
-
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-               final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                String oldPassword = oldET.getText().toString();
+                final String newPassword = newET.getText().toString();
+
                 if (!oldPassword.equals("") && !newPassword.equals("")) {
                     AuthCredential credential = EmailAuthProvider
                             .getCredential(user.getEmail(), oldPassword);
@@ -66,12 +71,25 @@ public class ChangePasswordFragment extends Fragment {
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
                                                     Log.d(TAG, "User password updated.");
+                                                    Snackbar snackbar = SnackBarUtils
+                                                            .shortSnackBar(view, "Password updated"
+                                                                    , SnackBarUtils.TYPE_INFO);
+                                                    snackbar.show();
+                                                    // 当snackbar显示消失是，启动回退栈
+                                                    snackbar.setCallback(new Snackbar.Callback() {
+                                                        @Override
+                                                        public void onDismissed(Snackbar snackbar, int event) {
+                                                            getActivity().onBackPressed();
+                                                            super.onDismissed(snackbar, event);
+                                                        }
+                                                    });
                                                 }
                                             }
                                         }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
-                                        SnackBarUtils.longSnackBar(view, e.toString(), SnackBarUtils.TYPE_INFO).show();
+                                        SnackBarUtils.longSnackBar(view, e.toString(),
+                                                SnackBarUtils.TYPE_INFO).show();
                                     }
                                 });
                             }
@@ -79,7 +97,8 @@ public class ChangePasswordFragment extends Fragment {
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            SnackBarUtils.longSnackBar(view, e.toString(), SnackBarUtils.TYPE_INFO).show();
+                            SnackBarUtils.longSnackBar(view, e.toString(),
+                                    SnackBarUtils.TYPE_INFO).show();
                         }
                     });
                 }
