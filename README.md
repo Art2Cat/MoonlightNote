@@ -1,5 +1,5 @@
 # MoonlightNote
-StudyJams进阶赛参赛项目（未完成）
+StudyJams进阶项目
 
 MoonlightNote基于Firebase并遵循Material Design开发的一款简洁高效的记事本应用。
 
