@@ -20,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.art2cat.dev.moonlightnote.Controller.CommonFragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonFragment.InputDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonFragment.PickPicDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonFragment.ProgressDialogFragment;
@@ -130,7 +129,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
         getActivity().setTitle(R.string.title_activity_user);
 
-        setHasOptionsMenu(true);
+
 
         mUser = UserUtils.getUserFromCache(getActivity().getApplicationContext());
         Log.d(TAG, "displayUserInfo: " + mUser.getUid());
@@ -157,6 +156,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         if (!SPUtils.getBoolean(getActivity(), "User", "google", false)) {
             mCircleImageView.setOnClickListener(this);
             mNickname.setOnClickListener(this);
+            setHasOptionsMenu(true);
         }
     }
 
@@ -198,12 +198,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                         .addToBackStack(null)
                         .commit();
                 break;
-            case R.id.action_close_account:
-                ConfirmationDialogFragment confirmationDialogFragment =
-                        ConfirmationDialogFragment.newInstance(getString(R.string.delete_account_title),
-                                getString(R.string.delete_account_content), 3);
-                confirmationDialogFragment.show(getFragmentManager(), "delete account");
-                break;
+//            case R.id.action_close_account:
+//                ConfirmationDialogFragment confirmationDialogFragment =
+//                        ConfirmationDialogFragment.newInstance(getString(R.string.delete_account_title),
+//                                getString(R.string.delete_account_content), 3);
+//                confirmationDialogFragment.show(getFragmentManager(), "delete account");
+//                break;
         }
         return super.onOptionsItemSelected(item);
     }

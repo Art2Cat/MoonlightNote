@@ -7,9 +7,9 @@
         android:orderInCategory="100"
         android:title="@string/action_change_password"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/action_close_account"
-        android:orderInCategory="100"
-        android:title="@string/action_close_account"
-        app:showAsAction="never" />
+    <!--<item-->
+        <!--android:id="@+id/action_close_account"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="@string/action_close_account"-->
+        <!--app:showAsAction="never" />-->
 </menu>
