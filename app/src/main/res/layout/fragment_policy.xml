@@ -2,11 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.art2cat.dev.moonlightnote.Controller.Settings.SettingsFragment">
+    tools:context="com.art2cat.dev.moonlightnote.Controller.Settings.PolicyFragment">
 
-    <android.support.v7.widget.ListViewCompat
-        android:id="@+id/settings_list_view"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:text="@string/settings_policy_content" />
 
 </FrameLayout>

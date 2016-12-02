@@ -201,11 +201,11 @@ public class MoonlightActivity extends AppCompatActivity
                     }
                 }
                 break;
-//            case R.id.nav_settings:
-//                Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
-//                intent.putExtra("Fragment", Constants.EXTRA_SETTINGS_FRAGMENT);
-//                startActivity(intent);
-//                break;
+            case R.id.nav_settings:
+                Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
+                intent.putExtra("Fragment", Constants.EXTRA_SETTINGS_FRAGMENT);
+                startActivity(intent);
+                break;
             case R.id.nav_rate_app:
                 RateThisApp.showRateDialog(this);
                 break;
