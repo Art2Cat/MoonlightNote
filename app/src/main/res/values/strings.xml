@@ -129,4 +129,15 @@
         "This library is distributed under an Apache 2.0 License.\n\n"
     </string>
     <string name="settings_policy_content">policy</string>
+    <string name="settings_security_pin">Pin</string>
+    <string name="settings_security_lock_app">Note Security</string>
+    <string name="settings_security_title">Security</string>
+    <string name="settings_security_password">Password</string>
+    <string name="settings_security_pattern">Pattern</string>
+    <string name="activity_not_locked_text">Nothing should happen on this page, here for test purpose</string>
+    <string name="activity_dialog_title">Forgot you Pincode?</string>
+    <string name="activity_dialog_accept">OK</string>
+    <string name="activity_dialog_decline">CANCEL</string>
+    <string name="activity_dialog_content">Tap \'OK\' to log out, when you log back in you\'ll be able to create a new Pincode.\n\nIf you remember your Pincode, tap \'Cancel\' to go back.</string>
+    <string name="activity_appcompat_message">I am a PinCompatActivity!</string>
 </resources>

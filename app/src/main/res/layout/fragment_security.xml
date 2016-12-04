@@ -1,13 +1,41 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.art2cat.dev.moonlightnote.Controller.Settings.SecurityFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:padding="16dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimary"
+        android:text="@string/settings_security_lock_app" />
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/security_pin"
+        android:padding="16dp"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:theme="@style/FlatButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_security_pin"/>
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/security_password"
+        android:padding="16dp"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:theme="@style/FlatButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="@string/settings_security_password"/>
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/security_pattern"
+        android:padding="16dp"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:theme="@style/FlatButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="@string/settings_security_pattern"/>
 
-</FrameLayout>
+</LinearLayout>

@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,20 +51,20 @@ public class SettingsFragment extends Fragment {
                 switch (i) {
                     case 0:
                         Log.d(TAG, "onItemClick: 0");
-                        changeFragment(new SecurityFragment());
+                        FragmentUtils.changeFragment(getActivity(), new SecurityFragment());
                         break;
                     case 1:
                         Log.d(TAG, "onItemClick: 1");
-                        changeFragment(new PolicyFragment());
+                        FragmentUtils.changeFragment(getActivity(), new PolicyFragment());
                         break;
                     case 2:
                         Log.d(TAG, "onItemClick: 2");
 
-                        changeFragment(new LicenseFragment());
+                        FragmentUtils.changeFragment(getActivity(), new LicenseFragment());
                         break;
                     case 3:
                         Log.d(TAG, "onItemClick: 3");
-                        changeFragment(new AboutFragment());
+                        FragmentUtils.changeFragment(getActivity(), new AboutFragment());
                         break;
                 }
             }
@@ -71,16 +72,5 @@ public class SettingsFragment extends Fragment {
         return view;
     }
 
-    private void changeFragment(Fragment fragment) {
-        getActivity().getFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.animator.fragment_slide_right_enter,
-                        R.animator.fragment_slide_right_exit,
-                        R.animator.fragment_slide_left_enter,
-                        R.animator.fragment_slide_left_exit)
-                .replace(R.id.common_fragment_container, fragment)
-                .addToBackStack(null)
-                .commit();
-    }
 
 }

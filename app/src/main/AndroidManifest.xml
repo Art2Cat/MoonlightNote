@@ -68,6 +68,8 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <activity android:name=".Controller.Settings.PinActivity"></activity>
     </application>
 
 </manifest>

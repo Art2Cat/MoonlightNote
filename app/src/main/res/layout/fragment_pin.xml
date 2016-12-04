@@ -2,8 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.art2cat.dev.moonlightnote.Controller.Settings.AboutFragment">
+    tools:context="com.art2cat.dev.moonlightnote.Controller.Settings.PinFragment">
 
+    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

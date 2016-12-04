@@ -2,6 +2,8 @@ package com.art2cat.dev.moonlightnote;
 
 import android.app.Application;
 
+import com.art2cat.dev.moonlightnote.Controller.Settings.PinActivity;
+import com.github.orangegangsters.lollipin.lib.managers.LockManager;
 import com.squareup.leakcanary.LeakCanary;
 
 /**
@@ -10,6 +12,8 @@ import com.squareup.leakcanary.LeakCanary;
  */
 
 public class MyApplication extends Application {
+
+    @SuppressWarnings("unchecked")
     @Override
     public void onCreate() {
         super.onCreate();
@@ -19,5 +23,8 @@ public class MyApplication extends Application {
             return;
         }
         LeakCanary.install(this);
+        LockManager<PinActivity> lockManager = LockManager.getInstance();
+        lockManager.enableAppLock(this, PinActivity.class);
+        lockManager.getAppLock().setLogoId(R.drawable.ic_screen_lock_portrait_black_24dp);
     }
 }
