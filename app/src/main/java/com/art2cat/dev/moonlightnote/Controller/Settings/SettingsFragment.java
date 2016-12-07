@@ -34,6 +34,7 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
+        getActivity().setTitle(R.string.title_activity_settings);
         ListViewCompat listViewCompat = (ListViewCompat) view.findViewById(R.id.settings_list_view);
         List<String> data = new ArrayList<String>() {
         };
@@ -72,5 +73,9 @@ public class SettingsFragment extends Fragment {
         return view;
     }
 
-
+    @Override
+    public void onResume() {
+        getActivity().setTitle(R.string.title_activity_settings);
+        super.onResume();
+    }
 }

@@ -28,6 +28,7 @@ public class PolicyFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         setHasOptionsMenu(true);
+        getActivity().setTitle(R.string.settings_policy);
         return inflater.inflate(R.layout.fragment_policy, container, false);
     }
 

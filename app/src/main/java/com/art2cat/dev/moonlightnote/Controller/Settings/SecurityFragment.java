@@ -49,6 +49,7 @@ public class SecurityFragment extends Fragment implements View.OnClickListener {
         switch (item.getItemId()) {
             case android.R.id.home:
                 getActivity().onBackPressed();
+                getActivity().setTitle(R.string.title_activity_settings);
                 break;
         }
         return super.onOptionsItemSelected(item);
