@@ -37,7 +37,7 @@ public class SettingsFragment extends Fragment {
         ListViewCompat listViewCompat = (ListViewCompat) view.findViewById(R.id.settings_list_view);
         List<String> data = new ArrayList<String>() {
         };
-        data.add(0, getString(R.string.settings_secure));
+        data.add(0, getString(R.string.settings_security));
         data.add(1, getString(R.string.settings_policy));
         data.add(2, getString(R.string.settings_license));
         data.add(3, getString(R.string.settings_about));

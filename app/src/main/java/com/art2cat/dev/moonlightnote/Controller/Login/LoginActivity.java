@@ -43,6 +43,7 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
     private Fragment mFragment;
 
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +57,7 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
         if (!flag) {
             signIn();
         }
+
         startAdFragment();
     }
 
@@ -211,6 +213,7 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
              * 如果登陆失败，则跳转至登陆及注册界面
              */
             if (mLoginState) {
+
                 startActivity(new Intent(LoginActivity.this, MoonlightActivity.class));
                 //这里调用Activity.finish()方法销毁当前Activity
                 finish();

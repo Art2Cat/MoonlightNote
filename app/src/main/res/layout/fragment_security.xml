@@ -6,36 +6,39 @@
     tools:context="com.art2cat.dev.moonlightnote.Controller.Settings.SecurityFragment">
 
     <TextView
-        android:padding="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorPrimary"
-        android:text="@string/settings_security_lock_app" />
+        android:padding="16dp"
+        android:text="@string/settings_security_lock_app"
+        android:textColor="@color/colorPrimary" />
+
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/security_pin"
-        android:padding="16dp"
         style="@style/Widget.AppCompat.Button.Borderless"
-        android:theme="@style/FlatButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/settings_security_pin"/>
+        android:padding="16dp"
+        android:text="@string/settings_security_pin"
+        android:theme="@style/FlatButtonStyle" />
+
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/security_password"
-        android:padding="16dp"
         style="@style/Widget.AppCompat.Button.Borderless"
-        android:theme="@style/FlatButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/settings_security_password"
         android:textAllCaps="false"
-        android:text="@string/settings_security_password"/>
+        android:theme="@style/FlatButtonStyle" />
+
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/security_pattern"
-        android:padding="16dp"
         style="@style/Widget.AppCompat.Button.Borderless"
-        android:theme="@style/FlatButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/settings_security_pattern"
         android:textAllCaps="false"
-        android:text="@string/settings_security_pattern"/>
+        android:theme="@style/FlatButtonStyle" />
 
 </LinearLayout>

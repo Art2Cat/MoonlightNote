@@ -11,6 +11,7 @@ public class Constants {
     public static final String USER_CONFIG = "UserConfigure";
     public static final String USER_CONFIG_AUTO_LOGIN = "autoLogin";
     public static final String USER_CONFIG_LABEL = "label";
+    public static final String USER_CONFIG_SECURITY_ENABLE = "Security";
 
     /**
      *
@@ -20,10 +21,6 @@ public class Constants {
     public static final String STORAGE_AVATAR = "avatar";
     public static final String STORAGE_USER_CONFIG = "user_config";
 
-    public static final String ARG_MOONLIGHT_ID = "com.art2cat.dev.moonlightdaybook.id";
-    public static final String ARG_MOONLIGHT_DATE = "com.art2cat.dev.moonlightdaybook.date";
-    public static final String ARG_MOONLIGHT_MONEY = "com.art2cat.dev.moonlightdaybook.money";
-    public static final String EXTRA_CREATE_OR_EDIT = "create or edit";
 
     /**
      * FireBase常量

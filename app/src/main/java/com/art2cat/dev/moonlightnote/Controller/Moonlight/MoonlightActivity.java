@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonActivity;
 import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
+import com.art2cat.dev.moonlightnote.Controller.Settings.MoonlightPinActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.User;
@@ -30,6 +31,7 @@ import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserUtils;
+import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -57,6 +59,7 @@ public class MoonlightActivity extends AppCompatActivity
     private boolean isHome;
     private boolean isClicked = false;
     private boolean isLogin = true;
+    private boolean isLock = true;
     private boolean userIsInteracting;
     private TextView emailTV;
     private TextView nickTV;
@@ -67,11 +70,17 @@ public class MoonlightActivity extends AppCompatActivity
     private FirebaseAnalytics mFirebaseAnalytics;
     private User mUser = new User();
     private FragmentManager mFragmentManager;
+    private int mLock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moonlight);
+
+        mLock = SPUtils.getInt(this, Constants.USER_CONFIG, Constants.USER_CONFIG_SECURITY_ENABLE, 0);
+        if (!isLock) {
+            lockApp(mLock);
+        }
 
         mFragmentManager = getFragmentManager();
 
@@ -134,12 +143,16 @@ public class MoonlightActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
+        if (isLock) {
+            lockApp(mLock);
+        }
         super.onResume();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        isLock = !isLock;
         mFDatabaseUtils.removeListener();
     }
 
@@ -205,6 +218,7 @@ public class MoonlightActivity extends AppCompatActivity
                 Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
                 intent.putExtra("Fragment", Constants.EXTRA_SETTINGS_FRAGMENT);
                 startActivity(intent);
+                isLock = !isLock;
                 break;
             case R.id.nav_rate_app:
                 RateThisApp.showRateDialog(this);
@@ -323,6 +337,7 @@ public class MoonlightActivity extends AppCompatActivity
                     Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
                     intent.putExtra("Fragment", Constants.EXTRA_USER_FRAGMENT);
                     startActivity(intent);
+                    isLock = !isLock;
                 } else {
                     SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
                             SnackBarUtils.TYPE_INFO).show();
@@ -422,5 +437,15 @@ public class MoonlightActivity extends AppCompatActivity
         bundle.putString("remakes", remarks);
         bundle.putBoolean("Rate_my_app", isRate);
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+    }
+
+    private void lockApp(int code) {
+        switch (code) {
+            case 11:
+                Intent intent = new Intent(MoonlightActivity.this, MoonlightPinActivity.class);
+                intent.putExtra(AppLock.EXTRA_TYPE, AppLock.UNLOCK_PIN);
+                startActivity(intent);
+                break;
+        }
     }
 }
