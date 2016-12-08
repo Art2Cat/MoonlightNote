@@ -3,9 +3,12 @@ package com.art2cat.dev.moonlightnote.Utils;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.widget.Toast;
 
+import com.art2cat.dev.moonlightnote.Controller.Settings.MoonlightPinActivity;
 import com.art2cat.dev.moonlightnote.Model.User;
+import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.text.SimpleDateFormat;
@@ -85,5 +88,26 @@ public class Utils {
         }
         return null;
     }
+
+    public static void lockApp(Context context, int code) {
+        switch (code) {
+            case 11:
+                Intent intent = new Intent(context, MoonlightPinActivity.class);
+                intent.putExtra(AppLock.EXTRA_TYPE, AppLock.UNLOCK_PIN);
+                context.startActivity(intent);
+                break;
+        }
+    }
+
+    public static void unLockApp(Context context, int code) {
+        switch (code) {
+            case 11:
+                Intent intent = new Intent(context, MoonlightPinActivity.class);
+                intent.putExtra(AppLock.EXTRA_TYPE, AppLock.DISABLE_PINLOCK);
+                context.startActivity(intent);
+                break;
+        }
+    }
+
 
 }

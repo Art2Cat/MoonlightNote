@@ -409,13 +409,16 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                             //销毁当前Activity
                             getActivity().finish();
                             Log.d(TAG, "signIn:onComplete:" + task.isSuccessful());
-                        } else {
-                            showProgress(false);
-                            SnackBarUtils.shortSnackBar(mView, "Sign In Failed",
-                                    SnackBarUtils.TYPE_WARNING).show();
                         }
                     }
-                });
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                showProgress(false);
+                SnackBarUtils.shortSnackBar(mView, "Sign In Failed: " + e.toString(),
+                        SnackBarUtils.TYPE_WARNING).show();
+            }
+        });
     }
 
     public void signUp(final String email, final String password) {

@@ -3,9 +3,10 @@ package com.art2cat.dev.moonlightnote.Controller;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toolbar;
 
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.CreateMoonlightFragment;
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.EditMoonlightFragment;
@@ -13,11 +14,10 @@ import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.TrashDetailFragm
 import com.art2cat.dev.moonlightnote.Controller.Settings.SettingsFragment;
 import com.art2cat.dev.moonlightnote.Controller.User.UserFragment;
 import com.art2cat.dev.moonlightnote.R;
-import com.github.orangegangsters.lollipin.lib.PinActivity;
 
 import java.util.ArrayList;
 
-public class CommonActivity extends PinActivity {
+public class CommonActivity extends AppCompatActivity {
 
     private ArrayList<CommonActivity.FragmentOnTouchListener> onTouchListeners = new ArrayList<CommonActivity.FragmentOnTouchListener>(
             10);
@@ -27,8 +27,8 @@ public class CommonActivity extends PinActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_common);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setActionBar(toolbar);
-        //setSupportActionBar(toolbar);
+        //setActionBar(toolbar);
+        setSupportActionBar(toolbar);
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {

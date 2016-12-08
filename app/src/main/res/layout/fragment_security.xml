@@ -5,12 +5,14 @@
     android:orientation="vertical"
     tools:context="com.art2cat.dev.moonlightnote.Controller.Settings.SecurityFragment">
 
-    <TextView
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/security_disable_all"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:text="@string/settings_security_lock_app"
-        android:textColor="@color/colorPrimary" />
+        android:text="@string/settings_security_disable_all"
+        android:theme="@style/FlatButtonStyle" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/security_pin"

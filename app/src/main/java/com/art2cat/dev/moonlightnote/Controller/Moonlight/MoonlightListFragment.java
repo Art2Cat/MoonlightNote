@@ -22,6 +22,7 @@ import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -149,7 +150,7 @@ public abstract class MoonlightListFragment extends Fragment {
 
         Query moonlightsQuery = getQuery(mDatabase);
         if (moonlightsQuery != null) {
-            mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder>(Moonlight.class, R.layout.moonlight_items, MoonlightViewHolder.class,
+            mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder>(Moonlight.class, R.layout.moonlight_item, MoonlightViewHolder.class,
                     moonlightsQuery) {
 
                 @Override
@@ -198,19 +199,21 @@ public abstract class MoonlightListFragment extends Fragment {
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            Log.d(TAG, "onClick: " + isLogin);
                             if (isLogin) {
-                                Log.d(TAG, "onClick: " + isLogin);
                                 Intent intent = new Intent(getActivity(), CommonActivity.class);
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");
                                     intent.putExtra("Fragment", Constants.EXTRA_TRASH_FRAGMENT);
                                     intent.putExtra("keyid", moonlightKey);
                                     startActivity(intent);
+                                    BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 } else {
                                     Log.d(TAG, "onClick: edit");
                                     intent.putExtra("Fragment", Constants.EXTRA_EDIT_FRAGMENT);
                                     intent.putExtra("keyid", moonlightKey);
                                     startActivity(intent);
+                                    BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 }
                             }
 
@@ -254,6 +257,8 @@ public abstract class MoonlightListFragment extends Fragment {
         mMenuInflater = inflater;
         if (isTrash()) {
             mMenuInflater.inflate(R.menu.trash_menu, mMenu);
+        } else {
+            mMenuInflater.inflate(R.menu.moonlight_menu, mMenu);
         }
         //this.menu = menu;
     }

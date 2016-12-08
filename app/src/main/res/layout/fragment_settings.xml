@@ -4,9 +4,14 @@
     android:layout_height="match_parent"
     tools:context="com.art2cat.dev.moonlightnote.Controller.Settings.SettingsFragment">
 
-    <android.support.v7.widget.ListViewCompat
-        android:id="@+id/settings_list_view"
+    <!--<android.support.v7.widget.ListViewCompat-->
+        <!--android:id="@+id/settings_list_view"-->
+        <!--android:dividerHeight="1dp"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
 </FrameLayout>
