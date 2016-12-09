@@ -8,7 +8,6 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
@@ -64,34 +63,55 @@ public class MyColorPickerDialog extends ColorChooserDialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View view = LayoutInflater.from(getContext())
-                .inflate(com.turkialkhateeb.materialcolorpicker.R.layout.color_picker_dialog, null);
-        setContentView(view);
-        int padding = getContext().getResources().getDimensionPixelOffset(R.dimen.padding);
-        view.setPadding(padding, padding, padding, 0);
+//        View view = LayoutInflater.from(getContext())
+//                .inflate(com.turkialkhateeb.materialcolorpicker.R.layout.color_picker_dialog, null);
+        setContentView(R.layout.dialog_color_picker);
+//        int padding = getContext().getResources().getDimensionPixelOffset(R.dimen.padding);
+//        view.setPadding(padding, padding, padding, 0);
 
 
-        one =      (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b1);
-        two =      (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b2);
-        three =    (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b3);
-        four =     (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b4);
-        five =     (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b5);
-        six =      (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b6);
-        seven =    (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b7);
-        eight =    (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b8);
-        nine =     (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b9);
-        ten =      (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b10);
-        eleven =   (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b11);
-        twelve =   (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b12);
-        thirteen = (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b13);
-        fourteen = (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b14);
-        fifteen =  (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b15);
-        sixteen =  (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b16);
-        seventeen =(ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b17);
-        eighteen = (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b18);
-        nineteen = (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b19);
-        twenty =   (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b20);
-        twentyOne =(Button)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b21);
+//        one =      (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b1);
+//        two =      (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b2);
+//        three =    (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b3);
+//        four =     (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b4);
+//        five =     (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b5);
+//        six =      (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b6);
+//        seven =    (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b7);
+//        eight =    (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b8);
+//        nine =     (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b9);
+//        ten =      (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b10);
+//        eleven =   (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b11);
+//        twelve =   (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b12);
+//        thirteen = (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b13);
+//        fourteen = (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b14);
+//        fifteen =  (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b15);
+//        sixteen =  (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b16);
+//        seventeen =(ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b17);
+//        eighteen = (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b18);
+//        nineteen = (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b19);
+//        twenty =   (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b20);
+//        twentyOne =(Button)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b21);
+        one =      (ImageButton)findViewById(R.id.b1);
+        two =      (ImageButton)findViewById(R.id.b2);
+        three =    (ImageButton)findViewById(R.id.b3);
+        four =     (ImageButton)findViewById(R.id.b4);
+        five =     (ImageButton)findViewById(R.id.b5);
+        six =      (ImageButton)findViewById(R.id.b6);
+        seven =    (ImageButton)findViewById(R.id.b7);
+        eight =    (ImageButton)findViewById(R.id.b8);
+        nine =     (ImageButton)findViewById(R.id.b9);
+        ten =      (ImageButton)findViewById(R.id.b10);
+        eleven =   (ImageButton)findViewById(R.id.b11);
+        twelve =   (ImageButton)findViewById(R.id.b12);
+        thirteen = (ImageButton)findViewById(R.id.b13);
+        fourteen = (ImageButton)findViewById(R.id.b14);
+        fifteen =  (ImageButton)findViewById(R.id.b15);
+        sixteen =  (ImageButton)findViewById(R.id.b16);
+        seventeen =(ImageButton)findViewById(R.id.b17);
+        eighteen = (ImageButton)findViewById(R.id.b18);
+        nineteen = (ImageButton)findViewById(R.id.b19);
+        twenty =   (ImageButton)findViewById(R.id.b20);
+        twentyOne =(Button)findViewById(R.id.b21);
 
 
 

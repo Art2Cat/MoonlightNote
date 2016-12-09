@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="Select your color:"
+        android:textSize="21sp"
+        android:textStyle="bold" />
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/b1"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/b2"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/b3"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/b4"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+
+            android:foreground="?android:attr/selectableItemBackground" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/b5"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/b6"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/b7"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/b8"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/b9"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/b10"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/b11"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/b12"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/b13"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/b14"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/b15"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/b16"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/b17"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/b18"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/b19"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/b20"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:foreground="?android:attr/selectableItemBackground" />
+    </TableRow>
+
+    <Button
+        android:id="@+id/b21"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:text="white"
+        android:textSize="14sp" />
+</TableLayout>
