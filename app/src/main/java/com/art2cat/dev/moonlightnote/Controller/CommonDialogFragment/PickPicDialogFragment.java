@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.CommonFragment;
+package com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

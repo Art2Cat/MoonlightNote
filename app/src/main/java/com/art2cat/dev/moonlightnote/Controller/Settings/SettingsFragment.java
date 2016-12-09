@@ -10,10 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -35,11 +38,30 @@ public class SettingsFragment extends Fragment {
         getActivity().setTitle(R.string.title_activity_settings);
 //      ListViewCompat listViewCompat = (ListViewCompat) view.findViewById(R.id.settings_list_view);
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        List<String> data = new ArrayList<String>() {};
-        data.add(0, getString(R.string.settings_security));
-        data.add(1, getString(R.string.settings_policy));
-        data.add(2, getString(R.string.settings_license));
-        data.add(3, getString(R.string.settings_about));
+
+        List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+        for (int i = 0; i < 4; i++) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            switch (i) {
+                case 0:
+                    map.put("Title", getString(R.string.settings_security));
+                    map.put("Type", Constants.FRAGMENT_SECURITY);
+                    break;
+                case 1:
+                    map.put("Title", getString(R.string.settings_policy));
+                    map.put("Type", Constants.FRAGMENT_POLICY);
+                    break;
+                case 2:
+                    map.put("Title", getString(R.string.settings_license));
+                    map.put("Type", Constants.FRAGMENT_LICENSE);
+                    break;
+                case 3:
+                    map.put("Title", getString(R.string.settings_about));
+                    map.put("Type", Constants.FRAGMENT_ABOUT);
+                    break;
+            }
+            data.add(i, map);
+        }
 
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());

@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonActivity;
-import com.art2cat.dev.moonlightnote.Controller.CommonFragment.ConfirmationDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;

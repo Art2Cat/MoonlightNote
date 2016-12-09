@@ -52,7 +52,7 @@ import android.widget.ProgressBar;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonActivity;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
-import com.art2cat.dev.moonlightnote.Controller.CommonFragment.ProgressDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;

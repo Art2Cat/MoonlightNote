@@ -15,36 +15,24 @@ import com.art2cat.dev.moonlightnote.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PolicyFragment extends Fragment {
+public class PolicyFragment extends CommonSettingsFragment {
 
 
     public PolicyFragment() {
         // Required empty public constructor
     }
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        setHasOptionsMenu(true);
-        getActivity().setTitle(R.string.settings_policy);
-        return inflater.inflate(R.layout.fragment_policy, container, false);
+    public String getContent() {
+        return getString(R.string.settings_policy_content);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
+    public Fragment newInstance() {
+        PolicyFragment policyFragment = new PolicyFragment();
+        Bundle args = new Bundle();
+        args.putInt("type", 2);
+        policyFragment.setArguments(args);
+        return policyFragment;
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                getActivity().onBackPressed();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
 }

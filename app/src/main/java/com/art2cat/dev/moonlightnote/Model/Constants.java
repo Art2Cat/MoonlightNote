@@ -21,7 +21,6 @@ public class Constants {
     public static final String STORAGE_AVATAR = "avatar";
     public static final String STORAGE_USER_CONFIG = "user_config";
 
-
     /**
      * FireBase常量
      */
@@ -43,6 +42,17 @@ public class Constants {
     public static final int BUS_FLAG_DELETE_ACCOUNT = 811;
     public static final int BUS_FLAG_NONE_SECURITY = 812;
 
+    /**
+     * Fragment type
+     */
+    public static final int FRAGMENT_POLICY = 301;
+    public static final int FRAGMENT_ABOUT = 302;
+    public static final int FRAGMENT_LICENSE = 303;
+    public static final int FRAGMENT_SECURITY = 304;
+    public static final int EXTRA_DISABLE_SECURITY = 305;
+    public static final int EXTRA_PIN = 306;
+    public static final int EXTRA_PASSWORD = 307;
+    public static final int EXTRA_PATTERN = 308;
 
 
     /**

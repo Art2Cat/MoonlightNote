@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
-import com.art2cat.dev.moonlightnote.Controller.CommonFragment.InputDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.InputDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;

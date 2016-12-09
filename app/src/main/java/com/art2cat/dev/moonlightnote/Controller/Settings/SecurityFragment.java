@@ -12,10 +12,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class SecurityFragment extends Fragment implements View.OnClickListener {
@@ -35,11 +38,30 @@ public class SecurityFragment extends Fragment implements View.OnClickListener {
         getActivity().setTitle(R.string.settings_security_title);
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 
-        List<String> data = new ArrayList<String>() {};
-        data.add(0, getString(R.string.settings_security_disable_all));
-        data.add(1, getString(R.string.settings_security_pin));
-        data.add(2, getString(R.string.settings_security_password));
-        data.add(3, getString(R.string.settings_security_pattern));
+        List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+        for (int i = 0; i < 4; i++) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            switch (i) {
+                case 0:
+                    map.put("Title", getString(R.string.settings_security_disable_all));
+                    map.put("Type", Constants.EXTRA_DISABLE_SECURITY);
+                    break;
+                case 1:
+                    map.put("Title",  getString(R.string.settings_security_pin));
+                    map.put("Type", Constants.EXTRA_PIN);
+                    break;
+                case 2:
+                    map.put("Title", getString(R.string.settings_security_password));
+                    map.put("Type", Constants.EXTRA_PASSWORD);
+                    break;
+                case 3:
+                    map.put("Title", getString(R.string.settings_security_pattern));
+                    map.put("Type", Constants.EXTRA_PATTERN);
+                    break;
+
+            }
+            data.add(i, map);
+        }
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -47,13 +69,6 @@ public class SecurityFragment extends Fragment implements View.OnClickListener {
         SettingsAdapter settingsAdapter = new SettingsAdapter(getActivity(), data);
 
         recyclerView.setAdapter(settingsAdapter);
-//
-//        AppCompatButton pin = (AppCompatButton) view.findViewById(R.id.security_pin);
-//        AppCompatButton password = (AppCompatButton) view.findViewById(R.id.security_password);
-//        AppCompatButton pattern = (AppCompatButton) view.findViewById(R.id.security_pattern);
-//        pin.setOnClickListener(this);
-//        password.setOnClickListener(this);
-//        pattern.setOnClickListener(this);
         return view;
     }
 
@@ -76,7 +91,6 @@ public class SecurityFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.security_pin:
-
                 break;
             case R.id.security_password:
                 break;

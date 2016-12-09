@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
@@ -16,6 +17,7 @@ import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Rorschach
@@ -24,10 +26,10 @@ import java.util.List;
 
 class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingsViewHolder> {
     private LayoutInflater layoutInflater;
-    private List<String> mData;
+    private  List<Map<String, Object>> mData;
     private Context context;
 
-    SettingsAdapter(Context context, List<String> data) {
+    SettingsAdapter(Context context,  List<Map<String, Object>> data) {
         layoutInflater = LayoutInflater.from(context);
         mData = data;
         this.context = context;
@@ -41,7 +43,8 @@ class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingsViewH
 
     @Override
     public void onBindViewHolder(SettingsViewHolder holder, @SuppressLint("RecyclerView") final int position) {
-        holder.item.setText(mData.get(position));
+        final Map<String, Object> map = mData.get(position);
+        holder.item.setText((CharSequence) map.get("Title"));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,33 +53,36 @@ class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingsViewH
                         SPUtils.getInt(context.getApplicationContext(),
                                 Constants.USER_CONFIG,
                                 Constants.USER_CONFIG_SECURITY_ENABLE, 0);
-                switch (mData.get(position)) {
-                    case "Security":
+                switch ((int)map.get("Type")) {
+                    case 304:
                         FragmentUtils.changeFragment((Activity) context, new SecurityFragment());
                         Utils.lockApp(context, code);
                         break;
-                    case "Policy":
-                        FragmentUtils.changeFragment((Activity) context, new PolicyFragment());
+                    case 301:
+                        FragmentUtils.changeFragment((Activity) context, new PolicyFragment().newInstance());
                         break;
-                    case "License":
-                        FragmentUtils.changeFragment((Activity) context, new LicenseFragment());
+                    case 303:
+                        FragmentUtils.changeFragment((Activity) context, new LicenseFragment().newInstance());
                         break;
-                    case "About":
-                        FragmentUtils.changeFragment((Activity) context, new AboutFragment());
+                    case 302:
+                        FragmentUtils.changeFragment((Activity) context, new AboutFragment().newInstance());
                         break;
-                    case "Disable Security":
+                    case 305:
+                        ConfirmationDialogFragment confirmationDialogFragment =
+                                ConfirmationDialogFragment.newInstance("Confirmation", "Disable protection and decrypt all your data?", 4);
+                        confirmationDialogFragment.show(((Activity)context).getFragmentManager(),null);
                         SPUtils.putInt(context.getApplicationContext(),
                                 Constants.USER_CONFIG,
                                 Constants.USER_CONFIG_SECURITY_ENABLE, 0);
                         break;
-                    case "Password":
-                        Utils.showToast(context, "Current not enable", 0);
+                    case 307:
+                        Utils.showToast(context, "Current not available", 0);
                         break;
-                    case "Pin":
+                    case 306:
                         FragmentUtils.changeFragment((Activity) context, new PinFragment());
                         break;
-                    case "Pattern":
-                        Utils.showToast(context, "Current not enable", 0);
+                    case 308:
+                        Utils.showToast(context, "Current not available", 0);
                         break;
                 }
             }

@@ -15,36 +15,24 @@ import com.art2cat.dev.moonlightnote.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LicenseFragment extends Fragment {
+public class LicenseFragment extends CommonSettingsFragment {
 
 
     public LicenseFragment() {
         // Required empty public constructor
     }
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_license, container, false);
-        getActivity().setTitle(R.string.settings_license);
-        setHasOptionsMenu(true);
-        return view;
+    public String getContent() {
+        return getString(R.string.settings_license_content);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                getActivity().onBackPressed();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
+    public Fragment newInstance() {
+        LicenseFragment licenseFragment = new LicenseFragment();
+        Bundle args = new Bundle();
+        args.putInt("type", 1);
+        licenseFragment.setArguments(args);
+        return licenseFragment;
     }
 }

@@ -20,9 +20,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.art2cat.dev.moonlightnote.Controller.CommonFragment.InputDialogFragment;
-import com.art2cat.dev.moonlightnote.Controller.CommonFragment.PickPicDialogFragment;
-import com.art2cat.dev.moonlightnote.Controller.CommonFragment.ProgressDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.InputDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.PickPicDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;

@@ -128,21 +128,94 @@
         "Copyright 2014 - 2016 Henning Dodenhof\n"
         "This library is distributed under an Apache 2.0 License.\n\n"
     </string>
-    <string name="settings_policy_content">policy</string>
     <string name="settings_security_pin">Pin</string>
     <string name="settings_security_lock_app">Note Security</string>
     <string name="settings_security_title">Security</string>
     <string name="settings_security_password">Password</string>
     <string name="settings_security_pattern">Pattern</string>
-    <string name="activity_not_locked_text">Nothing should happen on this page, here for test purpose</string>
+    <string name="activity_not_locked_text">Nothing should happen on this page, here for test purpose
+    </string>
     <string name="activity_dialog_title">Forgot you Pincode?</string>
     <string name="activity_dialog_accept">OK</string>
     <string name="activity_dialog_decline">CANCEL</string>
-    <string name="activity_dialog_content">Tap \'OK\' to log out, when you log back in you\'ll be able to create a new Pincode.\n\nIf you remember your Pincode, tap \'Cancel\' to go back.</string>
+    <string name="activity_dialog_content">Tap \'OK\' to log out, when you log back in you\'ll be
+        able to create a new Pincode.\n\nIf you remember your Pincode, tap \'Cancel\' to go back.
+    </string>
     <string name="activity_appcompat_message">I am a PinCompatActivity!</string>
     <string name="settings_security_enable">Enable</string>
     <string name="settings_security_pin_change">change pincode</string>
     <string name="settings_security_pin_enable">enable pincode</string>
     <string name="settings_security">Security</string>
     <string name="settings_security_disable_all">Disable Security</string>
+    <string name="settings_policy_content">
+        "Welcome to MoonlightNote. \n\n"
+
+        "MoonlightNote owned and maintained by Art2Cat and linked to this Legal Notice (collectively, the “App”). MoonlightNote maintains the App for informational purposes and as a service to the App users, subject to the following terms and conditions regarding the use of the App (the “Terms of Use”). If you use the App, you accept the Terms of Use. If you do not agree to the Terms of Use, then you may not use the App. MoonlightNote reserves the right to modify the App’content and the Terms of Use without prior notice.\n\n"
+
+        "Terms of Use\n\n"
+
+        "Use of App\n\n"
+
+        "You may compose, download, and upload content to the Firebase database and storage to "
+        "the following conditions: a) the content may be used solely for information purposes; "
+        "b) the content may not be modified or altered in any way; and c) you may not republish, "
+        "distribute, prepare derivative works, or otherwise use the content other than as "
+        "expressly permitted by the Terms of Use.\n\n"
+
+        "You may not use MoonlightNote’s name, any MoonlightNote trade-mark or logo, or "
+        "other proprietary graphic or trade-mark without the express written permission of "
+        "MoonlightNote. You do not acquire any ownership rights or any other intellectual "
+        "property rights in or to any content in the App. Any unauthorized use terminates the "
+        "permission or license granted by MoonlightNote\n\n."
+
+        "Any statements contained in the App concerning MoonlightNote’s future performance are "
+        "‘forward looking statements’ under relevant securities legislation and regulations. "
+        "There can be no assurance that future results will be achieved and actual results could "
+        "differ materially from forecasts, estimates and summary information contained in the App.\n\n"
+
+        "Copyright Information\n\n"
+
+        "The App and the content within the App are the property of MoonlightNote developer and are "
+        "protected by domestic and international copyright laws. The compilation, organization "
+        "and display of the content of the App are the exclusive property of MoonlightNote developer. "
+        "MoonlightNote developer reserves all rights in the App and to their contents.\n\n"
+
+        "Disclaimer\n\n"
+
+        "Your use of the App is at your own risk. Any product, process, composition, apparatus "
+        "or technology published on the App may be the subject of intellectual property rights "
+        "reserved by MoonlightNote, and are not licensed hereunder. You must make your own "
+        "determination of the suitability and completeness for your own use, for the protection "
+        "of the environment, and for the health and safety of your employees and customers, "
+        "of MoonlightNote’s products, services, technology and the content of the App. All test "
+        "and experimental information provided on the App are typical of average lots. "
+        "MoonlightNote makes no representation that the material in any particular shipment will "
+        "conform exactly to the values given. All measures and conversions of metric/imperial "
+        "values are approximate. ALL CONTENT, INFORMATION, SERVICES AND PRODUCTS PROVIDED ON "
+        "THE App ARE PROVIDED FOR INFORMATIONAL PURPOSES ONLY AND ON AN "AS IS" BASIS WITHOUT "
+        "WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED. MoonlightNote AND ITS SUBSIDIARY AND "
+        "AFFILIATE COMPANIES DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED INCLUDING, WITHOUT "
+        "LIMITATION, THOSE OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT."
+        "MoonlightNote FURTHER DISCLAIMS ANY LIABILITY IN CONNECTION WITH THE App OR THE INFORMATION, "
+        "CONTENT, SERVICES AND PRODUCTS PROVIDED IN THE App. YOU ARE SOLELY RESPONSIBLE FOR THE "
+        "APPROPRIATENESS OF THE App, ITS CONTENT, AND THE INFORMATION, PRODUCTS AND SERVICES "
+        "OFFERED BY MoonlightNote ON THE App FOR YOUR INTENDED APPLICATION AND USE. MoonlightNote "
+        "DOES NOT WARRANT THAT THE App, ITS CONTENT, OR THE PRODUCTS AND SERVICES IT OFFERS ON THE "
+        "App MEET YOUR REQUIREMENTS. IN NO EVENT WILL MoonlightNote, ITS SUBSIDIARY AND AFFILIATE COMPANIES "
+        "BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL, OR PUNITIVE DAMAGES "
+        "FOR ANY REASON WHATSOEVER CONNECTED WITH THE USE OF THE App. MoonlightNote ASSUMES NO "
+        "LIABILITY AND DOES NOT WARRANT THAT ANY PRODUCT INFORMATION OR CONTENT CONTAINED IN "
+        "THE App IS ACCURATE, CURRENT, RELIABLE, COMPLETE OR ERROR-FREE.\n\n"
+
+        "Contact\n\n"
+
+        "Should you have any questions or concerns regarding the Legal Notice, please contact "
+        "MoonlightNote developer at dev@art2cat.com."
+    </string>
+    <string name="settings_about_app_content">"MoonlightNote\n\n"
+        "Version: 1.16.12.12\n\n"
+        "Credit: StudyJamscn(www.studyjamscn.com)\n\n"
+        "Copyright: Art2Cat\n\n"
+        "Disclaimer statement: see Policy page"
+    </string>
 </resources>
