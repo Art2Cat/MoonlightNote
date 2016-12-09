@@ -11,6 +11,8 @@ import android.support.v7.app.AlertDialog;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.Utils.SPUtils;
+import com.art2cat.dev.moonlightnote.Utils.Utils;
 
 /**
  * Created by Rorschach
@@ -54,9 +56,9 @@ public class ConfirmationDialogFragment extends DialogFragment {
             builder.setMessage(mMessage);
         }
         String positiveText;
-        if (mType == 0) {
+        if (mType == 401) {
             positiveText = getString(R.string.dialog_empty_trash_confirm);
-        } else if (mType == 3) {
+        } else if (mType == 402) {
             positiveText = getString(R.string.dialog_delete_account_confirm);
         } else {
             positiveText = getString(android.R.string.ok);
@@ -67,12 +69,21 @@ public class ConfirmationDialogFragment extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // positive button logic
-                        if (mType == 0) {
-                            BusEventUtils.post(Constants.BUS_FLAG_EMPTY_TRASH, null);
-                        } else if (mType == 3) {
-                            InputDialogFragment inputDialogFragment =
-                                    InputDialogFragment.newInstance(getString(R.string.dialog_enter_your_password), 2);
-                            inputDialogFragment.show(getFragmentManager(), "enter password");
+                        switch (mType) {
+                            case 401:
+                                BusEventUtils.post(Constants.BUS_FLAG_EMPTY_TRASH, null);
+                                break;
+                            case 402:
+                                InputDialogFragment inputDialogFragment =
+                                        InputDialogFragment.newInstance(getString(R.string.dialog_enter_your_password), 2);
+                                inputDialogFragment.show(getFragmentManager(), "enter password");
+                                break;
+                            case 403:
+                                SPUtils.putInt(getActivity().getApplicationContext(),
+                                        Constants.USER_CONFIG,
+                                        Constants.USER_CONFIG_SECURITY_ENABLE, 0);
+                                Utils.showToast(getActivity(), "App Security disabled", 0);
+                                break;
                         }
                     }
                 });

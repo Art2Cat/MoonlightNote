@@ -69,11 +69,11 @@ class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingsViewH
                         break;
                     case 305:
                         ConfirmationDialogFragment confirmationDialogFragment =
-                                ConfirmationDialogFragment.newInstance("Confirmation", "Disable protection and decrypt all your data?", 4);
+                                ConfirmationDialogFragment.newInstance(
+                                        context.getString(R.string.confirmation_title),
+                                        context.getString(R.string.confirmation_disable_security),
+                                        Constants.EXTRA_TYPE_CDF_DISABLE_SECURITY);
                         confirmationDialogFragment.show(((Activity)context).getFragmentManager(),null);
-                        SPUtils.putInt(context.getApplicationContext(),
-                                Constants.USER_CONFIG,
-                                Constants.USER_CONFIG_SECURITY_ENABLE, 0);
                         break;
                     case 307:
                         Utils.showToast(context, "Current not available", 0);

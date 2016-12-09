@@ -18,6 +18,7 @@ import com.art2cat.dev.moonlightnote.R;
 import java.util.ArrayList;
 
 public class CommonActivity extends AppCompatActivity {
+    public Toolbar mToolbar;
 
     private ArrayList<CommonActivity.FragmentOnTouchListener> onTouchListeners = new ArrayList<CommonActivity.FragmentOnTouchListener>(
             10);
@@ -26,12 +27,11 @@ public class CommonActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_common);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setActionBar(toolbar);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onBackPressed();

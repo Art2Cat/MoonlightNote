@@ -2,24 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_delete"
+        android:id="@+id/action_export_data"
         android:icon="@drawable/ic_delete_white_24dp"
         android:orderInCategory="100"
-        android:title="@string/bottom_sheet_right_move_to_trash"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_delete_forever"
-        android:orderInCategory="100"
-        android:title="@string/bottom_sheet_right_permanent_delete"
+        android:title="@string/action_export_data"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/action_make_a_copy"
-        android:orderInCategory="100"
-        android:title="@string/bottom_sheet_right_make_a_copy"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_send"
-        android:orderInCategory="100"
-        android:title="@string/bottom_sheet_right_send"
-        app:showAsAction="never" />
+
 </menu>

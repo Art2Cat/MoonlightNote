@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -73,7 +74,23 @@ public abstract class MoonlightListFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.d(TAG, "onCreateView: ");
         View rootView = inflater.inflate(R.layout.fragment_moonlight, container, false);
+        Toolbar toolbar = ((MoonlightActivity)getActivity()).mToolbar;
+        if (isTrash()) {
+            getActivity().setTitle(R.string.fragment_trash);
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                toolbar.setBackgroundColor(getResources().getColor(R.color.grey, getActivity().getTheme()));
+            } else {
+                toolbar.setBackgroundColor(getResources().getColor(R.color.grey));
+            }
+        } else {
+            getActivity().setTitle(R.string.app_name);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary, getActivity().getTheme()));
+            } else {
+                toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            }
+        }
         setHasOptionsMenu(true);
 
         // [START create_database_reference]
@@ -114,10 +131,10 @@ public abstract class MoonlightListFragment extends Fragment {
             mRecyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
                 @Override
                 public void onScrollChange(View view, int i, int i1, int i2, int i3) {
-                    if (mMenu != null && !isTrash()) {
-                        mMenu.clear();
-                        getActivity().setTitle(R.string.app_name);
-                    }
+//                    if (mMenu != null && !isTrash()) {
+//                        mMenu.clear();
+//                        getActivity().setTitle(R.string.app_name);
+//                    }
                 }
             });
         } else {
@@ -125,12 +142,12 @@ public abstract class MoonlightListFragment extends Fragment {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        if (mMenu != null && !isTrash()) {
-                            mMenu.clear();
-                            getActivity().setTitle(R.string.app_name);
-                        }
-                    }
+//                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                        if (mMenu != null && !isTrash()) {
+//                            mMenu.clear();
+//                            getActivity().setTitle(R.string.app_name);
+//                        }
+//                    }
                 }
             });
         }
@@ -256,9 +273,9 @@ public abstract class MoonlightListFragment extends Fragment {
         mMenu = menu;
         mMenuInflater = inflater;
         if (isTrash()) {
-            mMenuInflater.inflate(R.menu.trash_menu, mMenu);
+            changeOptionsMenu(2);
         } else {
-            mMenuInflater.inflate(R.menu.moonlight_menu, mMenu);
+//            changeOptionsMenu(3);
         }
         //this.menu = menu;
     }
@@ -267,19 +284,19 @@ public abstract class MoonlightListFragment extends Fragment {
         mMenu.clear();
         switch (type) {
             case 0:
-                mMenuInflater.inflate(R.menu.moonlight_menu, mMenu);
-                getActivity().setTitle(null);
+                mMenuInflater.inflate(R.menu.long_click_moonlight_menu, mMenu);
+//                getActivity().setTitle(null);
                 break;
             case 1:
                 mMenuInflater.inflate(R.menu.long_click_trash_menu, mMenu);
-                getActivity().setTitle(R.string.fragment_trash);
+//                getActivity().setTitle(R.string.fragment_trash);
                 break;
             case 2:
                 mMenuInflater.inflate(R.menu.trash_menu, mMenu);
-                getActivity().setTitle(R.string.fragment_trash);
+//                getActivity().setTitle(R.string.fragment_trash);
                 break;
             case 3:
-                mMenuInflater.inflate(R.menu.nil, mMenu);
+                mMenuInflater.inflate(R.menu.moonlight_menu, mMenu);
                 break;
         }
     }
@@ -289,14 +306,14 @@ public abstract class MoonlightListFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.menu_empty_trash:
                 ConfirmationDialogFragment confirmationDialogFragment = ConfirmationDialogFragment
-                        .newInstance(getString(R.string.dialog_empty_trash_title), getString(R.string.dialog_empty_trash_content), 0);
+                        .newInstance(getString(R.string.dialog_empty_trash_title), getString(R.string.dialog_empty_trash_content), Constants.EXTRA_TYPE_CDF_EMPTY_TRASH);
                 confirmationDialogFragment.show(getFragmentManager(), "Empty Trash");
                 getActivity().setTitle(R.string.fragment_trash);
                 break;
             case R.id.action_delete:
                 mDatabaseUtils.moveToTrash(moonlight);
                 getActivity().setTitle(R.string.app_name);
-                //changeOptionsMenu(3);
+//                changeOptionsMenu(3);
                 break;
             case R.id.action_delete_forever:
                 StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
@@ -304,12 +321,12 @@ public abstract class MoonlightListFragment extends Fragment {
                 mDatabaseUtils.removeMoonlight(moonlight.getId(), Constants.EXTRA_TYPE_MOONLIGHT);
                 moonlight = null;
                 getActivity().setTitle(R.string.app_name);
-                //changeOptionsMenu(3);
+//                changeOptionsMenu(3);
                 break;
             case R.id.action_make_a_copy:
                 mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
                 getActivity().setTitle(R.string.app_name);
-                //changeOptionsMenu(3);
+//                changeOptionsMenu(3);
                 break;
             case R.id.action_send:
                 //启动Intent分享
@@ -330,7 +347,7 @@ public abstract class MoonlightListFragment extends Fragment {
                 in = Intent.createChooser(in, "Send to");
                 startActivity(in);
                 getActivity().setTitle(R.string.app_name);
-                changeOptionsMenu(3);
+//                changeOptionsMenu(3);
                 break;
             case R.id.action_restore:
                 mDatabaseUtils.restoreToNote(moonlight);

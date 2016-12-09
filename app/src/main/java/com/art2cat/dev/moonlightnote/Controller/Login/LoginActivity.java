@@ -152,9 +152,9 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
     }
 
     private void startLoginFragment() {
-        //创建handler对象，调用postDelayed()方法，启动插播5秒广告
+        //创建handler对象，调用postDelayed()方法，启动插播3秒广告
         Handler handler = new Handler();
-        handler.postDelayed(new UpdateUI(), 5000);
+        handler.postDelayed(new UpdateUI(), 3000);
     }
 
     @Override

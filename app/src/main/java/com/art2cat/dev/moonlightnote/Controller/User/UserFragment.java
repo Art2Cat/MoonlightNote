@@ -201,7 +201,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 //            case R.id.action_close_account:
 //                ConfirmationDialogFragment confirmationDialogFragment =
 //                        ConfirmationDialogFragment.newInstance(getString(R.string.delete_account_title),
-//                                getString(R.string.delete_account_content), 3);
+//                                getString(R.string.delete_account_content), Constants.EXTRA_TYPE_CDF_DELETE_ACCOUNT);
 //                confirmationDialogFragment.show(getFragmentManager(), "delete account");
 //                break;
         }

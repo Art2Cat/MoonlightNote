@@ -68,6 +68,7 @@ public class MoonlightActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
     private FirebaseAnalytics mFirebaseAnalytics;
     private FragmentManager mFragmentManager;
+    public Toolbar mToolbar;
     private int mLock;
 
     @Override
@@ -172,7 +173,6 @@ public class MoonlightActivity extends AppCompatActivity
                             mFragmentManager.beginTransaction()
                                     .add(R.id.main_fragment_container, fragment)
                                     .commit();
-                            setTitle(R.string.app_name);
                             mFAB.setVisibility(View.VISIBLE);
                             isHome = !isHome;
                         } else {
@@ -180,7 +180,6 @@ public class MoonlightActivity extends AppCompatActivity
                             mFragmentManager.beginTransaction()
                                     .replace(R.id.main_fragment_container, fragment)
                                     .commit();
-                            setTitle(R.string.app_name);
                             mFAB.setVisibility(View.VISIBLE);
                             isHome = !isHome;
                         }
@@ -195,7 +194,6 @@ public class MoonlightActivity extends AppCompatActivity
                         mFragmentManager.beginTransaction()
                                 .add(R.id.main_fragment_container, fragment)
                                 .commit();
-                        setTitle(R.string.fragment_trash);
                         mFAB.setVisibility(View.GONE);
                         isHome = !isHome;
                     } else {
@@ -203,7 +201,6 @@ public class MoonlightActivity extends AppCompatActivity
                         mFragmentManager.beginTransaction()
                                 .replace(R.id.main_fragment_container, fragment)
                                 .commit();
-                        setTitle(R.string.fragment_trash);
                         mFAB.setVisibility(View.GONE);
                         isHome = !isHome;
                     }
@@ -262,8 +259,8 @@ public class MoonlightActivity extends AppCompatActivity
      */
     private void initView() {
         //Toolbar实例化
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.snackbar_container);
         //FloatingActionButton实例化
@@ -287,7 +284,7 @@ public class MoonlightActivity extends AppCompatActivity
         //DrawerLayout实例化
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 

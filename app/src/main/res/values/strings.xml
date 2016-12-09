@@ -162,12 +162,6 @@
         "distribute, prepare derivative works, or otherwise use the content other than as "
         "expressly permitted by the Terms of Use.\n\n"
 
-        "You may not use MoonlightNote’s name, any MoonlightNote trade-mark or logo, or "
-        "other proprietary graphic or trade-mark without the express written permission of "
-        "MoonlightNote. You do not acquire any ownership rights or any other intellectual "
-        "property rights in or to any content in the App. Any unauthorized use terminates the "
-        "permission or license granted by MoonlightNote\n\n."
-
         "Any statements contained in the App concerning MoonlightNote’s future performance are "
         "‘forward looking statements’ under relevant securities legislation and regulations. "
         "There can be no assurance that future results will be achieved and actual results could "
@@ -218,4 +212,7 @@
         "Copyright: Art2Cat\n\n"
         "Disclaimer statement: see Policy page"
     </string>
+    <string name="confirmation_disable_security">Disable protection and decrypt all your data?</string>
+    <string name="confirmation_title">Confirmation</string>
+    <string name="action_export_data">Export all data</string>
 </resources>

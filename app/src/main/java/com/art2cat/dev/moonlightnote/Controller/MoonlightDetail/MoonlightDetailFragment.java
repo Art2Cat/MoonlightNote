@@ -3,10 +3,12 @@ package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
@@ -18,6 +20,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
@@ -26,7 +30,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
-import android.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
@@ -35,6 +38,7 @@ import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -51,8 +55,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonActivity;
-import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ProgressDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
@@ -79,7 +83,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
-import com.turkialkhateeb.materialcolorpicker.ColorChooserDialog;
 import com.turkialkhateeb.materialcolorpicker.ColorListener;
 
 import org.greenrobot.eventbus.EventBus;
@@ -114,7 +117,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         View.OnClickListener, View.OnFocusChangeListener {
     private static final String TAG = "MoonlightDetailFragment";
     private View mView;
+    private Toolbar mToolbar;
     private ContentFrameLayout mContentFrameLayout;
+    private LinearLayoutCompat mBottomBarContainer;
+    private LinearLayoutCompat mAudioContainer;
     private TextInputLayout mTitleTextInputLayout;
     private TextInputLayout mContentTextInputLayout;
     private TextInputEditText mTitle;
@@ -145,6 +151,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private String mUserId;
     private String mKeyId;
     private String mLabel;
+    private int mPaddingBottom;
     private Uri mFileUri = null;
     private FDatabaseUtils mFDatabaseUtils;
     private DatabaseReference mMoonlightRef;
@@ -200,6 +207,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
 
         mInputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
+        mPaddingBottom = getResources().getDimensionPixelOffset(R.dimen.padding_bottom);
+
         //当能argument不为空时，从argument中获取keyId，同时调用getMoonlight方法获取moonlight信息，editFlag设为true
         if (getArguments() != null) {
             mKeyId = getArguments().getString("keyId");
@@ -227,12 +236,17 @@ public abstract class MoonlightDetailFragment extends Fragment implements
 
         getActivity().setTitle(null);
 
+        mToolbar = ((CommonActivity) getActivity()).mToolbar;
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
+
         mContentFrameLayout = (ContentFrameLayout) mView.findViewById(R.id.view_parent);
         mTitle = (TextInputEditText) mView.findViewById(R.id.title_TIET);
         mContent = (TextInputEditText) mView.findViewById(R.id.content_TIET);
+        mContentTextInputLayout = (TextInputLayout) mView.findViewById(R.id.content_TIL);
         mImage = (AppCompatImageView) mView.findViewById(R.id.moonlight_image);
         //mImageCardView = (CardView) mView.findViewById(R.id.image_container);
         mAudioCardView = (CardView) mView.findViewById(R.id.audio_container);
+        mAudioContainer = (LinearLayoutCompat) mView.findViewById(R.id.audio_container_inner);
         //mDeleteImage = (AppCompatButton) mView.findViewById(R.id.delete_image);
 
         mDeleteAudio = (AppCompatButton) mView.findViewById(R.id.delete_audio);
@@ -241,6 +255,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         mAudioPlayerPB = (ProgressBar) mView.findViewById(R.id.moonlight_audio_progressBar);
         mDisplayTime = (AppCompatTextView) mView.findViewById(R.id.bottom_bar_display_time);
         mCoordinatorLayout = (CoordinatorLayout) mView.findViewById(R.id.bottom_sheet_container);
+        mBottomBarContainer = (LinearLayoutCompat) mView.findViewById(R.id.bottom_bar_container);
         mBottomBarLeft = (AppCompatButton) mView.findViewById(R.id.bottom_bar_left);
         mBottomBarRight = (AppCompatButton) mView.findViewById(R.id.bottom_bar_right);
         mTitle.setOnFocusChangeListener(this);
@@ -326,6 +341,22 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         return mView;
     }
 
+    private void changeUIColor(@ColorRes int color, Resources.Theme theme) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mToolbar.setBackgroundColor(getResources().getColor(color, theme));
+            mBottomBarContainer.setBackgroundColor(getResources().getColor(color, theme));
+        } else {
+            mToolbar.setBackgroundColor(getResources().getColor(color));
+            mBottomBarContainer.setBackgroundColor(getResources().getColor(color));
+        }
+    }
+
+    private void changeUIColor(@ColorInt int color) {
+        mToolbar.setBackgroundColor(color);
+        mBottomBarContainer.setBackgroundColor(color);
+
+    }
+
     @Override
     public void onStart() {
         Log.d(TAG, "onStart: ");
@@ -336,9 +367,11 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        changeUIColor(R.color.white, getActivity().getTheme());
         //当editFlag为true时延时0.5秒更新UI（防止UI已更新，moonlight数据未载入）
         if (mEditFlag) {
-            //moonlight_menu = mFDatabaseUtils.getMoonlight();
+            //long_click_moonlight_menu = mFDatabaseUtils.getMoonlight();
             mHandler.postDelayed(myRunnable, 500);
         }
         if (!mEditable) {
@@ -432,7 +465,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         switch (item.getItemId()) {
             case R.id.menu_color_picker:
                 if (mEditable) {
-                    ColorChooserDialog dialog = new ColorChooserDialog(getActivity());
+                    MyColorPickerDialog dialog = new MyColorPickerDialog(getActivity());
                     dialog.setTitle("Color Picker");
                     dialog.setColorListener(new ColorListener() {
                         @Override
@@ -440,6 +473,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                             //do whatever you want to with the values
                             moonlight.setColor(color);
                             mContentFrameLayout.setBackgroundColor(color);
+                            mAudioContainer.setBackgroundColor(color);
+                            changeUIColor(color);
                             mEditable = true;
                         }
                     });
@@ -841,7 +876,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     mAudioFileName = null;
                     mDownloadAUrl = null;
                     mProgressDialogFragment.dismiss();
-                    showImage(fileUri);
+                    showAudio(fileUri.toString());
                 }
             }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -892,7 +927,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                         moonlight = dataSnapshot.getValue(Moonlight.class);
                     }
 
-                    Log.d(TAG, "moonlight_menu.getId: " + moonlight.getId());
+                    Log.d(TAG, "long_click_moonlight_menu.getId: " + moonlight.getId());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -901,7 +936,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "loadMoonlight:onCancelled", databaseError.toException());
-                SnackBarUtils.shortSnackBar(mView, "Failed to load moonlight_menu.", SnackBarUtils.TYPE_WARNING).show();
+                SnackBarUtils.shortSnackBar(mView, "Failed to load long_click_moonlight_menu.", SnackBarUtils.TYPE_WARNING).show();
 
             }
         };
@@ -1099,6 +1134,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 }
                 //mImageCardView.setVisibility(View.VISIBLE);
                 mImage.setVisibility(View.VISIBLE);
+                mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
 
             } catch (FileNotFoundException e) {
                 Log.d(TAG, "load local file failed" + e.toString());
@@ -1114,6 +1150,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             mAudioPlayer.prepare(audioFileName);
             moonlight.setAudioDuration((long) mAudioPlayer.mDuration);
             mAudioCardView.setVisibility(View.VISIBLE);
+            mAudioContainer.setBackgroundColor(moonlight.getColor());
+            mContentTextInputLayout.setPadding(0, 0, 0, 0);
         } else {
             mShowDuration.setText(Utils.convert(moonlight.getAudioDuration()));
         }
@@ -1152,6 +1190,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
 //                mBitmapUtils.display(mImage, moonlight.getImageUrl());
                 //mImageCardView.setVisibility(View.VISIBLE);
                 mImage.setVisibility(View.VISIBLE);
+                mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
                 if (!editable) {
                     //mDeleteImage.setClickable(false);
                 }
@@ -1159,8 +1198,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             if (moonlight.getAudioUrl() != null) {
                 showAudio(moonlight.getAudioName());
                 //String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
-                //mAudioPlayer.prepare(dirPath + moonlight_menu.getAudioName());
+                //mAudioPlayer.prepare(dirPath + long_click_moonlight_menu.getAudioName());
                 mAudioCardView.setVisibility(View.VISIBLE);
+                mContentTextInputLayout.setPadding(0, 0, 0, 0);
                 if (!editable) {
                     mDeleteAudio.setClickable(false);
                     mBottomBarLeft.setClickable(false);
@@ -1170,6 +1210,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
 
             if (moonlight.getColor() != 0) {
                 mContentFrameLayout.setBackgroundColor(moonlight.getColor());
+                changeUIColor(moonlight.getColor());
+                mAudioContainer.setBackgroundColor(moonlight.getColor());
             }
         }
     }
