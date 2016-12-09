@@ -2,6 +2,7 @@ package com.art2cat.dev.moonlightnote.Controller.Settings;
 
 import android.util.Log;
 
+import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.github.orangegangsters.lollipin.lib.managers.AppLockActivity;
 
 public class MoonlightPinActivity extends AppLockActivity {
@@ -57,6 +58,7 @@ public class MoonlightPinActivity extends AppLockActivity {
 
     @Override
     public void showForgotDialog() {
+        Utils.showToast(this, "For security this feature has been disabled!", 1);
 
     }
 

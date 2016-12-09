@@ -79,10 +79,14 @@ public class ConfirmationDialogFragment extends DialogFragment {
                                 inputDialogFragment.show(getFragmentManager(), "enter password");
                                 break;
                             case 403:
+                                int code =
+                                        SPUtils.getInt(getActivity().getApplicationContext(),
+                                                Constants.USER_CONFIG,
+                                                Constants.USER_CONFIG_SECURITY_ENABLE, 0);
+                                Utils.unLockApp(getActivity(), code);
                                 SPUtils.putInt(getActivity().getApplicationContext(),
                                         Constants.USER_CONFIG,
                                         Constants.USER_CONFIG_SECURITY_ENABLE, 0);
-                                Utils.showToast(getActivity(), "App Security disabled", 0);
                                 break;
                         }
                     }

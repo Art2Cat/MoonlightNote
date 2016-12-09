@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class SecurityFragment extends Fragment implements View.OnClickListener {
+public class SecurityFragment extends Fragment {
 
     public SecurityFragment() {
         // Required empty public constructor
@@ -33,7 +33,7 @@ public class SecurityFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_settings, container, false);
+        View view = inflater.inflate(R.layout.fragment_settings, container, false);
         setHasOptionsMenu(true);
         getActivity().setTitle(R.string.settings_security_title);
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
@@ -47,7 +47,7 @@ public class SecurityFragment extends Fragment implements View.OnClickListener {
                     map.put("Type", Constants.EXTRA_DISABLE_SECURITY);
                     break;
                 case 1:
-                    map.put("Title",  getString(R.string.settings_security_pin));
+                    map.put("Title", getString(R.string.settings_security_pin));
                     map.put("Type", Constants.EXTRA_PIN);
                     break;
                 case 2:
@@ -87,15 +87,4 @@ public class SecurityFragment extends Fragment implements View.OnClickListener {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.security_pin:
-                break;
-            case R.id.security_password:
-                break;
-            case R.id.security_pattern:
-                break;
-        }
-    }
 }

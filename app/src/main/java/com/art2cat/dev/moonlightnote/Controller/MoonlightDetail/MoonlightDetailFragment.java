@@ -50,6 +50,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
@@ -235,6 +236,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         mView = inflater.inflate(R.layout.fragment_moonlight_detail, container, false);
 
         getActivity().setTitle(null);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         mToolbar = ((CommonActivity) getActivity()).mToolbar;
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
