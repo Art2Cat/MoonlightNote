@@ -113,6 +113,7 @@
                         android:layout_height="50dp"
                         android:layout_gravity="center"
                         android:layout_marginTop="16dp"
+                        android:foreground="?android:attr/selectableItemBackground"
                         android:background="@drawable/google_icon" />
 
                 </android.support.v7.widget.LinearLayoutCompat>

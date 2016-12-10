@@ -55,7 +55,7 @@ public class MoonlightActivity extends AppCompatActivity
     private FloatingActionButton mFAB;
     private Button mSortButton;
     private CircleImageView mCircleImageView;
-    private boolean isHome;
+    private boolean isHome = true;
     private boolean isClicked = false;
     private boolean isLogin = true;
     private boolean isLock = true;
@@ -167,6 +167,7 @@ public class MoonlightActivity extends AppCompatActivity
             case R.id.nav_notes:
                 if (mUserId != null) {
                     Fragment fragment = mFragmentManager.findFragmentById(R.id.main_fragment_container);
+                    Log.d(TAG, "nav_notes: " + isHome);
                     if (!isHome) {
                         if (fragment == null) {
                             fragment = new MoonlightFragment();
@@ -189,6 +190,7 @@ public class MoonlightActivity extends AppCompatActivity
             case R.id.nav_trash:
                 if (mUserId != null) {
                     Fragment fragment = mFragmentManager.findFragmentById(R.id.main_fragment_container);
+                    Log.d(TAG, "nav_trash: " + isHome);
                     if (fragment == null) {
                         fragment = new TrashFragment();
                         mFragmentManager.beginTransaction()
@@ -349,7 +351,6 @@ public class MoonlightActivity extends AppCompatActivity
                 mFragmentManager.beginTransaction()
                         .add(R.id.main_fragment_container, fragment)
                         .commit();
-                isHome = true;
             }
         }
     }

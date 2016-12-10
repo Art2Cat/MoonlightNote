@@ -131,10 +131,10 @@ public abstract class MoonlightListFragment extends Fragment {
             mRecyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
                 @Override
                 public void onScrollChange(View view, int i, int i1, int i2, int i3) {
-//                    if (mMenu != null && !isTrash()) {
-//                        mMenu.clear();
-//                        getActivity().setTitle(R.string.app_name);
-//                    }
+                    if (mMenu != null && !isTrash()) {
+                        mMenu.clear();
+                        getActivity().setTitle(R.string.app_name);
+                    }
                 }
             });
         } else {
@@ -142,12 +142,12 @@ public abstract class MoonlightListFragment extends Fragment {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
-//                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-//                        if (mMenu != null && !isTrash()) {
-//                            mMenu.clear();
-//                            getActivity().setTitle(R.string.app_name);
-//                        }
-//                    }
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        if (mMenu != null && !isTrash()) {
+                            mMenu.clear();
+                            getActivity().setTitle(R.string.app_name);
+                        }
+                    }
                 }
             });
         }

@@ -88,6 +88,9 @@ public class ConfirmationDialogFragment extends DialogFragment {
                                         Constants.USER_CONFIG,
                                         Constants.USER_CONFIG_SECURITY_ENABLE, 0);
                                 break;
+                            case 404:
+                                BusEventUtils.post(Constants.BUS_FLAG_DELETE_IMAGE, null);
+                                break;
                         }
                     }
                 });

@@ -6,7 +6,6 @@ import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -31,7 +30,6 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
@@ -56,6 +54,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonActivity;
+import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
@@ -284,17 +283,12 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             mImage.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle("Delete Image?").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            StorageUtils.removePhoto(mView, mUserId, moonlight.getImageName());
-                            mImage.setVisibility(View.GONE);
-                            moonlight.setImageName(null);
-                            moonlight.setImageUrl(null);
-                        }
-                    }).setNegativeButton("Cancel", null).create();
-                    builder.show();
+                    ConfirmationDialogFragment confirmationDialogFragment =
+                            ConfirmationDialogFragment.newInstance(
+                                    getString(R.string.confirmation_title),
+                                    getString(R.string.confirmation_delete_image),
+                                    Constants.EXTRA_TYPE_CDF_DELETE_IMAGE);
+                    confirmationDialogFragment.show(getFragmentManager(), "delete image");
                     return false;
                 }
             });
@@ -506,6 +500,12 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                         Uri mAudioUri = FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, file);
                         uploadFromUri(mAudioUri, mUserId, 3);
                     }
+                    break;
+                case Constants.BUS_FLAG_DELETE_IMAGE:
+                    StorageUtils.removePhoto(mView, mUserId, moonlight.getImageName());
+                    mImage.setVisibility(View.GONE);
+                    moonlight.setImageName(null);
+                    moonlight.setImageUrl(null);
                     break;
             }
         }

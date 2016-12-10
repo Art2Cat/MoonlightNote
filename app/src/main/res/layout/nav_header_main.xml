@@ -22,6 +22,7 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:gravity="center"
+            android:foreground="?android:attr/selectableItemBackground"
             android:src="@mipmap/ic_launcher" />
     </LinearLayout>
 

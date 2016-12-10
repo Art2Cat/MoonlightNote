@@ -79,15 +79,17 @@
                         android:background="@color/colorAccent" />
 
                 </android.support.v7.widget.LinearLayoutCompat>
+
+                <com.google.android.gms.ads.AdView
+                    android:id="@+id/banner_adView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    ads:adSize="BANNER"
+                    ads:adUnitId="ca-app-pub-5043396164425122/2448908497" />
+
             </android.support.v7.widget.LinearLayoutCompat>
 
     </android.support.v4.widget.NestedScrollView>
 
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/banner_adView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-5043396164425122/2448908497" />
 </android.support.design.widget.CoordinatorLayout>
