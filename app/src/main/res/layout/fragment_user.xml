@@ -4,11 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.art2cat.dev.moonlightnote.Controller.User.UserFragment" >
+    tools:context="com.art2cat.dev.moonlightnote.Controller.User.UserFragment">
 
-    <android.support.v4.widget.NestedScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/banner_adView"
+            android:layout_alignParentTop="true">
 
             <android.support.v7.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
@@ -48,9 +55,9 @@
                         android:id="@+id/user_nickname"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingTop="8dp"
                         android:ellipsize="marquee"
                         android:maxLines="1"
+                        android:paddingTop="8dp"
                         android:textSize="24sp" />
 
                     <android.support.v7.widget.AppCompatTextView
@@ -68,8 +75,8 @@
                         android:id="@+id/user_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxLines="1"
                         android:ellipsize="marquee"
+                        android:maxLines="1"
                         android:paddingTop="8dp"
                         android:textSize="24sp" />
 
@@ -80,16 +87,20 @@
 
                 </android.support.v7.widget.LinearLayoutCompat>
 
-                <com.google.android.gms.ads.AdView
-                    android:id="@+id/banner_adView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    ads:adSize="BANNER"
-                    ads:adUnitId="ca-app-pub-5043396164425122/2448908497" />
 
             </android.support.v7.widget.LinearLayoutCompat>
 
-    </android.support.v4.widget.NestedScrollView>
+        </android.support.v4.widget.NestedScrollView>
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/banner_adView"
+            android:elevation="2dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            ads:adSize="BANNER"
+            ads:adUnitId="ca-app-pub-5043396164425122/2448908497" />
+
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

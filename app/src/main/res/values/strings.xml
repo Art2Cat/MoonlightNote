@@ -207,10 +207,14 @@
         "MoonlightNote developer at dev@art2cat.com."
     </string>
     <string name="settings_about_app_content">"MoonlightNote\n\n"
-        "Version: 1.0.16.12.10\n\n"
-        "Credit: StudyJamscn(www.studyjamscn.com)\n\n"
-        "Copyright: Art2Cat\n\n"
-        "Disclaimer statement: see Policy page"
+        "Version:\n"
+        "1.0.16.12.10\n\n"
+        "Credit:\n"
+        "StudyJamscn(www.studyjamscn.com)\n\n"
+        "Copyright:\n"
+        "Art2Cat\n\n"
+        "Disclaimer statement:\n"
+        "see Policy page"
     </string>
     <string name="confirmation_disable_security">Disable protection and decrypt all your data?</string>
     <string name="confirmation_title">Confirmation</string>
