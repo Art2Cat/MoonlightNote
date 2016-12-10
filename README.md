@@ -3,6 +3,8 @@ StudyJams进阶项目
 
 MoonlightNote基于Firebase并遵循Material Design开发的一款简洁高效的记事本应用。
 
+ *Google Play*: https://goo.gl/rd5Z5A
+
 
 # Features Include:
 - Material Design UI 以及易用性
