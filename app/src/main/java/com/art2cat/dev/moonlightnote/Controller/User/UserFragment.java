@@ -135,9 +135,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         Log.d(TAG, "displayUserInfo: " + mUser.getUid());
 
         AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .addTestDevice("0ACA1878D607E6C4360F91E0A0379C2F")
-                .addTestDevice("4DA2263EDB49C1F2C00F9D130B823096")
+//                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+//                .addTestDevice("0ACA1878D607E6C4360F91E0A0379C2F")
+//                .addTestDevice("4DA2263EDB49C1F2C00F9D130B823096")
                 .build();
         mAdView.loadAd(adRequest);
 

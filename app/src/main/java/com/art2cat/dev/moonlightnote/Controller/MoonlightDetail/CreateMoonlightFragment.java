@@ -1,5 +1,7 @@
 package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
 
+import com.art2cat.dev.moonlightnote.Model.Moonlight;
+
 /**
  * Created by art2cat
  * on 10/1/16.
@@ -8,12 +10,11 @@ package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
 public class CreateMoonlightFragment extends MoonlightDetailFragment{
     @Override
     public MoonlightDetailFragment newInstance() {
-        MoonlightDetailFragment moonlightDetailFragment = new CreateMoonlightFragment();
-        return moonlightDetailFragment;
+        return new CreateMoonlightFragment();
     }
 
     @Override
-    public MoonlightDetailFragment newInstance(String keyid) {
+    public MoonlightDetailFragment newInstance(Moonlight moonlight) {
         return null;
     }
 }

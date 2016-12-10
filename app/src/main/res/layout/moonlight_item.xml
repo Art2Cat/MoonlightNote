@@ -18,6 +18,7 @@
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"
+            android:transitionName="@string/moonlight_image"
             android:visibility="gone" />
 
         <android.support.v7.widget.LinearLayoutCompat

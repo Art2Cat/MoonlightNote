@@ -274,6 +274,7 @@
                     android:layout_height="match_parent"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
+                    android:transitionName="@string/moonlight_image"
                     android:visibility="gone" />
 
                 <android.support.design.widget.TextInputLayout

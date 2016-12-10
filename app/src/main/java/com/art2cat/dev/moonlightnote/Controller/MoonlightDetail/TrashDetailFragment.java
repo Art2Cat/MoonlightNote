@@ -3,6 +3,7 @@ package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
 import android.os.Bundle;
 
 import com.art2cat.dev.moonlightnote.Model.Constants;
+import com.art2cat.dev.moonlightnote.Model.Moonlight;
 
 /**
  * Created by rorschach
@@ -16,10 +17,10 @@ public class TrashDetailFragment extends MoonlightDetailFragment {
     }
 
     @Override
-    public MoonlightDetailFragment newInstance(String keyId) {
+    public MoonlightDetailFragment newInstance(Moonlight moonlight) {
         MoonlightDetailFragment moonlightDetailFragment = new EditMoonlightFragment();
         Bundle args = new Bundle();
-        args.putString("keyId", keyId);
+        args.putParcelable("moonlight", moonlight);
         args.putInt("trash", Constants.EXTRA_TYPE_TRASH);
         moonlightDetailFragment.setArguments(args);
         return moonlightDetailFragment;

@@ -175,6 +175,7 @@ public class FDatabaseUtils {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot != null) {
+
                     if (type == 203) {
                         user = dataSnapshot.getValue(User.class);
                         UserUtils.saveUserToCache(mContext, user);

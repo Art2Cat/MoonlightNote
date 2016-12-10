@@ -220,4 +220,8 @@
     <string name="confirmation_title">Confirmation</string>
     <string name="action_export_data">Export all data</string>
     <string name="confirmation_delete_image">Delete image?</string>
+    <string name="moonlight_image">image</string>
+    <string name="transition_name">transitionName</string>
+    <string name="toolbar">toolbar</string>
+
 </resources>

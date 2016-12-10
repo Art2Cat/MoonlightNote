@@ -1,5 +1,8 @@
 package com.art2cat.dev.moonlightnote.Model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +10,20 @@ import java.util.Map;
  * Created by art2cat
  * on 9/17/16.
  */
-public class Moonlight {
+public class Moonlight implements Parcelable {
+
+    public static final Creator<Moonlight> CREATOR = new Creator<Moonlight>() {
+        @Override
+        public Moonlight createFromParcel(Parcel in) {
+            return new Moonlight(in);
+        }
+
+        @Override
+        public Moonlight[] newArray(int size) {
+            return new Moonlight[size];
+        }
+    };
+
     public String id;
     public String title;
     public String content;
@@ -40,6 +56,21 @@ public class Moonlight {
         this.audioName = audioName;
         this.color = color;
         this.trash = trash;
+    }
+
+    protected Moonlight(Parcel in) {
+        id = in.readString();
+        title = in.readString();
+        content = in.readString();
+        imageUrl = in.readString();
+        audioUrl = in.readString();
+        date = in.readLong();
+        audioDuration = in.readLong();
+        label = in.readString();
+        imageName = in.readString();
+        audioName = in.readString();
+        color = in.readInt();
+        trash = in.readByte() != 0;
     }
 
     public String getLabel() {
@@ -118,16 +149,16 @@ public class Moonlight {
         return audioDuration;
     }
 
+    public void setAudioDuration(long audioDuration) {
+        this.audioDuration = audioDuration;
+    }
+
     public int getColor() {
         return color;
     }
 
     public void setColor(int color) {
         this.color = color;
-    }
-
-    public void setAudioDuration(long audioDuration) {
-        this.audioDuration = audioDuration;
     }
 
     public boolean isTrash() {
@@ -153,5 +184,26 @@ public class Moonlight {
         moonlight.put("color", color);
         moonlight.put("trash", trash);
         return moonlight;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(title);
+        parcel.writeString(content);
+        parcel.writeString(imageUrl);
+        parcel.writeString(audioUrl);
+        parcel.writeLong(date);
+        parcel.writeLong(audioDuration);
+        parcel.writeString(label);
+        parcel.writeString(imageName);
+        parcel.writeString(audioName);
+        parcel.writeInt(color);
+        parcel.writeByte((byte) (trash ? 1 : 0));
     }
 }

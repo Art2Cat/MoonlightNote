@@ -1,10 +1,12 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
+import android.app.ActivityOptions;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -37,7 +39,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import jp.wasabeef.recyclerview.animators.FadeInDownAnimator;
+import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
 
 import static com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils.emptyTrash;
 
@@ -51,6 +53,7 @@ public abstract class MoonlightListFragment extends Fragment {
     private DatabaseReference mDatabase;
     private FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder> mFirebaseRecyclerAdapter;
     private RecyclerView mRecyclerView;
+    private AppCompatImageView mImageView;
     private Moonlight moonlight;
     private Menu mMenu;
     private MenuInflater mMenuInflater;
@@ -74,7 +77,7 @@ public abstract class MoonlightListFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.d(TAG, "onCreateView: ");
         View rootView = inflater.inflate(R.layout.fragment_moonlight, container, false);
-        Toolbar toolbar = ((MoonlightActivity)getActivity()).mToolbar;
+        Toolbar toolbar = ((MoonlightActivity) getActivity()).mToolbar;
         if (isTrash()) {
             getActivity().setTitle(R.string.fragment_trash);
 
@@ -118,7 +121,7 @@ public abstract class MoonlightListFragment extends Fragment {
         mLinearLayoutManager.setStackFromEnd(true);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        FadeInDownAnimator animator = new FadeInDownAnimator();
+        SlideInRightAnimator animator = new SlideInRightAnimator();
         animator.setInterpolator(new OvershootInterpolator());
         mRecyclerView.setItemAnimator(animator);
         mRecyclerView.getItemAnimator().setAddDuration(500);
@@ -212,7 +215,7 @@ public abstract class MoonlightListFragment extends Fragment {
                     } else {
                         viewHolder.audioAppCompatImageView.setVisibility(View.GONE);
                     }
-
+                    mImageView = viewHolder.photoAppCompatImageView;
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -222,14 +225,24 @@ public abstract class MoonlightListFragment extends Fragment {
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");
                                     intent.putExtra("Fragment", Constants.EXTRA_TRASH_FRAGMENT);
-                                    intent.putExtra("keyid", moonlightKey);
-                                    startActivity(intent);
+                                    intent.putExtra("moonlight", model);
+                                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
+                                            getActivity(),
+                                            mImageView,
+                                            mImageView.getTransitionName()).toBundle();
+                                    startActivity(intent, bundle);
+//                                    startActivity(intent);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 } else {
                                     Log.d(TAG, "onClick: edit");
                                     intent.putExtra("Fragment", Constants.EXTRA_EDIT_FRAGMENT);
-                                    intent.putExtra("keyid", moonlightKey);
-                                    startActivity(intent);
+                                    intent.putExtra("moonlight", model);
+                                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
+                                            getActivity(),
+                                            mImageView,
+                                            mImageView.getTransitionName()).toBundle();
+                                    startActivity(intent, bundle);
+//                                    startActivity(intent);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 }
                             }

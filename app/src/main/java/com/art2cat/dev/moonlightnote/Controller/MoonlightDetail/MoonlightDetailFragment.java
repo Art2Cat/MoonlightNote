@@ -173,7 +173,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     };
     private AudioPlayer mAudioPlayer;
     private BitmapUtils mBitmapUtils;
-    private InitView myRunnable = new InitView();
     private CommonActivity.FragmentOnTouchListener fragmentOnTouchListener;
 
     public MoonlightDetailFragment() {
@@ -182,7 +181,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
 
     public abstract MoonlightDetailFragment newInstance();
 
-    public abstract MoonlightDetailFragment newInstance(String keyid);
+    public abstract MoonlightDetailFragment newInstance(Moonlight moonlight);
 
     @TargetApi(Build.VERSION_CODES.N)
     @Override
@@ -199,8 +198,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mFDatabaseUtils = new FDatabaseUtils(getActivity(), mDatabaseReference, mUserId);
 
-        //新建moonlight对象
-        moonlight = new Moonlight();
         //获取firebaseStorage实例
         FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
         mStorageReference = firebaseStorage.getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE);
@@ -209,22 +206,20 @@ public abstract class MoonlightDetailFragment extends Fragment implements
 
         mPaddingBottom = getResources().getDimensionPixelOffset(R.dimen.padding_bottom);
 
-        //当能argument不为空时，从argument中获取keyId，同时调用getMoonlight方法获取moonlight信息，editFlag设为true
         if (getArguments() != null) {
-            mKeyId = getArguments().getString("keyId");
+            moonlight = getArguments().getParcelable("moonlight");
+            mKeyId = moonlight.getId();
             int trashTag = getArguments().getInt("trash");
             if (trashTag == 0) {
-                mFDatabaseUtils.getDataFromDatabase(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
-                //getMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
                 mEditFlag = true;
                 mCreateFlag = false;
             } else {
-                mFDatabaseUtils.getDataFromDatabase(mKeyId, Constants.EXTRA_TYPE_TRASH);
-                //getMoonlight(mKeyId, Constants.EXTRA_TYPE_TRASH);
                 mEditFlag = true;
                 mCreateFlag = false;
                 mEditable = false;
             }
+        } else {
+            moonlight = new Moonlight();
         }
     }
 
@@ -333,9 +328,58 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             }
         });
 
-        getActivity().postponeEnterTransition();
-
         return mView;
+    }
+
+    private void initView(boolean editable) {
+
+        //moonlight = mFDatabaseUtils.getMoonlight();
+        if (editable) {
+            if (moonlight.getTitle() != null) {
+                mTitle.setText(moonlight.getTitle());
+            }
+        } else {
+            //loseFocus();
+            //mTitle.setShowSoftInputOnFocus(false);
+            mTitle.setEnabled(false);
+            if (moonlight.getTitle() != null) {
+                mTitle.setText(moonlight.getTitle());
+            }
+        }
+        if (moonlight.getContent() != null) {
+            mContent.setText(moonlight.getContent());
+            if (!editable) {
+                mContent.setEnabled(false);
+            }
+        }
+        if (moonlight.getImageUrl() != null) {
+            Picasso.with(getActivity()).load(Uri.parse(moonlight.getImageUrl())).memoryPolicy(NO_CACHE, NO_STORE).into(mImage);
+//                mBitmapUtils.display(mImage, moonlight.getImageUrl());
+            //mImageCardView.setVisibility(View.VISIBLE);
+            mImage.setVisibility(View.VISIBLE);
+            mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
+            if (!editable) {
+                //mDeleteImage.setClickable(false);
+            }
+        }
+        if (moonlight.getAudioUrl() != null) {
+            showAudio(moonlight.getAudioName());
+            //String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
+            //mAudioPlayer.prepare(dirPath + long_click_moonlight_menu.getAudioName());
+            mAudioCardView.setVisibility(View.VISIBLE);
+            mContentTextInputLayout.setPadding(0, 0, 0, 0);
+            if (!editable) {
+                mDeleteAudio.setClickable(false);
+                mBottomBarLeft.setClickable(false);
+                mBottomBarRight.setClickable(false);
+            }
+        }
+
+        if (moonlight.getColor() != 0) {
+            mContentFrameLayout.setBackgroundColor(moonlight.getColor());
+            changeUIColor(moonlight.getColor());
+            mAudioContainer.setBackgroundColor(moonlight.getColor());
+        }
     }
 
     private void changeUIColor(@ColorRes int color, Resources.Theme theme) {
@@ -366,11 +410,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         super.onActivityCreated(savedInstanceState);
 
         changeUIColor(R.color.white, getActivity().getTheme());
-        //当editFlag为true时延时0.5秒更新UI（防止UI已更新，moonlight数据未载入）
-        if (mEditFlag) {
-            //long_click_moonlight_menu = mFDatabaseUtils.getMoonlight();
-            mHandler.postDelayed(myRunnable, 500);
-        }
+
+        initView(mEditable);
+
         if (!mEditable) {
             Log.d(TAG, "onActivityCreated: SnackBar");
             final Snackbar snackbar = SnackBarUtils.longSnackBar(mView, getString(R.string.trash_restore),
@@ -1157,65 +1199,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             mContentTextInputLayout.setPadding(0, 0, 0, 0);
         } else {
             mShowDuration.setText(Utils.convert(moonlight.getAudioDuration()));
-        }
-    }
-
-    private class InitView implements Runnable {
-
-        @Override
-        public void run() {
-            initView(mEditable);
-        }
-
-        private void initView(boolean editable) {
-
-            moonlight = mFDatabaseUtils.getMoonlight();
-            if (editable) {
-                if (moonlight.getTitle() != null) {
-                    mTitle.setText(moonlight.getTitle());
-                }
-            } else {
-                //loseFocus();
-                //mTitle.setShowSoftInputOnFocus(false);
-                mTitle.setEnabled(false);
-                if (moonlight.getTitle() != null) {
-                    mTitle.setText(moonlight.getTitle());
-                }
-            }
-            if (moonlight.getContent() != null) {
-                mContent.setText(moonlight.getContent());
-                if (!editable) {
-                    mContent.setEnabled(false);
-                }
-            }
-            if (moonlight.getImageUrl() != null) {
-                Picasso.with(getActivity()).load(Uri.parse(moonlight.getImageUrl())).memoryPolicy(NO_CACHE, NO_STORE).into(mImage);
-//                mBitmapUtils.display(mImage, moonlight.getImageUrl());
-                //mImageCardView.setVisibility(View.VISIBLE);
-                mImage.setVisibility(View.VISIBLE);
-                mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
-                if (!editable) {
-                    //mDeleteImage.setClickable(false);
-                }
-            }
-            if (moonlight.getAudioUrl() != null) {
-                showAudio(moonlight.getAudioName());
-                //String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
-                //mAudioPlayer.prepare(dirPath + long_click_moonlight_menu.getAudioName());
-                mAudioCardView.setVisibility(View.VISIBLE);
-                mContentTextInputLayout.setPadding(0, 0, 0, 0);
-                if (!editable) {
-                    mDeleteAudio.setClickable(false);
-                    mBottomBarLeft.setClickable(false);
-                    mBottomBarRight.setClickable(false);
-                }
-            }
-
-            if (moonlight.getColor() != 0) {
-                mContentFrameLayout.setBackgroundColor(moonlight.getColor());
-                changeUIColor(moonlight.getColor());
-                mAudioContainer.setBackgroundColor(moonlight.getColor());
-            }
         }
     }
 

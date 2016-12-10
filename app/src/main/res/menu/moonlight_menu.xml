@@ -3,7 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_export_data"
-        android:icon="@drawable/ic_delete_white_24dp"
+        android:orderInCategory="100"
+        android:title="@string/action_export_data"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_clear_data"
         android:orderInCategory="100"
         android:title="@string/action_export_data"
         app:showAsAction="never" />
