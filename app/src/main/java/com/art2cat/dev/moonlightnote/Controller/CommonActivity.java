@@ -32,7 +32,7 @@ public class CommonActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTransition();
+//        setTransition();
 
         setContentView(R.layout.activity_common);
 

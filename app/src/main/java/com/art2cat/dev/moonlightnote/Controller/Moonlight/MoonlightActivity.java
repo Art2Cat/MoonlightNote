@@ -55,6 +55,7 @@ public class MoonlightActivity extends AppCompatActivity
 
     private static final String TAG = "MoonlightActivity";
     public Toolbar mToolbar;
+    public Toolbar mToolbar2;
     private NavigationView mNavigationView;
     private CoordinatorLayout mCoordinatorLayout;
     private TextView mTransitionItem;
@@ -297,6 +298,7 @@ public class MoonlightActivity extends AppCompatActivity
     private void initView() {
         //Toolbar实例化
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar2 = (Toolbar) findViewById(R.id.toolbar2);
         setSupportActionBar(mToolbar);
 
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.snackbar_container);

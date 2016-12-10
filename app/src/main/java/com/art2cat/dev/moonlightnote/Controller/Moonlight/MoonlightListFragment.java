@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +18,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.OvershootInterpolator;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonActivity;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
@@ -52,12 +52,19 @@ public abstract class MoonlightListFragment extends Fragment {
     private static final String TAG = "MoonlightListFragment";
     private DatabaseReference mDatabase;
     private FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder> mFirebaseRecyclerAdapter;
+    private MoonlightActivity mMoonlightActivity;
+    private Toolbar mToolbar;
+    private Toolbar mToolbar2;
+    private AppBarLayout.LayoutParams mParams;
     private RecyclerView mRecyclerView;
     private AppCompatImageView mImageView;
     private Moonlight moonlight;
     private Menu mMenu;
     private MenuInflater mMenuInflater;
     private boolean isLogin = true;
+    private boolean isToolbarScroll = false;
+    private boolean isInflate = false;
+    ;
     private FDatabaseUtils mDatabaseUtils;
 
 
@@ -77,21 +84,27 @@ public abstract class MoonlightListFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.d(TAG, "onCreateView: ");
         View rootView = inflater.inflate(R.layout.fragment_moonlight, container, false);
-        Toolbar toolbar = ((MoonlightActivity) getActivity()).mToolbar;
+        mMoonlightActivity = (MoonlightActivity) getActivity();
+
+        mToolbar = mMoonlightActivity.mToolbar;
+        mToolbar2 = mMoonlightActivity.mToolbar2;
+        mParams = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
+
+
         if (isTrash()) {
             getActivity().setTitle(R.string.fragment_trash);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                toolbar.setBackgroundColor(getResources().getColor(R.color.grey, getActivity().getTheme()));
+                mToolbar.setBackgroundColor(getResources().getColor(R.color.grey, getActivity().getTheme()));
             } else {
-                toolbar.setBackgroundColor(getResources().getColor(R.color.grey));
+                mToolbar.setBackgroundColor(getResources().getColor(R.color.grey));
             }
         } else {
             getActivity().setTitle(R.string.app_name);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary, getActivity().getTheme()));
+                mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary, getActivity().getTheme()));
             } else {
-                toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
             }
         }
         setHasOptionsMenu(true);
@@ -122,7 +135,7 @@ public abstract class MoonlightListFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         SlideInRightAnimator animator = new SlideInRightAnimator();
-        animator.setInterpolator(new OvershootInterpolator());
+//        animator.setInterpolator(new OvershootInterpolator());
         mRecyclerView.setItemAnimator(animator);
         mRecyclerView.getItemAnimator().setAddDuration(500);
         mRecyclerView.getItemAnimator().setRemoveDuration(500);
@@ -134,8 +147,10 @@ public abstract class MoonlightListFragment extends Fragment {
             mRecyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
                 @Override
                 public void onScrollChange(View view, int i, int i1, int i2, int i3) {
-                    if (mMenu != null && !isTrash()) {
+                    Log.d(TAG, "onScrollChange: " + isToolbarScroll);
+                    if (mMenu != null && !isTrash() && !isToolbarScroll) {
                         mMenu.clear();
+                        setParams(0);
                         getActivity().setTitle(R.string.app_name);
                     }
                 }
@@ -145,8 +160,10 @@ public abstract class MoonlightListFragment extends Fragment {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     super.onScrollStateChanged(recyclerView, newState);
+                    Log.d(TAG, "onScrollChange: " + isToolbarScroll);
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        if (mMenu != null && !isTrash()) {
+                        setParams(0);
+                        if (mMenu != null && !isTrash() && !isToolbarScroll) {
                             mMenu.clear();
                             getActivity().setTitle(R.string.app_name);
                         }
@@ -245,6 +262,8 @@ public abstract class MoonlightListFragment extends Fragment {
 //                                    startActivity(intent);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 }
+                                changeToolbar(1);
+                                setParams(0);
                             }
 
                         }
@@ -254,9 +273,14 @@ public abstract class MoonlightListFragment extends Fragment {
                         public boolean onLongClick(View v) {
                             moonlight = model;
                             if (!isTrash()) {
-                                changeOptionsMenu(0);
+                                setParams(1);
+                                changeToolbar(0);
+                                isToolbarScroll = true;
                             } else {
-                                changeOptionsMenu(1);
+                                //changeOptionsMenu(1);
+                                changeToolbar(0);
+                                setParams(1);
+                                isToolbarScroll = true;
                             }
                             return true;
                         }
@@ -317,50 +341,12 @@ public abstract class MoonlightListFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
             case R.id.menu_empty_trash:
                 ConfirmationDialogFragment confirmationDialogFragment = ConfirmationDialogFragment
                         .newInstance(getString(R.string.dialog_empty_trash_title), getString(R.string.dialog_empty_trash_content), Constants.EXTRA_TYPE_CDF_EMPTY_TRASH);
                 confirmationDialogFragment.show(getFragmentManager(), "Empty Trash");
                 getActivity().setTitle(R.string.fragment_trash);
-                break;
-            case R.id.action_delete:
-                mDatabaseUtils.moveToTrash(moonlight);
-                getActivity().setTitle(R.string.app_name);
-//                changeOptionsMenu(3);
-                break;
-            case R.id.action_delete_forever:
-                StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
-                StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
-                mDatabaseUtils.removeMoonlight(moonlight.getId(), Constants.EXTRA_TYPE_MOONLIGHT);
-                moonlight = null;
-                getActivity().setTitle(R.string.app_name);
-//                changeOptionsMenu(3);
-                break;
-            case R.id.action_make_a_copy:
-                mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
-                getActivity().setTitle(R.string.app_name);
-//                changeOptionsMenu(3);
-                break;
-            case R.id.action_send:
-                //启动Intent分享
-                Intent in = new Intent(Intent.ACTION_SEND);
-                in.setType("text/plain");
-                if (moonlight.getTitle() != null) {
-                    in.putExtra(Intent.EXTRA_TITLE, moonlight.getTitle());
-                }
-
-                if (moonlight.getContent() != null) {
-                    in.putExtra(Intent.EXTRA_TEXT, moonlight.getContent());
-                }
-
-                if (moonlight.getImageUrl() != null) {
-                    in.putExtra(Intent.EXTRA_TEXT, moonlight.getImageUrl());
-                }
-                //设置分享选择器
-                in = Intent.createChooser(in, "Send to");
-                startActivity(in);
-                getActivity().setTitle(R.string.app_name);
-//                changeOptionsMenu(3);
                 break;
             case R.id.action_restore:
                 mDatabaseUtils.restoreToNote(moonlight);
@@ -376,6 +362,8 @@ public abstract class MoonlightListFragment extends Fragment {
                 changeOptionsMenu(2);
                 break;
         }
+        isToolbarScroll = false;
+        setParams(0);
         return super.onOptionsItemSelected(item);
     }
 
@@ -404,6 +392,111 @@ public abstract class MoonlightListFragment extends Fragment {
                     emptyTrash(getUid());
                     break;
             }
+        }
+    }
+
+    private void setParams(int type) {
+        switch (type) {
+            case 0:
+                mParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+                        | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+                break;
+            case 1:
+                mParams.setScrollFlags(0);
+                break;
+        }
+    }
+
+    private void changeToolbar(int type) {
+        switch (type) {
+            case 0:
+                mToolbar.setVisibility(View.GONE);
+                mToolbar2.setVisibility(View.VISIBLE);
+                mToolbar2.setTitle(null);
+
+
+                if (isTrash() && !isInflate) {
+                    mToolbar2.getMenu().clear();
+                    mToolbar2.inflateMenu(R.menu.long_click_trash_menu);
+                } else {
+                    if (!isInflate) {
+                        mToolbar2.getMenu().clear();
+                        mToolbar2.inflateMenu(R.menu.long_click_moonlight_menu);
+                    }
+                }
+
+
+                mToolbar2.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+                mToolbar2.setNavigationOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        changeToolbar(1);
+                        setParams(0);
+                        isInflate = true;
+                    }
+                });
+                mToolbar2.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_delete:
+                                mDatabaseUtils.moveToTrash(moonlight);
+                                getActivity().setTitle(R.string.app_name);
+                                break;
+                            case R.id.action_delete_forever:
+                                StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
+                                StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
+                                mDatabaseUtils.removeMoonlight(moonlight.getId(), Constants.EXTRA_TYPE_MOONLIGHT);
+                                moonlight = null;
+                                getActivity().setTitle(R.string.app_name);
+                                break;
+                            case R.id.action_make_a_copy:
+                                mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                                getActivity().setTitle(R.string.app_name);
+                                break;
+                            case R.id.action_send:
+                                //启动Intent分享
+                                Intent in = new Intent(Intent.ACTION_SEND);
+                                in.setType("text/plain");
+                                if (moonlight.getTitle() != null) {
+                                    in.putExtra(Intent.EXTRA_TITLE, moonlight.getTitle());
+                                }
+
+                                if (moonlight.getContent() != null) {
+                                    in.putExtra(Intent.EXTRA_TEXT, moonlight.getContent());
+                                }
+
+                                if (moonlight.getImageUrl() != null) {
+                                    in.putExtra(Intent.EXTRA_TEXT, moonlight.getImageUrl());
+                                }
+                                //设置分享选择器
+                                in = Intent.createChooser(in, "Send to");
+                                startActivity(in);
+                                getActivity().setTitle(R.string.app_name);
+                                break;
+                            case R.id.action_restore:
+                                mDatabaseUtils.restoreToNote(moonlight);
+                                getActivity().setTitle(R.string.fragment_trash);
+                                break;
+                            case R.id.action_trash_delete_forever:
+                                StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
+                                StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
+                                mDatabaseUtils.removeMoonlight(moonlight.getId(), Constants.EXTRA_TYPE_DELETE_TRASH);
+                                moonlight = null;
+                                getActivity().setTitle(R.string.fragment_trash);
+                                break;
+                        }
+                        changeToolbar(1);
+
+                        isInflate = true;
+                        return false;
+                    }
+                });
+                break;
+            case 1:
+                mToolbar2.setVisibility(View.GONE);
+                mToolbar.setVisibility(View.VISIBLE);
+                break;
         }
     }
 
