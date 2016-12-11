@@ -58,7 +58,6 @@ public class SecurityFragment extends Fragment {
                     map.put("Title", getString(R.string.settings_security_pattern));
                     map.put("Type", Constants.EXTRA_PATTERN);
                     break;
-
             }
             data.add(i, map);
         }

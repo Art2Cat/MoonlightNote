@@ -13,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.Gravity;
@@ -58,7 +59,6 @@ public class MoonlightActivity extends AppCompatActivity
     public Toolbar mToolbar2;
     private NavigationView mNavigationView;
     private CoordinatorLayout mCoordinatorLayout;
-    private TextView mTransitionItem;
     private FloatingActionButton mFAB;
     private Button mSortButton;
     private CircleImageView mCircleImageView;
@@ -83,8 +83,6 @@ public class MoonlightActivity extends AppCompatActivity
         setTransition();
 
         setContentView(R.layout.activity_moonlight);
-
-        mTransitionItem = (TextView) findViewById(R.id.transition_item);
 
         mLock = SPUtils.getInt(this, Constants.USER_CONFIG, Constants.USER_CONFIG_SECURITY_ENABLE, 0);
 
@@ -122,14 +120,20 @@ public class MoonlightActivity extends AppCompatActivity
 
     private void setTransition() {
         getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
-        getWindow().setAllowEnterTransitionOverlap(false);
-        getWindow().setAllowReturnTransitionOverlap(false);
+//        getWindow().setAllowEnterTransitionOverlap(false);
+//        getWindow().setAllowReturnTransitionOverlap(false);
         Slide slide1 = new Slide(Gravity.END);
-        slide1.setDuration(300);
+        slide1.setDuration(1000);
         getWindow().setExitTransition(slide1);
-
+//        Fade fade = new Fade(Fade.OUT);
+//        fade.setDuration(1000);
+//        getWindow().setExitTransition(fade);
+//
+//        Fade fade1 = new Fade(Fade.IN);
+//        fade1.setDuration(1000);
+//        getWindow().setReenterTransition(fade1);
         Slide slide = new Slide(Gravity.START);
-        slide.setDuration(300);
+        slide.setDuration(1000);
         getWindow().setReenterTransition(slide);
 //        ChangeColor changeColor = new ChangeColor();
 //        changeColor.setDuration(800);
@@ -198,7 +202,6 @@ public class MoonlightActivity extends AppCompatActivity
             case R.id.nav_notes:
                 if (mUserId != null) {
                     Fragment fragment = mFragmentManager.findFragmentById(R.id.main_fragment_container);
-                    Log.d(TAG, "nav_notes: " + isHome);
                     if (!isHome) {
                         if (fragment == null) {
                             fragment = new MoonlightFragment();
@@ -221,7 +224,6 @@ public class MoonlightActivity extends AppCompatActivity
             case R.id.nav_trash:
                 if (mUserId != null) {
                     Fragment fragment = mFragmentManager.findFragmentById(R.id.main_fragment_container);
-                    Log.d(TAG, "nav_trash: " + isHome);
                     if (fragment == null) {
                         fragment = new TrashFragment();
                         mFragmentManager.beginTransaction()
@@ -243,9 +245,7 @@ public class MoonlightActivity extends AppCompatActivity
                 Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
                 intent.putExtra("Fragment", Constants.EXTRA_SETTINGS_FRAGMENT);
                 Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
-                        MoonlightActivity.this,
-                        mTransitionItem,
-                        mTransitionItem.getTransitionName()).toBundle();
+                        MoonlightActivity.this).toBundle();
                 startActivity(intent, bundle);
 //                startActivity(intent);
                 isLock = !isLock;
@@ -312,12 +312,10 @@ public class MoonlightActivity extends AppCompatActivity
                 if (isLogin) {
                     Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
                     intent.putExtra("Fragment", Constants.EXTRA_CREATE_FRAGMENT);
-//                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
-//                            MoonlightActivity.this,
-//                            mTransitionItem,
-//                            mTransitionItem.getTransitionName()).toBundle();
-//                    startActivity(intent, bundle);
-                    startActivity(intent);
+                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
+                            MoonlightActivity.this).toBundle();
+                    startActivity(intent, bundle);
+//                    startActivity(intent);
                     isLock = !isLock;
                 } else {
                     SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
@@ -375,9 +373,7 @@ public class MoonlightActivity extends AppCompatActivity
                     Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
                     intent.putExtra("Fragment", Constants.EXTRA_USER_FRAGMENT);
                     Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
-                            MoonlightActivity.this,
-                            mTransitionItem,
-                            mTransitionItem.getTransitionName()).toBundle();
+                            MoonlightActivity.this).toBundle();
                     startActivity(intent, bundle);
 //                    startActivity(intent);
                     isLock = !isLock;

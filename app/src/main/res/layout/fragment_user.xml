@@ -92,12 +92,6 @@
 
         </android.support.v4.widget.NestedScrollView>
 
-        <TextView
-            android:transitionName="@string/transition_name"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
         <com.google.android.gms.ads.AdView
             android:id="@+id/banner_adView"
             android:elevation="2dp"

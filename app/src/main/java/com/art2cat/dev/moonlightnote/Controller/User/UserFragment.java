@@ -30,6 +30,7 @@ import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.AuthUtils;
+import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
@@ -188,15 +189,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         switch (item.getItemId()) {
             case R.id.action_change_password:
                 Fragment fragment = new ChangePasswordFragment();
-                getActivity().getFragmentManager()
-                        .beginTransaction()
-                        .setCustomAnimations(R.animator.fragment_slide_right_enter,
-                                R.animator.fragment_slide_right_exit,
-                                R.animator.fragment_slide_left_enter,
-                                R.animator.fragment_slide_left_exit)
-                        .replace(R.id.common_fragment_container, fragment)
-                        .addToBackStack(null)
-                        .commit();
+                FragmentUtils.replaceFragment(getFragmentManager(), R.id.common_fragment_container, fragment);
                 break;
 //            case R.id.action_close_account:
 //                ConfirmationDialogFragment confirmationDialogFragment =

@@ -2,6 +2,7 @@ package com.art2cat.dev.moonlightnote.Controller.Settings;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -53,19 +54,21 @@ class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingsViewH
                         SPUtils.getInt(context.getApplicationContext(),
                                 Constants.USER_CONFIG,
                                 Constants.USER_CONFIG_SECURITY_ENABLE, 0);
+                FragmentManager fragmentManager = ((Activity) context).getFragmentManager();
                 switch ((int)map.get("Type")) {
+
                     case 304:
-                        FragmentUtils.changeFragment((Activity) context, new SecurityFragment());
+                        FragmentUtils.replaceFragment(fragmentManager, R.id.common_fragment_container, new SecurityFragment());
                         Utils.lockApp(context, code);
                         break;
                     case 301:
-                        FragmentUtils.changeFragment((Activity) context, new PolicyFragment().newInstance());
+                        FragmentUtils.replaceFragment(fragmentManager, R.id.common_fragment_container, new PolicyFragment().newInstance());
                         break;
                     case 303:
-                        FragmentUtils.changeFragment((Activity) context, new LicenseFragment().newInstance());
+                        FragmentUtils.replaceFragment(fragmentManager, R.id.common_fragment_container, new LicenseFragment().newInstance());
                         break;
                     case 302:
-                        FragmentUtils.changeFragment((Activity) context, new AboutFragment().newInstance());
+                        FragmentUtils.replaceFragment(fragmentManager, R.id.common_fragment_container, new AboutFragment().newInstance());
                         break;
                     case 305:
                         ConfirmationDialogFragment confirmationDialogFragment =
@@ -79,7 +82,7 @@ class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingsViewH
                         Utils.showToast(context, "Current not available", 0);
                         break;
                     case 306:
-                        FragmentUtils.changeFragment((Activity) context, new PinFragment());
+                        FragmentUtils.replaceFragment(fragmentManager, R.id.common_fragment_container, new PinFragment());
                         break;
                     case 308:
                         Utils.showToast(context, "Current not available", 0);
