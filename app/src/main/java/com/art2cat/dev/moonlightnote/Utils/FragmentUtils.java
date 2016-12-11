@@ -1,6 +1,5 @@
 package com.art2cat.dev.moonlightnote.Utils;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.IdRes;
@@ -16,12 +15,12 @@ public class FragmentUtils {
 
 
     /**
-     * fragment的切换
+     * fragment的提交
      *
      * @param fm       FragmentManager
      * @param fragment 需要切换的fragment
      */
-    public static void commitFragment(FragmentManager fm, @IdRes int id, Fragment fragment) {
+    public static void addFragment(FragmentManager fm, @IdRes int id, Fragment fragment) {
         Fragment frag = fm.findFragmentById(id);
         if (frag == null) {
             fm.beginTransaction()

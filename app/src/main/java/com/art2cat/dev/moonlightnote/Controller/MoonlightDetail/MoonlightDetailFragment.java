@@ -53,7 +53,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 
-import com.art2cat.dev.moonlightnote.Controller.CommonActivity;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
@@ -173,7 +172,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     };
     private AudioPlayer mAudioPlayer;
     private BitmapUtils mBitmapUtils;
-    private CommonActivity.FragmentOnTouchListener fragmentOnTouchListener;
+    private MoonlightDetailActivity.FragmentOnTouchListener fragmentOnTouchListener;
 
     public MoonlightDetailFragment() {
         // Required empty public constructor
@@ -233,7 +232,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
-        mToolbar = ((CommonActivity) getActivity()).mToolbar;
+        mToolbar = ((MoonlightDetailActivity) getActivity()).mToolbar;
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
 
         mContentFrameLayout = (ContentFrameLayout) mView.findViewById(R.id.view_parent);
@@ -426,7 +425,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                         }
                     });
 
-            fragmentOnTouchListener = new CommonActivity.FragmentOnTouchListener() {
+            fragmentOnTouchListener = new MoonlightDetailActivity.FragmentOnTouchListener() {
                 @Override
                 public boolean onTouch(MotionEvent ev) {
                     if (!snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {
@@ -435,7 +434,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     return false;
                 }
             };
-            ((CommonActivity) getActivity()).registerFragmentOnTouchListener(fragmentOnTouchListener);
+            ((MoonlightDetailActivity) getActivity()).registerFragmentOnTouchListener(fragmentOnTouchListener);
         }
     }
 

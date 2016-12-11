@@ -28,20 +28,22 @@ import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 public class MoonlightViewHolder extends AnimateViewHolder {
     private static final String TAG = "MoonlightViewHolder";
     public CardView mCardView;
-    public AppCompatTextView titleAppCompatTextView;
-    public AppCompatTextView contentAppCompatTextView;
-    public AppCompatImageView photoAppCompatImageView;
-    public LinearLayoutCompat audioAppCompatImageView;
+    public LinearLayoutCompat mTransitionItem;
+    public AppCompatTextView mTitle;
+    public AppCompatTextView mContent;
+    public AppCompatImageView mImage;
+    public LinearLayoutCompat mAudio;
     private Context context;
     private BitmapUtils bitmapUtils;
 
     public MoonlightViewHolder(View itemView) {
         super(itemView);
         mCardView = (CardView) itemView.findViewById(R.id.item_main);
-        titleAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_title);
-        contentAppCompatTextView = (AppCompatTextView) itemView.findViewById(R.id.moonlight_content);
-        photoAppCompatImageView = (AppCompatImageView) itemView.findViewById(R.id.moonlight_image);
-        audioAppCompatImageView = (LinearLayoutCompat) itemView.findViewById(R.id.moonlight_audio);
+        mTransitionItem = (LinearLayoutCompat) itemView.findViewById(R.id.transition_item);
+        mTitle = (AppCompatTextView) itemView.findViewById(R.id.moonlight_title);
+        mContent = (AppCompatTextView) itemView.findViewById(R.id.moonlight_content);
+        mImage = (AppCompatImageView) itemView.findViewById(R.id.moonlight_image);
+        mAudio = (LinearLayoutCompat) itemView.findViewById(R.id.moonlight_audio);
     }
 
     @Override
@@ -73,22 +75,22 @@ public class MoonlightViewHolder extends AnimateViewHolder {
 
     public void displayTitle(String title) {
 
-        titleAppCompatTextView.setText(title);
-        titleAppCompatTextView.setVisibility(View.VISIBLE);
+        mTitle.setText(title);
+        mTitle.setVisibility(View.VISIBLE);
     }
 
     public void displayContent(String content) {
-        contentAppCompatTextView.setText(content);
-        contentAppCompatTextView.setVisibility(View.VISIBLE);
+        mContent.setText(content);
+        mContent.setVisibility(View.VISIBLE);
     }
 
     public void displayImage(Context context, String url) {
-        if (url != null && photoAppCompatImageView.getTag() != null) {
+        if (url != null && mImage.getTag() != null) {
             Log.d(TAG, "displayImage: succeed");
-            Picasso.with(context).load(Uri.parse(url)).memoryPolicy(NO_CACHE, NO_STORE).into(photoAppCompatImageView);
-            photoAppCompatImageView.setVisibility(View.VISIBLE);
+            Picasso.with(context).load(Uri.parse(url)).memoryPolicy(NO_CACHE, NO_STORE).into(mImage);
+            mImage.setVisibility(View.VISIBLE);
         } else {
-            photoAppCompatImageView.setVisibility(View.GONE);
+            mImage.setVisibility(View.GONE);
         }
     }
 

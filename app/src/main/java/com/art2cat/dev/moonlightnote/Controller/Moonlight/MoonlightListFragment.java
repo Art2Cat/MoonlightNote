@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.AppCompatImageView;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -19,8 +20,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.art2cat.dev.moonlightnote.Controller.CommonActivity;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
@@ -57,6 +58,7 @@ public abstract class MoonlightListFragment extends Fragment {
     private Toolbar mToolbar2;
     private AppBarLayout.LayoutParams mParams;
     private RecyclerView mRecyclerView;
+    public LinearLayoutCompat mTransitionItem;
     private AppCompatImageView mImageView;
     private Moonlight moonlight;
     private Menu mMenu;
@@ -198,22 +200,22 @@ public abstract class MoonlightListFragment extends Fragment {
                     if (model.getTitle() != null) {
                         viewHolder.displayTitle(model.getTitle());
                     } else {
-                        viewHolder.titleAppCompatTextView.setVisibility(View.GONE);
+                        viewHolder.mTitle.setVisibility(View.GONE);
                     }
 
                     if (model.getContent() != null) {
                         viewHolder.displayContent(model.getContent());
                     } else {
-                        viewHolder.contentAppCompatTextView.setVisibility(View.GONE);
+                        viewHolder.mContent.setVisibility(View.GONE);
                     }
 
                     if (model.getImageName() != null) {
                         Log.i(TAG, "populateViewHolder: " + model.getImageName());
-                        viewHolder.photoAppCompatImageView.setImageResource(R.drawable.ic_cloud_download_white_48dp);
-                        viewHolder.photoAppCompatImageView.setTag(model.getImageName());
+                        viewHolder.mImage.setImageResource(R.drawable.ic_cloud_download_white_48dp);
+                        viewHolder.mImage.setTag(model.getImageName());
                         viewHolder.displayImage(getActivity(), model.getImageUrl());
                     } else {
-                        viewHolder.photoAppCompatImageView.setVisibility(View.GONE);
+                        viewHolder.mImage.setVisibility(View.GONE);
                     }
 
                     if (model.getColor() != 0) {
@@ -228,26 +230,36 @@ public abstract class MoonlightListFragment extends Fragment {
 
                     if (model.getAudioName() != null) {
                         StorageUtils.downloadAudio(FirebaseStorage.getInstance().getReference(), getUid(), model.getAudioName());
-                        viewHolder.audioAppCompatImageView.setVisibility(View.VISIBLE);
+                        viewHolder.mAudio.setVisibility(View.VISIBLE);
                     } else {
-                        viewHolder.audioAppCompatImageView.setVisibility(View.GONE);
+                        viewHolder.mAudio.setVisibility(View.GONE);
                     }
-                    mImageView = viewHolder.photoAppCompatImageView;
+                    mTransitionItem = viewHolder.mTransitionItem;
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Log.d(TAG, "onClick: " + isLogin);
                             if (isLogin) {
-                                Intent intent = new Intent(getActivity(), CommonActivity.class);
+                                Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");
                                     intent.putExtra("Fragment", Constants.EXTRA_TRASH_FRAGMENT);
                                     intent.putExtra("moonlight", model);
                                     Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
                                             getActivity(),
-                                            mImageView,
-                                            mImageView.getTransitionName()).toBundle();
-                                    startActivity(intent, bundle);
+                                            mTransitionItem,
+                                            mTransitionItem.getTransitionName()).toBundle();
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        Bundle bundle1 = ActivityOptions.makeClipRevealAnimation(mTransitionItem,
+                                                mTransitionItem.getScrollX(),
+                                                mTransitionItem.getScrollY(),
+                                                mTransitionItem.getWidth(),
+                                                mTransitionItem.getHeight()).toBundle();
+                                        startActivity(intent, bundle1);
+                                    } else {
+                                        startActivity(intent, bundle);
+                                    }
+
 //                                    startActivity(intent);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 } else {
@@ -256,8 +268,9 @@ public abstract class MoonlightListFragment extends Fragment {
                                     intent.putExtra("moonlight", model);
                                     Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
                                             getActivity(),
-                                            mImageView,
-                                            mImageView.getTransitionName()).toBundle();
+                                            mTransitionItem,
+                                            mTransitionItem.getTransitionName()).toBundle();
+
                                     startActivity(intent, bundle);
 //                                    startActivity(intent);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
@@ -322,15 +335,12 @@ public abstract class MoonlightListFragment extends Fragment {
         switch (type) {
             case 0:
                 mMenuInflater.inflate(R.menu.long_click_moonlight_menu, mMenu);
-//                getActivity().setTitle(null);
                 break;
             case 1:
                 mMenuInflater.inflate(R.menu.long_click_trash_menu, mMenu);
-//                getActivity().setTitle(R.string.fragment_trash);
                 break;
             case 2:
                 mMenuInflater.inflate(R.menu.trash_menu, mMenu);
-//                getActivity().setTitle(R.string.fragment_trash);
                 break;
             case 3:
                 mMenuInflater.inflate(R.menu.moonlight_menu, mMenu);

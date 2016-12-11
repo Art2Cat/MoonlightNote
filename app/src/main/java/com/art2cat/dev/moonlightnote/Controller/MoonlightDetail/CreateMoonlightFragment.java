@@ -17,4 +17,5 @@ public class CreateMoonlightFragment extends MoonlightDetailFragment{
     public MoonlightDetailFragment newInstance(Moonlight moonlight) {
         return null;
     }
+
 }

@@ -23,11 +23,12 @@ public class ProgressDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        final ProgressDialog dialog = new ProgressDialog(getActivity());
+        ProgressDialog dialog = new ProgressDialog(getActivity());
         dialog.setMessage(getString(R.string.prograssBar_uploading));
         dialog.setIndeterminate(true);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
         return dialog;
     }
 }

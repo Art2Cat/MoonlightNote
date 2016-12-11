@@ -1,7 +1,6 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
 import android.app.ActivityOptions;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,14 +8,18 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Fade;
-import android.transition.Slide;
+import android.transition.ArcMotion;
+import android.transition.ChangeBounds;
+import android.transition.ChangeClipBounds;
+import android.transition.ChangeImageTransform;
+import android.transition.ChangeTransform;
+import android.transition.TransitionSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -25,12 +28,14 @@ import android.widget.TextView;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonActivity;
 import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
+import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
+import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
@@ -119,22 +124,38 @@ public class MoonlightActivity extends AppCompatActivity
     }
 
     private void setTransition() {
-        getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
 //        getWindow().setAllowEnterTransitionOverlap(false);
 //        getWindow().setAllowReturnTransitionOverlap(false);
-        Slide slide1 = new Slide(Gravity.END);
-        slide1.setDuration(1000);
-        getWindow().setExitTransition(slide1);
+//        Slide slide1 = new Slide(Gravity.START);
+//        slide1.setDuration(1000);
+//        getWindow().setExitTransition(slide1);
+
+        final TransitionSet transition = new TransitionSet();
+
+        transition.addTransition(new ChangeBounds());
+        transition.addTransition(new ChangeTransform());
+        transition.addTransition(new ChangeClipBounds());
+        transition.addTransition(new ChangeImageTransform());
+
+        transition.setDuration(1000);
+        transition.setInterpolator(new FastOutSlowInInterpolator());
+        final ArcMotion pathMotion = new ArcMotion();
+        pathMotion.setMaximumAngle(50);
+        transition.setPathMotion(pathMotion);
+        getWindow().setSharedElementExitTransition(transition);
+        getWindow().setSharedElementReenterTransition(transition);
+
 //        Fade fade = new Fade(Fade.OUT);
 //        fade.setDuration(1000);
 //        getWindow().setExitTransition(fade);
 //
 //        Fade fade1 = new Fade(Fade.IN);
 //        fade1.setDuration(1000);
-//        getWindow().setReenterTransition(fade1);
-        Slide slide = new Slide(Gravity.START);
-        slide.setDuration(1000);
-        getWindow().setReenterTransition(slide);
+////        getWindow().setReenterTransition(fade1);
+//        Slide slide = new Slide(Gravity.START);
+//        slide.setDuration(1000);
+//        getWindow().setReenterTransition(slide);
 //        ChangeColor changeColor = new ChangeColor();
 //        changeColor.setDuration(800);
 //        getWindow().setSharedElementExitTransition(changeColor);
@@ -201,44 +222,20 @@ public class MoonlightActivity extends AppCompatActivity
         switch (id) {
             case R.id.nav_notes:
                 if (mUserId != null) {
-                    Fragment fragment = mFragmentManager.findFragmentById(R.id.main_fragment_container);
                     if (!isHome) {
-                        if (fragment == null) {
-                            fragment = new MoonlightFragment();
-                            mFragmentManager.beginTransaction()
-                                    .add(R.id.main_fragment_container, fragment)
-                                    .commit();
-                            mFAB.setVisibility(View.VISIBLE);
-                            isHome = !isHome;
-                        } else {
-                            fragment = new MoonlightFragment();
-                            mFragmentManager.beginTransaction()
-                                    .replace(R.id.main_fragment_container, fragment)
-                                    .commit();
-                            mFAB.setVisibility(View.VISIBLE);
-                            isHome = !isHome;
-                        }
+                        FragmentUtils.replaceFragment(mFragmentManager,
+                                R.id.main_fragment_container, new MoonlightFragment());
+                        mFAB.setVisibility(View.VISIBLE);
+                        isHome = !isHome;
                     }
                 }
                 break;
             case R.id.nav_trash:
                 if (mUserId != null) {
-                    Fragment fragment = mFragmentManager.findFragmentById(R.id.main_fragment_container);
-                    if (fragment == null) {
-                        fragment = new TrashFragment();
-                        mFragmentManager.beginTransaction()
-                                .add(R.id.main_fragment_container, fragment)
-                                .commit();
+                    FragmentUtils.replaceFragment(mFragmentManager,
+                            R.id.main_fragment_container, new TrashFragment());
                         mFAB.setVisibility(View.GONE);
                         isHome = !isHome;
-                    } else {
-                        fragment = new TrashFragment();
-                        mFragmentManager.beginTransaction()
-                                .replace(R.id.main_fragment_container, fragment)
-                                .commit();
-                        mFAB.setVisibility(View.GONE);
-                        isHome = !isHome;
-                    }
                 }
                 break;
             case R.id.nav_settings:
@@ -310,7 +307,7 @@ public class MoonlightActivity extends AppCompatActivity
             public void onClick(View view) {
                 collapse();
                 if (isLogin) {
-                    Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
+                    Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
                     intent.putExtra("Fragment", Constants.EXTRA_CREATE_FRAGMENT);
                     Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
                             MoonlightActivity.this).toBundle();
@@ -389,13 +386,7 @@ public class MoonlightActivity extends AppCompatActivity
         nickTV = (TextView) headerView.findViewById(R.id.nav_header_nickname);
 
         if (mUserId != null) {
-            Fragment fragment = mFragmentManager.findFragmentById(R.id.main_fragment_container);
-            if (fragment == null) {
-                fragment = new MoonlightFragment();
-                mFragmentManager.beginTransaction()
-                        .add(R.id.main_fragment_container, fragment)
-                        .commit();
-            }
+            FragmentUtils.addFragment(mFragmentManager, R.id.main_fragment_container, new MoonlightFragment());
         }
     }
 

@@ -8,8 +8,10 @@
     android:foreground="?android:attr/selectableItemBackground">
 
     <android.support.v7.widget.LinearLayoutCompat
+        android:id="@+id/transition_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:transitionName="@string/transition_name"
         android:orientation="vertical">
 
         <android.support.v7.widget.AppCompatImageView
