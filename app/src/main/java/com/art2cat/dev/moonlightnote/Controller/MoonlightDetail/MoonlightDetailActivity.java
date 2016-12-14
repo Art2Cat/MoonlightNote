@@ -3,18 +3,10 @@ package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.ArcMotion;
-import android.transition.ChangeBounds;
-import android.transition.ChangeClipBounds;
-import android.transition.ChangeImageTransform;
-import android.transition.ChangeTransform;
-import android.transition.TransitionSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
@@ -24,6 +16,8 @@ import java.util.ArrayList;
 
 public class MoonlightDetailActivity extends AppCompatActivity {
 
+    private static final String TAG = "MoonlightDetailActivity";
+
     public Toolbar mToolbar;
     private ArrayList<MoonlightDetailActivity.FragmentOnTouchListener> onTouchListeners = new ArrayList<MoonlightDetailActivity.FragmentOnTouchListener>(
             10);
@@ -32,7 +26,6 @@ public class MoonlightDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTransition();
 
         setContentView(R.layout.activity_common);
 
@@ -70,47 +63,6 @@ public class MoonlightDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void setTransition() {
-        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
-//        getWindow().setAllowEnterTransitionOverlap(false);
-//        getWindow().setAllowReturnTransitionOverlap(false);
-//        Slide slide1 = new Slide(Gravity.BOTTOM);
-//        slide1.setDuration(1000);
-////        getWindow().setEnterTransition(slide1);
-//
-//        Fade fade = new Fade(Fade.IN);
-//        fade.setDuration(1000);
-//        getWindow().setEnterTransition(fade);
-
-        final TransitionSet transition = new TransitionSet();
-
-        transition.addTransition(new ChangeBounds());
-        transition.addTransition(new ChangeTransform());
-        transition.addTransition(new ChangeClipBounds());
-        transition.addTransition(new ChangeImageTransform());
-
-        transition.setDuration(1000);
-        transition.setInterpolator(new FastOutSlowInInterpolator());
-        final ArcMotion pathMotion = new ArcMotion();
-        pathMotion.setMaximumAngle(50);
-        transition.setPathMotion(pathMotion);
-
-        getWindow().setSharedElementEnterTransition(transition);
-        getWindow().setSharedElementReturnTransition(transition);
-
-//
-//        Fade fade1 = new Fade(Fade.OUT);
-//        fade1.setDuration(1000);
-//        getWindow().setReturnTransition(fade1);
-////        Slide slide = new Slide(Gravity.END);
-//        slide.setDuration(1000);
-//        getWindow().setReturnTransition(slide);
-//        ChangeColor changeColor = new ChangeColor();
-//        changeColor.setDuration(800);
-//        getWindow().setSharedElementExitTransition(changeColor);
-
-    }
-
     /**
      * 分发触摸事件给所有注册了MyOnTouchListener的接口
      */
@@ -144,5 +96,16 @@ public class MoonlightDetailActivity extends AppCompatActivity {
 
     public interface FragmentOnTouchListener {
         public boolean onTouch(MotionEvent ev);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
     }
 }

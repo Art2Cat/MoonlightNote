@@ -16,7 +16,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
 import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
 import android.support.annotation.ColorInt;
@@ -164,15 +163,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private Uri mDownloadIUrl;
     private Uri mDownloadAUrl;
     private File mFile;
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-        }
-    };
+    private Handler mHandler = new Handler();
     private AudioPlayer mAudioPlayer;
     private BitmapUtils mBitmapUtils;
-    private MoonlightDetailActivity.FragmentOnTouchListener fragmentOnTouchListener;
 
     public MoonlightDetailFragment() {
         // Required empty public constructor
@@ -357,9 +350,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             //mImageCardView.setVisibility(View.VISIBLE);
             mImage.setVisibility(View.VISIBLE);
             mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
-            if (!editable) {
-                //mDeleteImage.setClickable(false);
-            }
         }
         if (moonlight.getAudioUrl() != null) {
             showAudio(moonlight.getAudioName());
@@ -414,6 +404,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
 
         if (!mEditable) {
             Log.d(TAG, "onActivityCreated: SnackBar");
+            //禁用软键盘
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             final Snackbar snackbar = SnackBarUtils.longSnackBar(mView, getString(R.string.trash_restore),
                     SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_restore_action,
                     new View.OnClickListener() {
@@ -425,7 +417,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                         }
                     });
 
-            fragmentOnTouchListener = new MoonlightDetailActivity.FragmentOnTouchListener() {
+            MoonlightDetailActivity.FragmentOnTouchListener fragmentOnTouchListener = new MoonlightDetailActivity.FragmentOnTouchListener() {
                 @Override
                 public boolean onTouch(MotionEvent ev) {
                     if (!snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {

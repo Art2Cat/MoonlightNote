@@ -10,6 +10,7 @@ import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.Model.User;
+import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -66,6 +67,22 @@ public class FDatabaseUtils {
         }
     }
 
+
+    public static void emptyNote(String mUserId) {
+        try {
+            FirebaseDatabase.getInstance().getReference().child("users-moonlight")
+                    .child(mUserId).child("note").removeValue(
+                    new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            Log.d(TAG, "emptyNote onComplete: ");
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void addMoonlight(final Moonlight moonlight, final int type) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReference.child(mUserId).addListenerForSingleValueEvent(
@@ -93,7 +110,8 @@ public class FDatabaseUtils {
             mKey = keyId;
         }
         moonlight.setId(mKey);
-        Map<String, Object> moonlightValues = moonlight.toMap();
+        Moonlight moonlightE = MoonlightEncryptUtils.encryptMoonlight(moonlight);
+        Map<String, Object> moonlightValues = moonlightE.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
 
         if (type == 201 || type == 204) {
@@ -118,7 +136,6 @@ public class FDatabaseUtils {
                     if (finalOldKey != null) {
                         removeMoonlight(finalOldKey, type);
                     }
-                    ;
                 }
             }
         });
@@ -202,7 +219,7 @@ public class FDatabaseUtils {
         }
     }
 
-    public boolean isComplete() {
+    private boolean isComplete() {
         return complete;
     }
 

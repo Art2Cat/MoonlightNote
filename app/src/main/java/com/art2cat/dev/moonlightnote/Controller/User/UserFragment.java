@@ -189,7 +189,10 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         switch (item.getItemId()) {
             case R.id.action_change_password:
                 Fragment fragment = new ChangePasswordFragment();
-                FragmentUtils.replaceFragment(getFragmentManager(), R.id.common_fragment_container, fragment);
+                FragmentUtils.replaceFragment(getFragmentManager(),
+                        R.id.common_fragment_container,
+                        fragment,
+                        FragmentUtils.REPLACE_BACK_STACK);
                 break;
 //            case R.id.action_close_account:
 //                ConfirmationDialogFragment confirmationDialogFragment =

@@ -60,6 +60,8 @@ public class ConfirmationDialogFragment extends DialogFragment {
             positiveText = getString(R.string.dialog_empty_trash_confirm);
         } else if (mType == 402) {
             positiveText = getString(R.string.dialog_delete_account_confirm);
+        } else if (mType == 405) {
+            positiveText = getString(R.string.dialog_empty_note_confirm);
         } else {
             positiveText = getString(android.R.string.ok);
         }
@@ -90,6 +92,9 @@ public class ConfirmationDialogFragment extends DialogFragment {
                                 break;
                             case 404:
                                 BusEventUtils.post(Constants.BUS_FLAG_DELETE_IMAGE, null);
+                                break;
+                            case 405:
+                                BusEventUtils.post(Constants.BUS_FLAG_EMPTY_NOTE, null);
                                 break;
                         }
                     }

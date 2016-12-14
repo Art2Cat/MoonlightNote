@@ -42,6 +42,7 @@ public class Constants {
     public static final int BUS_FLAG_DELETE_ACCOUNT = 811;
     public static final int BUS_FLAG_NONE_SECURITY = 812;
     public static final int BUS_FLAG_DELETE_IMAGE = 813;
+    public static final int BUS_FLAG_EMPTY_NOTE = 813;
 
     /**
      * Fragment type
@@ -59,6 +60,7 @@ public class Constants {
     public static final int EXTRA_TYPE_CDF_DELETE_ACCOUNT = 402;
     public static final int EXTRA_TYPE_CDF_DISABLE_SECURITY = 403;
     public static final int EXTRA_TYPE_CDF_DELETE_IMAGE = 404;
+    public static final int EXTRA_TYPE_CDF_EMPTY_NOTE = 405;
 
     public static final int EXTRA_TYPE_MOONLIGHT = 201;
     public static final int EXTRA_TYPE_TRASH = 202;

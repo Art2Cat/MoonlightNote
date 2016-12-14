@@ -46,7 +46,6 @@ class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingsViewH
     public void onBindViewHolder(SettingsViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         final Map<String, Object> map = mData.get(position);
         holder.item.setText((CharSequence) map.get("Title"));
-
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -55,20 +54,33 @@ class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingsViewH
                                 Constants.USER_CONFIG,
                                 Constants.USER_CONFIG_SECURITY_ENABLE, 0);
                 FragmentManager fragmentManager = ((Activity) context).getFragmentManager();
+                int id = R.id.common_fragment_container;
                 switch ((int)map.get("Type")) {
 
                     case 304:
-                        FragmentUtils.replaceFragment(fragmentManager, R.id.common_fragment_container, new SecurityFragment());
+                        FragmentUtils.replaceFragment(fragmentManager,
+                                id,
+                                new SecurityFragment(),
+                                FragmentUtils.REPLACE_BACK_STACK);
                         Utils.lockApp(context, code);
                         break;
                     case 301:
-                        FragmentUtils.replaceFragment(fragmentManager, R.id.common_fragment_container, new PolicyFragment().newInstance());
+                        FragmentUtils.replaceFragment(fragmentManager,
+                                id,
+                                new PolicyFragment().newInstance(),
+                                FragmentUtils.REPLACE_BACK_STACK);
                         break;
                     case 303:
-                        FragmentUtils.replaceFragment(fragmentManager, R.id.common_fragment_container, new LicenseFragment().newInstance());
+                        FragmentUtils.replaceFragment(fragmentManager,
+                                id,
+                                new LicenseFragment().newInstance(),
+                                FragmentUtils.REPLACE_BACK_STACK);
                         break;
                     case 302:
-                        FragmentUtils.replaceFragment(fragmentManager, R.id.common_fragment_container, new AboutFragment().newInstance());
+                        FragmentUtils.replaceFragment(fragmentManager,
+                                id,
+                                new AboutFragment().newInstance(),
+                                FragmentUtils.REPLACE_BACK_STACK);
                         break;
                     case 305:
                         ConfirmationDialogFragment confirmationDialogFragment =
@@ -82,7 +94,10 @@ class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingsViewH
                         Utils.showToast(context, "Current not available", 0);
                         break;
                     case 306:
-                        FragmentUtils.replaceFragment(fragmentManager, R.id.common_fragment_container, new PinFragment());
+                        FragmentUtils.replaceFragment(fragmentManager,
+                                id,
+                                new PinFragment(),
+                                FragmentUtils.REPLACE_BACK_STACK);
                         break;
                     case 308:
                         Utils.showToast(context, "Current not available", 0);

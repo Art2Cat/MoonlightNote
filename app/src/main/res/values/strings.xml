@@ -65,7 +65,7 @@
     <string name="bottom_sheet_right_make_a_copy">Make a copy</string>
     <string name="bottom_sheet_right_send">Send</string>
     <string name="menu_empty_trash">Empty Trash</string>
-    <string name="dialog_empty_trash_title">Empty Trash</string>
+    <string name="dialog_empty_trash_title">Empty Trash?</string>
     <string name="dialog_empty_trash_content">All notes in Trash will be permanently deleted.</string>
     <string name="trash_restore">Can\'t edit in Trash</string>
     <string name="trash_restore_action">Restore</string>
@@ -82,18 +82,17 @@
     <string name="dialog_enter_your_nickname">Enter your nickname</string>
     <string name="dialog_set_nickname">Set nickname</string>
     <string name="init_moonlight_title">Welcome to MoonlightNote!</string>
-    <string name="init_moonlight_content">MoonlightNote based on Firebase, all of your datastores in Google Cloud Service are encrypted and secure.</string>
+    <string name="init_moonlight_content">MoonlightNote based on Firebase, all of your data stores in Google Cloud Service are encrypted and secure.</string>
     <string name="fragment_trash">Trash</string>
     <string name="action_close_account">Close account</string>
     <string name="delete_account_title">Delete Account?</string>
-    <string name="delete_account_content">Before deleting your account, make sure that you have exported all the data. Deleted account will not be restored.</string>
+    <string name="delete_account_content">Before deleting your account, make sure that you have exported all the data. Deleted accounts can not be restored.</string>
     <string name="dialog_delete_account_confirm">Delete Account</string>
     <string name="dialog_enter_your_password">Enter Your Password</string>
     <string name="old_password_hint">Enter your old password</string>
     <string name="new_password_hint">Enter your new password</string>
     <string name="action_change_password">Change password</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="settings_secure">Secure</string>
     <string name="settings_policy">Policy</string>
     <string name="settings_license">License</string>
@@ -223,5 +222,9 @@
     <string name="moonlight_image">image</string>
     <string name="transition_name">transitionName</string>
     <string name="toolbar">toolbar</string>
+    <string name="action_empty_note">Empty Note</string>
+    <string name="dialog_empty_note_title">Empty Note?</string>
+    <string name="dialog_empty_note_confirm">Empty Note</string>
+    <string name="dialog_empty_note_content">All notes will be permanently deleted. Deleted data will not be restored.</string>
 
 </resources>

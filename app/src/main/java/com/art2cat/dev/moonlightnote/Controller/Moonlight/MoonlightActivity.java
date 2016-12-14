@@ -1,6 +1,6 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
-import android.app.ActivityOptions;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,21 +8,13 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.ArcMotion;
-import android.transition.ChangeBounds;
-import android.transition.ChangeClipBounds;
-import android.transition.ChangeImageTransform;
-import android.transition.ChangeTransform;
-import android.transition.TransitionSet;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -85,8 +77,6 @@ public class MoonlightActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTransition();
-
         setContentView(R.layout.activity_moonlight);
 
         mLock = SPUtils.getInt(this, Constants.USER_CONFIG, Constants.USER_CONFIG_SECURITY_ENABLE, 0);
@@ -123,52 +113,9 @@ public class MoonlightActivity extends AppCompatActivity
         });
     }
 
-    private void setTransition() {
-        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
-//        getWindow().setAllowEnterTransitionOverlap(false);
-//        getWindow().setAllowReturnTransitionOverlap(false);
-//        Slide slide1 = new Slide(Gravity.START);
-//        slide1.setDuration(1000);
-//        getWindow().setExitTransition(slide1);
-
-        final TransitionSet transition = new TransitionSet();
-
-        transition.addTransition(new ChangeBounds());
-        transition.addTransition(new ChangeTransform());
-        transition.addTransition(new ChangeClipBounds());
-        transition.addTransition(new ChangeImageTransform());
-
-        transition.setDuration(1000);
-        transition.setInterpolator(new FastOutSlowInInterpolator());
-        final ArcMotion pathMotion = new ArcMotion();
-        pathMotion.setMaximumAngle(50);
-        transition.setPathMotion(pathMotion);
-        getWindow().setSharedElementExitTransition(transition);
-        getWindow().setSharedElementReenterTransition(transition);
-
-//        Fade fade = new Fade(Fade.OUT);
-//        fade.setDuration(1000);
-//        getWindow().setExitTransition(fade);
-//
-//        Fade fade1 = new Fade(Fade.IN);
-//        fade1.setDuration(1000);
-////        getWindow().setReenterTransition(fade1);
-//        Slide slide = new Slide(Gravity.START);
-//        slide.setDuration(1000);
-//        getWindow().setReenterTransition(slide);
-//        ChangeColor changeColor = new ChangeColor();
-//        changeColor.setDuration(800);
-//        getWindow().setSharedElementExitTransition(changeColor);
-
-    }
-
 
     @Override
     public void onBackPressed() {
-        collapse();
-    }
-
-    private void collapse() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -219,32 +166,37 @@ public class MoonlightActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation mView item clicks here.
         int id = item.getItemId();
+        int container = R.id.main_fragment_container;
         switch (id) {
             case R.id.nav_notes:
                 if (mUserId != null) {
+                    Log.d(TAG, "nav_notes: " + isHome);
                     if (!isHome) {
                         FragmentUtils.replaceFragment(mFragmentManager,
-                                R.id.main_fragment_container, new MoonlightFragment());
+                                container,
+                                new MoonlightFragment(),
+                                FragmentUtils.REPLACE_NORMAL);
                         mFAB.setVisibility(View.VISIBLE);
                         isHome = !isHome;
+
                     }
                 }
                 break;
             case R.id.nav_trash:
                 if (mUserId != null) {
+                    Log.d(TAG, "nav_trash: " + isHome);
                     FragmentUtils.replaceFragment(mFragmentManager,
-                            R.id.main_fragment_container, new TrashFragment());
-                        mFAB.setVisibility(View.GONE);
-                        isHome = !isHome;
+                            container,
+                            new TrashFragment(),
+                            FragmentUtils.REPLACE_NORMAL);
+                    mFAB.setVisibility(View.GONE);
+                    isHome = !isHome;
                 }
                 break;
             case R.id.nav_settings:
                 Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
                 intent.putExtra("Fragment", Constants.EXTRA_SETTINGS_FRAGMENT);
-                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
-                        MoonlightActivity.this).toBundle();
-                startActivity(intent, bundle);
-//                startActivity(intent);
+                startActivity(intent);
                 isLock = !isLock;
                 break;
             case R.id.nav_rate_app:
@@ -257,10 +209,10 @@ public class MoonlightActivity extends AppCompatActivity
                         "Hey check out my app at: https://play.google.com/store/apps/details?id=com.art2cat.dev.moonlightnote");
                 sendIntent.setType("text/plain");
 
-                Bundle bundle2 = new Bundle();
-                bundle2.putString("UserId", mUserId);
-                bundle2.putBoolean("Share_my_app", true);
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle2);
+                Bundle bundle = new Bundle();
+                bundle.putString("UserId", mUserId);
+                bundle.putBoolean("Share_my_app", true);
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
                 //设置分享选择器
                 sendIntent = Intent.createChooser(sendIntent, "Share to");
@@ -305,14 +257,10 @@ public class MoonlightActivity extends AppCompatActivity
         mFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                collapse();
                 if (isLogin) {
                     Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
                     intent.putExtra("Fragment", Constants.EXTRA_CREATE_FRAGMENT);
-                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
-                            MoonlightActivity.this).toBundle();
-                    startActivity(intent, bundle);
-//                    startActivity(intent);
+                    startActivity(intent);
                     isLock = !isLock;
                 } else {
                     SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
@@ -369,10 +317,7 @@ public class MoonlightActivity extends AppCompatActivity
                 if (isLogin) {
                     Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
                     intent.putExtra("Fragment", Constants.EXTRA_USER_FRAGMENT);
-                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
-                            MoonlightActivity.this).toBundle();
-                    startActivity(intent, bundle);
-//                    startActivity(intent);
+                    startActivity(intent);
                     isLock = !isLock;
                 } else {
                     SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
@@ -386,7 +331,13 @@ public class MoonlightActivity extends AppCompatActivity
         nickTV = (TextView) headerView.findViewById(R.id.nav_header_nickname);
 
         if (mUserId != null) {
-            FragmentUtils.addFragment(mFragmentManager, R.id.main_fragment_container, new MoonlightFragment());
+            Fragment fragment = mFragmentManager.findFragmentById(R.id.main_fragment_container);
+            if (fragment == null) {
+                fragment = new MoonlightFragment();
+                mFragmentManager.beginTransaction()
+                        .add(R.id.main_fragment_container, fragment)
+                        .commit();
+            }
         }
     }
 

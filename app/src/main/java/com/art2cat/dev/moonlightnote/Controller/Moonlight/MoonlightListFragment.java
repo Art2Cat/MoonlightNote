@@ -1,6 +1,5 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
-import android.app.ActivityOptions;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Build;
@@ -29,6 +28,7 @@ import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
+import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -42,7 +42,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
 
-import static com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils.emptyTrash;
+import static com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils.*;
 
 
 /**
@@ -51,6 +51,7 @@ import static com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils.emptyT
  */
 public abstract class MoonlightListFragment extends Fragment {
     private static final String TAG = "MoonlightListFragment";
+    public LinearLayoutCompat mTransitionItem;
     private DatabaseReference mDatabase;
     private FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder> mFirebaseRecyclerAdapter;
     private MoonlightActivity mMoonlightActivity;
@@ -58,9 +59,8 @@ public abstract class MoonlightListFragment extends Fragment {
     private Toolbar mToolbar2;
     private AppBarLayout.LayoutParams mParams;
     private RecyclerView mRecyclerView;
-    public LinearLayoutCompat mTransitionItem;
     private AppCompatImageView mImageView;
-    private Moonlight moonlight;
+    private Moonlight mMoonlight;
     private Menu mMenu;
     private MenuInflater mMenuInflater;
     private boolean isLogin = true;
@@ -151,7 +151,6 @@ public abstract class MoonlightListFragment extends Fragment {
                 public void onScrollChange(View view, int i, int i1, int i2, int i3) {
                     Log.d(TAG, "onScrollChange: " + isToolbarScroll);
                     if (mMenu != null && !isTrash() && !isToolbarScroll) {
-                        mMenu.clear();
                         setParams(0);
                         getActivity().setTitle(R.string.app_name);
                     }
@@ -165,10 +164,10 @@ public abstract class MoonlightListFragment extends Fragment {
                     Log.d(TAG, "onScrollChange: " + isToolbarScroll);
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                         setParams(0);
-                        if (mMenu != null && !isTrash() && !isToolbarScroll) {
-                            mMenu.clear();
-                            getActivity().setTitle(R.string.app_name);
-                        }
+//                        if (mMenu != null && !isTrash() && !isToolbarScroll) {
+//                            mMenu.clear();
+//                            getActivity().setTitle(R.string.app_name);
+//                        }
                     }
                 }
             });
@@ -193,33 +192,34 @@ public abstract class MoonlightListFragment extends Fragment {
                     moonlightsQuery) {
 
                 @Override
-                protected void populateViewHolder(MoonlightViewHolder viewHolder, final Moonlight model, int position) {
+                protected void populateViewHolder(MoonlightViewHolder viewHolder, Moonlight model, int position) {
                     DatabaseReference moonlightRef = getRef(position);
                     final String moonlightKey = moonlightRef.getKey();
+                    final Moonlight moonlightD = MoonlightEncryptUtils.decryptMoonlight(model);
 
-                    if (model.getTitle() != null) {
-                        viewHolder.displayTitle(model.getTitle());
+                    if (moonlightD.getTitle() != null) {
+                        viewHolder.displayTitle(moonlightD.getTitle());
                     } else {
                         viewHolder.mTitle.setVisibility(View.GONE);
                     }
 
-                    if (model.getContent() != null) {
-                        viewHolder.displayContent(model.getContent());
+                    if (moonlightD.getContent() != null) {
+                        viewHolder.displayContent(moonlightD.getContent());
                     } else {
                         viewHolder.mContent.setVisibility(View.GONE);
                     }
 
-                    if (model.getImageName() != null) {
-                        Log.i(TAG, "populateViewHolder: " + model.getImageName());
+                    if (moonlightD.getImageName() != null) {
+                        Log.i(TAG, "populateViewHolder: " + moonlightD.getImageName());
                         viewHolder.mImage.setImageResource(R.drawable.ic_cloud_download_white_48dp);
-                        viewHolder.mImage.setTag(model.getImageName());
-                        viewHolder.displayImage(getActivity(), model.getImageUrl());
+                        viewHolder.mImage.setTag(moonlightD.getImageName());
+                        viewHolder.displayImage(getActivity(), moonlightD.getImageUrl());
                     } else {
                         viewHolder.mImage.setVisibility(View.GONE);
                     }
 
-                    if (model.getColor() != 0) {
-                        viewHolder.setColor(model.getColor());
+                    if (moonlightD.getColor() != 0) {
+                        viewHolder.setColor(moonlightD.getColor());
                     } else {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             viewHolder.setColor(getActivity().getResources().getColor(R.color.white, null));
@@ -228,12 +228,15 @@ public abstract class MoonlightListFragment extends Fragment {
                         }
                     }
 
-                    if (model.getAudioName() != null) {
-                        StorageUtils.downloadAudio(FirebaseStorage.getInstance().getReference(), getUid(), model.getAudioName());
+                    if (moonlightD.getAudioName() != null) {
+                        StorageUtils.downloadAudio(
+                                FirebaseStorage.getInstance().getReference(),
+                                getUid(), moonlightD.getAudioName());
                         viewHolder.mAudio.setVisibility(View.VISIBLE);
                     } else {
                         viewHolder.mAudio.setVisibility(View.GONE);
                     }
+
                     mTransitionItem = viewHolder.mTransitionItem;
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -244,54 +247,33 @@ public abstract class MoonlightListFragment extends Fragment {
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");
                                     intent.putExtra("Fragment", Constants.EXTRA_TRASH_FRAGMENT);
-                                    intent.putExtra("moonlight", model);
-                                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
-                                            getActivity(),
-                                            mTransitionItem,
-                                            mTransitionItem.getTransitionName()).toBundle();
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                        Bundle bundle1 = ActivityOptions.makeClipRevealAnimation(mTransitionItem,
-                                                mTransitionItem.getScrollX(),
-                                                mTransitionItem.getScrollY(),
-                                                mTransitionItem.getWidth(),
-                                                mTransitionItem.getHeight()).toBundle();
-                                        startActivity(intent, bundle1);
-                                    } else {
-                                        startActivity(intent, bundle);
-                                    }
-
-//                                    startActivity(intent);
+                                    intent.putExtra("moonlight", moonlightD);
+                                    startActivity(intent);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 } else {
                                     Log.d(TAG, "onClick: edit");
                                     intent.putExtra("Fragment", Constants.EXTRA_EDIT_FRAGMENT);
-                                    intent.putExtra("moonlight", model);
-                                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
-                                            getActivity(),
-                                            mTransitionItem,
-                                            mTransitionItem.getTransitionName()).toBundle();
-
-                                    startActivity(intent, bundle);
-//                                    startActivity(intent);
+                                    intent.putExtra("moonlight", moonlightD);
+                                    startActivity(intent);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 }
-                                changeToolbar(1);
+                                changeToolbar(null, 1);
                                 setParams(0);
                             }
 
                         }
                     });
+
                     viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View v) {
-                            moonlight = model;
                             if (!isTrash()) {
                                 setParams(1);
-                                changeToolbar(0);
+                                changeToolbar(moonlightD, 0);
                                 isToolbarScroll = true;
                             } else {
                                 //changeOptionsMenu(1);
-                                changeToolbar(0);
+                                changeToolbar(moonlightD, 0);
                                 setParams(1);
                                 isToolbarScroll = true;
                             }
@@ -325,7 +307,7 @@ public abstract class MoonlightListFragment extends Fragment {
         if (isTrash()) {
             changeOptionsMenu(2);
         } else {
-//            changeOptionsMenu(3);
+            changeOptionsMenu(3);
         }
         //this.menu = menu;
     }
@@ -351,23 +333,31 @@ public abstract class MoonlightListFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-
+            case R.id.action_clear_data:
+                ConfirmationDialogFragment emptyNote = ConfirmationDialogFragment
+                        .newInstance(getString(R.string.dialog_empty_note_title),
+                                getString(R.string.dialog_empty_note_content),
+                                Constants.EXTRA_TYPE_CDF_EMPTY_NOTE);
+                emptyNote.show(getFragmentManager(), "Empty Note");
+                break;
             case R.id.menu_empty_trash:
-                ConfirmationDialogFragment confirmationDialogFragment = ConfirmationDialogFragment
-                        .newInstance(getString(R.string.dialog_empty_trash_title), getString(R.string.dialog_empty_trash_content), Constants.EXTRA_TYPE_CDF_EMPTY_TRASH);
-                confirmationDialogFragment.show(getFragmentManager(), "Empty Trash");
+                ConfirmationDialogFragment emptyTrash = ConfirmationDialogFragment
+                        .newInstance(getString(R.string.dialog_empty_trash_title),
+                                getString(R.string.dialog_empty_trash_content),
+                                Constants.EXTRA_TYPE_CDF_EMPTY_TRASH);
+                emptyTrash.show(getFragmentManager(), "Empty Trash");
                 getActivity().setTitle(R.string.fragment_trash);
                 break;
             case R.id.action_restore:
-                mDatabaseUtils.restoreToNote(moonlight);
+                mDatabaseUtils.restoreToNote(mMoonlight);
                 getActivity().setTitle(R.string.fragment_trash);
                 changeOptionsMenu(2);
                 break;
             case R.id.action_trash_delete_forever:
-                StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
-                StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
-                mDatabaseUtils.removeMoonlight(moonlight.getId(), Constants.EXTRA_TYPE_DELETE_TRASH);
-                moonlight = null;
+                StorageUtils.removePhoto(null, getUid(), mMoonlight.getImageName());
+                StorageUtils.removeAudio(null, getUid(), mMoonlight.getAudioName());
+                mDatabaseUtils.removeMoonlight(mMoonlight.getId(), Constants.EXTRA_TYPE_DELETE_TRASH);
+                mMoonlight = null;
                 getActivity().setTitle(R.string.fragment_trash);
                 changeOptionsMenu(2);
                 break;
@@ -401,6 +391,9 @@ public abstract class MoonlightListFragment extends Fragment {
                 case Constants.BUS_FLAG_EMPTY_TRASH:
                     emptyTrash(getUid());
                     break;
+                case Constants.BUS_FLAG_EMPTY_NOTE:
+                    emptyNote(getUid());
+                    break;
             }
         }
     }
@@ -417,7 +410,7 @@ public abstract class MoonlightListFragment extends Fragment {
         }
     }
 
-    private void changeToolbar(int type) {
+    private void changeToolbar(final Moonlight moonlight, int type) {
         switch (type) {
             case 0:
                 mToolbar.setVisibility(View.GONE);
@@ -440,7 +433,7 @@ public abstract class MoonlightListFragment extends Fragment {
                 mToolbar2.setNavigationOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        changeToolbar(1);
+                        changeToolbar(null, 1);
                         setParams(0);
                         isInflate = true;
                     }
@@ -454,10 +447,14 @@ public abstract class MoonlightListFragment extends Fragment {
                                 getActivity().setTitle(R.string.app_name);
                                 break;
                             case R.id.action_delete_forever:
-                                StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
-                                StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
+                                if (moonlight.getImageUrl() != null) {
+                                    StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
+                                }
+                                if (moonlight.getAudioUrl() != null) {
+                                    StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
+                                }
                                 mDatabaseUtils.removeMoonlight(moonlight.getId(), Constants.EXTRA_TYPE_MOONLIGHT);
-                                moonlight = null;
+                                mMoonlight = null;
                                 getActivity().setTitle(R.string.app_name);
                                 break;
                             case R.id.action_make_a_copy:
@@ -469,11 +466,11 @@ public abstract class MoonlightListFragment extends Fragment {
                                 Intent in = new Intent(Intent.ACTION_SEND);
                                 in.setType("text/plain");
                                 if (moonlight.getTitle() != null) {
-                                    in.putExtra(Intent.EXTRA_TITLE, moonlight.getTitle());
+                                    in.putExtra(Intent.EXTRA_TITLE, mMoonlight.getTitle());
                                 }
 
                                 if (moonlight.getContent() != null) {
-                                    in.putExtra(Intent.EXTRA_TEXT, moonlight.getContent());
+                                    in.putExtra(Intent.EXTRA_TEXT, mMoonlight.getContent());
                                 }
 
                                 if (moonlight.getImageUrl() != null) {
@@ -489,14 +486,18 @@ public abstract class MoonlightListFragment extends Fragment {
                                 getActivity().setTitle(R.string.fragment_trash);
                                 break;
                             case R.id.action_trash_delete_forever:
-                                StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
-                                StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
+                                if (moonlight.getImageUrl() != null) {
+                                    StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
+                                }
+                                if (moonlight.getAudioUrl() != null) {
+                                    StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
+                                }
                                 mDatabaseUtils.removeMoonlight(moonlight.getId(), Constants.EXTRA_TYPE_DELETE_TRASH);
-                                moonlight = null;
+                                mMoonlight = null;
                                 getActivity().setTitle(R.string.fragment_trash);
                                 break;
                         }
-                        changeToolbar(1);
+                        changeToolbar(null, 1);
 
                         isInflate = true;
                         return false;

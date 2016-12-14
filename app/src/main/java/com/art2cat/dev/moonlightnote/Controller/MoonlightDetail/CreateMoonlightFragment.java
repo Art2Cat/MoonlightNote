@@ -10,7 +10,8 @@ import com.art2cat.dev.moonlightnote.Model.Moonlight;
 public class CreateMoonlightFragment extends MoonlightDetailFragment{
     @Override
     public MoonlightDetailFragment newInstance() {
-        return new CreateMoonlightFragment();
+        MoonlightDetailFragment moonlightDetailFragment = new CreateMoonlightFragment();
+        return moonlightDetailFragment;
     }
 
     @Override
