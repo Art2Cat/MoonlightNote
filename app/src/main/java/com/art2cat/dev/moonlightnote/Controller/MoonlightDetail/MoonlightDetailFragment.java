@@ -64,6 +64,7 @@ import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
+import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
@@ -142,6 +143,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private boolean mEditable = true;
     private boolean mStartPlaying = true;
     private boolean isLeftOrRight;
+    private boolean isMakeACopy = false;
     private String mUserId;
     private String mKeyId;
     private String mLabel;
@@ -190,6 +192,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
 
         if (getArguments() != null) {
             moonlight = getArguments().getParcelable("moonlight");
+            Log.d(TAG, "hash: " + moonlight.hashCode());
             mKeyId = moonlight.getId();
             int trashTag = getArguments().getInt("trash");
             if (trashTag == 0) {
@@ -445,7 +448,15 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         if (mEditable && mEditFlag && moonlight != null && !moonlight.isTrash()) {
             Log.d(TAG, "mKeyId" + mKeyId);
             Log.d(TAG, "onStop: " + moonlight.getTitle());
-            FDatabaseUtils.updateMoonlight(mUserId, mKeyId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+            Log.d(TAG, "hash: " + moonlight.hashCode());
+            if (isMakeACopy) {
+                FDatabaseUtils.updateMoonlight(mUserId,
+                        mKeyId, MoonlightEncryptUtils.decryptMoonlight(moonlight),
+                        Constants.EXTRA_TYPE_MOONLIGHT);
+            } else {
+                FDatabaseUtils.updateMoonlight(mUserId, mKeyId, moonlight,
+                        Constants.EXTRA_TYPE_MOONLIGHT);
+            }
         }
     }
 
@@ -618,6 +629,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     SnackBarUtils.shortSnackBar(mContentFrameLayout,
                             "Note Copy complete.", SnackBarUtils.TYPE_INFO).show();
                     changeBottomSheetState();
+                    isMakeACopy = true;
                 } else {
                     SnackBarUtils.shortSnackBar(mContentFrameLayout,
                             getString(R.string.note_binned), SnackBarUtils.TYPE_INFO).show();

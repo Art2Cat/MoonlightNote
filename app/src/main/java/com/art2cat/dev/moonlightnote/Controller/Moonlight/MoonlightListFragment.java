@@ -62,6 +62,7 @@ public abstract class MoonlightListFragment extends Fragment {
     private FloatingActionButton mFAB;
     private AppBarLayout.LayoutParams mParams;
     private RecyclerView mRecyclerView;
+    private RecyclerView.AdapterDataObserver mAdapterDataObserver;
     private MoonlightViewHolder mMoonlightViewHolder;
     private AppCompatImageView mImageView;
     private Moonlight mMoonlight;
@@ -184,7 +185,13 @@ public abstract class MoonlightListFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        isNotify = false;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d(TAG, "onDestroyView: ");
+        mFirebaseRecyclerAdapter.unregisterAdapterDataObserver(mAdapterDataObserver);
     }
 
     private void setAdapter() {
@@ -295,19 +302,25 @@ public abstract class MoonlightListFragment extends Fragment {
             };
 
 
-            mFirebaseRecyclerAdapter.notifyDataSetChanged();
+//            mFirebaseRecyclerAdapter.notifyDataSetChanged();
             mRecyclerView.setAdapter(mFirebaseRecyclerAdapter);
             Log.d(TAG, "setAdapter");
 
-            mFirebaseRecyclerAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            mAdapterDataObserver = new RecyclerView.AdapterDataObserver() {
                 @Override
                 public void onChanged() {
                     super.onChanged();
                 }
 
                 @Override
+                public void onItemRangeChanged(int positionStart, int itemCount) {
+                    super.onItemRangeChanged(positionStart, itemCount);
+                }
+
+                @Override
                 public void onItemRangeInserted(int positionStart, int itemCount) {
                     super.onItemRangeInserted(positionStart, itemCount);
+                    Log.d(TAG, "onItemRangeInserted: " + itemCount);
                     mRecyclerView.smoothScrollToPosition(itemCount);
                     if (isNotify) {
                         notifyChange();
@@ -322,7 +335,13 @@ public abstract class MoonlightListFragment extends Fragment {
                     }
                 }
 
-            });
+                @Override
+                public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+                    super.onItemRangeMoved(fromPosition, toPosition, itemCount);
+                }
+            };
+
+            mFirebaseRecyclerAdapter.registerAdapterDataObserver(mAdapterDataObserver);
 
         }
     }

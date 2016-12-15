@@ -83,6 +83,7 @@ public class FDatabaseUtils {
 
     public static void updateMoonlight(final String userId, @Nullable String keyId, final Moonlight moonlight, final int type) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        Moonlight moonlightE = null;
         String mKey;
         String oldKey = null;
         oldKey = moonlight.getId();
@@ -95,7 +96,7 @@ public class FDatabaseUtils {
         }
 
         Log.d(TAG, "updateMoonlight: " + mKey);
-        Moonlight moonlightE = MoonlightEncryptUtils.encryptMoonlight(moonlight);
+        moonlightE = MoonlightEncryptUtils.encryptMoonlight(moonlight);
         Map<String, Object> moonlightValues = moonlightE.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
 
