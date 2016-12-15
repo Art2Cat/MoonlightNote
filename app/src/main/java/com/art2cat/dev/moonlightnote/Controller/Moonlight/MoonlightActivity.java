@@ -56,7 +56,7 @@ public class MoonlightActivity extends AppCompatActivity
     public Toolbar mToolbar2;
     private NavigationView mNavigationView;
     private CoordinatorLayout mCoordinatorLayout;
-    private FloatingActionButton mFAB;
+    public FloatingActionButton mFAB;
     private Button mSortButton;
     private CircleImageView mCircleImageView;
     private boolean isHome = true;

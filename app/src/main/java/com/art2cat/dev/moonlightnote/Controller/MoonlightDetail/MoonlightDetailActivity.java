@@ -97,15 +97,4 @@ public class MoonlightDetailActivity extends AppCompatActivity {
     public interface FragmentOnTouchListener {
         public boolean onTouch(MotionEvent ev);
     }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-    }
 }

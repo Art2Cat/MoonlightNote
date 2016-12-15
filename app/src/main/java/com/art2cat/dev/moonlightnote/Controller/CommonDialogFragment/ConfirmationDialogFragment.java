@@ -56,11 +56,11 @@ public class ConfirmationDialogFragment extends DialogFragment {
             builder.setMessage(mMessage);
         }
         String positiveText;
-        if (mType == 401) {
+        if (mType == Constants.EXTRA_TYPE_CDF_EMPTY_TRASH) {
             positiveText = getString(R.string.dialog_empty_trash_confirm);
-        } else if (mType == 402) {
+        } else if (mType == Constants.EXTRA_TYPE_CDF_DELETE_ACCOUNT) {
             positiveText = getString(R.string.dialog_delete_account_confirm);
-        } else if (mType == 405) {
+        } else if (mType == Constants.EXTRA_TYPE_CDF_EMPTY_NOTE) {
             positiveText = getString(R.string.dialog_empty_note_confirm);
         } else {
             positiveText = getString(android.R.string.ok);
@@ -72,15 +72,15 @@ public class ConfirmationDialogFragment extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         // positive button logic
                         switch (mType) {
-                            case 401:
+                            case Constants.EXTRA_TYPE_CDF_EMPTY_TRASH:
                                 BusEventUtils.post(Constants.BUS_FLAG_EMPTY_TRASH, null);
                                 break;
-                            case 402:
+                            case Constants.EXTRA_TYPE_CDF_DELETE_ACCOUNT:
                                 InputDialogFragment inputDialogFragment =
                                         InputDialogFragment.newInstance(getString(R.string.dialog_enter_your_password), 2);
                                 inputDialogFragment.show(getFragmentManager(), "enter password");
                                 break;
-                            case 403:
+                            case Constants.EXTRA_TYPE_CDF_DISABLE_SECURITY:
                                 int code =
                                         SPUtils.getInt(getActivity().getApplicationContext(),
                                                 Constants.USER_CONFIG,
@@ -90,10 +90,10 @@ public class ConfirmationDialogFragment extends DialogFragment {
                                         Constants.USER_CONFIG,
                                         Constants.USER_CONFIG_SECURITY_ENABLE, 0);
                                 break;
-                            case 404:
+                            case Constants.EXTRA_TYPE_CDF_DELETE_IMAGE:
                                 BusEventUtils.post(Constants.BUS_FLAG_DELETE_IMAGE, null);
                                 break;
-                            case 405:
+                            case Constants.EXTRA_TYPE_CDF_EMPTY_NOTE:
                                 BusEventUtils.post(Constants.BUS_FLAG_EMPTY_NOTE, null);
                                 break;
                         }

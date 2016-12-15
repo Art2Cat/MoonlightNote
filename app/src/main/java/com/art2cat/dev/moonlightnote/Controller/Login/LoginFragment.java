@@ -50,8 +50,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -72,7 +70,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     private View mLoginFormView;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private DatabaseReference myReference;
     private GoogleApiClient mGoogleApiClient;
     private int flag = 0;
     private boolean isNewUser = false;
@@ -86,7 +83,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
-        myReference = FirebaseDatabase.getInstance().getReference();
         EventBus.getDefault().register(this);
         signIn();
     }
@@ -473,7 +469,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         Moonlight moonlight = new Moonlight();
         moonlight.setTitle(getString(R.string.init_moonlight_title));
         moonlight.setContent(getString(R.string.init_moonlight_content));
-        FDatabaseUtils fDatabaseUtils = FDatabaseUtils.newInstance(getActivity(), null, userId);
-        fDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+        FDatabaseUtils.addMoonlight(userId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
     }
 }

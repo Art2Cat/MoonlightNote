@@ -21,10 +21,10 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar2"
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/light_green"
+            android:visibility="gone"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_action_create" />
-    <!--app:layout_behavior="com.art2cat.dev.moonlightnote.CustomView.CustomBehavior.FAB_Float_on_Scroll" />-->
+        android:src="@drawable/ic_action_create"
+        app:layout_behavior="com.art2cat.dev.moonlightnote.CustomView.CustomBehavior.ScaleDownShowBehavior" />
 
 </android.support.design.widget.CoordinatorLayout>

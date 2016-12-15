@@ -37,108 +37,117 @@ public class StorageUtils {
     public static void downloadImage(StorageReference storageReference, final String userID, final String imageName) {
 
         if (imageName != null) {
-            StorageReference islandRef = storageReference.child(userID).child("photos").child(imageName);
-            File localFile = null;
-            String path = getPath(0);
-            if (path != null) {
-                File dir = new File(path);
-                localFile = new File(dir, imageName + ".jpg");
-            }
+            return;
+        }
 
-            if (localFile != null) {
-                islandRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                        // Local temp file has been created
-                        Log.i(TAG, "onSuccess: ");
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
-                    }
-                });
-            } else {
-                Log.w(TAG, "downloadImage " + "localFile: null");
-            }
+        StorageReference islandRef = storageReference.child(userID).child("photos").child(imageName);
+        File localFile = null;
+        String path = getPath(0);
+        if (path != null) {
+            File dir = new File(path);
+            localFile = new File(dir, imageName + ".jpg");
+        }
 
+        if (localFile != null) {
+            islandRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    // Local temp file has been created
+                    Log.i(TAG, "onSuccess: ");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
+        } else {
+            Log.w(TAG, "downloadImage " + "localFile: null");
         }
     }
 
     public static void downloadAudio(StorageReference storageReference, String userId, String audioName) {
 
-        if (audioName != null) {
-            StorageReference islandRef = storageReference.child(userId).child("audios").child(audioName);
-            File localFile = null;
-            String path = getPath(1);
-            if (path != null) {
-                File dir = new File(path);
-                if (audioName.contains(".amr")) {
-                    localFile = new File(dir, audioName);
-                } else {
-                    localFile = new File(dir, audioName + ".amr");
-                }
-            }
-
-            if (localFile != null) {
-                islandRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                        // Local temp file has been created
-                        Log.i(TAG, "onSuccess: ");
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
-                    }
-                });
-            } else {
-                Log.w(TAG, "downloadAudio " + "localFile: null");
-            }
-
+        if (audioName == null) {
+            return;
         }
+
+        StorageReference islandRef = storageReference.child(userId).child("audios").child(audioName);
+        File localFile = null;
+        String path = getPath(1);
+        if (path != null) {
+            File dir = new File(path);
+            if (audioName.contains(".amr")) {
+                localFile = new File(dir, audioName);
+            } else {
+                localFile = new File(dir, audioName + ".amr");
+            }
+        }
+
+        if (localFile != null) {
+            islandRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    // Local temp file has been created
+                    Log.i(TAG, "onSuccess: ");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // Handle any errors
+                }
+            });
+        } else {
+            Log.w(TAG, "downloadAudio " + "localFile: null");
+        }
+
     }
 
     public static void removePhoto(final View mView, String mUserId, String imageName) {
-        if (imageName != null) {
-            StorageReference photoRef = FirebaseStorage.getInstance().getReference()
-                    .child(mUserId).child("photos").child(imageName);
-            photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(TAG, "onSuccess: ");
-                    if (mView != null) {
-                        SnackBarUtils.shortSnackBar(mView, "Image removed!", SnackBarUtils.TYPE_INFO).show();
-                    }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.w(TAG, "onFailure: " + e.toString());
-                }
-            });
+        if (imageName == null) {
+            return;
         }
+
+        StorageReference photoRef = FirebaseStorage.getInstance().getReference()
+                .child(mUserId).child("photos").child(imageName);
+        photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "onSuccess: ");
+                if (mView != null) {
+                    SnackBarUtils.shortSnackBar(mView, "Image removed!", SnackBarUtils.TYPE_INFO).show();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "onFailure: " + e.toString());
+            }
+        });
+
     }
 
     public static void removeAudio(final View mView, String mUserId, String audioName) {
-        if (audioName != null) {
-            StorageReference audioRef = FirebaseStorage.getInstance().getReference()
-                    .child(mUserId).child("audios").child(audioName);
-            audioRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(TAG, "onSuccess: ");
-                    if (mView != null) {
-                        SnackBarUtils.shortSnackBar(mView, "Voice removed!", SnackBarUtils.TYPE_INFO).show();
-                    }
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.w(TAG, "onFailure: " + e.toString());
-                }
-            });
+        if (audioName == null) {
+            return;
         }
+
+        StorageReference audioRef = FirebaseStorage.getInstance().getReference()
+                .child(mUserId).child("audios").child(audioName);
+        audioRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "onSuccess: ");
+                if (mView != null) {
+                    SnackBarUtils.shortSnackBar(mView, "Voice removed!", SnackBarUtils.TYPE_INFO).show();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.w(TAG, "onFailure: " + e.toString());
+            }
+        });
+
     }
 }

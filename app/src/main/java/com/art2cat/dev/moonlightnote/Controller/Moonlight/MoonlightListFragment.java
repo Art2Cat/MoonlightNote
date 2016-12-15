@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -56,9 +57,9 @@ public abstract class MoonlightListFragment extends Fragment {
     public LinearLayoutCompat mTransitionItem;
     private DatabaseReference mDatabase;
     private FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder> mFirebaseRecyclerAdapter;
-    private MoonlightActivity mMoonlightActivity;
     private Toolbar mToolbar;
     private Toolbar mToolbar2;
+    private FloatingActionButton mFAB;
     private AppBarLayout.LayoutParams mParams;
     private RecyclerView mRecyclerView;
     private MoonlightViewHolder mMoonlightViewHolder;
@@ -69,9 +70,8 @@ public abstract class MoonlightListFragment extends Fragment {
     private boolean isLogin = true;
     private boolean isToolbarScroll = false;
     private boolean isInflate = false;
-    ;
-    private FDatabaseUtils mDatabaseUtils;
-
+    private boolean isNotify = false;
+    private boolean isScroll = false;
 
     public MoonlightListFragment() {
     }
@@ -89,10 +89,11 @@ public abstract class MoonlightListFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.d(TAG, "onCreateView: ");
         View rootView = inflater.inflate(R.layout.fragment_moonlight, container, false);
-        mMoonlightActivity = (MoonlightActivity) getActivity();
 
-        mToolbar = mMoonlightActivity.mToolbar;
-        mToolbar2 = mMoonlightActivity.mToolbar2;
+        MoonlightActivity moonlightActivity = (MoonlightActivity) getActivity();
+        mToolbar = moonlightActivity.mToolbar;
+        mToolbar2 = moonlightActivity.mToolbar2;
+        mFAB = moonlightActivity.mFAB;
         mParams = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
 
 
@@ -117,7 +118,6 @@ public abstract class MoonlightListFragment extends Fragment {
         // [START create_database_reference]
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        mDatabaseUtils = FDatabaseUtils.newInstance(getActivity(), mDatabase, getUid());
         // [END create_database_reference]
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
@@ -148,44 +148,42 @@ public abstract class MoonlightListFragment extends Fragment {
         mRecyclerView.getItemAnimator().setChangeDuration(500);
         setAdapter();
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            mRecyclerView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-                @Override
-                public void onScrollChange(View view, int i, int i1, int i2, int i3) {
-                    Log.d(TAG, "onScrollChange: " + isToolbarScroll);
-                    if (mMenu != null && !isTrash() && !isToolbarScroll) {
-                        setParams(0);
-                        getActivity().setTitle(R.string.app_name);
-                    }
-                }
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
 
-            });
-        } else {
-            mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-                    Log.d(TAG, "onScrollChange: " + isToolbarScroll);
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE && isTrash()) {
-                        setParams(0);
-//                        if (mMenu != null && !isTrash() && !isToolbarScroll) {
-//                            mMenu.clear();
-//                            getActivity().setTitle(R.string.app_name);
-//                        }
-                    }
-                }
-            });
-        }
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+//                if (!isTrash()) {
+//                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                        isScroll= false;
+//                        Log.d(TAG, "onScrollStateChanged: " + mFAB.getVisibility());
+//                        Log.d(TAG, "onScrollStateChanged: S 0");
+//                            showFAB(mFAB);
+//                    }
+//                    if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+//                        hideFAB(mFAB);
+//                    }
+//                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+//                        hideFAB(mFAB);
+//                    }
+//                }
 
+            }
+        });
     }
 
     @Override
     public void onPause() {
-        if (mMenu != null && !isTrash()) {
-            mMenu.clear();
-            getActivity().setTitle(R.string.app_name);
-        }
         super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 
     private void setAdapter() {
@@ -346,10 +344,10 @@ public abstract class MoonlightListFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         mMenu = menu;
         mMenuInflater = inflater;
-        if (isTrash()) {
-            changeOptionsMenu(2);
-        } else {
+        if (!isTrash()) {
             changeOptionsMenu(3);
+        } else {
+            changeOptionsMenu(2);
         }
         //this.menu = menu;
     }
@@ -391,17 +389,17 @@ public abstract class MoonlightListFragment extends Fragment {
                 getActivity().setTitle(R.string.fragment_trash);
                 break;
             case R.id.action_restore:
-                mDatabaseUtils.restoreToNote(mMoonlight);
+                FDatabaseUtils.restoreToNote(getUid(), mMoonlight);
                 getActivity().setTitle(R.string.fragment_trash);
-                changeOptionsMenu(2);
+                changeOptionsMenu(3);
                 break;
             case R.id.action_trash_delete_forever:
                 StorageUtils.removePhoto(null, getUid(), mMoonlight.getImageName());
                 StorageUtils.removeAudio(null, getUid(), mMoonlight.getAudioName());
-                mDatabaseUtils.removeMoonlight(mMoonlight.getId(), Constants.EXTRA_TYPE_DELETE_TRASH);
+                FDatabaseUtils.removeMoonlight(getUid(), mMoonlight.getId(), Constants.EXTRA_TYPE_DELETE_TRASH);
                 mMoonlight = null;
                 getActivity().setTitle(R.string.fragment_trash);
-                changeOptionsMenu(2);
+                changeOptionsMenu(3);
                 break;
         }
         isToolbarScroll = false;
@@ -484,7 +482,7 @@ public abstract class MoonlightListFragment extends Fragment {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.action_delete:
-                                mDatabaseUtils.moveToTrash(moonlight);
+                                FDatabaseUtils.moveToTrash(getUid(), moonlight);
                                 getActivity().setTitle(R.string.app_name);
                                 break;
                             case R.id.action_delete_forever:
@@ -494,12 +492,14 @@ public abstract class MoonlightListFragment extends Fragment {
                                 if (moonlight.getAudioUrl() != null) {
                                     StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
                                 }
-                                mDatabaseUtils.removeMoonlight(moonlight.getId(),
+                                FDatabaseUtils.removeMoonlight(getUid(),
+                                        moonlight.getId(),
                                         Constants.EXTRA_TYPE_MOONLIGHT);
                                 getActivity().setTitle(R.string.app_name);
                                 break;
                             case R.id.action_make_a_copy:
-                                mDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                                FDatabaseUtils.addMoonlight(getUid(),
+                                        moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
                                 getActivity().setTitle(R.string.app_name);
                                 break;
                             case R.id.action_send:
@@ -523,7 +523,7 @@ public abstract class MoonlightListFragment extends Fragment {
                                 getActivity().setTitle(R.string.app_name);
                                 break;
                             case R.id.action_restore:
-                                mDatabaseUtils.restoreToNote(moonlight);
+                                FDatabaseUtils.restoreToNote(getUid(), moonlight);
                                 getActivity().setTitle(R.string.fragment_trash);
                                 break;
                             case R.id.action_trash_delete_forever:
@@ -533,13 +533,15 @@ public abstract class MoonlightListFragment extends Fragment {
                                 if (moonlight.getAudioUrl() != null) {
                                     StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
                                 }
-                                mDatabaseUtils.removeMoonlight(moonlight.getId(),
+                                FDatabaseUtils.removeMoonlight(getUid(),
+                                        moonlight.getId(),
                                         Constants.EXTRA_TYPE_DELETE_TRASH);
                                 getActivity().setTitle(R.string.fragment_trash);
                                 break;
                         }
                         setParams(0);
                         changeToolbar(null, 1);
+                        changeOptionsMenu(2);
                         isInflate = true;
                         return false;
                     }

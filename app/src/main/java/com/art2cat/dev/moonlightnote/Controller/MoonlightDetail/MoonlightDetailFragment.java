@@ -70,10 +70,7 @@ import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnPausedListener;
@@ -134,7 +131,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private CardView mAudioCardView;
     private AppCompatImageView mImage;
     private ProgressDialogFragment mProgressDialogFragment;
-    private ProgressBar mAudioPlayerPB;
     private CoordinatorLayout mCoordinatorLayout;
     private BottomSheetBehavior mRightBottomSheetBehavior;
     private BottomSheetBehavior mLeftBottomSheetBehavior;
@@ -151,11 +147,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private String mLabel;
     private int mPaddingBottom;
     private Uri mFileUri = null;
-    private FDatabaseUtils mFDatabaseUtils;
     private DatabaseReference mMoonlightRef;
     private ValueEventListener mMoonlightListener;
     private ValueEventListener moonlightListener;
-    private DatabaseReference mDatabaseReference;
     private StorageReference mStorageRef;
     private StorageReference mStorageReference;
     private String mImageFileName;
@@ -186,10 +180,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         EventBus.getDefault().register(this);
         //获取用户id
         mUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        //获取FirebaseDatabase实例
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mFDatabaseUtils = new FDatabaseUtils(getActivity(), mDatabaseReference, mUserId);
-
         //获取firebaseStorage实例
         FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
         mStorageReference = firebaseStorage.getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE);
@@ -241,7 +231,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         mDeleteAudio = (AppCompatButton) mView.findViewById(R.id.delete_audio);
         mPlayingAudio = (AppCompatButton) mView.findViewById(R.id.playing_audio_button);
         mShowDuration = (AppCompatTextView) mView.findViewById(R.id.moonlight_audio_duration);
-        mAudioPlayerPB = (ProgressBar) mView.findViewById(R.id.moonlight_audio_progressBar);
+        ProgressBar audioPlayerPB = (ProgressBar) mView.findViewById(R.id.moonlight_audio_progressBar);
         mDisplayTime = (AppCompatTextView) mView.findViewById(R.id.bottom_bar_display_time);
         mCoordinatorLayout = (CoordinatorLayout) mView.findViewById(R.id.bottom_sheet_container);
         mBottomBarContainer = (LinearLayoutCompat) mView.findViewById(R.id.bottom_bar_container);
@@ -250,7 +240,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         mTitle.setOnFocusChangeListener(this);
         mContent.setOnFocusChangeListener(this);
         mBitmapUtils = new BitmapUtils(getActivity());
-        mAudioPlayer = new AudioPlayer(mAudioPlayerPB, mShowDuration);
+        mAudioPlayer = new AudioPlayer(audioPlayerPB, mShowDuration);
 
         mProgressDialogFragment = ProgressDialogFragment.newInstance();
 
@@ -325,7 +315,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
 
     private void initView(boolean editable) {
 
-        //moonlight = mFDatabaseUtils.getMoonlight();
         if (editable) {
             if (moonlight.getTitle() != null) {
                 mTitle.setText(moonlight.getTitle());
@@ -412,7 +401,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                         @Override
                         public void onClick(View view) {
                             BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
-                            mFDatabaseUtils.restoreToNote(moonlight);
+                            FDatabaseUtils.restoreToNote(mUserId, moonlight);
                             startActivity(new Intent(getActivity(), MoonlightActivity.class));
                         }
                     });
@@ -448,17 +437,16 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         Log.i(TAG, "onStop");
         //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
         if (mCreateFlag && mEditable) {
-            if (isEmpty(moonlight)) {
-                mFDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+            if (!isEmpty(moonlight)) {
+                FDatabaseUtils.addMoonlight(mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
             }
         }
         //当editFlag为true且moonlight不为空时更新moonlight信息到服务器
         if (mEditable && mEditFlag && moonlight != null && !moonlight.isTrash()) {
             Log.d(TAG, "mKeyId" + mKeyId);
-            mFDatabaseUtils.updateMoonlight(mKeyId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+            Log.d(TAG, "onStop: " + moonlight.getTitle());
+            FDatabaseUtils.updateMoonlight(mUserId, mKeyId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
         }
-        mFDatabaseUtils.removeListener();
-        //removeListener();
     }
 
     @Override
@@ -517,8 +505,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     }
 
     private boolean isEmpty(Moonlight moonlight) {
-        return moonlight.getImageUrl() != null || moonlight.getAudioUrl() != null || moonlight.getContent() != null
-                || moonlight.getTitle() != null;
+        return !(moonlight.getImageUrl() != null || moonlight.getAudioUrl() != null || moonlight.getContent() != null
+                || moonlight.getTitle() != null);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -539,6 +527,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     mImage.setVisibility(View.GONE);
                     moonlight.setImageName(null);
                     moonlight.setImageUrl(null);
+                    break;
+                case Constants.BUS_FLAG_MAKE_COPY_DONE:
+                    SnackBarUtils.shortSnackBar(mCoordinatorLayout,
+                            "Note Copy complete.", SnackBarUtils.TYPE_INFO);
                     break;
             }
         }
@@ -601,8 +593,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 onAudioClick();
                 break;
             case R.id.bottom_sheet_item_move_to_trash:
-                if (isEmpty(moonlight)) {
-                    mFDatabaseUtils.moveToTrash(moonlight);
+                if (!isEmpty(moonlight)) {
+                    FDatabaseUtils.moveToTrash(mUserId, moonlight);
                 } else {
                     BusEventUtils.post(Constants.BUS_FLAG_NULL, null);
                 }
@@ -610,11 +602,11 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 mEditable = false;
                 break;
             case R.id.bottom_sheet_item_permanent_delete:
-                if (isEmpty(moonlight)) {
+                if (!isEmpty(moonlight)) {
                     StorageUtils.removePhoto(mView, mUserId, moonlight.getImageName());
                     StorageUtils.removeAudio(mView, mUserId, moonlight.getAudioName());
                     if (mKeyId != null) {
-                        mFDatabaseUtils.removeMoonlight(mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
+                        FDatabaseUtils.removeMoonlight(mUserId, mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
                     }
                     moonlight = null;
                 } else {
@@ -623,8 +615,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 startActivity(new Intent(getActivity(), MoonlightActivity.class));
                 break;
             case R.id.bottom_sheet_item_make_a_copy:
-                if (isEmpty(moonlight)) {
-                    mFDatabaseUtils.addMoonlight(moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                if (!isEmpty(moonlight)) {
+                    Log.d(TAG, "onClick: " + moonlight.getTitle());
+                    FDatabaseUtils.addMoonlight(mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                    BusEventUtils.post(Constants.BUS_FLAG_MAKE_COPY_DONE, null);
                 } else {
                     SnackBarUtils.shortSnackBar(mCoordinatorLayout,
                             getString(R.string.note_binned), SnackBarUtils.TYPE_INFO).show();
@@ -938,53 +932,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         // Start the activity, the intent will be populated with the speech text
         startActivityForResult(intent, RECORD_AUDIO);
         mEditable = false;
-    }
-
-
-    /**
-     * 从firebase的database获取moonlight
-     *
-     * @param keyId 当前读取moonlight的keyId
-     */
-    private void getMoonlight(String keyId, int type) {
-        if (type == 201) {
-            mMoonlightRef = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight").child(mUserId).child("note").child(keyId);
-        } else if (type == 202) {
-            mMoonlightRef = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight").child(mUserId).child("trash").child(keyId);
-        }
-
-        moonlightListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                try {
-                    if (dataSnapshot.exists()) {
-                        moonlight = dataSnapshot.getValue(Moonlight.class);
-                    }
-
-                    Log.d(TAG, "long_click_moonlight_menu.getId: " + moonlight.getId());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, "loadMoonlight:onCancelled", databaseError.toException());
-                SnackBarUtils.shortSnackBar(mView, "Failed to load long_click_moonlight_menu.", SnackBarUtils.TYPE_WARNING).show();
-
-            }
-        };
-        mMoonlightRef.addValueEventListener(moonlightListener);
-    }
-
-
-    private void removeListener() {
-        // Remove mMoonlight value event listener
-        if (mMoonlightListener != null) {
-            mMoonlightRef.removeEventListener(mMoonlightListener);
-        }
     }
 
     public void showBottomSheet() {

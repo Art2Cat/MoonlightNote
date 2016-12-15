@@ -20,37 +20,32 @@ public class MoonlightEncryptUtils {
     }
 
     private static Moonlight encrypt(Moonlight moonlight) {
-        String title = moonlight.getTitle();
-        String content = moonlight.getContent();
-        String imageUrl = moonlight.getImageUrl();
-        String audioUrl = moonlight.getAudioUrl();
-        String imageName = moonlight.getImageName();
-        String audioName = moonlight.getAudioName();
+        String[] metadata = getMetadata(moonlight);
 
         try {
 
-            if (title != null) {
-                moonlight.setTitle(AESUtils.encrypt(title));
+            if (metadata[0] != null) {
+                moonlight.setTitle(AESUtils.encrypt(metadata[0]));
             }
 
-            if (content != null) {
-                moonlight.setContent(AESUtils.encrypt(content));
+            if (metadata[1] != null) {
+                moonlight.setContent(AESUtils.encrypt(metadata[1]));
             }
 
-            if (imageUrl != null) {
-                moonlight.setImageUrl(AESUtils.encrypt(imageUrl));
+            if (metadata[2] != null) {
+                moonlight.setImageUrl(AESUtils.encrypt(metadata[2]));
             }
 
-            if (audioUrl != null) {
-                moonlight.setAudioUrl(AESUtils.encrypt(audioUrl));
+            if (metadata[3] != null) {
+                moonlight.setAudioUrl(AESUtils.encrypt(metadata[3]));
             }
 
-            if (imageName != null) {
-                moonlight.setImageName(AESUtils.encrypt(imageName));
+            if (metadata[4] != null) {
+                moonlight.setImageName(AESUtils.encrypt(metadata[4]));
             }
 
-            if (audioName != null) {
-                moonlight.setAudioName(AESUtils.encrypt(audioName));
+            if (metadata[5] != null) {
+                moonlight.setAudioName(AESUtils.encrypt(metadata[5]));
             }
 
             return moonlight;
@@ -61,12 +56,6 @@ public class MoonlightEncryptUtils {
     }
 
     private static Moonlight decrypt(Moonlight moonlight) {
-        String title = moonlight.getTitle();
-        String content = moonlight.getContent();
-        String imageUrl = moonlight.getImageUrl();
-        String audioUrl = moonlight.getAudioUrl();
-        String imageName = moonlight.getImageName();
-        String audioName = moonlight.getAudioName();
 
         String[] metadata = getMetadata(moonlight);
 

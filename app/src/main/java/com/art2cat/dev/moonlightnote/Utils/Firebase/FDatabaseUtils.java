@@ -1,12 +1,10 @@
 package com.art2cat.dev.moonlightnote.Utils.Firebase;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.Model.User;
@@ -83,13 +81,79 @@ public class FDatabaseUtils {
         }
     }
 
-    public void addMoonlight(final Moonlight moonlight, final int type) {
+    public static void updateMoonlight(final String userId, @Nullable String keyId, final Moonlight moonlight, final int type) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.child(mUserId).addListenerForSingleValueEvent(
+        String mKey;
+        String oldKey = null;
+        oldKey = moonlight.getId();
+        if (keyId == null) {
+            mKey = databaseReference.child("moonlight").push().getKey();
+            moonlight.setId(mKey);
+        } else {
+            mKey = keyId;
+            moonlight.setId(keyId);
+        }
+
+        Log.d(TAG, "updateMoonlight: " + mKey);
+        Moonlight moonlightE = MoonlightEncryptUtils.encryptMoonlight(moonlight);
+        Map<String, Object> moonlightValues = moonlightE.toMap();
+        Map<String, Object> childUpdates = new HashMap<>();
+
+        if (type == Constants.EXTRA_TYPE_MOONLIGHT || type == Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT) {
+            childUpdates.put("/users-moonlight/" + userId + "/note/" + mKey, moonlightValues);
+            Log.d(TAG, "updateMoonlight: " + mKey);
+        } else if (type == Constants.EXTRA_TYPE_TRASH) {
+            childUpdates.put("/users-moonlight/" + userId + "/trash/" + mKey, moonlightValues);
+            Log.d(TAG, "updateMoonlight: " + mKey);
+        }
+
+        final String finalOldKey = oldKey;
+        databaseReference.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (type == Constants.EXTRA_TYPE_TRASH) {
+                    Log.d(TAG, "onComplete: update" + finalOldKey);
+                    if (finalOldKey != null) {
+                        removeMoonlight(userId, finalOldKey, type);
+                    }
+                } else if (type == Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT) {
+                    Log.d(TAG, "onComplete: update" + finalOldKey);
+                    if (finalOldKey != null) {
+                        removeMoonlight(userId, finalOldKey, type);
+                    }
+                }
+            }
+        });
+
+    }
+
+    public static void removeMoonlight(String userId, String keyId, final int type) {
+        DatabaseReference databaseReference = null;
+        if (type == Constants.EXTRA_TYPE_MOONLIGHT || type == Constants.EXTRA_TYPE_TRASH) {
+            databaseReference = FirebaseDatabase.getInstance().getReference()
+                    .child("users-moonlight").child(userId).child("note").child(keyId);
+        } else if (type == Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT || type == 205) {
+            databaseReference = FirebaseDatabase.getInstance().getReference()
+                    .child("users-moonlight").child(userId).child("trash").child(keyId);
+        }
+
+        if (databaseReference != null) {
+            databaseReference.removeValue(new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+                }
+            });
+        }
+    }
+
+    public static void addMoonlight(final String userId, final Moonlight moonlight, final int type) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference.child(userId).addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        updateMoonlight(null, moonlight, type);
+                        updateMoonlight(userId, null, moonlight, type);
                     }
 
                     @Override
@@ -99,91 +163,25 @@ public class FDatabaseUtils {
                 });
     }
 
-    public void updateMoonlight(@Nullable String keyId, final Moonlight moonlight, final int type) {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        String mKey;
-        String oldKey = null;
-        oldKey = moonlight.getId();
-        if (keyId == null) {
-            mKey = databaseReference.child("moonlight").push().getKey();
-        } else {
-            mKey = keyId;
-        }
-        moonlight.setId(mKey);
-        Moonlight moonlightE = MoonlightEncryptUtils.encryptMoonlight(moonlight);
-        Map<String, Object> moonlightValues = moonlightE.toMap();
-        Map<String, Object> childUpdates = new HashMap<>();
-
-        if (type == 201 || type == 204) {
-            childUpdates.put("/users-moonlight/" + mUserId + "/note/" + mKey, moonlightValues);
-            Log.d(TAG, "updateMoonlight: " + mKey);
-        } else if (type == 202) {
-            childUpdates.put("/users-moonlight/" + mUserId + "/trash/" + mKey, moonlightValues);
-            Log.d(TAG, "updateMoonlight: " + mKey);
-        }
-
-        final String finalOldKey = oldKey;
-        databaseReference.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (type == 202) {
-                    Log.d(TAG, "onComplete: update" + finalOldKey);
-                    if (finalOldKey != null) {
-                        removeMoonlight(finalOldKey, type);
-                    }
-                } else if (type == 204) {
-                    Log.d(TAG, "onComplete: update" + finalOldKey);
-                    if (finalOldKey != null) {
-                        removeMoonlight(finalOldKey, type);
-                    }
-                }
-            }
-        });
-
-    }
-
-    public void moveToTrash(Moonlight moonlight) {
+    public static void moveToTrash(String userId, Moonlight moonlight) {
         moonlight.setTrash(true);
-        addMoonlight(moonlight, Constants.EXTRA_TYPE_TRASH);
+        addMoonlight(userId, moonlight, Constants.EXTRA_TYPE_TRASH);
     }
 
-    public void restoreToNote(Moonlight moonlight) {
+    public static void restoreToNote(String userId, Moonlight moonlight) {
         moonlight.setTrash(false);
-        addMoonlight(moonlight, Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT);
-    }
-
-    public void removeMoonlight(String keyId, final int type) {
-        DatabaseReference databaseReference = null;
-        if (type == 201 || type == 202) {
-            databaseReference = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight").child(mUserId).child("note").child(keyId);
-        } else if (type == 204 || type == 205) {
-            databaseReference = FirebaseDatabase.getInstance().getReference()
-                    .child("users-moonlight").child(mUserId).child("trash").child(keyId);
-        }
-
-        if (databaseReference != null) {
-            databaseReference.removeValue(new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-//                    Utils.showToast(mContext, "Delete completed!", 0);
-                    if (type != 205) {
-                        mContext.startActivity(new Intent(mContext, MoonlightActivity.class));
-                    }
-                }
-            });
-        }
+        addMoonlight(userId, moonlight, Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT);
     }
 
     public void getDataFromDatabase(String keyId, final int type) {
         Log.d(TAG, "getDataFromDatabase: " + keyId);
-        if (type == 201) {
+        if (type == Constants.EXTRA_TYPE_MOONLIGHT) {
             mDatabaseReference = FirebaseDatabase.getInstance().getReference()
                     .child("users-moonlight").child(mUserId).child("note").child(keyId);
-        } else if (type == 202) {
+        } else if (type == Constants.EXTRA_TYPE_TRASH) {
             mDatabaseReference = FirebaseDatabase.getInstance().getReference()
                     .child("users-moonlight").child(mUserId).child("trash").child(keyId);
-        } else if (type == 203) {
+        } else if (type == Constants.EXTRA_TYPE_USER) {
             mDatabaseReference = FirebaseDatabase.getInstance().getReference()
                     .child("user").child(mUserId);
         }
@@ -193,7 +191,7 @@ public class FDatabaseUtils {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot != null) {
 
-                    if (type == 203) {
+                    if (type == Constants.EXTRA_TYPE_USER) {
                         user = dataSnapshot.getValue(User.class);
                         UserUtils.saveUserToCache(mContext, user);
                         complete = true;
