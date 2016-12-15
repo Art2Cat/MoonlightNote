@@ -528,10 +528,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     moonlight.setImageName(null);
                     moonlight.setImageUrl(null);
                     break;
-                case Constants.BUS_FLAG_MAKE_COPY_DONE:
-                    SnackBarUtils.shortSnackBar(mCoordinatorLayout,
-                            "Note Copy complete.", SnackBarUtils.TYPE_INFO);
-                    break;
             }
         }
     }
@@ -619,9 +615,13 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     Log.d(TAG, "onClick: " + moonlight.getTitle());
                     FDatabaseUtils.addMoonlight(mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
                     BusEventUtils.post(Constants.BUS_FLAG_MAKE_COPY_DONE, null);
+                    SnackBarUtils.shortSnackBar(mContentFrameLayout,
+                            "Note Copy complete.", SnackBarUtils.TYPE_INFO).show();
+                    changeBottomSheetState();
                 } else {
-                    SnackBarUtils.shortSnackBar(mCoordinatorLayout,
+                    SnackBarUtils.shortSnackBar(mContentFrameLayout,
                             getString(R.string.note_binned), SnackBarUtils.TYPE_INFO).show();
+                    changeBottomSheetState();
                 }
                 break;
             case R.id.bottom_sheet_item_send:

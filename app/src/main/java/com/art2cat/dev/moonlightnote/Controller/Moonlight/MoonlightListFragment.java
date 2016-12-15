@@ -70,8 +70,7 @@ public abstract class MoonlightListFragment extends Fragment {
     private boolean isLogin = true;
     private boolean isToolbarScroll = false;
     private boolean isInflate = false;
-    private boolean isNotify = false;
-    private boolean isScroll = false;
+    private boolean isNotify;
 
     public MoonlightListFragment() {
     }
@@ -134,6 +133,7 @@ public abstract class MoonlightListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        isNotify = true;
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mLinearLayoutManager.setReverseLayout(true);
         mLinearLayoutManager.setStackFromEnd(true);
@@ -184,6 +184,7 @@ public abstract class MoonlightListFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+        isNotify = false;
     }
 
     private void setAdapter() {
@@ -261,6 +262,7 @@ public abstract class MoonlightListFragment extends Fragment {
                                     startActivity(intent);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 }
+                                isNotify = false;
                                 changeToolbar(null, 1);
                                 setParams(0);
                             }
@@ -307,13 +309,17 @@ public abstract class MoonlightListFragment extends Fragment {
                 public void onItemRangeInserted(int positionStart, int itemCount) {
                     super.onItemRangeInserted(positionStart, itemCount);
                     mRecyclerView.smoothScrollToPosition(itemCount);
-                    notifyChange();
+                    if (isNotify) {
+                        notifyChange();
+                    }
                 }
 
                 @Override
                 public void onItemRangeRemoved(int positionStart, int itemCount) {
                     super.onItemRangeRemoved(positionStart, itemCount);
-                    notifyChange();
+                    if (isNotify) {
+                        notifyChange();
+                    }
                 }
 
             });
@@ -433,6 +439,9 @@ public abstract class MoonlightListFragment extends Fragment {
                     break;
                 case Constants.BUS_FLAG_EMPTY_NOTE:
                     emptyNote(getUid());
+                    break;
+                case Constants.BUS_FLAG_MAKE_COPY_DONE:
+                    isNotify = false;
                     break;
             }
         }
