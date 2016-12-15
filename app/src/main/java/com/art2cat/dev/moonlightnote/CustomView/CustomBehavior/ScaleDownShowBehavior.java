@@ -1,4 +1,3 @@
-
 package com.art2cat.dev.moonlightnote.CustomView.CustomBehavior;
 
 import android.content.Context;
