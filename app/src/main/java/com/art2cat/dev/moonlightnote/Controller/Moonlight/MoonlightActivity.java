@@ -414,7 +414,7 @@ public class MoonlightActivity extends AppCompatActivity
     private void isRateMyApp(String mUserId, String remarks, boolean isRate) {
         Bundle bundle = new Bundle();
         bundle.putString("UserId", mUserId);
-        bundle.putString("remakes", remarks);
+        bundle.putString("remarks", remarks);
         bundle.putBoolean("Rate_my_app", isRate);
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }

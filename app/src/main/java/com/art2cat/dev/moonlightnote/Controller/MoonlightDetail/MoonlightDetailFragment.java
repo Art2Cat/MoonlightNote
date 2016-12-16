@@ -383,8 +383,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     public void onStart() {
         Log.d(TAG, "onStart: ");
         super.onStart();
-
     }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -438,6 +438,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     public void onStop() {
         super.onStop();
         Log.i(TAG, "onStop");
+    }
+
+    @Override
+    public void onDestroy() {
         //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
         if (mCreateFlag && mEditable) {
             if (!isEmpty(moonlight)) {
@@ -446,9 +450,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         }
         //当editFlag为true且moonlight不为空时更新moonlight信息到服务器
         if (mEditable && mEditFlag && moonlight != null && !moonlight.isTrash()) {
-            Log.d(TAG, "mKeyId" + mKeyId);
-            Log.d(TAG, "onStop: " + moonlight.getTitle());
-            Log.d(TAG, "hash: " + moonlight.hashCode());
             if (isMakeACopy) {
                 FDatabaseUtils.updateMoonlight(mUserId,
                         mKeyId, MoonlightEncryptUtils.decryptMoonlight(moonlight),
@@ -458,10 +459,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                         Constants.EXTRA_TYPE_MOONLIGHT);
             }
         }
-    }
-
-    @Override
-    public void onDestroy() {
         EventBus.getDefault().unregister(this);
         mAudioPlayer.releasePlayer();
         super.onDestroy();
