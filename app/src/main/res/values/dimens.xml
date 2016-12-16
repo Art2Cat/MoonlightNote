@@ -15,4 +15,8 @@
     <dimen name="activity_dialog_content_size">5sp</dimen>
     <dimen name="activity_dialog_positive_button_size">6sp</dimen>
     <dimen name="activity_dialog_negative_button_size">6sp</dimen>
+    <dimen name="icon_top_margin">24dp</dimen>
+    <dimen name="icon_bottom_margin">24dp</dimen>
+    <dimen name="title_bottom_margin">16dp</dimen>
+    <dimen name="field_width_standard">160dp</dimen>
 </resources>

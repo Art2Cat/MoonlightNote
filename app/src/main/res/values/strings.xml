@@ -45,6 +45,8 @@
     <string name="dialog_reset_password">Send a password reset email</string>
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="google_title_text">Sign In with Google</string>
+    <string name="desc_firebase_lockup">Firebase logo and name</string>
     <string name="login_send_email_succeed">Reset password email have been send to your email</string>
     <string name="ChoseEmailClient">Chose email app</string>
     <string name="dialog_enter_your_register_email">Enter your register email</string>
@@ -226,5 +228,6 @@
     <string name="dialog_empty_note_title">Empty Note?</string>
     <string name="dialog_empty_note_confirm">Empty Note</string>
     <string name="dialog_empty_note_content">All notes will be permanently deleted. Deleted data will not be restored.</string>
+    <string name="dialog_color_white">white</string>
 
 </resources>

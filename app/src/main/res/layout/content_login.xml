@@ -107,14 +107,31 @@
                             android:theme="@style/RaiseButtonStyle" />
                     </android.support.v7.widget.LinearLayoutCompat>
 
-                    <android.support.v7.widget.AppCompatImageButton
+                    <android.support.v7.widget.AppCompatButton
                         android:id="@+id/login_google_btn"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        android:background="@drawable/google_icon" />
+                        android:textAllCaps="false"
+                        android:layout_gravity="center_horizontal"
+                        android:theme="@style/RaiseButtonStyleX"
+                        android:drawableStart="@mipmap/ic_google"
+                        android:drawablePadding="8dp"
+                        android:text="@string/google_title_text" />
+
+                    <android.support.v7.widget.AppCompatButton
+                        android:id="@+id/test_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:textAllCaps="false"
+                        android:visibility="gone"
+                        android:layout_gravity="center_horizontal"
+                        android:theme="@style/RaiseButtonStyleX"
+                        android:text="TEST ONLY"/>
+                        <!--android:drawableStart="@mipmap/ic_google"-->
+                        <!--android:drawablePadding="8dp"-->
+                        <!--android:text="@string/google_title_text" />-->
 
                 </android.support.v7.widget.LinearLayoutCompat>
             </android.support.v7.widget.ContentFrameLayout>

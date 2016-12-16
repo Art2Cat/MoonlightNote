@@ -39,13 +39,25 @@
     <style name="RaiseButtonStyle" parent="Theme.AppCompat.Light">
         <item name="android:elevation">8dp</item>
         <item name="android:textColor">#FFFFFF</item>
-        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="colorControlHighlight">@color/grey</item>
         <item name="colorButtonNormal">@color/colorPrimary</item>
     </style>
 
-    <style name="FlatButtonStyle" parent="Theme.AppCompat.Light">
-        <item name="android:textSize">14sp</item>
+    <style name="RaiseButtonStyleX" parent="Theme.AppCompat.Light">
+        <item name="android:elevation">8dp</item>
+        <item name="android:textColor">@color/grey</item>
         <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="colorButtonNormal">@color/white</item>
+    </style>
+
+    <style name="FlatButtonStyle" parent="Theme.AppCompat.Light">
+    <item name="android:textSize">14sp</item>
+    <item name="colorControlHighlight">@color/colorAccent</item>
+</style>
+
+    <style name="FlatButtonStyleX" parent="Theme.AppCompat.Light">
+        <item name="android:textSize">14sp</item>
+        <item name="colorControlHighlight">@color/grey</item>
     </style>
 
     <style name="MoonlightCardViewStyle" parent="AppTheme">
@@ -77,5 +89,26 @@
     <style name="MyEditText" parent="Theme.AppCompat.Light">
         <item name="colorControlNormal">@color/indigo</item>
         <item name="colorControlActivated">@color/pink</item>
+    </style>
+
+    <style name="ThemeOverlay.MyTextDetail" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fadeScrollbars">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:maxLines">5</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:scrollbars">vertical</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="ThemeOverlay.FirebaseIcon" parent="AppTheme">
+        <item name="android:layout_marginTop">@dimen/icon_top_margin</item>
+        <item name="android:layout_marginBottom">@dimen/icon_bottom_margin</item>
+    </style>
+
+    <style name="ThemeOverlay.MyTitleText" parent="AppTheme">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
     </style>
 </resources>

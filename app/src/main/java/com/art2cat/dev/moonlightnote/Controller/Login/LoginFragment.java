@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.InputDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
@@ -73,6 +74,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     private GoogleApiClient mGoogleApiClient;
     private int flag = 0;
     private boolean isNewUser = false;
+    private boolean isSignUp;
 
 
     public LoginFragment() {
@@ -113,12 +115,14 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         AppCompatButton reset = (AppCompatButton) mView.findViewById(R.id.reset_password);
         AppCompatButton mRegister = (AppCompatButton) mView.findViewById(R.id.email_sign_in_button);
         AppCompatButton mLogin = (AppCompatButton) mView.findViewById(R.id.email_sign_up_button);
-        AppCompatImageButton mLogin_Google = (AppCompatImageButton) mView.findViewById(R.id.login_google_btn);
+        AppCompatButton mLogin_Google = (AppCompatButton) mView.findViewById(R.id.login_google_btn);
+        AppCompatButton test = (AppCompatButton) mView.findViewById(R.id.test_btn);
 
         reset.setOnClickListener(this);
         mRegister.setOnClickListener(this);
         mLogin.setOnClickListener(this);
         mLogin_Google.setOnClickListener(this);
+        test.setOnClickListener(this);
 
         mLoginFormView = mView.findViewById(R.id.login_form);
         mProgressView = mView.findViewById(R.id.login_progress);
@@ -134,8 +138,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-
     }
 
     @Override
@@ -307,8 +309,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                         .requestIdToken(getActivity().getString(R.string.default_web_client_id))
                         .requestEmail()
                         .build();
-
-
                 mGoogleApiClient = null;
                 mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                         .enableAutoManage((FragmentActivity) getActivity() /* FragmentActivity */, this /* OnConnectionFailedListener */)
@@ -316,6 +316,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                         .build();
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
                 startActivityForResult(signInIntent, RC_SIGN_IN);
+                break;
+            case R.id.test_btn:
+                signInAnonymously();
                 break;
         }
     }
@@ -427,6 +430,16 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                             showProgress(false);
                             SnackBarUtils.longSnackBar(mView, "Sign Up succeed!",
                                     SnackBarUtils.TYPE_WARNING).show();
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            user.sendEmailVerification()
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "Email sent.");
+                                            }
+                                        }
+                                    });
                             signInWithEmail(email, password);
                             isNewUser = true;
                         } else {
@@ -443,6 +456,33 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
             }
         });
     }
+
+    private void signInAnonymously() {
+        showProgress(true);
+        // [START signin_anonymously]
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInAnonymously:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (task.isSuccessful()) {
+                            Intent intent = new Intent(getActivity(), MoonlightActivity.class);
+                            getActivity().startActivity(intent);
+                            //销毁当前Activity
+                        }
+
+                        // [START_EXCLUDE]
+                        showProgress(false);
+                        // [END_EXCLUDE]
+                    }
+                });
+        // [END signin_anonymously]
+    }
+
 
     public void addListener() {
         mAuth.addAuthStateListener(mAuthListener);

@@ -69,28 +69,6 @@ public class MyColorPickerDialog extends ColorChooserDialog {
 //        int padding = getContext().getResources().getDimensionPixelOffset(R.dimen.padding);
 //        view.setPadding(padding, padding, padding, 0);
 
-
-//        one =      (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b1);
-//        two =      (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b2);
-//        three =    (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b3);
-//        four =     (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b4);
-//        five =     (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b5);
-//        six =      (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b6);
-//        seven =    (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b7);
-//        eight =    (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b8);
-//        nine =     (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b9);
-//        ten =      (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b10);
-//        eleven =   (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b11);
-//        twelve =   (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b12);
-//        thirteen = (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b13);
-//        fourteen = (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b14);
-//        fifteen =  (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b15);
-//        sixteen =  (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b16);
-//        seventeen =(ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b17);
-//        eighteen = (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b18);
-//        nineteen = (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b19);
-//        twenty =   (ImageButton)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b20);
-//        twentyOne =(Button)findViewById(com.turkialkhateeb.materialcolorpicker.R.id.b21);
         one =      (ImageButton)findViewById(R.id.b1);
         two =      (ImageButton)findViewById(R.id.b2);
         three =    (ImageButton)findViewById(R.id.b3);
@@ -319,7 +297,7 @@ public class MyColorPickerDialog extends ColorChooserDialog {
         handler.postDelayed(r6,counter * 6);
         handler.postDelayed(r7,counter * 7);
 //        handler.postDelayed(r8,counter * 8);
-        handler.postDelayed(r9,counter * 9);
+        handler.postDelayed(r9,counter * 8);
     }
 
 
