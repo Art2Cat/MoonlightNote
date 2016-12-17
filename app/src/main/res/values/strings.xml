@@ -87,7 +87,7 @@
     <string name="init_moonlight_content">MoonlightNote based on Firebase, all of your data stores
         in Google Cloud Service are encrypted and secure.</string>
     <string name="fragment_trash">Trash</string>
-    <string name="action_close_account">Close account</string>
+    <string name="action_close_account">Delete account</string>
     <string name="delete_account_title">Delete Account?</string>
     <string name="delete_account_content">Warning: Before deleting your account, make sure that you
         have exported all the data. Deleted accounts can not be restored.
