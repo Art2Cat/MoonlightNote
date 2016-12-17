@@ -224,7 +224,7 @@ public abstract class MoonlightListFragment extends Fragment {
                     if (moonlightD.getImageName() != null) {
                         Log.i(TAG, "populateViewHolder: " + moonlightD.getImageName());
                         viewHolder.mImage.setImageResource(R.drawable.ic_cloud_download_white_48dp);
-                        viewHolder.mImage.setTag(moonlightD.getImageName());
+//                        viewHolder.mImage.setTag(moonlightD.getImageName());
                         viewHolder.displayImage(getActivity(), moonlightD.getImageUrl());
                     } else {
                         viewHolder.mImage.setVisibility(View.GONE);

@@ -121,9 +121,13 @@
         "Copyright 2015 Wasabeef\n"
         "This library is distributed under an Apache 2.0 License.\n\n"
 
-        "Picasso:\n"
-        "Copyright 2013 Square, Inc.\n"
+        "Glide:\n"
+        "Copyright 2013 Sam Judd\n"
         "This library is distributed under an Apache 2.0 License.\n\n"
+
+        "LolliPin:\n"
+        "Copyright 2015 OrangeGangsters\n"
+        "This library is distributed under the MIT License (MIT).\n\n"
 
         "CircleImageView:\n"
         "Copyright 2014 - 2016 Henning Dodenhof\n"

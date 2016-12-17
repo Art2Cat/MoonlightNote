@@ -8,8 +8,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -68,6 +66,7 @@ import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -78,7 +77,6 @@ import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 import com.turkialkhateeb.materialcolorpicker.ColorListener;
 
 import org.greenrobot.eventbus.EventBus;
@@ -86,7 +84,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -103,8 +100,6 @@ import static com.art2cat.dev.moonlightnote.Model.Constants.CAMERA_PERMS;
 import static com.art2cat.dev.moonlightnote.Model.Constants.RECORD_AUDIO;
 import static com.art2cat.dev.moonlightnote.Model.Constants.STORAGE_PERMS;
 import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
-import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
-import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -323,8 +318,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 mTitle.setText(moonlight.getTitle());
             }
         } else {
-            //loseFocus();
-            //mTitle.setShowSoftInputOnFocus(false);
             mTitle.setEnabled(false);
             if (moonlight.getTitle() != null) {
                 mTitle.setText(moonlight.getTitle());
@@ -337,16 +330,17 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             }
         }
         if (moonlight.getImageUrl() != null) {
-            Picasso.with(getActivity()).load(Uri.parse(moonlight.getImageUrl())).memoryPolicy(NO_CACHE, NO_STORE).into(mImage);
-//                mBitmapUtils.display(mImage, moonlight.getImageUrl());
-            //mImageCardView.setVisibility(View.VISIBLE);
+            String url = moonlight.getImageUrl();
+            Glide.with(getActivity())
+                    .load(Uri.parse(url))
+                    .placeholder(R.drawable.ic_cloud_download_white_48dp)
+                    .crossFade()
+                    .into(mImage);
             mImage.setVisibility(View.VISIBLE);
             mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
         }
         if (moonlight.getAudioUrl() != null) {
             showAudio(moonlight.getAudioName());
-            //String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
-            //mAudioPlayer.prepare(dirPath + long_click_moonlight_menu.getAudioName());
             mAudioCardView.setVisibility(View.VISIBLE);
             mContentTextInputLayout.setPadding(0, 0, 0, 0);
             if (!editable) {
@@ -501,6 +495,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                             mContentFrameLayout.setBackgroundColor(color);
                             mAudioContainer.setBackgroundColor(color);
                             changeUIColor(color);
+                            mEditable = true;
                             mEditable = true;
                         }
                     });
@@ -1108,29 +1103,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         //当图片地址不为空时，首先从本地读取bitmap设置图片，bitmap为空，则从网络加载
         //图片地址为空则不加载图片
         if (mFileUri != null) {
-            try {
-                //.Options options = new BitmapFactory.Options();
-                //options.inJustDecodeBounds = true;
-                //options.inSampleSize = 2;//宽高压缩为原来的1/2
-                //options.inPreferredConfig = Bitmap.Config.ARGB_4444;
-                Bitmap bitmap = BitmapFactory.decodeStream(
-                        getActivity().getContentResolver().openInputStream(mFileUri), null, null);
-                if (bitmap != null) {
-                    mImage.setImageBitmap(bitmap);
-//                    LocalCacheUtils localCacheUtils = new LocalCacheUtils(getActivity(), new MemoryCacheUtils());
-//                    localCacheUtils.setBitmapToLocal(mDownloadIUrl.toString(), bitmap);
-                    Picasso.with(getActivity()).load(mFileUri).memoryPolicy(NO_CACHE, NO_STORE).into(mImage);
-                } else {
-//                    mBitmapUtils.display(mImage, mDownloadIUrl.toString());
-                    Picasso.with(getActivity()).load(mDownloadIUrl).memoryPolicy(NO_CACHE, NO_STORE).into(mImage);
-                }
-                //mImageCardView.setVisibility(View.VISIBLE);
+                Glide.with(getActivity()).load(mFileUri).into(mImage);
                 mImage.setVisibility(View.VISIBLE);
                 mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
-
-            } catch (FileNotFoundException e) {
-                Log.d(TAG, "load local file failed" + e.toString());
-            }
         } else {
             mImageFileName = null;
             //mImageCardView.setVisibility(View.GONE);

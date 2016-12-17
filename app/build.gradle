@@ -74,7 +74,7 @@ dependencies {
     compile 'com.turki-alkhateeb:materialcolorpicker:1.0.7'
     compile 'io.github.kobakei:ratethisapp:1.1.0'
     compile 'jp.wasabeef:recyclerview-animators:2.2.4'
-    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'me.zhanghai.android.patternlock:library:2.0.4'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
