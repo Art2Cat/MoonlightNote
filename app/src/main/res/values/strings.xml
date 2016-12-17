@@ -84,11 +84,15 @@
     <string name="dialog_enter_your_nickname">Enter your nickname</string>
     <string name="dialog_set_nickname">Set nickname</string>
     <string name="init_moonlight_title">Welcome to MoonlightNote!</string>
-    <string name="init_moonlight_content">MoonlightNote based on Firebase, all of your data stores in Google Cloud Service are encrypted and secure.</string>
+    <string name="init_moonlight_content">MoonlightNote based on Firebase, all of your data stores
+        in Google Cloud Service are encrypted and secure.</string>
     <string name="fragment_trash">Trash</string>
     <string name="action_close_account">Close account</string>
     <string name="delete_account_title">Delete Account?</string>
-    <string name="delete_account_content">Before deleting your account, make sure that you have exported all the data. Deleted accounts can not be restored.</string>
+    <string name="delete_account_content">Warning: Before deleting your account, make sure that you
+        have exported all the data. Deleted accounts can not be restored
+        (When you delete the account text notes will be deleted instantly, images and
+        audio will be deleted after seven days).</string>
     <string name="dialog_delete_account_confirm">Delete Account</string>
     <string name="dialog_enter_your_password">Enter Your Password</string>
     <string name="old_password_hint">Enter your old password</string>
@@ -142,7 +146,7 @@
     </string>
     <string name="activity_dialog_title">Forgot you Pincode?</string>
     <string name="activity_dialog_accept">OK</string>
-    <string name="activity_dialog_decline">CANCEL</string>
+    <string name="activity_dialog_decline">Cancel</string>
     <string name="activity_dialog_content">Tap \'OK\' to log out, when you log back in you\'ll be
         able to create a new Pincode.\n\nIf you remember your Pincode, tap \'Cancel\' to go back.
     </string>

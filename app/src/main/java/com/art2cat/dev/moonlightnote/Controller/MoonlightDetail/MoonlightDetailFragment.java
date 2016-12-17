@@ -51,7 +51,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
-import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ProgressDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.CircleProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
@@ -126,7 +126,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private CardView mImageCardView;
     private CardView mAudioCardView;
     private AppCompatImageView mImage;
-    private ProgressDialogFragment mProgressDialogFragment;
+    private CircleProgressDialogFragment mCircleProgressDialogFragment;
     private CoordinatorLayout mCoordinatorLayout;
     private BottomSheetBehavior mRightBottomSheetBehavior;
     private BottomSheetBehavior mLeftBottomSheetBehavior;
@@ -240,7 +240,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         mBitmapUtils = new BitmapUtils(getActivity());
         mAudioPlayer = new AudioPlayer(audioPlayerPB, mShowDuration);
 
-        mProgressDialogFragment = ProgressDialogFragment.newInstance();
+        mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance();
 
         showBottomSheet();
 
@@ -842,11 +842,11 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     }
 
     public void uploadFromUri(final Uri fileUri, String userId, int type) {
-        if (mProgressDialogFragment != null) {
-            mProgressDialogFragment.show(getFragmentManager(), "progress");
+        if (mCircleProgressDialogFragment != null) {
+            mCircleProgressDialogFragment.show(getFragmentManager(), "progress");
         } else {
-            mProgressDialogFragment = ProgressDialogFragment.newInstance();
-            mProgressDialogFragment.show(getFragmentManager(), "progress");
+            mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance();
+            mCircleProgressDialogFragment.show(getFragmentManager(), "progress");
         }
 
         StorageTask<UploadTask.TaskSnapshot> uploadTask = null;
@@ -867,7 +867,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadIUrl.toString());
                     moonlight.setImageName(mImageFileName);
                     moonlight.setImageUrl(mDownloadIUrl.toString());
-                    mProgressDialogFragment.dismiss();
+                    mCircleProgressDialogFragment.dismiss();
                     showImage(fileUri);
                 }
             }).addOnFailureListener(getActivity(), new OnFailureListener() {
@@ -876,14 +876,14 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     Log.e(TAG, "onFailure: " + e.toString());
                     mImageFileName = null;
                     mDownloadIUrl = null;
-                    mProgressDialogFragment.dismiss();
+                    mCircleProgressDialogFragment.dismiss();
                     showImage(fileUri);
                 }
             }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
                     Log.d(TAG, "onPaused: ");
-                    mProgressDialogFragment.dismiss();
+                    mCircleProgressDialogFragment.dismiss();
                     SnackBarUtils.shortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO).show();
                 }
             });
@@ -901,7 +901,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     moonlight.setAudioName(mAudioFileName);
                     moonlight.setAudioUrl(mDownloadAUrl.toString());
                     showAudio(mAudioFileName);
-                    mProgressDialogFragment.dismiss();
+                    mCircleProgressDialogFragment.dismiss();
                 }
             }).addOnFailureListener(getActivity(), new OnFailureListener() {
                 @Override
@@ -909,14 +909,14 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     Log.e(TAG, "onFailure: " + e.toString());
                     mAudioFileName = null;
                     mDownloadAUrl = null;
-                    mProgressDialogFragment.dismiss();
+                    mCircleProgressDialogFragment.dismiss();
                     showAudio(fileUri.toString());
                 }
             }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
                     Log.d(TAG, "onPaused: ");
-                    mProgressDialogFragment.dismiss();
+                    mCircleProgressDialogFragment.dismiss();
                     SnackBarUtils.shortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO).show();
                 }
             });

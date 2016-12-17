@@ -44,6 +44,7 @@ public class Constants {
     public static final int BUS_FLAG_DELETE_IMAGE = 813;
     public static final int BUS_FLAG_EMPTY_NOTE = 813;
     public static final int BUS_FLAG_MAKE_COPY_DONE = 814;
+    public static final int BUS_FLAG_EXPORT_DATA_DONE = 815;
 
     /**
      * Fragment type

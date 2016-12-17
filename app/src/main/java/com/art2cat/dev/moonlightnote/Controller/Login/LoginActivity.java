@@ -21,7 +21,6 @@ import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
 import java.util.List;
@@ -91,9 +90,7 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
-                    mFDatabaseUtils = new FDatabaseUtils(LoginActivity.this,
-
-                            FirebaseDatabase.getInstance().getReference(), user.getUid());
+                    mFDatabaseUtils = new FDatabaseUtils(LoginActivity.this, user.getUid());
                     mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
                     //downloadUserConfig(user.getUid());
 

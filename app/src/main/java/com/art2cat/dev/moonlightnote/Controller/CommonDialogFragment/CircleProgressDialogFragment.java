@@ -13,10 +13,10 @@ import com.art2cat.dev.moonlightnote.R;
  * on 11/20/16 6:11 PM.
  */
 
-public class ProgressDialogFragment extends DialogFragment {
+public class CircleProgressDialogFragment extends DialogFragment {
 
-    public static ProgressDialogFragment newInstance() {
-        return new ProgressDialogFragment();
+    public static CircleProgressDialogFragment newInstance() {
+        return new CircleProgressDialogFragment();
     }
 
     @NonNull

@@ -36,8 +36,6 @@ import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.kobakei.ratethisapp.RateThisApp;
 
 import org.greenrobot.eventbus.EventBus;
@@ -88,8 +86,7 @@ public class MoonlightActivity extends AppCompatActivity
         //获取FirebaseAuth实例
         mAuth = getInstance();
         mUserId = mAuth.getCurrentUser().getUid();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        mFDatabaseUtils = new FDatabaseUtils(this, databaseReference, mUserId);
+        mFDatabaseUtils = new FDatabaseUtils(this, mUserId);
         mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
         //获取Bus单例，并注册
         EventBus.getDefault().register(this);
@@ -381,6 +378,11 @@ public class MoonlightActivity extends AppCompatActivity
                     break;
                 case Constants.BUS_FLAG_NONE_SECURITY:
                     isLock = !isLock;
+                    break;
+                case Constants.BUS_FLAG_EXPORT_DATA_DONE:
+                    SnackBarUtils.longSnackBar(mCoordinatorLayout,
+                            "Export succeed! save in internal storage root named Note.json",
+                            SnackBarUtils.TYPE_INFO).show();
                     break;
             }
         }

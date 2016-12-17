@@ -7,9 +7,12 @@ import android.util.Log;
 
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
+import com.art2cat.dev.moonlightnote.Model.NoteLab;
 import com.art2cat.dev.moonlightnote.Model.User;
+import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserUtils;
+import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -34,20 +37,22 @@ public class FDatabaseUtils {
     private boolean complete;
     private String mUserId;
     private DatabaseReference mDatabaseReference;
+    private DatabaseReference mDatabaseReference1;
     private ValueEventListener mValueEventListener;
+    private ValueEventListener mValueEventListener1;
 
     public FDatabaseUtils() {
 
     }
 
-    public FDatabaseUtils(Context context, DatabaseReference databaseReference, String userId) {
+    public FDatabaseUtils(Context context, String userId) {
         mContext = context;
-        mDatabaseReference = databaseReference;
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mUserId = userId;
     }
 
-    public static FDatabaseUtils newInstance(Context context, DatabaseReference databaseReference, String userId) {
-        return new FDatabaseUtils(context, databaseReference, userId);
+    public static FDatabaseUtils newInstance(Context context, String userId) {
+        return new FDatabaseUtils(context, userId);
     }
 
     public static void emptyTrash(String mUserId) {
@@ -175,7 +180,6 @@ public class FDatabaseUtils {
     }
 
     public void getDataFromDatabase(String keyId, final int type) {
-        Log.d(TAG, "getDataFromDatabase: " + keyId);
         if (type == Constants.EXTRA_TYPE_MOONLIGHT) {
             mDatabaseReference = FirebaseDatabase.getInstance().getReference()
                     .child("users-moonlight").child(mUserId).child("note").child(keyId);
@@ -212,9 +216,44 @@ public class FDatabaseUtils {
 
     }
 
+    public void exportNote() {
+        mDatabaseReference1 = FirebaseDatabase.getInstance().getReference()
+                .child("users-moonlight").child(mUserId).child("note");
+
+        mValueEventListener1 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null) {
+                    NoteLab noteLab = new NoteLab();
+
+                    int count = (int) dataSnapshot.getChildrenCount();
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        Moonlight moonlight = child.getValue(Moonlight.class);
+                        noteLab.setMoonlight(MoonlightEncryptUtils.decryptMoonlight(moonlight));
+                    }
+
+                    if (count == noteLab.getMoonlights().size()) {
+                        Utils.saveNoteToLocal(noteLab);
+                        BusEventUtils.post(Constants.BUS_FLAG_EXPORT_DATA_DONE, null);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadMoonlight:onCancelled", databaseError.toException());
+            }
+
+        };
+        mDatabaseReference1.addValueEventListener(mValueEventListener1);
+    }
+
     public void removeListener() {
         if (mValueEventListener != null) {
             mDatabaseReference.removeEventListener(mValueEventListener);
+        }
+        if (mValueEventListener1 != null) {
+            mDatabaseReference1.removeEventListener(mValueEventListener1);
         }
     }
 

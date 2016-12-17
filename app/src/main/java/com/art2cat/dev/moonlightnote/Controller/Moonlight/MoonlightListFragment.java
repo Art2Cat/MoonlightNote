@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -56,6 +55,7 @@ public abstract class MoonlightListFragment extends Fragment {
     private static final String TAG = "MoonlightListFragment";
     public LinearLayoutCompat mTransitionItem;
     private DatabaseReference mDatabase;
+    private FDatabaseUtils mFDatabaseUtils;
     private FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder> mFirebaseRecyclerAdapter;
     private Toolbar mToolbar;
     private Toolbar mToolbar2;
@@ -63,8 +63,6 @@ public abstract class MoonlightListFragment extends Fragment {
     private AppBarLayout.LayoutParams mParams;
     private RecyclerView mRecyclerView;
     private RecyclerView.AdapterDataObserver mAdapterDataObserver;
-    private MoonlightViewHolder mMoonlightViewHolder;
-    private AppCompatImageView mImageView;
     private Moonlight mMoonlight;
     private Menu mMenu;
     private MenuInflater mMenuInflater;
@@ -81,6 +79,7 @@ public abstract class MoonlightListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         //获取Bus单例，并注册
         EventBus.getDefault().register(this);
+        mFDatabaseUtils = FDatabaseUtils.newInstance(getActivity(), getUid());
     }
 
     @Override
@@ -191,6 +190,7 @@ public abstract class MoonlightListFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         Log.d(TAG, "onDestroyView: ");
+        mFDatabaseUtils.removeListener();
         mFirebaseRecyclerAdapter.unregisterAdapterDataObserver(mAdapterDataObserver);
     }
 
@@ -205,7 +205,6 @@ public abstract class MoonlightListFragment extends Fragment {
                 protected void populateViewHolder(MoonlightViewHolder viewHolder, Moonlight model, final int position) {
                     DatabaseReference moonlightRef = getRef(position);
                     final String moonlightKey = moonlightRef.getKey();
-                    mMoonlightViewHolder = viewHolder;
 
                     final Moonlight moonlightD = MoonlightEncryptUtils.decryptMoonlight(model);
 
@@ -321,7 +320,7 @@ public abstract class MoonlightListFragment extends Fragment {
                 public void onItemRangeInserted(int positionStart, int itemCount) {
                     super.onItemRangeInserted(positionStart, itemCount);
                     Log.d(TAG, "onItemRangeInserted: " + itemCount);
-                    mRecyclerView.smoothScrollToPosition(itemCount);
+                    mRecyclerView.smoothScrollToPosition(mFirebaseRecyclerAdapter.getItemCount());
                     if (isNotify) {
                         notifyChange();
                     }
@@ -362,6 +361,8 @@ public abstract class MoonlightListFragment extends Fragment {
             Log.d(TAG, "cleanup");
             mFirebaseRecyclerAdapter.cleanup();
         }
+
+        mFDatabaseUtils.removeListener();
     }
 
     @Override
@@ -404,6 +405,9 @@ public abstract class MoonlightListFragment extends Fragment {
                                 getString(R.string.dialog_empty_note_content),
                                 Constants.EXTRA_TYPE_CDF_EMPTY_NOTE);
                 emptyNote.show(getFragmentManager(), "Empty Note");
+                break;
+            case R.id.action_export_data:
+                mFDatabaseUtils.exportNote();
                 break;
             case R.id.menu_empty_trash:
                 ConfirmationDialogFragment emptyTrash = ConfirmationDialogFragment
@@ -569,7 +573,7 @@ public abstract class MoonlightListFragment extends Fragment {
                         }
                         setParams(0);
                         changeToolbar(null, 1);
-                        changeOptionsMenu(2);
+                        changeOptionsMenu(3);
                         isInflate = true;
                         return false;
                     }

@@ -20,9 +20,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.CircleProgressDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.InputDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.PickPicDialogFragment;
-import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
@@ -30,6 +31,7 @@ import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.AuthUtils;
+import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
@@ -88,7 +90,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private AppCompatTextView mNickname;
     private AppCompatTextView mEmail;
     private AdView mAdView;
-    private ProgressDialogFragment mProgressDialogFragment;
+    private CircleProgressDialogFragment mCircleProgressDialogFragment;
     private FirebaseUser user;
     private User mUser;
     private BitmapUtils mBitmapUtils;
@@ -115,7 +117,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
         mBitmapUtils = new BitmapUtils(getActivity());
 
-        mProgressDialogFragment = ProgressDialogFragment.newInstance();
+        mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance();
     }
 
     @Override
@@ -194,13 +196,13 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                         fragment,
                         FragmentUtils.REPLACE_BACK_STACK);
                 break;
-//            case R.id.action_close_account:
-//                ConfirmationDialogFragment confirmationDialogFragment =
-//                        ConfirmationDialogFragment.newInstance(getString(R.string.delete_account_title),
-//                                getString(R.string.delete_account_content), Constants.EXTRA_TYPE_CDF_DELETE_ACCOUNT);
-//                confirmationDialogFragment.show(getFragmentManager(), "delete account");
-//                break;
-        }
+            case R.id.action_close_account:
+                ConfirmationDialogFragment confirmationDialogFragment =
+                        ConfirmationDialogFragment.newInstance(getString(R.string.delete_account_title),
+                                getString(R.string.delete_account_content), Constants.EXTRA_TYPE_CDF_DELETE_ACCOUNT);
+                confirmationDialogFragment.show(getFragmentManager(), "delete account");
+                break;
+      }
         return super.onOptionsItemSelected(item);
     }
 
@@ -292,6 +294,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                         AuthCredential credential = EmailAuthProvider
                                 .getCredential(user.getEmail(), busEvent.getMessage());
+                        FDatabaseUtils.emptyNote(user.getUid());
+                        FDatabaseUtils.emptyTrash(user.getUid());
+
                         user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
@@ -459,7 +464,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     private void uploadFromUri(Uri fileUri, final String userId) {
 
-        mProgressDialogFragment.show(getFragmentManager(), "progress");
+        mCircleProgressDialogFragment.show(getFragmentManager(), "progress");
 
         StorageReference photoRef = mStorageReference.child(userId).child("avatar")
                 .child(fileUri.getLastPathSegment());
@@ -475,12 +480,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 updateUI(taskSnapshot.getDownloadUrl());
                 UserUtils.saveUserToCache(getActivity().getApplicationContext(), mUser);
                 updateProfile(null, taskSnapshot.getDownloadUrl());
-                mProgressDialogFragment.dismiss();
+                mCircleProgressDialogFragment.dismiss();
             }
         }).addOnFailureListener(getActivity(), new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                mProgressDialogFragment.dismiss();
+                mCircleProgressDialogFragment.dismiss();
                 Log.e(TAG, "onFailure: " + e.toString());
                 mFileName = null;
                 if (user.getPhotoUrl() != null) {

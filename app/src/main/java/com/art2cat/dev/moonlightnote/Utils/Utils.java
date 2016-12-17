@@ -4,13 +4,22 @@ import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Environment;
 import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.Controller.Settings.MoonlightPinActivity;
+import com.art2cat.dev.moonlightnote.Model.NoteLab;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -106,6 +115,31 @@ public class Utils {
                 intent.putExtra(AppLock.EXTRA_TYPE, AppLock.DISABLE_PINLOCK);
                 context.startActivity(intent);
                 break;
+        }
+    }
+
+
+    public static void saveNoteToLocal(NoteLab noteLab) {
+        String path = Environment
+                .getExternalStorageDirectory().getAbsolutePath();
+        try (Writer writer = new FileWriter(path + "/Note.json")) {
+            Gson gson = new GsonBuilder().create();
+            gson.toJson(noteLab, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static NoteLab getNoteFromLocal(){
+        String path = Environment
+                .getExternalStorageDirectory().getAbsolutePath();
+        try (Reader reader = new FileReader(path + "/Note.json")) {
+
+            Gson gson = new GsonBuilder().create();
+            return gson.fromJson(reader, NoteLab.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
