@@ -1,13 +1,10 @@
 package com.art2cat.dev.moonlightnote.Utils;
 
-import android.annotation.SuppressLint;
-import android.icu.util.TimeUnit;
 import android.media.MediaPlayer;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
-import android.util.TimeUtils;
 import android.widget.ProgressBar;
 
 import java.io.IOException;
@@ -53,12 +50,7 @@ public class AudioPlayer {
             //采用异步的方式同步
             mPlayer.prepare();
             // 为播放器注册
-            mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-
-                public void onPrepared(MediaPlayer mp) {
-                    Log.d(TAG, "onPrepared: ");
-                }
-            });
+            mPlayer.setOnPreparedListener(mp -> Log.d(TAG, "onPrepared: "));
             //开始播放
             mDuration = mPlayer.getDuration();
             Log.d(TAG, "prepare: " + mDuration);

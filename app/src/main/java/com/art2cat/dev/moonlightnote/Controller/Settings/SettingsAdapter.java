@@ -46,63 +46,60 @@ class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingsViewH
     public void onBindViewHolder(SettingsViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         final Map<String, Object> map = mData.get(position);
         holder.item.setText((CharSequence) map.get("Title"));
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int code =
-                        SPUtils.getInt(context.getApplicationContext(),
-                                Constants.USER_CONFIG,
-                                Constants.USER_CONFIG_SECURITY_ENABLE, 0);
-                FragmentManager fragmentManager = ((Activity) context).getFragmentManager();
-                int id = R.id.common_fragment_container;
-                switch ((int)map.get("Type")) {
+        holder.itemView.setOnClickListener(view -> {
+            int code =
+                    SPUtils.getInt(context.getApplicationContext(),
+                            Constants.USER_CONFIG,
+                            Constants.USER_CONFIG_SECURITY_ENABLE, 0);
+            FragmentManager fragmentManager = ((Activity) context).getFragmentManager();
+            int id = R.id.common_fragment_container;
+            switch ((int)map.get("Type")) {
 
-                    case 304:
-                        FragmentUtils.replaceFragment(fragmentManager,
-                                id,
-                                new SecurityFragment(),
-                                FragmentUtils.REPLACE_BACK_STACK);
-                        Utils.lockApp(context, code);
-                        break;
-                    case 301:
-                        FragmentUtils.replaceFragment(fragmentManager,
-                                id,
-                                new PolicyFragment().newInstance(),
-                                FragmentUtils.REPLACE_BACK_STACK);
-                        break;
-                    case 303:
-                        FragmentUtils.replaceFragment(fragmentManager,
-                                id,
-                                new LicenseFragment().newInstance(),
-                                FragmentUtils.REPLACE_BACK_STACK);
-                        break;
-                    case 302:
-                        FragmentUtils.replaceFragment(fragmentManager,
-                                id,
-                                new AboutFragment().newInstance(),
-                                FragmentUtils.REPLACE_BACK_STACK);
-                        break;
-                    case 305:
-                        ConfirmationDialogFragment confirmationDialogFragment =
-                                ConfirmationDialogFragment.newInstance(
-                                        context.getString(R.string.confirmation_title),
-                                        context.getString(R.string.confirmation_disable_security),
-                                        Constants.EXTRA_TYPE_CDF_DISABLE_SECURITY);
-                        confirmationDialogFragment.show(((Activity)context).getFragmentManager(),null);
-                        break;
-                    case 307:
-                        Utils.showToast(context, "Current not available", 0);
-                        break;
-                    case 306:
-                        FragmentUtils.replaceFragment(fragmentManager,
-                                id,
-                                new PinFragment(),
-                                FragmentUtils.REPLACE_BACK_STACK);
-                        break;
-                    case 308:
-                        Utils.showToast(context, "Current not available", 0);
-                        break;
-                }
+                case 304:
+                    FragmentUtils.replaceFragment(fragmentManager,
+                            id,
+                            new SecurityFragment(),
+                            FragmentUtils.REPLACE_BACK_STACK);
+                    Utils.lockApp(context, code);
+                    break;
+                case 301:
+                    FragmentUtils.replaceFragment(fragmentManager,
+                            id,
+                            new PolicyFragment().newInstance(),
+                            FragmentUtils.REPLACE_BACK_STACK);
+                    break;
+                case 303:
+                    FragmentUtils.replaceFragment(fragmentManager,
+                            id,
+                            new LicenseFragment().newInstance(),
+                            FragmentUtils.REPLACE_BACK_STACK);
+                    break;
+                case 302:
+                    FragmentUtils.replaceFragment(fragmentManager,
+                            id,
+                            new AboutFragment().newInstance(),
+                            FragmentUtils.REPLACE_BACK_STACK);
+                    break;
+                case 305:
+                    ConfirmationDialogFragment confirmationDialogFragment =
+                            ConfirmationDialogFragment.newInstance(
+                                    context.getString(R.string.confirmation_title),
+                                    context.getString(R.string.confirmation_disable_security),
+                                    Constants.EXTRA_TYPE_CDF_DISABLE_SECURITY);
+                    confirmationDialogFragment.show(((Activity)context).getFragmentManager(),null);
+                    break;
+                case 307:
+                    Utils.showToast(context, "Current not available", 0);
+                    break;
+                case 306:
+                    FragmentUtils.replaceFragment(fragmentManager,
+                            id,
+                            new PinFragment(),
+                            FragmentUtils.REPLACE_BACK_STACK);
+                    break;
+                case 308:
+                    Utils.showToast(context, "Current not available", 0);
+                    break;
             }
         });
     }

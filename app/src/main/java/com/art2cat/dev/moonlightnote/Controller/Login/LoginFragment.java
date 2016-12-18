@@ -13,17 +13,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
-import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.InputDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
@@ -43,11 +39,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -101,15 +93,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         toolbar.setTitle(R.string.fragment_login);
 
         mPasswordView = (AppCompatEditText) mView.findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
+        mPasswordView.setOnEditorActionListener((textView, id, keyEvent) -> {
+            if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                attemptLogin();
+                return true;
             }
+            return false;
         });
 
         AppCompatButton reset = (AppCompatButton) mView.findViewById(R.id.reset_password);
@@ -330,37 +319,34 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     }
 
     public void signIn() {
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    SPUtils.putString(getActivity(), "User", "Id", user.getUid());
-                    Uri photoUrl = user.getPhotoUrl();
-                    String nickname = user.getDisplayName();
-                    String email = user.getEmail();
-                    User user1 = new User();
-                    user1.setUid(user.getUid());
-                    if (nickname != null) {
-                        user1.setNickname(nickname);
-                    }
-                    if (email != null) {
-                        user1.setEmail(email);
-                    }
-                    if (photoUrl != null) {
-                        user1.photoUrl = photoUrl.toString();
-                    }
-
-                    if (isNewUser) {
-                        commitMoonlight(user.getUid());
-                    }
-
-                    UserUtils.updateUser(user.getUid(), user1);
-                    UserUtils.saveUserToCache(getActivity().getApplicationContext(), user1);
-                } else {
-                    Log.d(TAG, "onAuthStateChanged:signed_out:");
+        mAuthListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                SPUtils.putString(getActivity(), "User", "Id", user.getUid());
+                Uri photoUrl = user.getPhotoUrl();
+                String nickname = user.getDisplayName();
+                String email = user.getEmail();
+                User user1 = new User();
+                user1.setUid(user.getUid());
+                if (nickname != null) {
+                    user1.setNickname(nickname);
                 }
+                if (email != null) {
+                    user1.setEmail(email);
+                }
+                if (photoUrl != null) {
+                    user1.photoUrl = photoUrl.toString();
+                }
+
+                if (isNewUser) {
+                    commitMoonlight(user.getUid());
+                }
+
+                UserUtils.updateUser(user.getUid(), user1);
+                UserUtils.saveUserToCache(getActivity().getApplicationContext(), user1);
+            } else {
+                Log.d(TAG, "onAuthStateChanged:signed_out:");
             }
         };
     }
@@ -370,115 +356,92 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
+                .addOnCompleteListener(getActivity(), task -> {
+                    Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
 
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
-                            showProgress(false);
-                            Log.w(TAG, "signInWithCredential", task.getException());
-                            SnackBarUtils.shortSnackBar(mView, "Authentication failed: " + task.getException(),
-                                    SnackBarUtils.TYPE_WARNING).show();
-                        } else {
-                            showProgress(false);
-                            Intent intent = new Intent(getActivity(), MoonlightActivity.class);
-                            isNewUser = true;
-                            getActivity().startActivity(intent);
-                            SnackBarUtils.shortSnackBar(mView, "Google Sign In successed", SnackBarUtils.TYPE_INFO).show();
-                            SPUtils.putBoolean(getActivity(), "User", "google", true);
-                            getActivity().finish();
-                        }
+                    // If sign in fails, display a message to the user. If sign in succeeds
+                    // the auth state listener will be notified and logic to handle the
+                    // signed in user can be handled in the listener.
+                    if (!task.isSuccessful()) {
+                        showProgress(false);
+                        Log.w(TAG, "signInWithCredential", task.getException());
+                        SnackBarUtils.shortSnackBar(mView, "Authentication failed: " + task.getException(),
+                                SnackBarUtils.TYPE_WARNING).show();
+                    } else {
+                        showProgress(false);
+                        Intent intent = new Intent(getActivity(), MoonlightActivity.class);
+                        isNewUser = true;
+                        getActivity().startActivity(intent);
+                        SnackBarUtils.shortSnackBar(mView, "Google Sign In successed", SnackBarUtils.TYPE_INFO).show();
+                        SPUtils.putBoolean(getActivity(), "User", "google", true);
+                        getActivity().finish();
                     }
                 });
     }
 
     public void signInWithEmail(final String email, final String password) {
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            showProgress(false);
-                            Intent intent = new Intent(getActivity(), MoonlightActivity.class);
-                            getActivity().startActivity(intent);
-                            //销毁当前Activity
-                            getActivity().finish();
-                            Log.d(TAG, "signIn:onComplete:" + task.isSuccessful());
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        showProgress(false);
+                        Intent intent = new Intent(getActivity(), MoonlightActivity.class);
+                        getActivity().startActivity(intent);
+                        //销毁当前Activity
+                        getActivity().finish();
+                        Log.d(TAG, "signIn:onComplete:" + task.isSuccessful());
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                showProgress(false);
-                SnackBarUtils.shortSnackBar(mView, "Sign In Failed: " + e.toString(),
-                        SnackBarUtils.TYPE_WARNING).show();
-            }
-        });
+                }).addOnFailureListener(e -> {
+                    showProgress(false);
+                    SnackBarUtils.shortSnackBar(mView, "Sign In Failed: " + e.toString(),
+                            SnackBarUtils.TYPE_WARNING).show();
+                });
     }
 
     public void signUp(final String email, final String password) {
 
         mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            showProgress(false);
-                            SnackBarUtils.longSnackBar(mView, "Sign Up succeed!",
-                                    SnackBarUtils.TYPE_WARNING).show();
-                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            user.sendEmailVerification()
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Log.d(TAG, "Email sent.");
-                                            }
-                                        }
-                                    });
-                            signInWithEmail(email, password);
-                            isNewUser = true;
-                        } else {
-                            showProgress(false);
-                            isNewUser = false;
-                            SnackBarUtils.longSnackBar(mView, "Sign Up Failed: " + task.getException().toString(),
-                                    SnackBarUtils.TYPE_WARNING).show();
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        showProgress(false);
+                        SnackBarUtils.longSnackBar(mView, "Sign Up succeed!",
+                                SnackBarUtils.TYPE_WARNING).show();
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        user.sendEmailVerification()
+                                .addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        Log.d(TAG, "Email sent.");
+                                    }
+                                });
+                        signInWithEmail(email, password);
+                        isNewUser = true;
+                    } else {
+                        showProgress(false);
+                        isNewUser = false;
+                        SnackBarUtils.longSnackBar(mView, "Sign Up Failed: " + task.getException().toString(),
+                                SnackBarUtils.TYPE_WARNING).show();
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "onFailure: " + e.toString());
-            }
-        });
+                }).addOnFailureListener(e -> Log.e(TAG, "onFailure: " + e.toString()));
     }
 
     private void signInAnonymously() {
         showProgress(true);
         // [START signin_anonymously]
         mAuth.signInAnonymously()
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInAnonymously:onComplete:" + task.isSuccessful());
+                .addOnCompleteListener(task -> {
+                    Log.d(TAG, "signInAnonymously:onComplete:" + task.isSuccessful());
 
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (task.isSuccessful()) {
-                            Intent intent = new Intent(getActivity(), MoonlightActivity.class);
-                            getActivity().startActivity(intent);
-                            //销毁当前Activity
-                        }
-
-                        // [START_EXCLUDE]
-                        showProgress(false);
-                        // [END_EXCLUDE]
+                    // If sign in fails, display a message to the user. If sign in succeeds
+                    // the auth state listener will be notified and logic to handle the
+                    // signed in user can be handled in the listener.
+                    if (task.isSuccessful()) {
+                        Intent intent = new Intent(getActivity(), MoonlightActivity.class);
+                        getActivity().startActivity(intent);
+                        //销毁当前Activity
                     }
+
+                    // [START_EXCLUDE]
+                    showProgress(false);
+                    // [END_EXCLUDE]
                 });
         // [END signin_anonymously]
     }

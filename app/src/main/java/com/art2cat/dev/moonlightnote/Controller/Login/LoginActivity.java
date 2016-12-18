@@ -83,22 +83,19 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
     }
 
     public void signIn() {
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
-                    mFDatabaseUtils = new FDatabaseUtils(LoginActivity.this, user.getUid());
-                    mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
-                    //downloadUserConfig(user.getUid());
+        mAuthListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
+                mFDatabaseUtils = new FDatabaseUtils(LoginActivity.this, user.getUid());
+                mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
+                //downloadUserConfig(user.getUid());
 
-                    mLoginState = true;
-                } else {
-                    mLoginState = false;
-                    Log.d(TAG, "onAuthStateChanged:signed_out:");
-                }
+                mLoginState = true;
+            } else {
+                mLoginState = false;
+                Log.d(TAG, "onAuthStateChanged:signed_out:");
             }
         };
     }

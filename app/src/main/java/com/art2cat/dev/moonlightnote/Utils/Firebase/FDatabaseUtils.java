@@ -1,7 +1,6 @@
 package com.art2cat.dev.moonlightnote.Utils.Firebase;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -13,8 +12,6 @@ import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -59,12 +56,7 @@ public class FDatabaseUtils {
         try {
             FirebaseDatabase.getInstance().getReference().child("users-moonlight")
                     .child(mUserId).child("trash").removeValue(
-                    new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                            Log.d(TAG, "emptyTrash onComplete: ");
-                        }
-                    });
+                    (databaseError, databaseReference) -> Log.d(TAG, "emptyTrash onComplete: "));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -113,20 +105,17 @@ public class FDatabaseUtils {
             Log.d(TAG, "updateMoonlight: " + mKey);
         }
 
-        final String finalOldKey = oldKey;
-        databaseReference.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (type == Constants.EXTRA_TYPE_TRASH) {
-                    Log.d(TAG, "onComplete: update" + finalOldKey);
-                    if (finalOldKey != null) {
-                        removeMoonlight(userId, finalOldKey, type);
-                    }
-                } else if (type == Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT) {
-                    Log.d(TAG, "onComplete: update" + finalOldKey);
-                    if (finalOldKey != null) {
-                        removeMoonlight(userId, finalOldKey, type);
-                    }
+        String finalOldKey = oldKey;
+        databaseReference.updateChildren(childUpdates).addOnCompleteListener(task -> {
+            if (type == Constants.EXTRA_TYPE_TRASH) {
+                Log.d(TAG, "onComplete: update" + finalOldKey);
+                if (finalOldKey != null) {
+                    removeMoonlight(userId, finalOldKey, type);
+                }
+            } else if (type == Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT) {
+                Log.d(TAG, "onComplete: update" + finalOldKey);
+                if (finalOldKey != null) {
+                    removeMoonlight(userId, finalOldKey, type);
                 }
             }
         });
@@ -144,11 +133,8 @@ public class FDatabaseUtils {
         }
 
         if (databaseReference != null) {
-            databaseReference.removeValue(new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+            databaseReference.removeValue((databaseError, databaseReference1) -> {
 
-                }
             });
         }
     }

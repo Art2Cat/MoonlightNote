@@ -204,9 +204,9 @@ public abstract class MoonlightListFragment extends Fragment {
                 @Override
                 protected void populateViewHolder(MoonlightViewHolder viewHolder, Moonlight model, final int position) {
                     DatabaseReference moonlightRef = getRef(position);
-                    final String moonlightKey = moonlightRef.getKey();
+                    String moonlightKey = moonlightRef.getKey();
 
-                    final Moonlight moonlightD = MoonlightEncryptUtils.decryptMoonlight(model);
+                    Moonlight moonlightD = MoonlightEncryptUtils.decryptMoonlight(model);
 
                     if (moonlightD.getTitle() != null) {
                         viewHolder.displayTitle(moonlightD.getTitle());
@@ -249,53 +249,47 @@ public abstract class MoonlightListFragment extends Fragment {
                     }
 
                     mTransitionItem = viewHolder.mTransitionItem;
-                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Log.d(TAG, "onClick: " + isLogin);
-                            if (isLogin) {
-                                Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
-                                if (isTrash()) {
-                                    Log.d(TAG, "onClick: trash");
-                                    intent.putExtra("Fragment", Constants.EXTRA_TRASH_FRAGMENT);
-                                    intent.putExtra("moonlight", moonlightD);
-                                    startActivity(intent);
-                                    BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
-                                } else {
-                                    Log.d(TAG, "onClick: edit");
-                                    intent.putExtra("Fragment", Constants.EXTRA_EDIT_FRAGMENT);
-                                    intent.putExtra("moonlight", moonlightD);
-                                    startActivity(intent);
-                                    BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
-                                }
-                                isNotify = false;
-                                changeToolbar(null, 1);
-                                setParams(0);
+                    viewHolder.itemView.setOnClickListener(v -> {
+                        Log.d(TAG, "onClick: " + isLogin);
+                        if (isLogin) {
+                            Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
+                            if (isTrash()) {
+                                Log.d(TAG, "onClick: trash");
+                                intent.putExtra("Fragment", Constants.EXTRA_TRASH_FRAGMENT);
+                                intent.putExtra("moonlight", moonlightD);
+                                startActivity(intent);
+                                BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
+                            } else {
+                                Log.d(TAG, "onClick: edit");
+                                intent.putExtra("Fragment", Constants.EXTRA_EDIT_FRAGMENT);
+                                intent.putExtra("moonlight", moonlightD);
+                                startActivity(intent);
+                                BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                             }
-
+                            isNotify = false;
+                            changeToolbar(null, 1);
+                            setParams(0);
                         }
+
                     });
 
-                    viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            Log.d(TAG, "onLongClick: " + moonlightKey);
-                            Log.d(TAG, "onLongClick1: " + moonlightD.getId());
-                            Log.d(TAG, "onLongClick2: " + position);
-                            if (moonlightKey.equals(moonlightD.getId())) {
-                                if (!isTrash()) {
-                                    setParams(1);
-                                    changeToolbar(moonlightD, 0);
-                                    isToolbarScroll = true;
-                                } else {
-                                    changeToolbar(moonlightD, 0);
-                                    setParams(1);
-                                    isToolbarScroll = true;
-                                }
+                    viewHolder.itemView.setOnLongClickListener(v -> {
+                        Log.d(TAG, "onLongClick: " + moonlightKey);
+                        Log.d(TAG, "onLongClick1: " + moonlightD.getId());
+                        Log.d(TAG, "onLongClick2: " + position);
+                        if (moonlightKey.equals(moonlightD.getId())) {
+                            if (!isTrash()) {
+                                setParams(1);
+                                changeToolbar(moonlightD, 0);
+                                isToolbarScroll = true;
+                            } else {
+                                changeToolbar(moonlightD, 0);
+                                setParams(1);
+                                isToolbarScroll = true;
                             }
-                            return true;
-
                         }
+                        return true;
+
                     });
                 }
             };
@@ -346,12 +340,7 @@ public abstract class MoonlightListFragment extends Fragment {
     }
 
     private void notifyChange() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mFirebaseRecyclerAdapter.notifyDataSetChanged();
-            }
-        }, 1000);
+        new Handler().postDelayed(() -> mFirebaseRecyclerAdapter.notifyDataSetChanged(), 1000);
     }
 
     @Override

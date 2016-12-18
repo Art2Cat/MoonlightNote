@@ -31,7 +31,6 @@ public abstract class CommonSettingsFragment extends Fragment {
 
     public abstract Fragment newInstance();
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
