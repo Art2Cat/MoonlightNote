@@ -251,15 +251,18 @@ public class MoonlightActivity extends AppCompatActivity
         //FloatingActionButton实例化
         mFAB = (FloatingActionButton) findViewById(R.id.fab);
         //设置FloatingActionButton点击事件
-        mFAB.setOnClickListener(view -> {
-            if (isLogin) {
-                Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
-                intent.putExtra("Fragment", Constants.EXTRA_CREATE_FRAGMENT);
-                startActivity(intent);
-                isLock = !isLock;
-            } else {
-                SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
-                        SnackBarUtils.TYPE_INFO).show();
+        mFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isLogin) {
+                    Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
+                    intent.putExtra("Fragment", Constants.EXTRA_CREATE_FRAGMENT);
+                    startActivity(intent);
+                    isLock = !isLock;
+                } else {
+                    SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
+                            SnackBarUtils.TYPE_INFO).show();
+                }
             }
         });
 
@@ -279,38 +282,43 @@ public class MoonlightActivity extends AppCompatActivity
         View headerView = mNavigationView.getHeaderView(0);
 
         mSortButton = (Button) headerView.findViewById(R.id.sort_up_or_down_btn);
-        mSortButton.setOnClickListener(view -> {
-
-            if (isLogin) {
-                if (!isClicked) {
-                    mNavigationView.getMenu().clear();
-                    mNavigationView.inflateMenu(R.menu.activity_main_drawer_account);
-                    mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_sort_up, null));
-                    isClicked = !isClicked;
+        mSortButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isLogin) {
+                    if (!isClicked) {
+                        mNavigationView.getMenu().clear();
+                        mNavigationView.inflateMenu(R.menu.activity_main_drawer_account);
+                        mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_sort_up, null));
+                        isClicked = !isClicked;
+                    } else {
+                        mNavigationView.getMenu().clear();
+                        mNavigationView.inflateMenu(R.menu.activity_main_drawer);
+                        mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_sort_down, null));
+                        isClicked = !isClicked;
+                    }
                 } else {
-                    mNavigationView.getMenu().clear();
-                    mNavigationView.inflateMenu(R.menu.activity_main_drawer);
-                    mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_sort_down, null));
-                    isClicked = !isClicked;
+                    SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
+                            SnackBarUtils.TYPE_INFO).show();
                 }
-            } else {
-                SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
-                        SnackBarUtils.TYPE_INFO).show();
             }
         });
 
         //头像实例化
         mCircleImageView = (CircleImageView) headerView.findViewById(R.id.imageView);
         //设置点击头像事件启动LoginActivity
-        mCircleImageView.setOnClickListener(view -> {
-            if (isLogin) {
-                Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
-                intent.putExtra("Fragment", Constants.EXTRA_USER_FRAGMENT);
-                startActivity(intent);
-                isLock = !isLock;
-            } else {
-                SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
-                        SnackBarUtils.TYPE_INFO).show();
+        mCircleImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isLogin) {
+                    Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
+                    intent.putExtra("Fragment", Constants.EXTRA_USER_FRAGMENT);
+                    startActivity(intent);
+                    isLock = !isLock;
+                } else {
+                    SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
+                            SnackBarUtils.TYPE_INFO).show();
+                }
             }
         });
 
@@ -348,8 +356,11 @@ public class MoonlightActivity extends AppCompatActivity
                 case Constants.EXTRA_TYPE_MOONLIGHT:
                     SnackBarUtils.shortSnackBar(mCoordinatorLayout,
                             getString(R.string.delete_moonlight), SnackBarUtils.TYPE_INFO)
-                            .setAction(getString(R.string.restore_moonlight), view -> {
+                            .setAction(getString(R.string.restore_moonlight), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
 
+                                }
                             }).show();
                     break;
                 case Constants.EXTRA_TYPE_TRASH:

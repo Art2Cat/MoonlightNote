@@ -2,18 +2,16 @@ package com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
-
-import org.greenrobot.eventbus.EventBus;
+import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 
 
 /**
@@ -43,18 +41,20 @@ public class PickPicDialogFragment extends DialogFragment {
         TextView album = (TextView) view.findViewById(R.id.album);
 
 
-        camera.setOnClickListener(view1 -> {
-            BusEvent busEvent = new BusEvent();
-            busEvent.setFlag(Constants.BUS_FLAG_CAMERA);
-            EventBus.getDefault().post(busEvent);
-            dismiss();
+        camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BusEventUtils.post(Constants.BUS_FLAG_CAMERA, null);
+                dismiss();
+            }
         });
 
-        album.setOnClickListener(view2 -> {
-            BusEvent busEvent = new BusEvent();
-            busEvent.setFlag(Constants.BUS_FLAG_ALBUM);
-            EventBus.getDefault().post(busEvent);
-            dismiss();
+        album.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BusEventUtils.post(Constants.BUS_FLAG_ALBUM, null);
+                dismiss();
+            }
         });
 
         return new AlertDialog.Builder(getActivity()).setView(view).create();

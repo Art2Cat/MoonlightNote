@@ -8,6 +8,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,6 +44,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -65,13 +67,17 @@ import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.turkialkhateeb.materialcolorpicker.ColorListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -249,14 +255,17 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             }
             onCheckSoftKeyboardState(mView);
             //mDeleteImage.setOnClickListener(this);
-            mImage.setOnLongClickListener(view -> {
-                ConfirmationDialogFragment confirmationDialogFragment =
-                        ConfirmationDialogFragment.newInstance(
-                                getString(R.string.confirmation_title),
-                                getString(R.string.confirmation_delete_image),
-                                Constants.EXTRA_TYPE_CDF_DELETE_IMAGE);
-                confirmationDialogFragment.show(getFragmentManager(), "delete image");
-                return false;
+            mImage.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    ConfirmationDialogFragment confirmationDialogFragment =
+                            ConfirmationDialogFragment.newInstance(
+                                    getString(R.string.confirmation_title),
+                                    getString(R.string.confirmation_delete_image),
+                                    Constants.EXTRA_TYPE_CDF_DELETE_IMAGE);
+                    confirmationDialogFragment.show(getFragmentManager(), "delete image");
+                    return false;
+                }
             });
             mDeleteAudio.setOnClickListener(this);
             mPlayingAudio.setOnClickListener(this);
@@ -385,17 +394,24 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             final Snackbar snackbar = SnackBarUtils.longSnackBar(mView, getString(R.string.trash_restore),
                     SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_restore_action,
-                    view -> {
-                        BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
-                        FDatabaseUtils.restoreToNote(mUserId, moonlight);
-                        startActivity(new Intent(getActivity(), MoonlightActivity.class));
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
+                            FDatabaseUtils.restoreToNote(mUserId, moonlight);
+                            startActivity(new Intent(getActivity(), MoonlightActivity.class));
+                        }
                     });
 
-            MoonlightDetailActivity.FragmentOnTouchListener fragmentOnTouchListener = ev -> {
-                if (!snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {
-                    snackbar.show();
+            MoonlightDetailActivity.FragmentOnTouchListener fragmentOnTouchListener = new MoonlightDetailActivity.FragmentOnTouchListener() {
+                @Override
+                public boolean onTouch(MotionEvent ev) {
+                    if (!snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {
+                        snackbar.show();
+                    }
+                    return false;
                 }
-                return false;
             };
             ((MoonlightDetailActivity) getActivity()).registerFragmentOnTouchListener(fragmentOnTouchListener);
         }
@@ -472,14 +488,16 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 if (mEditable) {
                     MyColorPickerDialog dialog = new MyColorPickerDialog(getActivity());
                     dialog.setTitle("Color Picker");
-                    dialog.setColorListener((v, color) -> {
-                        //do whatever you want to with the values
-                        moonlight.setColor(color);
-                        mContentFrameLayout.setBackgroundColor(color);
-                        mAudioContainer.setBackgroundColor(color);
-                        changeUIColor(color);
-                        mEditable = true;
-                        mEditable = true;
+                    dialog.setColorListener(new ColorListener() {
+                        @Override
+                        public void OnColorClick(View v, int color) {
+                            moonlight.setColor(color);
+                            mContentFrameLayout.setBackgroundColor(color);
+                            mAudioContainer.setBackgroundColor(color);
+                            changeUIColor(color);
+                            mEditable = true;
+                            mEditable = true;
+                        }
                     });
                     //customize the dialog however you want
                     dialog.show();
@@ -541,12 +559,15 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     }
                     mAudioPlayer.startPlaying();
                     mPlayingAudio.setBackgroundResource(R.drawable.ic_pause_circle_filled_lime_a700_48dp);
-                    mAudioPlayer.mPlayer.setOnCompletionListener(mp -> {
-                        mp.reset();
-                        mAudioPlayer.mProgressBar.setProgress(0);
-                        mPlayingAudio.setBackgroundResource(R.drawable.ic_play_circle_outline_cyan_400_48dp);
-                        mAudioPlayer.isPrepared = false;
-                        mStartPlaying = !mStartPlaying;
+                    mAudioPlayer.mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+                            mediaPlayer.reset();
+                            mAudioPlayer.mProgressBar.setProgress(0);
+                            mPlayingAudio.setBackgroundResource(R.drawable.ic_play_circle_outline_cyan_400_48dp);
+                            mAudioPlayer.isPrepared = false;
+                            mStartPlaying = !mStartPlaying;
+                        }
                     });
                 } else {
                     mAudioPlayer.stopPlaying();
@@ -837,49 +858,67 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             Log.d(TAG, "uploadFromUri: " + fileUri.getLastPathSegment());
             // Upload file to Firebase Storage
             uploadTask = photoRef.putFile(fileUri);
-            uploadTask.addOnSuccessListener(taskSnapshot -> {
-                mDownloadIUrl = taskSnapshot.getDownloadUrl();
-                mImageFileName = taskSnapshot.getMetadata().getName();
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    mDownloadIUrl = taskSnapshot.getDownloadUrl();
+                    mImageFileName = taskSnapshot.getMetadata().getName();
 
-                Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadIUrl.toString());
-                moonlight.setImageName(mImageFileName);
-                moonlight.setImageUrl(mDownloadIUrl.toString());
-                mCircleProgressDialogFragment.dismiss();
-                showImage(fileUri);
-            }).addOnFailureListener(e -> {
-                Log.e(TAG, "onFailure: " + e.toString());
-                mImageFileName = null;
-                mDownloadIUrl = null;
-                mCircleProgressDialogFragment.dismiss();
-                showImage(fileUri);
-            }).addOnPausedListener(taskSnapshot -> {
-                Log.d(TAG, "onPaused: ");
-                mCircleProgressDialogFragment.dismiss();
-                SnackBarUtils.shortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO).show();
+                    Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadIUrl.toString());
+                    moonlight.setImageName(mImageFileName);
+                    moonlight.setImageUrl(mDownloadIUrl.toString());
+                    mCircleProgressDialogFragment.dismiss();
+                    showImage(fileUri);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, "onFailure: " + e.toString());
+                    mImageFileName = null;
+                    mDownloadIUrl = null;
+                    mCircleProgressDialogFragment.dismiss();
+                    showImage(fileUri);
+                }
+            }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.d(TAG, "onPaused: ");
+                    mCircleProgressDialogFragment.dismiss();
+                    SnackBarUtils.shortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO).show();
+                }
             });
         } else if (type == 3) {
             StorageReference storageReference = mStorageReference.child(userId).child("audios")
                     .child(fileUri.getLastPathSegment());
             uploadTask = storageReference.putFile(fileUri);
-            uploadTask.addOnSuccessListener(taskSnapshot -> {
-                mDownloadAUrl = taskSnapshot.getDownloadUrl();
-                mAudioFileName = taskSnapshot.getMetadata().getName();
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    mDownloadAUrl = taskSnapshot.getDownloadUrl();
+                    mAudioFileName = taskSnapshot.getMetadata().getName();
 
-                Log.d(TAG, "onSuccess: downloadUrl:  " + mAudioFileName.toString());
-                moonlight.setAudioName(mAudioFileName);
-                moonlight.setAudioUrl(mDownloadAUrl.toString());
-                showAudio(mAudioFileName);
-                mCircleProgressDialogFragment.dismiss();
-            }).addOnFailureListener(getActivity(), e -> {
-                Log.e(TAG, "onFailure: " + e.toString());
-                mAudioFileName = null;
-                mDownloadAUrl = null;
-                mCircleProgressDialogFragment.dismiss();
-                showAudio(fileUri.toString());
-            }).addOnPausedListener(taskSnapshot -> {
-                Log.d(TAG, "onPaused: ");
-                mCircleProgressDialogFragment.dismiss();
-                SnackBarUtils.shortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO).show();
+                    Log.d(TAG, "onSuccess: downloadUrl:  " + mAudioFileName.toString());
+                    moonlight.setAudioName(mAudioFileName);
+                    moonlight.setAudioUrl(mDownloadAUrl.toString());
+                    showAudio(mAudioFileName);
+                    mCircleProgressDialogFragment.dismiss();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, "onFailure: " + e.toString());
+                    mAudioFileName = null;
+                    mDownloadAUrl = null;
+                    mCircleProgressDialogFragment.dismiss();
+                    showAudio(fileUri.toString());
+                }
+            }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.d(TAG, "onPaused: ");
+                    mCircleProgressDialogFragment.dismiss();
+                    SnackBarUtils.shortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO).show();
+                }
             });
         }
     }
@@ -1028,27 +1067,32 @@ public abstract class MoonlightDetailFragment extends Fragment implements
      *
      * @param view 主视图布局
      */
-    private void onCheckSoftKeyboardState(View view) {
+    private void onCheckSoftKeyboardState(final View view) {
         //先主视图布局设置监听，监听其布局发生变化事件
-        view.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-
-            //比较主视图布局与当前布局的大小
-            int heightDiff = mView.getRootView().getHeight() - view.getHeight();
-            if (heightDiff > 100) {
-                //大小超过100时，一般为显示虚拟键盘事件
-                if (mEditable) {
-                    if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                        mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    }
-                    if (mRightBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                        mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                    }
-                } else {
-                    //大小小于100时，为不显示虚拟键盘或虚拟键盘隐藏
-                    Log.d(TAG, "onGlobalLayout: ");
-                }
-            }
-        });
+        view.getViewTreeObserver()
+                .addOnGlobalLayoutListener(
+                        new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                //比较主视图布局与当前布局的大小
+                                int heightDiff = mView.getRootView().getHeight() - view.getHeight();
+                                if (heightDiff > 100) {
+                                    //大小超过100时，一般为显示虚拟键盘事件
+                                    if (mEditable) {
+                                        if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                                            mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                                        }
+                                        if (mRightBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                                            mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                                        }
+                                    } else {
+                                        //大小小于100时，为不显示虚拟键盘或虚拟键盘隐藏
+                                        Log.d(TAG, "onGlobalLayout: ");
+                                    }
+                                }
+                            }
+                        }
+                );
     }
 
     /**
@@ -1060,9 +1104,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         //当图片地址不为空时，首先从本地读取bitmap设置图片，bitmap为空，则从网络加载
         //图片地址为空则不加载图片
         if (mFileUri != null) {
-                Glide.with(getActivity()).load(mFileUri).into(mImage);
-                mImage.setVisibility(View.VISIBLE);
-                mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
+            Glide.with(getActivity()).load(mFileUri).into(mImage);
+            mImage.setVisibility(View.VISIBLE);
+            mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
         } else {
             mImageFileName = null;
             //mImageCardView.setVisibility(View.GONE);

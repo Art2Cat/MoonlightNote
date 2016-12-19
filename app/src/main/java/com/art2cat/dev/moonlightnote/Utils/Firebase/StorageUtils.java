@@ -5,8 +5,11 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 
+import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -47,9 +50,11 @@ public class StorageUtils {
         }
 
         if (localFile != null) {
-            islandRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
-                // Local temp file has been created
-                Log.i(TAG, "onSuccess: ");
+            islandRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+
+                }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
@@ -80,9 +85,11 @@ public class StorageUtils {
         }
 
         if (localFile != null) {
-            islandRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
-                // Local temp file has been created
-                Log.i(TAG, "onSuccess: ");
+            islandRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+
+                }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
@@ -102,10 +109,12 @@ public class StorageUtils {
 
         StorageReference photoRef = FirebaseStorage.getInstance().getReference()
                 .child(mUserId).child("photos").child(imageName);
-        photoRef.delete().addOnSuccessListener(aVoid -> {
-            Log.d(TAG, "onSuccess: ");
-            if (mView != null) {
-                SnackBarUtils.shortSnackBar(mView, "Image removed!", SnackBarUtils.TYPE_INFO).show();
+        photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                if (mView != null) {
+                    SnackBarUtils.shortSnackBar(mView, "Image removed!", SnackBarUtils.TYPE_INFO).show();
+                }
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -123,12 +132,19 @@ public class StorageUtils {
 
         StorageReference audioRef = FirebaseStorage.getInstance().getReference()
                 .child(mUserId).child("audios").child(audioName);
-        audioRef.delete().addOnSuccessListener(aVoid -> {
-            Log.d(TAG, "onSuccess: ");
-            if (mView != null) {
-                SnackBarUtils.shortSnackBar(mView, "Voice removed!", SnackBarUtils.TYPE_INFO).show();
+        audioRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                if (mView != null) {
+                    SnackBarUtils.shortSnackBar(mView, "Voice removed!", SnackBarUtils.TYPE_INFO).show();
+                }
             }
-        }).addOnFailureListener(e -> Log.w(TAG, "onFailure: " + e.toString()));
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (BuildConfig.DEBUG) Log.d(TAG, e.toString());
+            }
+        });
 
     }
 }
