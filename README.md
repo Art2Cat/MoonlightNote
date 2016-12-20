@@ -12,9 +12,9 @@ MoonlightNote Based on Firebase and in accordance with the Material Design stand
 - Multi-Window Support(require Android 7.0 Nougat)
 - Encrypt/Decrypt Note(AES)
 - Password Protect Program(Current use PinCode, password and pattern coming soon)
+- Export all Notes
 
 # To Do:
-- Export all Notes
 - Sorting notes (a-z, date)
 
 I'm a members from the 2016 Google Developer StudyJams Chinese activities, thanks StudyJams activity provides a very good opportunity for me to learn Android programming techniques, just because StudyJams help, let me step by step forward, continue to progress, in order to have results today, hope for the future StudyJams can help more novices to achieve the dream of programming techniques. For more information, please attention www.studyjamscn.com
