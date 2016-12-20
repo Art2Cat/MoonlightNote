@@ -18,6 +18,7 @@ import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
+import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
@@ -120,8 +121,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            if (!super.onMenuItemSelected(featureId, item)) {
+            if (super.onMenuItemSelected(featureId, item)) {
                 NavUtils.navigateUpFromSameTask(this);
+            }
+            if (super.onMenuItemSelected(featureId, item) && isXLargeTablet(this)) {
+                startActivity(new Intent(SettingsActivity.this, MoonlightActivity.class));
+                this.finish();
             }
             return true;
         }

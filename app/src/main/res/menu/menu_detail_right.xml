@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.art2cat.dev.moonlightnote.ScrollingActivity">
+    <item
+        android:id="@+id/action_change_password"
+        android:orderInCategory="100"
+        android:title="@string/action_change_password"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_close_account"
+        android:orderInCategory="100"
+        android:title="@string/action_close_account"
+        app:showAsAction="never" />
+</menu>

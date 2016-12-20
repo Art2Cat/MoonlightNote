@@ -53,9 +53,9 @@ public class MoonlightActivity extends AppCompatActivity
     private static final String TAG = "MoonlightActivity";
     public Toolbar mToolbar;
     public Toolbar mToolbar2;
+    public FloatingActionButton mFAB;
     private NavigationView mNavigationView;
     private CoordinatorLayout mCoordinatorLayout;
-    public FloatingActionButton mFAB;
     private Button mSortButton;
     private CircleImageView mCircleImageView;
     private boolean isHome = true;
@@ -195,7 +195,13 @@ public class MoonlightActivity extends AppCompatActivity
 //                Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
 //                intent.putExtra("Fragment", Constants.EXTRA_SETTINGS_FRAGMENT);
 //                startActivity(intent);
-                startActivity(new Intent(MoonlightActivity.this, SettingsActivity.class));
+                Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
+                if (Utils.isXLargeTablet(this)) {
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    Log.d(TAG, "onNavigationItemSelected: ");
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                }
+                startActivity(intent);
                 isLock = !isLock;
                 break;
             case R.id.nav_rate_app:

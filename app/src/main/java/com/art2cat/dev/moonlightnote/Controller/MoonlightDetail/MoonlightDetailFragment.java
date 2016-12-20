@@ -33,6 +33,7 @@ import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -63,6 +64,7 @@ import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.MaterialAnimation.CircularRevealUtils;
+import com.art2cat.dev.moonlightnote.Utils.MenuUtils;
 import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
@@ -106,7 +108,7 @@ import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
  * A simple {@link Fragment} subclass.
  */
 public abstract class MoonlightDetailFragment extends Fragment implements
-        View.OnClickListener, View.OnFocusChangeListener {
+        View.OnClickListener, View.OnFocusChangeListener, PopupMenu.OnMenuItemClickListener {
     private static final String TAG = "MoonlightDetailFragment";
     private View mView;
     private Toolbar mToolbar;
@@ -243,8 +245,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
 
         mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance();
 
-        showBottomSheet();
-
         if (mEditable) {
             //获取系统当前时间
             long date = System.currentTimeMillis();
@@ -270,9 +270,14 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             });
             mDeleteAudio.setOnClickListener(this);
             mPlayingAudio.setOnClickListener(this);
+            if (!Utils.isXLargeTablet(getActivity())) {
+                showBottomSheet();
+            }
+
             mBottomBarLeft.setOnClickListener(this);
             mBottomBarRight.setOnClickListener(this);
         }
+
         mTitle.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -548,12 +553,20 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bottom_bar_left:
-                isLeftOrRight = true;
-                hideSoftKeyboard();
+                if (Utils.isXLargeTablet(getActivity())) {
+                    MenuUtils.showPopupMenu(getActivity(), mView, R.menu.menu_detail_left, this);
+                } else {
+                    isLeftOrRight = true;
+                    hideSoftKeyboard();
+                }
                 break;
             case R.id.bottom_bar_right:
-                isLeftOrRight = false;
-                hideSoftKeyboard();
+                if (Utils.isXLargeTablet(getActivity())) {
+                    MenuUtils.showPopupMenu(getActivity(), mView, R.menu.menu_detail_right, this);
+                } else {
+                    isLeftOrRight = false;
+                    hideSoftKeyboard();
+                }
                 break;
             case R.id.moonlight_image:
                 //网页浏览图片。。。
@@ -1087,7 +1100,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                                 int heightDiff = mView.getRootView().getHeight() - view.getHeight();
                                 if (heightDiff > 100) {
                                     //大小超过100时，一般为显示虚拟键盘事件
-                                    if (mEditable) {
+                                    if (mEditable && !Utils.isXLargeTablet(getActivity())) {
                                         if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                                             mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                                         }
@@ -1114,7 +1127,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         //图片地址为空则不加载图片
         if (mFileUri != null) {
             Glide.with(getActivity())
-                    .load(mFileUri)
+                    .load(mDownloadAUrl)
                     .placeholder(R.drawable.ic_cloud_download_white_48dp)
                     .into(mImage);
             mImage.post(new Runnable() {
@@ -1141,6 +1154,11 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         } else {
             mShowDuration.setText(Utils.convert(moonlight.getAudioDuration()));
         }
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        return false;
     }
 
     private class BottomSheet implements Runnable {
