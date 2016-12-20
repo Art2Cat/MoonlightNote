@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,14 +22,17 @@ import java.util.ArrayList;
 public class CommonActivity extends AppCompatActivity {
     public Toolbar mToolbar;
 
-    private ArrayList<CommonActivity.FragmentOnTouchListener> onTouchListeners = new ArrayList<CommonActivity.FragmentOnTouchListener>(
+    private ArrayList<FragmentOnTouchListener> onTouchListeners = new ArrayList<FragmentOnTouchListener>(
             10);
+    public ContentFrameLayout mCommonFragmentContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_common);
+        initView();
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mCommonFragmentContainer = (ContentFrameLayout) findViewById(R.id.common_fragment_container);
         setSupportActionBar(mToolbar);
 
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
@@ -97,7 +101,7 @@ public class CommonActivity extends AppCompatActivity {
      */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        for (CommonActivity.FragmentOnTouchListener listener : onTouchListeners) {
+        for (FragmentOnTouchListener listener : onTouchListeners) {
             if (listener != null) {
                 listener.onTouch(ev);
             }
@@ -110,7 +114,7 @@ public class CommonActivity extends AppCompatActivity {
      *
      * @param fragmentOnTouchListener
      */
-    public void registerFragmentOnTouchListener(CommonActivity.FragmentOnTouchListener fragmentOnTouchListener) {
+    public void registerFragmentOnTouchListener(FragmentOnTouchListener fragmentOnTouchListener) {
         onTouchListeners.add(fragmentOnTouchListener);
     }
 
@@ -119,8 +123,12 @@ public class CommonActivity extends AppCompatActivity {
      *
      * @param fragmentOnTouchListener
      */
-    public void unregisterFragmentOnTouchListener(CommonActivity.FragmentOnTouchListener fragmentOnTouchListener) {
+    public void unregisterFragmentOnTouchListener(FragmentOnTouchListener fragmentOnTouchListener) {
         onTouchListeners.remove(fragmentOnTouchListener);
+    }
+
+    private void initView() {
+        mCommonFragmentContainer = (ContentFrameLayout) findViewById(R.id.common_fragment_container);
     }
 
     public interface FragmentOnTouchListener {

@@ -205,40 +205,58 @@ public class MyColorPickerDialog extends ColorChooserDialog {
 
     private void animate(){
         Log.e("animate","true");
-        Runnable r1 = () -> {
-            Log.e("animator 1","r");
-            animator(one);
+        Runnable r1 = new Runnable() {
+            @Override
+            public void run() {
+                Log.e("animator 1","r");
+                animator(one);
+            }
         };
 
-        Runnable r2 = () -> {
-            animator(two);
-            animator(six);
+        Runnable r2 = new Runnable() {
+            @Override
+            public void run() {
+                animator(two);
+                animator(six);
+            }
         };
 
-        Runnable r3 = () -> {
-            animator(three);
-            animator(seven);
-            animator(eleven);
+        Runnable r3 = new Runnable() {
+            @Override
+            public void run() {
+                animator(three);
+                animator(seven);
+                animator(eleven);
+            }
         };
 
-        Runnable r4 = () -> {
-            animator(four);
-            animator(eight);
-            animator(twelve);
-            animator(sixteen);
+        Runnable r4 = new Runnable() {
+            @Override
+            public void run() {
+                animator(four);
+                animator(eight);
+                animator(twelve);
+                animator(sixteen);
+            }
         };
 
-        Runnable r5 = () -> {
-            animator(five);
-            animator(nine);
-            animator(thirteen);
-            animator(seventeen);
+        Runnable r5 = new Runnable() {
+            @Override
+            public void run() {
+                animator(five);
+                animator(nine);
+                animator(thirteen);
+                animator(seventeen);
+            }
         };
 
-        Runnable r6 = () -> {
-            animator(ten);
-            animator(fourteen);
-            animator(eighteen);
+        Runnable r6 = new Runnable() {
+            @Override
+            public void run() {
+                animator(ten);
+                animator(fourteen);
+                animator(eighteen);
+            }
         };
 
         Runnable r7 = new Runnable() {
@@ -256,12 +274,15 @@ public class MyColorPickerDialog extends ColorChooserDialog {
 //            }
 //        };
 
-        Runnable r9 = () -> {
-            Animation animation = AnimationUtils.loadAnimation(getContext(),android.R.anim.fade_in);
-            animation.setInterpolator(new AccelerateInterpolator());
-            twentyOne.setAnimation(animation);
-            twentyOne.setVisibility(View.VISIBLE);
-            animation.start();
+        Runnable r9 = new Runnable() {
+            @Override
+            public void run() {
+                Animation animation = AnimationUtils.loadAnimation(getContext(),android.R.anim.fade_in);
+                animation.setInterpolator(new AccelerateInterpolator());
+                twentyOne.setAnimation(animation);
+                twentyOne.setVisibility(View.VISIBLE);
+                animation.start();
+            }
         };
 
 

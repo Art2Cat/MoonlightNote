@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.art2cat.dev.moonlightnote.Controller.CommonActivity;
 import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
+import com.art2cat.dev.moonlightnote.Controller.Settings.SettingsActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.User;
@@ -191,9 +192,10 @@ public class MoonlightActivity extends AppCompatActivity
                 }
                 break;
             case R.id.nav_settings:
-                Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
-                intent.putExtra("Fragment", Constants.EXTRA_SETTINGS_FRAGMENT);
-                startActivity(intent);
+//                Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
+//                intent.putExtra("Fragment", Constants.EXTRA_SETTINGS_FRAGMENT);
+//                startActivity(intent);
+                startActivity(new Intent(MoonlightActivity.this, SettingsActivity.class));
                 isLock = !isLock;
                 break;
             case R.id.nav_rate_app:

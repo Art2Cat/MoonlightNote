@@ -58,8 +58,8 @@
         </activity>
         <activity
             android:name=".Controller.CommonActivity"
-            android:theme="@style/AppTheme.NoActionBarForLoginFragment"
-            android:parentActivityName=".Controller.Moonlight.MoonlightActivity" >
+            android:parentActivityName=".Controller.Moonlight.MoonlightActivity"
+            android:theme="@style/AppTheme.NoActionBarForLoginFragment">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Controller.Moonlight.MoonlightActivity" />
@@ -72,13 +72,26 @@
         </service>
 
         <activity android:name=".Controller.Settings.MoonlightPinActivity" />
-
-        <activity android:name=".Controller.MoonlightDetail.MoonlightDetailActivity"
-            android:theme="@style/AppTheme.NoActionBarForLoginFragment"
-            android:parentActivityName=".Controller.Moonlight.MoonlightActivity" >
+        <activity
+            android:name=".Controller.MoonlightDetail.MoonlightDetailActivity"
+            android:parentActivityName=".Controller.Moonlight.MoonlightActivity"
+            android:theme="@style/AppTheme.NoActionBarForLoginFragment">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Controller.Moonlight.MoonlightActivity" />
+        </activity>
+        <activity
+            android:name=".Controller.Settings.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".Controller.Moonlight.MoonlightActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity" />
+        </activity>
+        <activity android:name=".Controller.Settings.SettingsSecondActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.art2cat.dev.moonlightnote.Controller.Settings.SettingsActivity" />
         </activity>
     </application>
 

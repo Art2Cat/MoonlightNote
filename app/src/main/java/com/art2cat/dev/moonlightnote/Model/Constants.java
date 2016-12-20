@@ -20,6 +20,8 @@ public class Constants {
     public static final String STORAGE_AUDIO = "audio";
     public static final String STORAGE_AVATAR = "avatar";
     public static final String STORAGE_USER_CONFIG = "user_config";
+    public static final String EXTRA_SECURITY_TYPE = "security_type";
+    public static final String EXTRA_TYPE_FRAGMENT = "fragment";
 
     /**
      * FireBase常量
@@ -98,6 +100,5 @@ public class Constants {
      * AES偏移量 （可修改）
      */
     public static final String IV_PARAMERER = "1020304050607080";
-
 
 }

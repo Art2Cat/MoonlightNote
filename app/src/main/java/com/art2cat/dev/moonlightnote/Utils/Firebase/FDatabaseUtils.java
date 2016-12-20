@@ -249,6 +249,15 @@ public class FDatabaseUtils {
         mDatabaseReference1.addValueEventListener(mValueEventListener1);
     }
 
+    public void restoreAll() {
+        NoteLab noteLab = Utils.getNoteFromLocal();
+        if (noteLab != null) {
+            for (Moonlight moonlight : noteLab.getMoonlights()) {
+                updateMoonlight(mUserId, null, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+            }
+        }
+    }
+
     public void removeListener() {
         if (mValueEventListener != null) {
             mDatabaseReference.removeEventListener(mValueEventListener);

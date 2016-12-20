@@ -100,20 +100,24 @@ public class Utils {
 
     public static void lockApp(Context context, int code) {
         switch (code) {
-            case 11:
-                Intent intent = new Intent(context, MoonlightPinActivity.class);
-                intent.putExtra(AppLock.EXTRA_TYPE, AppLock.UNLOCK_PIN);
-                context.startActivity(intent);
+            case 306:
+                Intent pin = new Intent(context, MoonlightPinActivity.class);
+                pin.putExtra(AppLock.EXTRA_TYPE, AppLock.UNLOCK_PIN);
+                context.startActivity(pin);
+                break;
+            case 12:
                 break;
         }
     }
 
     public static void unLockApp(Context context, int code) {
         switch (code) {
-            case 11:
-                Intent intent = new Intent(context, MoonlightPinActivity.class);
-                intent.putExtra(AppLock.EXTRA_TYPE, AppLock.DISABLE_PINLOCK);
-                context.startActivity(intent);
+            case 306:
+                Intent pin = new Intent(context, MoonlightPinActivity.class);
+                pin.putExtra(AppLock.EXTRA_TYPE, AppLock.DISABLE_PINLOCK);
+                context.startActivity(pin);
+                break;
+            case 12:
                 break;
         }
     }

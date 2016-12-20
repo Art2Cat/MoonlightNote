@@ -62,6 +62,7 @@ import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
+import com.art2cat.dev.moonlightnote.Utils.MaterialAnimation.CircularRevealUtils;
 import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
@@ -308,6 +309,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             }
         });
 
+        getActivity().postponeEnterTransition();
+
         return mView;
     }
 
@@ -336,7 +339,13 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     .placeholder(R.drawable.ic_cloud_download_white_48dp)
                     .crossFade()
                     .into(mImage);
-            mImage.setVisibility(View.VISIBLE);
+            mImage.post(new Runnable() {
+                @Override
+                public void run() {
+                    CircularRevealUtils.show(mImage);
+                }
+            });
+
             mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
         }
         if (moonlight.getAudioUrl() != null) {
@@ -383,7 +392,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+//        CircularRevealUtils.show(mContentFrameLayout);
         changeUIColor(R.color.white, getActivity().getTheme());
 
         initView(mEditable);
@@ -527,7 +536,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     break;
                 case Constants.BUS_FLAG_DELETE_IMAGE:
                     StorageUtils.removePhoto(mView, mUserId, moonlight.getImageName());
-                    mImage.setVisibility(View.GONE);
+                    CircularRevealUtils.hide(mImage);
                     moonlight.setImageName(null);
                     moonlight.setImageUrl(null);
                     break;
@@ -1104,8 +1113,17 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         //当图片地址不为空时，首先从本地读取bitmap设置图片，bitmap为空，则从网络加载
         //图片地址为空则不加载图片
         if (mFileUri != null) {
-            Glide.with(getActivity()).load(mFileUri).into(mImage);
-            mImage.setVisibility(View.VISIBLE);
+            Glide.with(getActivity())
+                    .load(mFileUri)
+                    .placeholder(R.drawable.ic_cloud_download_white_48dp)
+                    .into(mImage);
+            mImage.post(new Runnable() {
+                @Override
+                public void run() {
+                    CircularRevealUtils.show(mImage);
+                }
+            });
+
             mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
         } else {
             mImageFileName = null;

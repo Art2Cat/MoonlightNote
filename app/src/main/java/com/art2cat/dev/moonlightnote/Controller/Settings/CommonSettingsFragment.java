@@ -51,17 +51,19 @@ public abstract class CommonSettingsFragment extends Fragment {
         textView.setLayoutParams(params);
         int padding = getResources().getDimensionPixelOffset(R.dimen.padding);
         textView.setPadding(padding, padding, padding, padding);
-        textView.setGravity(Gravity.CENTER);
         switch (mType) {
             case 0:
+                textView.setGravity(Gravity.CENTER);
                 textView.setText(getContent());
                 getActivity().setTitle(R.string.settings_about);
                 break;
             case 1:
+                textView.setGravity(Gravity.CENTER);
                 textView.setText(getContent());
                 getActivity().setTitle(R.string.settings_license);
                 break;
             case 2:
+                textView.setGravity(Gravity.START);
                 textView.setText(getContent());
                 getActivity().setTitle(R.string.settings_policy);
                 break;

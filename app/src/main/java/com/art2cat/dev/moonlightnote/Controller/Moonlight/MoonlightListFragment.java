@@ -43,9 +43,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
 
-import static com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils.emptyNote;
-import static com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils.emptyTrash;
-
 
 /**
  * Created by art2cat
@@ -396,17 +393,14 @@ public abstract class MoonlightListFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_clear_data:
                 ConfirmationDialogFragment emptyNote = ConfirmationDialogFragment
-                        .newInstance(getString(R.string.dialog_empty_note_title),
+                        .newInstance(getUid(), getString(R.string.dialog_empty_note_title),
                                 getString(R.string.dialog_empty_note_content),
                                 Constants.EXTRA_TYPE_CDF_EMPTY_NOTE);
                 emptyNote.show(getFragmentManager(), "Empty Note");
                 break;
-            case R.id.action_export_data:
-                mFDatabaseUtils.exportNote();
-                break;
             case R.id.menu_empty_trash:
                 ConfirmationDialogFragment emptyTrash = ConfirmationDialogFragment
-                        .newInstance(getString(R.string.dialog_empty_trash_title),
+                        .newInstance(getUid(), getString(R.string.dialog_empty_trash_title),
                                 getString(R.string.dialog_empty_trash_content),
                                 Constants.EXTRA_TYPE_CDF_EMPTY_TRASH);
                 emptyTrash.show(getFragmentManager(), "Empty Trash");
@@ -451,12 +445,6 @@ public abstract class MoonlightListFragment extends Fragment {
             switch (busEvent.getFlag()) {
                 case Constants.BUS_FLAG_SIGN_OUT:
                     isLogin = false;
-                    break;
-                case Constants.BUS_FLAG_EMPTY_TRASH:
-                    emptyTrash(getUid());
-                    break;
-                case Constants.BUS_FLAG_EMPTY_NOTE:
-                    emptyNote(getUid());
                     break;
                 case Constants.BUS_FLAG_MAKE_COPY_DONE:
                     isNotify = false;

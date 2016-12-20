@@ -50,7 +50,12 @@ public class AudioPlayer {
             //采用异步的方式同步
             mPlayer.prepare();
             // 为播放器注册
-            mPlayer.setOnPreparedListener(mp -> Log.d(TAG, "onPrepared: "));
+            mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mediaPlayer) {
+                    Log.d(TAG, "onPrepared: ");
+                }
+            });
             //开始播放
             mDuration = mPlayer.getDuration();
             Log.d(TAG, "prepare: " + mDuration);

@@ -1,13 +1,16 @@
 package com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment;
 
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
-import android.app.DialogFragment;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,10 +26,11 @@ import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 
 public class InputDialogFragment extends DialogFragment {
     private static final String TAG = "InputDialogFragment";
-    TextInputEditText mTextInputEditText;
-    private View mView;
+    private TextInputLayout mTextInputLayout;
+    private TextInputEditText mTextInputEditText;
     private int mType;
     private String mTitle;
+
 
     public static InputDialogFragment newInstance(String title, int type) {
         InputDialogFragment inputDialogFragment = new InputDialogFragment();
@@ -53,17 +57,22 @@ public class InputDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        mView = inflater.inflate(R.layout.dialog_input, null);
-        mTextInputEditText = (TextInputEditText) mView.findViewById(R.id.dialog_editText);
-
+        View view = inflater.inflate(R.layout.dialog_input, null);
+        mTextInputLayout = (TextInputLayout) view.findViewById(R.id.inputLayout);
+        mTextInputEditText = (TextInputEditText) view.findViewById(R.id.dialog_editText);
         if (mType == 0) {
-            mTextInputEditText.setHint(R.string.dialog_enter_your_register_email);
+            mTextInputLayout.setHint(getString(R.string.dialog_enter_your_register_email));
+            mTextInputEditText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         } else if (mType == 1) {
-            mTextInputEditText.setHint(R.string.dialog_enter_your_nickname);
+            mTextInputLayout.setHint(getString(R.string.dialog_enter_your_nickname));
+            mTextInputEditText.setInputType(InputType.TYPE_CLASS_TEXT);
         } else if (mType == 2) {
-            mTextInputEditText.setHint(R.string.dialog_enter_your_password);
+            mTextInputLayout.setHint(getString(R.string.dialog_enter_your_password));
+            mTextInputEditText.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            //设置密码隐藏
+            mTextInputEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
         }
-            builder.setView(mView);
+        builder.setView(view);
         builder.setTitle(mTitle);
         Log.d(TAG, "showLocationDialog: " + mTitle);
 
@@ -73,7 +82,6 @@ public class InputDialogFragment extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // positive button logic
-
                         if (mType == 0) {
                             String email = mTextInputEditText.getText().toString();
                             BusEventUtils.post(Constants.BUS_FLAG_EMAIL, email);

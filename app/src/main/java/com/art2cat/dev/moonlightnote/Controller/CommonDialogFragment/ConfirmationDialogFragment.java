@@ -7,10 +7,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
 
@@ -20,13 +22,25 @@ import com.art2cat.dev.moonlightnote.Utils.Utils;
  */
 
 public class ConfirmationDialogFragment extends DialogFragment {
+    private String mUserId;
     private String mTitle;
     private String mMessage;
     private int mType;
+    private static final String TAG = "ConfirmationDialog";
 
     public static ConfirmationDialogFragment newInstance(String title, String message, int type) {
         ConfirmationDialogFragment confirmationDialogFragment = new ConfirmationDialogFragment();
         Bundle args = new Bundle();
+        args.putString("title", title);
+        args.putString("message", message);
+        args.putInt("type", type);
+        confirmationDialogFragment.setArguments(args);
+        return confirmationDialogFragment;
+    }
+    public static ConfirmationDialogFragment newInstance(String id, String title, String message, int type) {
+        ConfirmationDialogFragment confirmationDialogFragment = new ConfirmationDialogFragment();
+        Bundle args = new Bundle();
+        args.putString("id", id);
         args.putString("title", title);
         args.putString("message", message);
         args.putInt("type", type);
@@ -39,6 +53,7 @@ public class ConfirmationDialogFragment extends DialogFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             Bundle args = getArguments();
+            mUserId = args.getString("id");
             mTitle = args.getString("title");
             mMessage = args.getString("message");
             mType = args.getInt("type");
@@ -73,7 +88,7 @@ public class ConfirmationDialogFragment extends DialogFragment {
                         // positive button logic
                         switch (mType) {
                             case Constants.EXTRA_TYPE_CDF_EMPTY_TRASH:
-                                BusEventUtils.post(Constants.BUS_FLAG_EMPTY_TRASH, null);
+                                FDatabaseUtils.emptyTrash(mUserId);
                                 break;
                             case Constants.EXTRA_TYPE_CDF_DELETE_ACCOUNT:
                                 InputDialogFragment inputDialogFragment =
@@ -92,9 +107,11 @@ public class ConfirmationDialogFragment extends DialogFragment {
                                 break;
                             case Constants.EXTRA_TYPE_CDF_DELETE_IMAGE:
                                 BusEventUtils.post(Constants.BUS_FLAG_DELETE_IMAGE, null);
+                                Log.d(TAG, "onClick: ");
                                 break;
                             case Constants.EXTRA_TYPE_CDF_EMPTY_NOTE:
-                                BusEventUtils.post(Constants.BUS_FLAG_EMPTY_NOTE, null);
+                                Log.d(TAG, "onClick: ");
+                                FDatabaseUtils.emptyNote(mUserId);
                                 break;
                         }
                     }
