@@ -20,11 +20,15 @@ How do we protect your information?
 
 Our website is scanned on a regular basis for security holes and known vulnerabilities in order to make your visit to our site as safe as possible.
 
+How do we protect your data?
+
+Your data uses AES encryption to securely upload your data to firebase
+
 We do not use Malware Scanning.
 
 We do not use an SSL certificate
       • We do not need an SSL because:
-Use Google Firebase service
+We use Google Firebase service
 
 Do we use 'cookies'?
 
@@ -114,9 +118,6 @@ Contacting Us
 If there are any questions regarding this privacy policy, you may contact us using the information below.
 
 MoonlightNote
-Thompsons Bridge Rd
-Wilmington, DE 19803
-United States
 dev@art2cat.com
 
 Last Edited on 2016-12-19
