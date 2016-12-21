@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -58,7 +57,6 @@ public abstract class MoonlightListFragment extends Fragment {
     private FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder> mFirebaseRecyclerAdapter;
     private Toolbar mToolbar;
     private Toolbar mToolbar2;
-    private FloatingActionButton mFAB;
     private AppBarLayout.LayoutParams mParams;
     private RecyclerView mRecyclerView;
     private RecyclerView.AdapterDataObserver mAdapterDataObserver;
@@ -91,7 +89,6 @@ public abstract class MoonlightListFragment extends Fragment {
         MoonlightActivity moonlightActivity = (MoonlightActivity) getActivity();
         mToolbar = moonlightActivity.mToolbar;
         mToolbar2 = moonlightActivity.mToolbar2;
-        mFAB = moonlightActivity.mFAB;
         mParams = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
 
 
@@ -126,6 +123,7 @@ public abstract class MoonlightListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        notifyChange();
     }
 
 
@@ -184,6 +182,7 @@ public abstract class MoonlightListFragment extends Fragment {
     public void onStop() {
         super.onStop();
     }
+
 
     @Override
     public void onDestroyView() {
@@ -267,7 +266,6 @@ public abstract class MoonlightListFragment extends Fragment {
                                     startActivity(intent);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 }
-                                isNotify = false;
                                 changeToolbar(null, 1);
                                 setParams(0);
                             }
@@ -331,6 +329,9 @@ public abstract class MoonlightListFragment extends Fragment {
                 @Override
                 public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
                     super.onItemRangeMoved(fromPosition, toPosition, itemCount);
+                    if (isNotify) {
+                        notifyChange();
+                    }
                 }
             };
 
@@ -340,6 +341,7 @@ public abstract class MoonlightListFragment extends Fragment {
     }
 
     private void notifyChange() {
+        Log.d(TAG, "notifyChange: ");
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -452,7 +454,7 @@ public abstract class MoonlightListFragment extends Fragment {
                     isLogin = false;
                     break;
                 case Constants.BUS_FLAG_MAKE_COPY_DONE:
-                    isNotify = false;
+                    isNotify = true;
                     break;
             }
         }
@@ -518,6 +520,7 @@ public abstract class MoonlightListFragment extends Fragment {
                                 getActivity().setTitle(R.string.app_name);
                                 break;
                             case R.id.action_make_a_copy:
+                                isNotify = true;
                                 FDatabaseUtils.addMoonlight(getUid(),
                                         moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
                                 getActivity().setTitle(R.string.app_name);
