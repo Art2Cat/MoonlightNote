@@ -121,7 +121,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            if (super.onMenuItemSelected(featureId, item)) {
+            if (!super.onMenuItemSelected(featureId, item)) {
                 NavUtils.navigateUpFromSameTask(this);
             }
             if (super.onMenuItemSelected(featureId, item) && isXLargeTablet(this)) {
@@ -220,7 +220,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     SPUtils.putInt(getActivity(),
                             Constants.USER_CONFIG,
                             Constants.USER_CONFIG_SECURITY_ENABLE,
-                            REQUEST_ENABLE_PIN);
+                            Constants.EXTRA_PIN);
                     mProtection.setEnabled(true);
                     break;
                 case PATTERN:

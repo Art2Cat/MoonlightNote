@@ -57,6 +57,7 @@ import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
+import com.art2cat.dev.moonlightnote.MyApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.AudioPlayer;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
@@ -80,6 +81,7 @@ import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.leakcanary.RefWatcher;
 import com.turkialkhateeb.materialcolorpicker.ColorListener;
 
 import org.greenrobot.eventbus.EventBus;
@@ -470,6 +472,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         }
         EventBus.getDefault().unregister(this);
         mAudioPlayer.releasePlayer();
+        RefWatcher refWatcher = MyApplication.getRefWatcher(getActivity());
+        refWatcher.watch(this);
         super.onDestroy();
     }
 
@@ -890,7 +894,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     moonlight.setImageName(mImageFileName);
                     moonlight.setImageUrl(mDownloadIUrl.toString());
                     mCircleProgressDialogFragment.dismiss();
-                    showImage(fileUri);
+                    showImage(mDownloadIUrl);
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -1127,7 +1131,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         //图片地址为空则不加载图片
         if (mFileUri != null) {
             Glide.with(getActivity())
-                    .load(mDownloadAUrl)
+                    .load(mFileUri)
                     .placeholder(R.drawable.ic_cloud_download_white_48dp)
                     .into(mImage);
             mImage.post(new Runnable() {

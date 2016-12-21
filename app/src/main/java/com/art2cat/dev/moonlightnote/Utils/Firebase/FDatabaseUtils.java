@@ -97,7 +97,6 @@ public class FDatabaseUtils {
             moonlight.setId(mKey);
         } else {
             mKey = keyId;
-            moonlight.setId(keyId);
         }
 
         Log.d(TAG, "updateMoonlight: " + mKey);

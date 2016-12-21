@@ -25,6 +25,7 @@ import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailA
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
+import com.art2cat.dev.moonlightnote.MyApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
@@ -36,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
+import com.squareup.leakcanary.RefWatcher;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -355,6 +357,9 @@ public abstract class MoonlightListFragment extends Fragment {
         }
 
         mFDatabaseUtils.removeListener();
+
+        RefWatcher refWatcher = MyApplication.getRefWatcher(getActivity());
+        refWatcher.watch(this);
     }
 
     @Override
