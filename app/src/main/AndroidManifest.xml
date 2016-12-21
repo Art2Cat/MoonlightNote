@@ -43,6 +43,7 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
         <!-- [END fcm_default_icon] -->
+
         <activity
             android:name=".Controller.Moonlight.MoonlightActivity"
             android:launchMode="singleTask"

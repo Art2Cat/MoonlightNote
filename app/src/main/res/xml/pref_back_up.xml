@@ -3,6 +3,12 @@
         android:title="@string/backup_to_drive">
 
         <Preference
+            android:key="connect_to_drive"
+            android:title="@string/settings_connect_to_drive"
+            android:summary="@string/settings_connect_to_drive_summary"
+            />
+
+        <Preference
             android:key="backup_to_drive"
             android:title="@string/settings_backup_to_drive"
             />
