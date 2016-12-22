@@ -4,6 +4,8 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.annotation.IdRes;
 
+import com.art2cat.dev.moonlightnote.R;
+
 /**
  * Created by Rorschach
  * on 12/4/16 7:22 PM.
@@ -45,6 +47,10 @@ public class FragmentUtils {
 
     private static void replaceBackStackFragment(FragmentManager fm, @IdRes int id, Fragment fragment) {
         fm.beginTransaction()
+                .setCustomAnimations(R.animator.fragment_slide_left_enter,
+                        R.animator.fragment_slide_left_exit,
+                        R.animator.fragment_slide_right_enter,
+                        R.animator.fragment_slide_right_exit)
                 .replace(id, fragment)
                 .addToBackStack(null)
                 .commit();
@@ -52,6 +58,10 @@ public class FragmentUtils {
 
     private static void replaceFragment(FragmentManager fm, @IdRes int id, Fragment fragment) {
         fm.beginTransaction()
+                .setCustomAnimations(R.animator.fragment_slide_left_enter,
+                        R.animator.fragment_slide_left_exit,
+                        R.animator.fragment_slide_right_enter,
+                        R.animator.fragment_slide_right_exit)
                 .replace(id, fragment)
                 .commit();
     }

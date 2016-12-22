@@ -82,6 +82,12 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finish();
+    }
+
     public void signIn() {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override

@@ -96,6 +96,12 @@ public class CommonActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        finish();
+    }
+
     /**
      * 分发触摸事件给所有注册了MyOnTouchListener的接口
      */

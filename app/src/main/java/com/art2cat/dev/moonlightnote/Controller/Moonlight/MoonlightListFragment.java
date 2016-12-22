@@ -123,7 +123,7 @@ public abstract class MoonlightListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        notifyChange();
+//        notifyChange();
     }
 
 
