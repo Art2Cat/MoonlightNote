@@ -327,9 +327,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     break;
                 case BACKUP_TO_SD:
                     mFDatabaseUtils.exportNote();
+                    SnackBarUtils.longSnackBar(getView(),
+                            "Back up succeed! save in internal storage root named Note.json",
+                            SnackBarUtils.TYPE_INFO).show();
                     break;
                 case RESTORE_FROM_SD:
+
                     mFDatabaseUtils.restoreAll();
+                    SnackBarUtils.longSnackBar(getView(),
+                            "Restore succeed!",
+                            SnackBarUtils.TYPE_INFO).show();
                     break;
             }
             return false;

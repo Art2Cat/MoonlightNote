@@ -387,9 +387,6 @@ public class MoonlightActivity extends AppCompatActivity
                     isLock = !isLock;
                     break;
                 case Constants.BUS_FLAG_EXPORT_DATA_DONE:
-                    SnackBarUtils.longSnackBar(mCoordinatorLayout,
-                            "Export succeed! save in internal storage root named Note.json",
-                            SnackBarUtils.TYPE_INFO).show();
                     break;
             }
         }
