@@ -12,16 +12,18 @@ public class User {
     public String email;
     public String uid;
     public String photoUrl;
+    public String token;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String nickname, String email, String photoUrl, String uid) {
+    public User(String nickname, String email, String photoUrl, String uid, String token) {
         this.nickname = nickname;
         this.email = email;
         this.photoUrl = photoUrl;
         this.uid = uid;
+        this.token = token;
     }
 
     public String getPhotoUrl() {
@@ -56,12 +58,21 @@ public class User {
         this.nickname = nickname;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("nickname", nickname);
         result.put("email", email);
         result.put("uid", uid);
         result.put("photoUrl", photoUrl);
+        result.put("token", token);
         return result;
     }
 }

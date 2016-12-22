@@ -21,6 +21,7 @@ import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.File;
 import java.util.List;

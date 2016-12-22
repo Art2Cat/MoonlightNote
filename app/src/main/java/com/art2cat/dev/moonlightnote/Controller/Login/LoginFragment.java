@@ -49,7 +49,9 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -339,6 +341,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                     Uri photoUrl = user.getPhotoUrl();
                     String nickname = user.getDisplayName();
                     String email = user.getEmail();
+                    String token =  FirebaseInstanceId.getInstance().getToken();
                     User user1 = new User();
                     user1.setUid(user.getUid());
                     if (nickname != null) {
@@ -348,7 +351,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                         user1.setEmail(email);
                     }
                     if (photoUrl != null) {
-                        user1.photoUrl = photoUrl.toString();
+                        user1.setPhotoUrl(photoUrl.toString());
+                    }
+
+                    if (token != null) {
+                        user1.setToken(token);
                     }
 
                     if (isNewUser) {

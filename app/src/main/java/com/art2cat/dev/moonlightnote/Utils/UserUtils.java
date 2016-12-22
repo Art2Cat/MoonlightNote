@@ -41,6 +41,12 @@ public class UserUtils {
             } else {
                 SPUtils.putString(context, "User", "PhotoUrl", null);
             }
+
+            if (user.getToken() != null) {
+                SPUtils.putString(context, "User", "Token", user.getToken());
+            } else {
+                SPUtils.putString(context, "User", "Token", null);
+            }
         }
     }
 
@@ -50,6 +56,7 @@ public class UserUtils {
         user.setNickname(SPUtils.getString(context, "User", "Username", null));
         user.setEmail(SPUtils.getString(context, "User", "Email", null));
         user.setPhotoUrl(SPUtils.getString(context, "User", "PhotoUrl", null));
+        user.setToken(SPUtils.getString(context, "User", "Token", null));
         return user;
     }
 
