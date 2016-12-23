@@ -1,6 +1,8 @@
 package com.art2cat.dev.moonlightnote.Utils.Firebase;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -10,6 +12,7 @@ import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.Model.NoteLab;
 import com.art2cat.dev.moonlightnote.Model.User;
+import com.art2cat.dev.moonlightnote.MyApplication;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserUtils;
@@ -21,6 +24,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,10 +41,18 @@ public class FDatabaseUtils {
     private Context mContext;
     private boolean complete;
     private String mUserId;
+    public String mJson;
     private DatabaseReference mDatabaseReference;
     private DatabaseReference mDatabaseReference1;
     private ValueEventListener mValueEventListener;
     private ValueEventListener mValueEventListener1;
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Utils.showToast(MyApplication.mContext, "Restore succeed!", 1);
+        }
+    };
 
     public FDatabaseUtils() {
 
@@ -216,7 +228,7 @@ public class FDatabaseUtils {
 
     }
 
-    public void exportNote() {
+    public void exportNote(final int type) {
         mDatabaseReference1 = FirebaseDatabase.getInstance().getReference()
                 .child("users-moonlight").child(mUserId).child("note");
 
@@ -233,8 +245,18 @@ public class FDatabaseUtils {
                     }
 
                     if (count == noteLab.getMoonlights().size()) {
-                        Utils.saveNoteToLocal(noteLab);
-                        BusEventUtils.post(Constants.BUS_FLAG_EXPORT_DATA_DONE, null);
+                        if (type == 0) {
+                            Utils.saveNoteToLocal(noteLab);
+                            Utils.showToast(MyApplication.mContext,
+                                    "Back up succeed! save in internal storage root named Note.json"
+                            , 1);
+                            BusEventUtils.post(Constants.BUS_FLAG_EXPORT_DATA_DONE, null);
+                        } else if (type == 1) {
+                            Gson gson = new Gson();
+                            mJson = gson.toJson(noteLab);
+                            Log.d(TAG, "onDataChange: " + mJson);
+                            complete = true;
+                        }
                     }
                 }
             }
@@ -254,6 +276,16 @@ public class FDatabaseUtils {
             for (Moonlight moonlight : noteLab.getMoonlights()) {
                 updateMoonlight(mUserId, null, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
             }
+            mHandler.sendEmptyMessage(0);
+        }
+    }
+
+    public void restoreAll(NoteLab noteLab) {
+        if (noteLab != null) {
+            for (Moonlight moonlight : noteLab.getMoonlights()) {
+                updateMoonlight(mUserId, null, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+            }
+            mHandler.sendEmptyMessage(0);
         }
     }
 
@@ -284,4 +316,10 @@ public class FDatabaseUtils {
         return null;
     }
 
+    public String getJson() {
+        if (isComplete()) {
+            return mJson;
+        }
+        return null;
+    }
 }

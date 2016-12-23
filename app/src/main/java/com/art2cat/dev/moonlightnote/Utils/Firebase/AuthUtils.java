@@ -56,8 +56,8 @@ public class AuthUtils {
                                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     try {
                                         context.startActivity(intent);
-                                        //context.startActivity(Intent.createChooser(gmintent,
-                                        //       context.getString(R.string.ChoseEmailClient)));
+                                        //mContext.startActivity(Intent.createChooser(gmintent,
+                                        //       mContext.getString(R.string.ChoseEmailClient)));
                                     } catch (ActivityNotFoundException e) {
                                         e.printStackTrace();
                                     }

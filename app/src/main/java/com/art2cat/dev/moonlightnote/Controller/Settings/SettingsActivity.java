@@ -19,12 +19,12 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.Constants;
+import com.art2cat.dev.moonlightnote.Model.NoteLab;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
@@ -41,12 +41,17 @@ import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
+import com.google.android.gms.drive.Metadata;
 import com.google.android.gms.drive.MetadataChangeSet;
+import com.google.android.gms.drive.query.Filters;
+import com.google.android.gms.drive.query.Query;
+import com.google.android.gms.drive.query.SearchableField;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.gson.Gson;
 
-import org.json.JSONObject;
-
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -273,12 +278,66 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         private static final int REQUEST_CODE_CREATOR = 2;
         private static final int REQUEST_CODE_RESOLUTION = 3;
         private static final int REQUEST_CODE_SAVE_TO_DRIVE = 1;
+        /**
+         * Handle result of Created file
+         */
+        final private ResultCallback<DriveFolder.DriveFileResult> fileCallback = new
+                ResultCallback<DriveFolder.DriveFileResult>() {
+                    @Override
+                    public void onResult(DriveFolder.DriveFileResult result) {
+                        if (result.getStatus().isSuccess()) {
+
+                            Toast.makeText(getActivity(), "file created: " + "" +
+                                    result.getDriveFile().getDriveId(), Toast.LENGTH_LONG).show();
+                            result.getDriveFile().getDriveId().toString();
+                            SPUtils.putString(getActivity(), "User",
+                                    "GoogleDriveFileID", result.getDriveFile().getDriveId().toString());
+
+                        }
+                    }
+                };
+        public DriveFile file;
         private GoogleApiClient mGoogleApiClient;
         private FDatabaseUtils mFDatabaseUtils;
-        private JSONObject mJsonObject;
+        final private ResultCallback<DriveApi.MetadataBufferResult> metadataCallback =
+                new ResultCallback<DriveApi.MetadataBufferResult>() {
+                    @Override
+                    public void onResult(DriveApi.MetadataBufferResult result) {
+                        if (!result.getStatus().isSuccess()) {
+                            Log.d(TAG, "Problem while retrieving results");
+                            return;
+                        }
+
+                        Metadata metadata = result.getMetadataBuffer().get(0);
+                        Log.d(TAG, "metadata.getDriveId():" + metadata.getDriveId());
+                        readFileFromDrive(metadata.getDriveId());
+                    }
+                };
+        private String mData;
         private boolean fileOperation = false;
-        private DriveId mFileId;
-        public DriveFile file;
+
+        /**
+         * This is Result result handler of Drive contents.
+         * this callback method call CreateFileOnGoogleDrive() method
+         * and also call readFileFromGoogleDrive() method, send intent onActivityResult() method to handle result.
+         */
+        private ResultCallback<DriveApi.DriveContentsResult> driveContentsCallback =
+                new ResultCallback<DriveApi.DriveContentsResult>() {
+                    @Override
+                    public void onResult(DriveApi.DriveContentsResult result) {
+
+                        if (result.getStatus().isSuccess()) {
+
+                            if (fileOperation) {
+                                CreateFileOnGoogleDrive(result);
+                            } else {
+                                queryFile();
+                            }
+                        }
+
+
+                    }
+                };
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -316,27 +375,38 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     connectToDrive();
                     break;
                 case BACKUP_TO_DRIVE:
-                    fileOperation = true;
-                    Drive.DriveApi.newDriveContents(mGoogleApiClient)
-                            .setResultCallback(driveContentsCallback);
+                    if (mGoogleApiClient != null) {
+                        fileOperation = true;
+                        mFDatabaseUtils.exportNote(1);
+                        Drive.DriveApi.newDriveContents(mGoogleApiClient)
+                                .setResultCallback(driveContentsCallback);
+                    } else {
+                        SnackBarUtils.shortSnackBar(getView(),
+                                "please connect to Google Drive first!",
+                                SnackBarUtils.TYPE_INFO).show();
+                    }
                     break;
                 case RESTORE_FROM_DRIVE:
-                    fileOperation = false;
-                    Drive.DriveApi.newDriveContents(mGoogleApiClient)
-                            .setResultCallback(driveContentsCallback);
+                    if (mGoogleApiClient != null) {
+                        fileOperation = false;
+                        mFDatabaseUtils.exportNote(1);
+                        Drive.DriveApi.newDriveContents(mGoogleApiClient)
+                                .setResultCallback(driveContentsCallback);
+                    } else {
+                        SnackBarUtils.shortSnackBar(getView(),
+                                "please connect to Google Drive first!",
+                                SnackBarUtils.TYPE_INFO).show();
+                    }
                     break;
                 case BACKUP_TO_SD:
-                    mFDatabaseUtils.exportNote();
-                    SnackBarUtils.longSnackBar(getView(),
-                            "Back up succeed! save in internal storage root named Note.json",
-                            SnackBarUtils.TYPE_INFO).show();
+                    mFDatabaseUtils.exportNote(0);
                     break;
                 case RESTORE_FROM_SD:
 
                     mFDatabaseUtils.restoreAll();
-                    SnackBarUtils.longSnackBar(getView(),
-                            "Restore succeed!",
-                            SnackBarUtils.TYPE_INFO).show();
+//                    SnackBarUtils.longSnackBar(getView(),
+//                            "Restore succeed!",
+//                            SnackBarUtils.TYPE_INFO).show();
                     break;
             }
             return false;
@@ -378,150 +448,88 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             mGoogleApiClient.connect();
         }
 
-
         /**
          * Create a new file and save it to Drive.
          */
-        private void saveFileToDrive() {
-            // Start by creating a new contents, and setting a callback.
-            JSONObject jsonObject = mJsonObject;
-            Log.i(TAG, "Creating new contents.");
-            Drive.DriveApi.newDriveContents(mGoogleApiClient)
-                    .setResultCallback(new ResultCallback<DriveApi.DriveContentsResult>() {
-
-                        @Override
-                        public void onResult(DriveApi.DriveContentsResult result) {
-                            // If the operation was not successful, we cannot do anything
-                            // and must
-                            // fail.
-                            if (!result.getStatus().isSuccess()) {
-                                Log.i(TAG, "Failed to create new contents.");
-                                return;
-                            }
-                            DriveContents driveContents = result.getDriveContents();
-
-                            OutputStream outputStream = driveContents.getOutputStream();
-                            Writer writer = new OutputStreamWriter(outputStream);
-                            try {
-                                writer.write("Fuck Google Drive");
-                                writer.close();
-
-                            } catch (IOException e) {
-                                Log.e(TAG, e.getMessage());
-                            }
-
-                            MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
-                                    .setTitle("Test")
-                                    .setMimeType("text/plain")
-                                    .setStarred(true).build();
-
-
-                            IntentSender intentSender = Drive.DriveApi
-                                    .newCreateFileActivityBuilder()
-                                    .setInitialMetadata(metadataChangeSet)
-                                    .setInitialDriveContents(result.getDriveContents())
-                                    .build(mGoogleApiClient);
-                            try {
-                                getActivity().startIntentSenderForResult(
-                                        intentSender, REQUEST_CODE_CREATOR, null, 0, 0, 0);
-                            } catch (IntentSender.SendIntentException e) {
-                                Log.i(TAG, "Failed to launch file chooser.");
-                            }
-                        }
-                    });
-        }
-        public void onClickCreateFile(View view){
-            fileOperation = true;
-
-            // create new contents resource
-            Drive.DriveApi.newDriveContents(mGoogleApiClient)
-                    .setResultCallback(driveContentsCallback);
-
-        }
-
-        public void onClickOpenFile(View view){
-            fileOperation = false;
-
-            // create new contents resource
-            Drive.DriveApi.newDriveContents(mGoogleApiClient)
-                    .setResultCallback(driveContentsCallback);
-        }
-
-        /**
-         *  Open list of folder and file of the Google Drive
-         */
-        public void OpenFileFromGoogleDrive(){
-
-            IntentSender intentSender = Drive.DriveApi
-                    .newOpenFileActivityBuilder()
-                    .setMimeType(new String[] { "text/plain", "text/html" })
-                    .build(mGoogleApiClient);
-            try {
-                getActivity().startIntentSenderForResult(
-
-                        intentSender, REQUEST_CODE_CREATOR, null, 0, 0, 0);
-
-            } catch (IntentSender.SendIntentException e) {
-
-                Log.w(TAG, "Unable to send intent", e);
-            }
-
-        }
-
-
-        /**
-         * This is Result result handler of Drive contents.
-         * this callback method call CreateFileOnGoogleDrive() method
-         * and also call OpenFileFromGoogleDrive() method, send intent onActivityResult() method to handle result.
-         */
-        final ResultCallback<DriveApi.DriveContentsResult> driveContentsCallback =
-                new ResultCallback<DriveApi.DriveContentsResult>() {
-                    @Override
-                    public void onResult(DriveApi.DriveContentsResult result) {
-
-                        if (result.getStatus().isSuccess()) {
-
-                            if (fileOperation) {
-
-                                CreateFileOnGoogleDrive(result);
-
-                            } else {
-
-                                OpenFileFromGoogleDrive();
-
-                            }
-                        }
-
-
+        private void readFileFromDrive(DriveId id) {
+            final DriveFile f = id.asDriveFile();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    DriveApi.DriveContentsResult driveContentsResult =
+                            f.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null).await();
+                    if (!driveContentsResult.getStatus().isSuccess()) {
+//                        Utils.showToast(getActivity(), "file: null", 1);
+                        Log.d(TAG, "run: " + driveContentsResult.getStatus());
+                        return;
                     }
-                };
+
+                    DriveContents driveContents = driveContentsResult.getDriveContents();
+                    BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(driveContents.getInputStream()));
+                    StringBuilder builder = new StringBuilder();
+                    String line;
+                    try {
+                        while ((line = reader.readLine()) != null) {
+                            builder.append(line);
+                        }
+                        String contentsAsString = builder.toString();
+                        Gson gson = new Gson();
+                        NoteLab noteLab = gson.fromJson(contentsAsString, NoteLab.class);
+                        Log.d(TAG, "onResult: " + noteLab.getMoonlights().size());
+                        if (noteLab.getMoonlights().size() != 0) {
+                            mFDatabaseUtils.restoreAll(noteLab);
+                        }
+                    } catch (IOException e) {
+                        Log.e(TAG, "IOException while reading from the stream", e);
+                    }
+
+                    driveContents.discard(mGoogleApiClient);
+                }
+            }).start();
+        }
+
+        private void queryFile() {
+            Query query = new Query.Builder()
+                    .addFilter(Filters.contains(SearchableField.TITLE, "Note.json"))
+                    .build();
+            Drive.DriveApi.query(
+                    mGoogleApiClient, query).setResultCallback(metadataCallback);
+        }
 
         /**
          * Create a file in root folder using MetadataChangeSet object.
+         *
          * @param result
          */
-        public void CreateFileOnGoogleDrive(DriveApi.DriveContentsResult result){
-
+        public void CreateFileOnGoogleDrive(DriveApi.DriveContentsResult result) {
 
             final DriveContents driveContents = result.getDriveContents();
+
+            mData = mFDatabaseUtils.getJson();
 
             // Perform I/O off the UI thread.
             new Thread() {
                 @Override
                 public void run() {
-                    // write content to DriveContents
                     OutputStream outputStream = driveContents.getOutputStream();
                     Writer writer = new OutputStreamWriter(outputStream);
-                    try {
-                        writer.write("Hello abhay!");
-                        writer.close();
-                    } catch (IOException e) {
-                        Log.e(TAG, e.getMessage());
-                    }
 
+                    if (mData == null) {
+                        mData = mFDatabaseUtils.getJson();
+                    }
+                    Log.d(TAG, "run: " + mData);
+                    if (mData != null) {
+                        try {
+                            writer.write(mData);
+                            writer.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                            .setTitle("abhaytest2")
-                            .setMimeType("text/plain")
+                            .setTitle("Note.json")
+                            .setMimeType("plain/text")
                             .setStarred(true).build();
 
                     // create a file in root folder
@@ -532,31 +540,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             }.start();
         }
 
-        /**
-         * Handle result of Created file
-         */
-        final private ResultCallback<DriveFolder.DriveFileResult> fileCallback = new
-                ResultCallback<DriveFolder.DriveFileResult>() {
-                    @Override
-                    public void onResult(DriveFolder.DriveFileResult result) {
-                        if (result.getStatus().isSuccess()) {
-
-                            Toast.makeText(getActivity(), "file created: "+""+
-                                    result.getDriveFile().getDriveId(), Toast.LENGTH_LONG).show();
-
-                        }
-
-                        return;
-
-                    }
-                };
-
-
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
             switch (requestCode) {
                 case REQUEST_CODE_CREATOR:
+                    Utils.showToast(getActivity(), "Done", 1);
                     if (resultCode == Activity.RESULT_OK) {
                         //startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE),
 //                                REQUEST_CODE_SAVE_TO_DRIVE);
@@ -566,7 +555,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 case REQUEST_CODE_SAVE_TO_DRIVE:
                     if (resultCode == Activity.RESULT_OK) {
                         // Store the image data as a bitmap for writing later.
-                        mJsonObject = (JSONObject) data.getExtras().get("data");
                     }
                     break;
             }

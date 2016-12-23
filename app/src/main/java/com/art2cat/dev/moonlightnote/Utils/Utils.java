@@ -16,6 +16,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -147,6 +149,19 @@ public class Utils {
             return null;
         }
     }
+
+    private Reader readBackupFile() {
+        File file = new File(Environment
+                .getExternalStorageDirectory(), "/Notes.json");
+        try {
+            return new FileReader(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 
     /**
      * Helper method to determine if the device has an extra-large screen. For

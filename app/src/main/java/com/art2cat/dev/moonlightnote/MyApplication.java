@@ -23,6 +23,14 @@ public class MyApplication extends Application {
         return application.mRefWatcher;
     }
 
+    public static Context mContext;
+
+    @Override
+    public Context getApplicationContext() {
+        mContext = super.getApplicationContext();
+        return super.getApplicationContext();
+    }
+
     private RefWatcher mRefWatcher;
 
     @SuppressWarnings("unchecked")
