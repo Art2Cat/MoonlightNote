@@ -1,11 +1,12 @@
 package com.art2cat.dev.moonlightnote.Utils;
 
 import android.media.MediaPlayer;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
 import android.widget.ProgressBar;
+
+import com.art2cat.dev.moonlightnote.MyApplication;
 
 import java.io.IOException;
 
@@ -26,10 +27,12 @@ public class AudioPlayer {
     private Runnable updateThread = new Runnable() {
         public void run() {
             // 获得歌曲现在播放位置并设置成播放进度条的值
-            if (mPlayer.isPlaying()) {
-                mProgressBar.setProgress(mPlayer.getCurrentPosition());
-                // 每次延迟100毫秒再启动线程
-                handler.postDelayed(updateThread, 100);
+            if (mPlayer != null) {
+                if (mPlayer.isPlaying()) {
+                    mProgressBar.setProgress(mPlayer.getCurrentPosition());
+                    // 每次延迟100毫秒再启动线程
+                    handler.postDelayed(updateThread, 100);
+                }
             }
         }
     };
@@ -44,7 +47,11 @@ public class AudioPlayer {
     public void prepare(String mFileName) {
         try {
             //设置数据源
-            String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/";
+            String dirPath = MyApplication.mContext.getCacheDir().getAbsolutePath() + "/audio/";
+
+            if (!mFileName.contains(".amr")) {
+                mFileName = mFileName + ".amr";
+            }
             String filePath = dirPath + mFileName;
             mPlayer.setDataSource(filePath);
             //采用异步的方式同步

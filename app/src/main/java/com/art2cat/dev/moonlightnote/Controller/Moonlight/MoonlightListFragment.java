@@ -42,6 +42,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
+
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
 
 
@@ -238,9 +240,12 @@ public abstract class MoonlightListFragment extends Fragment {
                     }
 
                     if (moonlightD.getAudioName() != null) {
-                        StorageUtils.downloadAudio(
-                                FirebaseStorage.getInstance().getReference(),
-                                getUid(), moonlightD.getAudioName());
+                        String audioName = moonlightD.getAudioName();
+                        if (!isAudioFileExists(audioName)) {
+                            StorageUtils.downloadAudio(
+                                    FirebaseStorage.getInstance().getReference(),
+                                    getUid(), moonlightD.getAudioName());
+                        }
                         viewHolder.mAudio.setVisibility(View.VISIBLE);
                     } else {
                         viewHolder.mAudio.setVisibility(View.GONE);
@@ -339,6 +344,18 @@ public abstract class MoonlightListFragment extends Fragment {
 
         }
     }
+
+    private boolean isAudioFileExists(String audioName) {
+        File dir = new File(getActivity().getCacheDir(), "/audio");
+        if (audioName.contains(".amr")) {
+            File file = new File(dir, audioName);
+            return file.exists();
+        } else {
+            File file = new File(dir, audioName + ".amr");
+            return file.exists();
+        }
+    }
+
 
     private void notifyChange() {
         Log.d(TAG, "notifyChange: ");

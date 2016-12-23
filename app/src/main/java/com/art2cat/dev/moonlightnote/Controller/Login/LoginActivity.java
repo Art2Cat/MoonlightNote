@@ -1,11 +1,9 @@
 package com.art2cat.dev.moonlightnote.Controller.Login;
 
-import android.Manifest;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,23 +14,15 @@ import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
-import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
+import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.iid.FirebaseInstanceId;
 
-import java.io.File;
-import java.util.List;
-
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.EasyPermissions;
-
-import static com.art2cat.dev.moonlightnote.Model.Constants.STORAGE_PERMS;
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
-public class LoginActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
+public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final String AD_UNIT_ID = "ca-app-pub-5043396164425122/9918900095";
     private FragmentManager mFragmentManager;
@@ -41,7 +31,6 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FDatabaseUtils mFDatabaseUtils;
     private Fragment mFragment;
-
 
 
     @Override
@@ -121,81 +110,24 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
     }
 
     private void startAdFragment() {
-        Fragment fragment = mFragmentManager.findFragmentById(R.id.login_container);
         //这里判断是否是重新登陆，如果是，则直接进入登陆界面，如果不是则，加载广告页面
+        int id = R.id.login_container;
         boolean reLogin = getIntent().getBooleanExtra("reLogin", false);
         if (reLogin) {
-            if (fragment == null) {
-                fragment = new LoginFragment();
-                mFragmentManager.beginTransaction()
-                        .add(R.id.login_container, fragment)
-                        .commit();
-            }
+            FragmentUtils.addFragment(mFragmentManager, id, new LoginFragment());
         } else {
             //在这里首先加载一个含有广告的fragment
-            if (fragment == null) {
-
-                fragment = new SlashFragment();
-                mFragmentManager.beginTransaction()
-                        .add(R.id.login_container, fragment)
-                        .commit();
-            }
-            requestPermission();
-        }
-
-    }
-
-    @AfterPermissionGranted(STORAGE_PERMS)
-    private void requestPermission() {
-        String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        if (!EasyPermissions.hasPermissions(this, perm)) {
-            PermissionUtils.requestStorage(this, perm);
-        } else {
+            FragmentUtils.addFragment(mFragmentManager, id, new SlashFragment());
             startLoginFragment();
+//            requestPermission();
         }
+
     }
 
     private void startLoginFragment() {
         //创建handler对象，调用postDelayed()方法，启动插播3秒广告
         Handler handler = new Handler();
         handler.postDelayed(new UpdateUI(), 3000);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        // EasyPermissions handles the request result.
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, List<String> perms) {
-        if (requestCode == STORAGE_PERMS) {
-            Log.d(TAG, "onPermissionsGranted: ");
-            startLoginFragment();
-
-            File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.image");
-            File dir1 = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.audio");
-            if (!dir.exists() && !dir1.exists()) {
-                if (dir.mkdirs()) {
-                    Log.d(TAG, "/MoonlightNote/.image: created");
-                }
-
-                if (dir1.mkdirs()) {
-                    Log.d(TAG, "/MoonlightNote/.audio: created");
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, List<String> perms) {
-        if (requestCode == STORAGE_PERMS) {
-            Log.d(TAG, "onPermissionsDenied: ");
-            mFragmentManager.beginTransaction().remove(mFragment).commitAllowingStateLoss();
-            onBackPressed();
-        }
     }
 
     public void onBackPressed() {
@@ -224,6 +156,10 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
             } else {
                 mFragment = new LoginFragment();
                 mFragmentManager.beginTransaction()
+                        .setCustomAnimations(R.animator.fragment_slide_left_enter,
+                                R.animator.fragment_slide_left_exit,
+                                R.animator.fragment_slide_right_enter,
+                                R.animator.fragment_slide_right_exit)
                         .replace(R.id.login_container, mFragment)
                         .commitAllowingStateLoss();
             }

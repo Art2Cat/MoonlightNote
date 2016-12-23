@@ -580,6 +580,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 break;
             case R.id.playing_audio_button:
                 if (moonlight.getAudioName() != null && mStartPlaying) {
+                    mStartPlaying = false;
                     if (!mAudioPlayer.isPrepared) {
                         mAudioPlayer.prepare(moonlight.getAudioName());
                     }
@@ -592,14 +593,16 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                             mAudioPlayer.mProgressBar.setProgress(0);
                             mPlayingAudio.setBackgroundResource(R.drawable.ic_play_circle_outline_cyan_400_48dp);
                             mAudioPlayer.isPrepared = false;
-                            mStartPlaying = !mStartPlaying;
+                            mStartPlaying = true;
                         }
                     });
                 } else {
                     mAudioPlayer.stopPlaying();
                     mPlayingAudio.setBackgroundResource(R.drawable.ic_play_circle_outline_cyan_400_48dp);
+                    mStartPlaying = true;
+                    mAudioPlayer.mPlayer.reset();
+                    mAudioPlayer.isPrepared = false;
                 }
-                mStartPlaying = !mStartPlaying;
                 break;
             case R.id.delete_audio:
                 //删除录音
@@ -721,7 +724,11 @@ public abstract class MoonlightDetailFragment extends Fragment implements
 
     private Uri copyAudioFile(Uri uri) {
         ContentResolver contentResolver = getActivity().getContentResolver();
-        File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.audio");
+        String pwd = getActivity().getCacheDir().getAbsolutePath();
+        File dir = new File(pwd + "/audio");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
         File file = new File(dir, UUID.randomUUID().toString() + ".amr");
         FileOutputStream fos = null;
         InputStream inputStream = null;
@@ -743,7 +750,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 assert inputStream != null;
                 inputStream.close();
             }
-            return FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, file);
+            return Uri.fromFile(file);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -84,8 +84,6 @@ public class MoonlightViewHolder extends AnimateViewHolder {
     public void displayImage(Context context, String url) {
         if (url != null) {
             Log.d(TAG, "displayImage: succeed");
-//            Picasso.with(mContext).setIndicatorsEnabled(true);
-//            Picasso.with(mContext).load(Uri.parse(url)).memoryPolicy(NO_CACHE, NO_STORE).into(mImage);
             Glide.with(context)
                     .load(Uri.parse(url))
                     .placeholder(R.drawable.ic_cloud_download_white_48dp)

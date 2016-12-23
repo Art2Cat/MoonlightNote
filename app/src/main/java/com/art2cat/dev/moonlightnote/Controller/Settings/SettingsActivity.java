@@ -1,6 +1,7 @@
 package com.art2cat.dev.moonlightnote.Controller.Settings;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -15,6 +16,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -27,6 +29,7 @@ import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.NoteLab;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
+import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
@@ -56,6 +59,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
+
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
+import static com.art2cat.dev.moonlightnote.Model.Constants.STORAGE_PERMS;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -269,7 +277,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @SuppressLint("ValidFragment")
     public static class BackPreferenceFragment extends PreferenceFragment implements
             Preference.OnPreferenceClickListener, GoogleApiClient.ConnectionCallbacks,
-            GoogleApiClient.OnConnectionFailedListener {
+            GoogleApiClient.OnConnectionFailedListener, EasyPermissions.PermissionCallbacks {
         private static final String CONNECT_TO_DRIVE = "connect_to_drive";
         private static final String BACKUP_TO_DRIVE = "backup_to_drive";
         private static final String RESTORE_FROM_DRIVE = "restore_from_drive";
@@ -314,6 +322,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     }
                 };
         private String mData;
+        private int mType;
         private boolean fileOperation = false;
 
         /**
@@ -399,17 +408,61 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     }
                     break;
                 case BACKUP_TO_SD:
-                    mFDatabaseUtils.exportNote(0);
+                    mType = 0;
+
                     break;
                 case RESTORE_FROM_SD:
+                    mType = 1;
 
-                    mFDatabaseUtils.restoreAll();
-//                    SnackBarUtils.longSnackBar(getView(),
-//                            "Restore succeed!",
-//                            SnackBarUtils.TYPE_INFO).show();
                     break;
             }
             return false;
+        }
+
+        @AfterPermissionGranted(STORAGE_PERMS)
+        private void requestPermission(int type) {
+            String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+            if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
+                PermissionUtils.requestStorage(getActivity(), perm);
+            } else {
+                if (type == 0) {
+                    mFDatabaseUtils.exportNote(0);
+                } else {
+                    mFDatabaseUtils.restoreAll();
+                }
+            }
+        }
+
+        @Override
+        public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            // EasyPermissions handles the request result.
+            EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+        }
+
+        @Override
+        public void onPermissionsGranted(int requestCode, List<String> perms) {
+            if (requestCode == STORAGE_PERMS) {
+                Log.d(TAG, "onPermissionsGranted: ");
+                switch (mType) {
+                    case 0:
+                        mFDatabaseUtils.exportNote(0);
+                        break;
+                    case 1:
+                        mFDatabaseUtils.restoreAll();
+                        break;
+                }
+            }
+        }
+
+        @Override
+        public void onPermissionsDenied(int requestCode, List<String> perms) {
+            if (requestCode == STORAGE_PERMS) {
+                Log.d(TAG, "onPermissionsDenied: ");
+                SnackBarUtils.shortSnackBar(getView(), "This action need Storage permission",
+                        SnackBarUtils.TYPE_INFO).show();
+            }
         }
 
         @Override
