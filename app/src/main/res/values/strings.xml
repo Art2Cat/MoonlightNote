@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MoonlightNote</string>
+    <string name="app_name">Moonlight Note</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -104,7 +104,7 @@
     <string name="settings_license">License</string>
     <string name="settings_about">About app</string>
     <string name="settings_license_content">
-        "MoonlightNote:\n"
+        "Moonlight Note:\n"
         "Copyright 2016 Art2Cat\n"
         "This App is distributed under an Apache 2.0 License.\n\n"
 
@@ -161,7 +161,7 @@
     <string name="settings_security">Security</string>
     <string name="settings_security_disable_all">Disable Security</string>
     <string name="settings_policy_content">
-        "MoonlightNote Privacy Policy\n\n"
+        "Moonlight Note Privacy Policy\n\n"
 
         "This privacy policy has been compiled to better serve those who are concerned with how
         their 'Personally Identifiable Information' (PII) is being used online. PII, as described
@@ -321,13 +321,13 @@
         "If there are any questions regarding this privacy policy, you may contact us using the
         information below.\n\n"
 
-        "MoonlightNote\n"
+        "Moonlight Note\n"
         "Email: dev@art2cat.com\n"
         "Tel: +1(530)2901031\n\n"
 
         "Last Edited on 2016-12-19"
     </string>
-    <string name="settings_about_app_content">"MoonlightNote\n\n"
+    <string name="settings_about_app_content">"Moonlight Note\n\n"
         "Version:\n"
         "1.0.161224\n\n"
         "Credit:\n"
