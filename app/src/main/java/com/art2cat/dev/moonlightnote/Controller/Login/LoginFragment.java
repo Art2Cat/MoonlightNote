@@ -36,6 +36,7 @@ import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserUtils;
+import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -94,7 +95,11 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mView = inflater.inflate(R.layout.fragment_login, container, false);
+        if (Utils.isXLargeTablet(getActivity())) {
+            mView = inflater.inflate(R.layout.fragment_login_two, container, false);
+        } else {
+            mView = inflater.inflate(R.layout.fragment_login, container, false);
+        }
         mEmailView = (AppCompatEditText) mView.findViewById(R.id.email);
 
         Toolbar toolbar = (Toolbar) mView.findViewById(R.id.toolbar);
