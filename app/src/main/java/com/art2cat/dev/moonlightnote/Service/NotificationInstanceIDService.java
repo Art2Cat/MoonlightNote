@@ -27,7 +27,6 @@ public class NotificationInstanceIDService extends FirebaseInstanceIdService {
     }
 
     private void sendRegistrationToServer(String token) {
-        // TODO: Implement this method to send token to your app server.
         User user = UserUtils.getUserFromCache(getApplicationContext());
         user.setToken(token);
         UserUtils.updateUser(user.getUid(), user);

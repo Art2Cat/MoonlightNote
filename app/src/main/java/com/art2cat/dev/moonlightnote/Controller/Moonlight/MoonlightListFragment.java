@@ -280,6 +280,9 @@ public abstract class MoonlightListFragment extends Fragment {
                     viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View view) {
+                            Log.d(TAG, moonlightKey);
+                            Log.d(TAG, moonlightD.getId());
+                            moonlightD.setId(moonlightKey);
                             if (moonlightKey.equals(moonlightD.getId())) {
                                 if (!isTrash()) {
                                     setParams(1);
