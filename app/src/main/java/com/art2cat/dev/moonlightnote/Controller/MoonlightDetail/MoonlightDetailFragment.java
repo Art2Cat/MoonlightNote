@@ -65,7 +65,6 @@ import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.MaterialAnimation.CircularRevealUtils;
-import com.art2cat.dev.moonlightnote.Utils.MenuUtils;
 import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
@@ -272,9 +271,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             });
             mDeleteAudio.setOnClickListener(this);
             mPlayingAudio.setOnClickListener(this);
-            if (!Utils.isXLargeTablet(getActivity())) {
-                showBottomSheet();
-            }
+//            if (!Utils.isXLargeTablet(getActivity())) {
+            showBottomSheet();
+//            }
 
             mBottomBarLeft.setOnClickListener(this);
             mBottomBarRight.setOnClickListener(this);
@@ -557,20 +556,20 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bottom_bar_left:
-                if (Utils.isXLargeTablet(getActivity())) {
-                    MenuUtils.showPopupMenu(getActivity(), mView, R.menu.menu_detail_left, this);
-                } else {
-                    isLeftOrRight = true;
-                    hideSoftKeyboard();
-                }
+//                if (Utils.isXLargeTablet(getActivity())) {
+//                    MenuUtils.showPopupMenu(getActivity(), mView, R.menu.menu_detail_left, this);
+//                } else {
+                isLeftOrRight = true;
+                hideSoftKeyboard();
+//                }
                 break;
             case R.id.bottom_bar_right:
-                if (Utils.isXLargeTablet(getActivity())) {
-                    MenuUtils.showPopupMenu(getActivity(), mView, R.menu.menu_detail_right, this);
-                } else {
-                    isLeftOrRight = false;
-                    hideSoftKeyboard();
-                }
+//                if (Utils.isXLargeTablet(getActivity())) {
+//                    MenuUtils.showPopupMenu(getActivity(), mView, R.menu.menu_detail_right, this);
+//                } else {
+                isLeftOrRight = false;
+                hideSoftKeyboard();
+//                }
                 break;
             case R.id.moonlight_image:
                 //网页浏览图片。。。

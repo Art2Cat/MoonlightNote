@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.os.StrictMode;
@@ -23,6 +24,7 @@ public class MyApplication extends Application {
         return application.mRefWatcher;
     }
 
+    @SuppressLint("StaticFieldLeak")
     public static Context mContext;
 
     @Override
@@ -42,7 +44,7 @@ public class MyApplication extends Application {
             // You should not init your app in this process.
             return;
         }
-        enabledStrictMode();
+//        enabledStrictMode();
         mRefWatcher = LeakCanary.install(this);
         LockManager<MoonlightPinActivity> lockManager = LockManager.getInstance();
         lockManager.enableAppLock(this, MoonlightPinActivity.class);

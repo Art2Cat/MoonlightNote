@@ -8,7 +8,7 @@
         android:icon="@drawable/ic_camera_black_24dp"
         android:orderInCategory="100"
         android:title="@string/bottom_sheet_left_take_photo"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always|withText" />
     <item
         android:id="@+id/action_choose_image"
         android:icon="@drawable/ic_photo_album_black_24dp"

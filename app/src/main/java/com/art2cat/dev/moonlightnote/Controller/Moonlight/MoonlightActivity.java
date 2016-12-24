@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -61,7 +62,7 @@ public class MoonlightActivity extends AppCompatActivity
     private boolean isHome = true;
     private boolean isClicked = false;
     private boolean isLogin = true;
-    private boolean isLock = true;
+    private boolean isLock;
     private boolean userIsInteracting;
     private TextView emailTV;
     private TextView nickTV;
@@ -79,7 +80,9 @@ public class MoonlightActivity extends AppCompatActivity
         setContentView(R.layout.activity_moonlight);
 
         mLock = SPUtils.getInt(this, Constants.USER_CONFIG, Constants.USER_CONFIG_SECURITY_ENABLE, 0);
-
+        if (mLock != 0) {
+            isLock = true;
+        }
         mFragmentManager = getFragmentManager();
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -111,6 +114,16 @@ public class MoonlightActivity extends AppCompatActivity
         });
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_HOME:
+                break;
+            case KeyEvent.KEYCODE_MENU:
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
     @Override
     public void onBackPressed() {
@@ -122,6 +135,12 @@ public class MoonlightActivity extends AppCompatActivity
         }
     }
 
+    private void checkLockStatus() {
+        if (mLock != 0) {
+            isLock = !isLock;
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -130,6 +149,8 @@ public class MoonlightActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
+        checkLockStatus();
+        Log.d(TAG, "onPause: ");
     }
 
     @Override
@@ -140,21 +161,23 @@ public class MoonlightActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
         if (isLock) {
             Utils.lockApp(this, mLock);
         }
-        super.onResume();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        isLock = !isLock;
+        Log.d(TAG, "onStop: ");
         mFDatabaseUtils.removeListener();
     }
 
     @Override
     protected void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
         EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
@@ -176,7 +199,6 @@ public class MoonlightActivity extends AppCompatActivity
                                 FragmentUtils.REPLACE_NORMAL);
                         mFAB.setVisibility(View.VISIBLE);
                         isHome = !isHome;
-
                     }
                 }
                 break;
@@ -201,8 +223,8 @@ public class MoonlightActivity extends AppCompatActivity
                     Log.d(TAG, "onNavigationItemSelected: ");
 //                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 }
+                checkLockStatus();
                 startActivity(intent);
-                isLock = !isLock;
                 break;
             case R.id.nav_rate_app:
                 RateThisApp.showRateDialog(this);
@@ -266,7 +288,7 @@ public class MoonlightActivity extends AppCompatActivity
                     Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
                     intent.putExtra("Fragment", Constants.EXTRA_CREATE_FRAGMENT);
                     startActivity(intent);
-                    isLock = !isLock;
+                    checkLockStatus();
                 } else {
                     SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
                             SnackBarUtils.TYPE_INFO).show();
@@ -322,7 +344,7 @@ public class MoonlightActivity extends AppCompatActivity
                     Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
                     intent.putExtra("Fragment", Constants.EXTRA_USER_FRAGMENT);
                     startActivity(intent);
-                    isLock = !isLock;
+                    checkLockStatus();
                 } else {
                     SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
                             SnackBarUtils.TYPE_INFO).show();
@@ -384,7 +406,7 @@ public class MoonlightActivity extends AppCompatActivity
                             getString(R.string.note_binned), SnackBarUtils.TYPE_INFO).show();
                     break;
                 case Constants.BUS_FLAG_NONE_SECURITY:
-                    isLock = !isLock;
+                    checkLockStatus();
                     break;
                 case Constants.BUS_FLAG_EXPORT_DATA_DONE:
                     break;

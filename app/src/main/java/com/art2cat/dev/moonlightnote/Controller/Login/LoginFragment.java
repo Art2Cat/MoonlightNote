@@ -50,7 +50,6 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -96,7 +95,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         if (Utils.isXLargeTablet(getActivity())) {
-            mView = inflater.inflate(R.layout.fragment_login_two, container, false);
+            mView = inflater.inflate(R.layout.fragment_login_tablet, container, false);
         } else {
             mView = inflater.inflate(R.layout.fragment_login, container, false);
         }

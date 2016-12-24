@@ -409,11 +409,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     break;
                 case BACKUP_TO_SD:
                     mType = 0;
-
                     break;
                 case RESTORE_FROM_SD:
                     mType = 1;
-
                     break;
             }
             return false;

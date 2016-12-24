@@ -133,9 +133,9 @@
         "Copyright 2015 OrangeGangsters\n"
         "This library is distributed under the MIT License (MIT).\n\n"
 
-        "PasscodeLock:\n"
-        "Copyright 2016 wordpress-mobile\n"
-        "This library is distributed under the MIT, and GPL.\n\n"
+        "Gson:\n"
+        "Copyright 2008 Google\n"
+        "This library is distributed under an Apache 2.0 License.\n\n"
 
         "CircleImageView:\n"
         "Copyright 2014 - 2016 Henning Dodenhof\n"
@@ -329,7 +329,7 @@
     </string>
     <string name="settings_about_app_content">"MoonlightNote\n\n"
         "Version:\n"
-        "1.0.161217\n\n"
+        "1.0.161224\n\n"
         "Credit:\n"
         "StudyJamscn(www.studyjamscn.com)\n\n"
         "Copyright:\n"

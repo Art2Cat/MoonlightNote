@@ -3,6 +3,7 @@ package com.art2cat.dev.moonlightnote.Controller.Settings;
 import android.util.Log;
 
 import com.art2cat.dev.moonlightnote.Utils.Utils;
+import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.github.orangegangsters.lollipin.lib.managers.AppLockActivity;
 
 public class MoonlightPinActivity extends AppLockActivity {
@@ -74,6 +75,22 @@ public class MoonlightPinActivity extends AppLockActivity {
     @Override
     public void onPinSuccess(int attempts) {
         Log.d(TAG, "onPinSuccess: " + attempts);
+        finish();
     }
 
+    @Override
+    protected void onPinCodeSuccess() {
+        super.onPinCodeSuccess();
+        if (getIntent().getIntExtra(AppLock.EXTRA_TYPE, 78)== 0) {
+            Utils.showToast(getApplicationContext(), "App protection will enable next time.", 1);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(1);
+        super.onBackPressed();
+    }
 }

@@ -102,6 +102,7 @@ public class Utils {
     public static void lockApp(Context context, int code) {
         switch (code) {
             case 306:
+//                LockManager<MoonlightPinActivity> lockManager = LockManager.getInstance();
                 Intent pin = new Intent(context, MoonlightPinActivity.class);
                 pin.putExtra(AppLock.EXTRA_TYPE, AppLock.UNLOCK_PIN);
                 context.startActivity(pin);
