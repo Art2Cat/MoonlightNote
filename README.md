@@ -1,7 +1,7 @@
-## MoonlightNote
+## Moonlight Note
 StudyJams Advanced Learning Project
 
-MoonlightNote Based on Firebase and in accordance with the Material Design standard development of a simple and efficient cloud note application.
+Moonlight Note Based on Firebase and in accordance with the Material Design standard development of a simple and efficient cloud note application.
 
  *Google Play*: https://goo.gl/rd5Z5A
 
