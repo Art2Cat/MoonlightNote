@@ -10,16 +10,20 @@ Moonlight Note Based on Firebase and in accordance with the Material Design stan
 - All notes stored in Firebase Database(not local)*
 - If you want you can Share with your friends
 - Multi-Window Support(require Android 7.0 Nougat)
-- Encrypt/Decrypt Note(AES)
-- Password Protect Program(Current use PinCode, password and pattern coming soon)
-- Export all Notes
+- Password Protect Program(Current use PinCode, pattern coming soon)
+- Encrypt/Decrypt Note(AES encryption)
+- Back up to SD card and Google Drive(Restore data from them)
 
 # To Do:
 - Sorting notes (a-z, date)
+- Add more Material Design Animation
 
 I'm a members from the 2016 Google Developer StudyJams Chinese activities, thanks StudyJams activity provides a very good opportunity for me to learn Android programming techniques, just because StudyJams help, let me step by step forward, continue to progress, in order to have results today, hope for the future StudyJams can help more novices to achieve the dream of programming techniques. For more information, please attention www.studyjamscn.com
 
 *Only text notes stored in Firebase Database, images and audios stored int Firebase Storage.
+
+#Privacy Policy
+
 
 ## License
 
