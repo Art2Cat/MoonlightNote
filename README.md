@@ -24,6 +24,8 @@ I'm a members from the 2016 Google Developer StudyJams Chinese activities, thank
 
 #Privacy Policy
 
+https://github.com/Art2Cat/MoonlightNote/blob/master/PRIVACY%20POLICY.md
+
 
 ## License
 
