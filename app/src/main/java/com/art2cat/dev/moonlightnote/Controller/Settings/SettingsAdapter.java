@@ -69,7 +69,7 @@ class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingsViewH
                     case Constants.FRAGMENT_POLICY:
                         FragmentUtils.replaceFragment(fragmentManager,
                                 id,
-                                new PolicyFragment().newInstance(),
+                                new PrivacyPolicyFragment().newInstance(),
                                 FragmentUtils.REPLACE_BACK_STACK);
                         break;
                     case Constants.FRAGMENT_LICENSE:
@@ -81,7 +81,7 @@ class SettingsAdapter extends RecyclerView.Adapter<SettingsAdapter.SettingsViewH
                     case Constants.FRAGMENT_ABOUT:
                         FragmentUtils.replaceFragment(fragmentManager,
                                 id,
-                                new AboutFragment().newInstance(),
+                                new AboutAppFragment().newInstance(),
                                 FragmentUtils.REPLACE_BACK_STACK);
                         break;
                     case Constants.EXTRA_DISABLE_SECURITY:

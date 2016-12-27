@@ -9,10 +9,10 @@ import com.art2cat.dev.moonlightnote.R;
 /**
  * A simple {@link CommonSettingsFragment} subclass.
  */
-public class AboutFragment extends CommonSettingsFragment {
+public class AboutAppFragment extends CommonSettingsFragment {
 
 
-    public AboutFragment() {
+    public AboutAppFragment() {
         // Required empty public constructor
     }
 
@@ -23,10 +23,10 @@ public class AboutFragment extends CommonSettingsFragment {
 
     @Override
     public Fragment newInstance() {
-        AboutFragment aboutFragment = new AboutFragment();
+        AboutAppFragment aboutAppFragment = new AboutAppFragment();
         Bundle args = new Bundle();
-        args.putInt("type", 0);
-        aboutFragment.setArguments(args);
-        return aboutFragment;
+        args.putInt("type", TYPE_ABOUT_APP);
+        aboutAppFragment.setArguments(args);
+        return aboutAppFragment;
     }
 }

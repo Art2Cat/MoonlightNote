@@ -28,7 +28,7 @@ public class SettingsSecondActivity extends AppCompatActivity {
             case Constants.FRAGMENT_POLICY:
                 FragmentUtils.addFragment(fragmentManager,
                         id,
-                        new PolicyFragment().newInstance());
+                        new PrivacyPolicyFragment().newInstance());
                 break;
             case Constants.FRAGMENT_LICENSE:
                 FragmentUtils.addFragment(fragmentManager,
@@ -38,7 +38,7 @@ public class SettingsSecondActivity extends AppCompatActivity {
             case Constants.FRAGMENT_ABOUT:
                 FragmentUtils.addFragment(fragmentManager,
                         id,
-                        new AboutFragment().newInstance());
+                        new AboutAppFragment().newInstance());
                 break;
         }
     }

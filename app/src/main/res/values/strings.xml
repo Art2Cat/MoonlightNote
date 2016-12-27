@@ -100,9 +100,9 @@
     <string name="action_change_password">Change password</string>
 
     <string name="settings_secure">Secure</string>
-    <string name="settings_policy">Privacy policy</string>
+    <string name="settings_policy">Privacy Policy</string>
     <string name="settings_license">License</string>
-    <string name="settings_about">About app</string>
+    <string name="settings_about">About App</string>
     <string name="settings_license_content">
         “Moonlight Note:\n”
         “Copyright 2016 Art2Cat\n”

@@ -3,12 +3,6 @@ package com.art2cat.dev.moonlightnote.Controller.Settings;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.art2cat.dev.moonlightnote.R;
 
@@ -31,7 +25,7 @@ public class LicenseFragment extends CommonSettingsFragment {
     public Fragment newInstance() {
         LicenseFragment licenseFragment = new LicenseFragment();
         Bundle args = new Bundle();
-        args.putInt("type", 1);
+        args.putInt("type", TYPE_LICENSE);
         licenseFragment.setArguments(args);
         return licenseFragment;
     }

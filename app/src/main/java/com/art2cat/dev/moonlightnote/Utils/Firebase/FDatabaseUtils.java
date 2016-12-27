@@ -190,7 +190,7 @@ public class FDatabaseUtils {
         addMoonlight(userId, moonlight, Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT);
     }
 
-    public void getDataFromDatabase(String keyId, final int type) {
+    public void getDataFromDatabase(@Nullable String keyId, final int type) {
         if (type == Constants.EXTRA_TYPE_MOONLIGHT) {
             mDatabaseReference = FirebaseDatabase.getInstance().getReference()
                     .child("users-moonlight").child(mUserId).child("note").child(keyId);

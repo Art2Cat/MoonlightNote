@@ -20,6 +20,9 @@ import com.art2cat.dev.moonlightnote.R;
  * A simple {@link Fragment} subclass.
  */
 public abstract class CommonSettingsFragment extends Fragment {
+    public static final int TYPE_ABOUT_APP = 0;
+    public static final int TYPE_LICENSE = 1;
+    public static final int TYPE_RIVACY_POLICY = 2;
 
     private int mType ;
 
@@ -51,17 +54,17 @@ public abstract class CommonSettingsFragment extends Fragment {
         int padding = getResources().getDimensionPixelOffset(R.dimen.padding);
         textView.setPadding(padding, padding, padding, padding);
         switch (mType) {
-            case 0:
+            case TYPE_ABOUT_APP:
                 textView.setGravity(Gravity.CENTER);
                 textView.setText(getContent());
                 getActivity().setTitle(R.string.settings_about);
                 break;
-            case 1:
+            case TYPE_LICENSE:
                 textView.setGravity(Gravity.CENTER);
                 textView.setText(getContent());
                 getActivity().setTitle(R.string.settings_license);
                 break;
-            case 2:
+            case TYPE_RIVACY_POLICY:
                 textView.setGravity(Gravity.START);
                 textView.setText(getContent());
                 getActivity().setTitle(R.string.settings_policy);
@@ -69,7 +72,6 @@ public abstract class CommonSettingsFragment extends Fragment {
         }
         setHasOptionsMenu(true);
         scrollView.addView(textView);
-//        return inflater.inflate(R.layout.fragment_about, container, false);
         return linearLayout;
     }
 
