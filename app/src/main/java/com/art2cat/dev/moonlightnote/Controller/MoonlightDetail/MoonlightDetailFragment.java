@@ -49,7 +49,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.CircleProgressDialogFragment;
@@ -64,7 +63,6 @@ import com.art2cat.dev.moonlightnote.Utils.AudioPlayer;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
-import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.MaterialAnimation.CircularRevealUtils;
 import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
@@ -74,8 +72,6 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.StorageReference;
@@ -117,18 +113,14 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private ContentFrameLayout mContentFrameLayout;
     private LinearLayoutCompat mBottomBarContainer;
     private LinearLayoutCompat mAudioContainer;
-    private TextInputLayout mTitleTextInputLayout;
     private TextInputLayout mContentTextInputLayout;
     private TextInputEditText mTitle;
     private TextInputEditText mContent;
     private AppCompatTextView mShowDuration;
-    private AppCompatTextView mDisplayTime;
     private AppCompatButton mBottomBarLeft;
     private AppCompatButton mBottomBarRight;
-    private AppCompatButton mDeleteImage;
     private AppCompatButton mDeleteAudio;
     private AppCompatButton mPlayingAudio;
-    private CardView mImageCardView;
     private CardView mAudioCardView;
     private AppCompatImageView mImage;
     private CircleProgressDialogFragment mCircleProgressDialogFragment;
@@ -136,7 +128,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private BottomSheetBehavior mRightBottomSheetBehavior;
     private BottomSheetBehavior mLeftBottomSheetBehavior;
     private InputMethodManager mInputMethodManager;
-    private ArrayAdapter<String> mArrayAdapter;
     private Moonlight moonlight;
     private boolean mCreateFlag = true;
     private boolean mEditFlag = false;
@@ -146,13 +137,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private boolean isMakeACopy = false;
     private String mUserId;
     private String mKeyId;
-    private String mLabel;
     private int mPaddingBottom;
     private Uri mFileUri = null;
-    private DatabaseReference mMoonlightRef;
-    private ValueEventListener mMoonlightListener;
-    private ValueEventListener moonlightListener;
-    private StorageReference mStorageRef;
     private StorageReference mStorageReference;
     private String mImageFileName;
     private String mAudioFileName;
@@ -161,7 +147,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private File mFile;
     private Handler mHandler = new Handler();
     private AudioPlayer mAudioPlayer;
-    private BitmapUtils mBitmapUtils;
 
     public MoonlightDetailFragment() {
         // Required empty public constructor
@@ -192,8 +177,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements
 
         if (getArguments() != null) {
             moonlight = getArguments().getParcelable("moonlight");
-            Log.d(TAG, "hash: " + moonlight.hashCode());
-            mKeyId = moonlight.getId();
+            if (moonlight != null) {
+                mKeyId = moonlight.getId();
+            }
             int trashTag = getArguments().getInt("trash");
             if (trashTag == 0) {
                 mEditFlag = true;
@@ -226,23 +212,20 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         mContent = (TextInputEditText) mView.findViewById(R.id.content_TIET);
         mContentTextInputLayout = (TextInputLayout) mView.findViewById(R.id.content_TIL);
         mImage = (AppCompatImageView) mView.findViewById(R.id.moonlight_image);
-        //mImageCardView = (CardView) mView.findViewById(R.id.image_container);
         mAudioCardView = (CardView) mView.findViewById(R.id.audio_container);
         mAudioContainer = (LinearLayoutCompat) mView.findViewById(R.id.audio_container_inner);
-        //mDeleteImage = (AppCompatButton) mView.findViewById(R.id.delete_image);
 
         mDeleteAudio = (AppCompatButton) mView.findViewById(R.id.delete_audio);
         mPlayingAudio = (AppCompatButton) mView.findViewById(R.id.playing_audio_button);
         mShowDuration = (AppCompatTextView) mView.findViewById(R.id.moonlight_audio_duration);
         ProgressBar audioPlayerPB = (ProgressBar) mView.findViewById(R.id.moonlight_audio_progressBar);
-        mDisplayTime = (AppCompatTextView) mView.findViewById(R.id.bottom_bar_display_time);
+        AppCompatTextView displayTime = (AppCompatTextView) mView.findViewById(R.id.bottom_bar_display_time);
         mCoordinatorLayout = (CoordinatorLayout) mView.findViewById(R.id.bottom_sheet_container);
         mBottomBarContainer = (LinearLayoutCompat) mView.findViewById(R.id.bottom_bar_container);
         mBottomBarLeft = (AppCompatButton) mView.findViewById(R.id.bottom_bar_left);
         mBottomBarRight = (AppCompatButton) mView.findViewById(R.id.bottom_bar_right);
         mTitle.setOnFocusChangeListener(this);
         mContent.setOnFocusChangeListener(this);
-        mBitmapUtils = new BitmapUtils(getActivity());
         mAudioPlayer = new AudioPlayer(audioPlayerPB, mShowDuration);
 
         mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance();
@@ -254,7 +237,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             String time = Utils.timeFormat(getActivity().getApplicationContext(), new Date(date));
             if (time != null) {
                 String timeFormat = "Edited: " + time;
-                mDisplayTime.setText(timeFormat);
+                displayTime.setText(timeFormat);
             }
             onCheckSoftKeyboardState(mView);
             //mDeleteImage.setOnClickListener(this);
@@ -728,11 +711,12 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         String pwd = getActivity().getCacheDir().getAbsolutePath();
         File dir = new File(pwd + "/audio");
         if (!dir.exists()) {
-            dir.mkdirs();
+            boolean isDirCreate = dir.mkdirs();
+            Log.d(TAG, "dir.mkdirs():" + isDirCreate);
         }
         File file = new File(dir, UUID.randomUUID().toString() + ".amr");
-        FileOutputStream fos = null;
-        InputStream inputStream = null;
+        FileOutputStream fos;
+        InputStream inputStream;
         try {
             inputStream = contentResolver.openInputStream(uri);
             fos = new FileOutputStream(file);
@@ -740,15 +724,17 @@ public abstract class MoonlightDetailFragment extends Fragment implements
 
                 byte[] buffer = new byte[4 * 1024];
                 int length;
-                while ((length = inputStream.read(buffer)) != -1) {
+                while ((length = inputStream != null ? inputStream.read(buffer) : 0) != -1) {
                     fos.write(buffer, 0, length);
                 }
                 fos.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
+                //noinspection ThrowFromFinallyBlock
                 fos.close();
                 assert inputStream != null;
+                //noinspection ThrowFromFinallyBlock
                 inputStream.close();
             }
             return Uri.fromFile(file);
@@ -758,6 +744,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         return null;
     }
 
+    @SuppressLint("LogConditional")
     @AfterPermissionGranted(CAMERA_PERMS)
     private void onCameraClick() {
         // Check that we have permission to read images from external storage.
@@ -786,7 +773,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 dir.mkdirs();
             }
             boolean created = mFile.createNewFile();
-            Log.d(TAG, "file.createNewFile:" + mFile.getAbsolutePath() + ":" + created);
+            Log.d(TAG, "created:" + created);
         } catch (IOException e) {
             Log.e(TAG, "file.createNewFile" + mFile.getAbsolutePath() + ":FAILED", e);
         }
@@ -809,6 +796,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         }
     }
 
+    @SuppressLint("LogConditional")
     @AfterPermissionGranted(STORAGE_PERMS)
     private void onAlbumClick() {
         // Check that we have permission to read images from external storage.
@@ -869,8 +857,8 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.audio");
 
         if (!dir.exists()) {
-            dir.mkdirs();
-            Log.d(TAG, "onAudioClick: " + dir.mkdirs());
+            boolean isDirCreate = dir.mkdirs();
+            Log.d(TAG, "onAudioClick: " + isDirCreate);
         }
         displaySpeechRecognizer();
     }
@@ -893,6 +881,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             // Upload file to Firebase Storage
             uploadTask = photoRef.putFile(fileUri);
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @SuppressLint("LogConditional")
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     mDownloadIUrl = taskSnapshot.getDownloadUrl();
@@ -926,12 +915,13 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     .child(fileUri.getLastPathSegment());
             uploadTask = storageReference.putFile(fileUri);
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @SuppressLint("LogConditional")
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     mDownloadAUrl = taskSnapshot.getDownloadUrl();
                     mAudioFileName = taskSnapshot.getMetadata().getName();
 
-                    Log.d(TAG, "onSuccess: downloadUrl:  " + mAudioFileName.toString());
+                    Log.d(TAG, "onSuccess: downloadUrl:  " + mAudioFileName);
                     moonlight.setAudioName(mAudioFileName);
                     moonlight.setAudioUrl(mDownloadAUrl.toString());
                     showAudio(mAudioFileName);

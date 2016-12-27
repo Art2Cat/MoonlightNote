@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -63,7 +64,6 @@ public class MoonlightActivity extends AppCompatActivity
     private boolean isClicked = false;
     private boolean isLogin = true;
     private boolean isLock;
-    private boolean userIsInteracting;
     private TextView emailTV;
     private TextView nickTV;
     private String mUserId;
@@ -184,7 +184,7 @@ public class MoonlightActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation mView item clicks here.
         int id = item.getItemId();
         int container = R.id.main_fragment_container;
@@ -300,7 +300,7 @@ public class MoonlightActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         //NavigationView实例化
@@ -373,7 +373,6 @@ public class MoonlightActivity extends AppCompatActivity
     @Override
     public void onUserInteraction() {
         super.onUserInteraction();
-        userIsInteracting = true;
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

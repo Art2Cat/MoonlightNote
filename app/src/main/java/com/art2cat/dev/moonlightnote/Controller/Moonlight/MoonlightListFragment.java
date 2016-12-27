@@ -66,7 +66,6 @@ public abstract class MoonlightListFragment extends Fragment {
     private Menu mMenu;
     private MenuInflater mMenuInflater;
     private boolean isLogin = true;
-    private boolean isToolbarScroll = false;
     private boolean isInflate = false;
     private boolean isNotify;
 
@@ -96,7 +95,6 @@ public abstract class MoonlightListFragment extends Fragment {
 
         if (isTrash()) {
             getActivity().setTitle(R.string.fragment_trash);
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.grey, getActivity().getTheme()));
             } else {
@@ -255,7 +253,6 @@ public abstract class MoonlightListFragment extends Fragment {
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Log.d(TAG, "onClick: " + isLogin);
                             if (isLogin) {
                                 Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
                                 if (isTrash()) {
@@ -287,11 +284,9 @@ public abstract class MoonlightListFragment extends Fragment {
                                 if (!isTrash()) {
                                     setParams(1);
                                     changeToolbar(moonlightD, 0);
-                                    isToolbarScroll = true;
                                 } else {
                                     changeToolbar(moonlightD, 0);
                                     setParams(1);
-                                    isToolbarScroll = true;
                                 }
                             }
                             return false;
@@ -319,7 +314,6 @@ public abstract class MoonlightListFragment extends Fragment {
                 @Override
                 public void onItemRangeInserted(int positionStart, int itemCount) {
                     super.onItemRangeInserted(positionStart, itemCount);
-                    Log.d(TAG, "onItemRangeInserted: " + itemCount);
                     mRecyclerView.smoothScrollToPosition(mFirebaseRecyclerAdapter.getItemCount());
                     if (isNotify) {
                         notifyChange();
@@ -447,7 +441,6 @@ public abstract class MoonlightListFragment extends Fragment {
                 changeOptionsMenu(3);
                 break;
         }
-        isToolbarScroll = false;
         setParams(0);
         return super.onOptionsItemSelected(item);
     }

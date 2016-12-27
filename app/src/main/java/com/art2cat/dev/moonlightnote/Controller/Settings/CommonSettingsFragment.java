@@ -38,7 +38,6 @@ public abstract class CommonSettingsFragment extends Fragment {
         if (getArguments() != null) {
             mType = getArguments().getInt("type");
         }
-        View view = new View(getActivity());
         LinearLayout linearLayout = new LinearLayout(getActivity());
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(

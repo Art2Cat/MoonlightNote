@@ -27,9 +27,9 @@ import java.util.List;
  * on 12/9/16 11:10 PM.
  */
 
-public class MyColorPickerDialog extends ColorChooserDialog {
+class MyColorPickerDialog extends ColorChooserDialog {
 
-    public MyColorPickerDialog(Context context) {
+    MyColorPickerDialog(Context context) {
         super(context);
     }
 
@@ -52,7 +52,6 @@ public class MyColorPickerDialog extends ColorChooserDialog {
     private ImageButton seventeen;
     private ImageButton eighteen;
     private ImageButton nineteen;
-    private ImageButton twenty;
     private Button twentyOne;
 
     private List<Integer> colors;
@@ -88,7 +87,7 @@ public class MyColorPickerDialog extends ColorChooserDialog {
         seventeen =(ImageButton)findViewById(R.id.b17);
         eighteen = (ImageButton)findViewById(R.id.b18);
         nineteen = (ImageButton)findViewById(R.id.b19);
-        twenty =   (ImageButton)findViewById(R.id.b20);
+        ImageButton twenty = (ImageButton) findViewById(R.id.b20);
         twentyOne =(Button)findViewById(R.id.b21);
 
 
@@ -197,7 +196,7 @@ public class MyColorPickerDialog extends ColorChooserDialog {
             buttons.get(i).setVisibility(View.INVISIBLE);
             d.getPaint().setStyle(Paint.Style.FILL);
             d.getPaint().setColor(colors.get(i));
-            buttons.get(i).setBackgroundDrawable(d);
+            buttons.get(i).setBackground(d);
         }
         animate();
     }
