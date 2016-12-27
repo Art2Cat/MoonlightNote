@@ -2,6 +2,7 @@ package com.art2cat.dev.moonlightnote.Controller.Login;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.content.Intent;
@@ -63,7 +64,6 @@ import org.greenrobot.eventbus.ThreadMode;
  */
 public class LoginFragment extends Fragment implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
     private static final int RC_SIGN_IN = 9001;
-    private static final String USER_G = "google";
     private static final String TAG = "LoginFragment";
     protected View mView;
     private AppCompatEditText mEmailView;
@@ -75,8 +75,6 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     private GoogleApiClient mGoogleApiClient;
     private int flag = 0;
     private boolean isNewUser = false;
-    private boolean isSignUp;
-
 
     public LoginFragment() {
         // Required empty public constructor
@@ -375,12 +373,14 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         };
     }
 
+    @SuppressLint("LogConditional")
     public void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @SuppressLint("LogConditional")
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
@@ -388,14 +388,16 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                         if (!task.isSuccessful()) {
                             showProgress(false);
                             Log.w(TAG, "signInWithCredential", task.getException());
-                            SnackBarUtils.shortSnackBar(mView, "Authentication failed: " + task.getException(),
+                            //noinspection ThrowableResultOfMethodCallIgnored,ConstantConditions
+                            String exception = task.getException().getMessage();
+                            SnackBarUtils.shortSnackBar(mView, "Authentication failed: " + exception,
                                     SnackBarUtils.TYPE_WARNING).show();
                         } else {
                             showProgress(false);
                             Intent intent = new Intent(getActivity(), MoonlightActivity.class);
                             isNewUser = true;
                             getActivity().startActivity(intent);
-                            SnackBarUtils.shortSnackBar(mView, "Google Sign In successed", SnackBarUtils.TYPE_INFO).show();
+                            SnackBarUtils.shortSnackBar(mView, "Google Sign In succeed", SnackBarUtils.TYPE_INFO).show();
                             SPUtils.putBoolean(getActivity(), "User", "google", true);
                             getActivity().finish();
                         }
@@ -438,6 +440,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                             SnackBarUtils.longSnackBar(mView, "Sign Up succeed!",
                                     SnackBarUtils.TYPE_WARNING).show();
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            assert user != null;
                             user.sendEmailVerification()
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
@@ -452,7 +455,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                         } else {
                             showProgress(false);
                             isNewUser = false;
-                            SnackBarUtils.longSnackBar(mView, "Sign Up Failed: " + task.getException().toString(),
+                            //noinspection ThrowableResultOfMethodCallIgnored,ConstantConditions
+                            String exception = task.getException().getMessage();
+                            SnackBarUtils.longSnackBar(mView, "Sign Up Failed: " + exception,
                                     SnackBarUtils.TYPE_WARNING).show();
                         }
                     }
@@ -468,6 +473,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         showProgress(true);
         mAuth.signInAnonymously()
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @SuppressLint("LogConditional")
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "signInAnonymously:onComplete:" + task.isSuccessful());

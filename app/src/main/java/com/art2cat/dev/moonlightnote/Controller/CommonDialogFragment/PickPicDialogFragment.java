@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -35,6 +36,7 @@ public class PickPicDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
+        @SuppressLint("InflateParams")
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_pick_pic, null);
 
         TextView camera = (TextView) view.findViewById(R.id.camera);

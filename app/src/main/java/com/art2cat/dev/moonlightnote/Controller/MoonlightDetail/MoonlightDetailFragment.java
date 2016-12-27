@@ -2,6 +2,7 @@ package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.content.ContentResolver;
@@ -476,6 +477,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         super.onDestroy();
     }
 
+    @SuppressLint("LogConditional")
     @Override
     public void onFocusChange(View view, boolean b) {
         switch (view.getId()) {

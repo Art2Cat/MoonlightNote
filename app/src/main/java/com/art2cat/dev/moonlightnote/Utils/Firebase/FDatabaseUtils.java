@@ -46,7 +46,7 @@ public class FDatabaseUtils {
     private DatabaseReference mDatabaseReference1;
     private ValueEventListener mValueEventListener;
     private ValueEventListener mValueEventListener1;
-    private Handler mHandler = new Handler() {
+    private static Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -111,7 +111,6 @@ public class FDatabaseUtils {
             mKey = keyId;
         }
 
-        Log.d(TAG, "updateMoonlight: " + mKey);
         moonlightE = MoonlightEncryptUtils.encryptMoonlight(moonlight);
         Map<String, Object> moonlightValues = moonlightE.toMap();
         Map<String, Object> childUpdates = new HashMap<>();

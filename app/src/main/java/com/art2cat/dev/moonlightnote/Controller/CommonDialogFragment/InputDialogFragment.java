@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
@@ -52,11 +53,13 @@ public class InputDialogFragment extends DialogFragment {
         }
     }
 
+    @SuppressLint("LogConditional")
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
+        @SuppressLint("InflateParams")
         View view = inflater.inflate(R.layout.dialog_input, null);
         mTextInputLayout = (TextInputLayout) view.findViewById(R.id.inputLayout);
         mTextInputEditText = (TextInputEditText) view.findViewById(R.id.dialog_editText);

@@ -138,6 +138,6 @@ public class CommonActivity extends AppCompatActivity {
     }
 
     public interface FragmentOnTouchListener {
-        public boolean onTouch(MotionEvent ev);
+        boolean onTouch(MotionEvent ev);
     }
 }

@@ -103,7 +103,6 @@
                 </android.support.v7.widget.LinearLayoutCompat>
 
                 <android.support.v7.widget.LinearLayoutCompat
-                    android:id="@+id/bottom_sheet_selection_6"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:orientation="horizontal">
@@ -235,7 +234,6 @@
                 </android.support.v7.widget.LinearLayoutCompat>
 
                 <android.support.v7.widget.LinearLayoutCompat
-                    android:id="@+id/bottom_sheet_selection_1"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:orientation="horizontal">
@@ -263,7 +261,6 @@
             android:scrollbars="none">
 
             <android.support.v7.widget.LinearLayoutCompat
-                android:id="@+id/note_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:transitionName="@string/transition_name"

@@ -1,5 +1,9 @@
+/**
+ * 音频播放器
+ */
 package com.art2cat.dev.moonlightnote.Utils;
 
+import android.annotation.SuppressLint;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.support.v7.widget.AppCompatTextView;
@@ -24,19 +28,25 @@ public class AudioPlayer {
     public ProgressBar mProgressBar;
     private AppCompatTextView mShowDuration;
     private Handler handler = new Handler();
-    private Runnable updateThread = new Runnable() {
+    private Runnable updateProgress = new Runnable() {
         public void run() {
             // 获得歌曲现在播放位置并设置成播放进度条的值
             if (mPlayer != null) {
                 if (mPlayer.isPlaying()) {
                     mProgressBar.setProgress(mPlayer.getCurrentPosition());
                     // 每次延迟100毫秒再启动线程
-                    handler.postDelayed(updateThread, 100);
+                    handler.postDelayed(updateProgress, 100);
                 }
             }
         }
     };
 
+    /**
+     * 音频播放器
+     *
+     * @param progressBar 播放器进度条
+     * @param duration    音频时间总长
+     */
     public AudioPlayer(ProgressBar progressBar, AppCompatTextView duration) {
         //新建音频播放器
         mPlayer = new MediaPlayer();
@@ -44,15 +54,24 @@ public class AudioPlayer {
         mShowDuration = duration;
     }
 
-    public void prepare(String mFileName) {
+    /**
+     * 准备音频播放数据源
+     *
+     * @param filename 数据源文件名
+     */
+    @SuppressLint("LogConditional")
+    public void prepare(String filename) {
         try {
-            //设置数据源
+            //获取数据源文件目录地址
             String dirPath = MyApplication.mContext.getCacheDir().getAbsolutePath() + "/audio/";
 
-            if (!mFileName.contains(".amr")) {
-                mFileName = mFileName + ".amr";
+            //检查文件名是否有".amr",如果没有就添加
+            if (!filename.contains(".amr")) {
+                filename = filename + ".amr";
             }
-            String filePath = dirPath + mFileName;
+            //合成数据源地址
+            String filePath = dirPath + filename;
+            //设置数据源
             mPlayer.setDataSource(filePath);
             //采用异步的方式同步
             mPlayer.prepare();
@@ -63,34 +82,37 @@ public class AudioPlayer {
                     Log.d(TAG, "onPrepared: ");
                 }
             });
-            //开始播放
+            //获取音频时长，并设置进度条最大值
             mDuration = mPlayer.getDuration();
             Log.d(TAG, "prepare: " + mDuration);
             mProgressBar.setMax(mDuration);
-            mShowDuration.setText(Utils.convert((long)mDuration));
+            mShowDuration.setText(Utils.convert((long) mDuration));
             isPrepared = true;
         } catch (IOException e) {
             Log.e(TAG, "prepare() failed");
         }
-
     }
 
+    /**
+     * 开始播放并更新进度条
+     */
     public void startPlaying() {
-        //开始播放
-        //prepare(mFileName);
         mPlayer.start();
-        handler.post(updateThread);
-        // 注册播放完毕后的监听事件
-
+        handler.post(updateProgress);
     }
 
+    /**
+     * 停止播放并将进度条归位
+     */
     public void stopPlaying() {
         //释放播放器
         mPlayer.reset();
         mProgressBar.setProgress(0);
-        //mPlayer = null;
     }
 
+    /**
+     * 释放播放器
+     */
     public void releasePlayer() {
         if (mPlayer != null) {
             mPlayer.release();

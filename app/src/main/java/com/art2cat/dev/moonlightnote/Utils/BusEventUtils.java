@@ -16,6 +16,11 @@ import org.greenrobot.eventbus.EventBus;
 
 public class BusEventUtils {
 
+    /**
+     * 发送事件
+     * @param flag 事件类型
+     * @param message 消息内容
+     */
     public static void post(int flag, @Nullable String message) {
         BusEvent busEvent = new BusEvent();
         busEvent.setFlag(flag);

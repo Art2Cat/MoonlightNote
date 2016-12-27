@@ -1,3 +1,6 @@
+/**
+ * AES加密工具
+ */
 package com.art2cat.dev.moonlightnote.Utils;
 
 
@@ -14,14 +17,14 @@ import javax.crypto.spec.SecretKeySpec;
  * Created by art2cat
  * on 7/25/16.
  */
-public class AESUtils {
+class AESUtils {
 
     /**
      * @param sSrc 需要加密的字符串
      * @return 返回加密后的字符串
      * @throws Exception
      */
-    public static String encrypt(String sSrc) throws Exception {
+    static String encrypt(String sSrc) throws Exception {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         byte[] raw = Constants.AES_KEY.getBytes();
         SecretKeySpec keySpec = new SecretKeySpec(raw, "AES");
@@ -36,7 +39,7 @@ public class AESUtils {
      * @return 返回解密后的字符串
      * @throws Exception
      */
-    public static String decrypt(String sSrc) throws Exception {
+    static String decrypt(String sSrc) throws Exception {
         try {
             byte[] raw = Constants.AES_KEY.getBytes("ASCII");
             SecretKeySpec keySpec = new SecretKeySpec(raw, "AES");
@@ -45,8 +48,7 @@ public class AESUtils {
             cipher.init(Cipher.DECRYPT_MODE, keySpec, iv);
             byte[] encrypted1 = Base64.decode(sSrc, Base64.CRLF);// 先用base64解密
             byte[] original = cipher.doFinal(encrypted1);
-            String originalString = new String(original, "utf-8");
-            return originalString;
+            return new String(original, "utf-8");
         } catch (Exception ex) {
             return null;
         }

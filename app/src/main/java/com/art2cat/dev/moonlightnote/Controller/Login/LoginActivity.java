@@ -30,7 +30,6 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FDatabaseUtils mFDatabaseUtils;
-    private Fragment mFragment;
 
 
     @Override
@@ -88,7 +87,6 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
                     mFDatabaseUtils = new FDatabaseUtils(LoginActivity.this, user.getUid());
                     mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
-                    //downloadUserConfig(user.getUid());
 
                     mLoginState = true;
                 } else {
@@ -109,6 +107,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    //启动广告页面
     private void startAdFragment() {
         //这里判断是否是重新登陆，如果是，则直接进入登陆界面，如果不是则，加载广告页面
         int id = R.id.login_container;
@@ -119,11 +118,13 @@ public class LoginActivity extends AppCompatActivity {
             //在这里首先加载一个含有广告的fragment
             FragmentUtils.addFragment(mFragmentManager, id, new SlashFragment());
             startLoginFragment();
-//            requestPermission();
         }
 
     }
 
+    /**
+     * 启动登录界面
+     */
     private void startLoginFragment() {
         //创建handler对象，调用postDelayed()方法，启动插播3秒广告
         Handler handler = new Handler();
@@ -154,13 +155,13 @@ public class LoginActivity extends AppCompatActivity {
                 //这里调用Activity.finish()方法销毁当前Activity
                 finish();
             } else {
-                mFragment = new LoginFragment();
+                Fragment fragment = new LoginFragment();
                 mFragmentManager.beginTransaction()
                         .setCustomAnimations(R.animator.fragment_slide_left_enter,
                                 R.animator.fragment_slide_left_exit,
                                 R.animator.fragment_slide_right_enter,
                                 R.animator.fragment_slide_right_exit)
-                        .replace(R.id.login_container, mFragment)
+                        .replace(R.id.login_container, fragment)
                         .commitAllowingStateLoss();
             }
         }

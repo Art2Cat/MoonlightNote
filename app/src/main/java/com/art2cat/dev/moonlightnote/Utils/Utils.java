@@ -49,6 +49,13 @@ public class Utils {
         return formatter.format(date);
     }
 
+    /**
+     * 格式化时间
+     *
+     * @param context 上下文
+     * @param date    需要格式化的日期
+     * @return 返回格式化后的时间
+     */
     public static String timeFormat(Context context, Date date) {
         String pattern = null;
         ContentResolver cv = context.getContentResolver();
@@ -78,6 +85,11 @@ public class Utils {
         return String.format("%02d:%02d", min, sec);
     }
 
+    /**
+     * @param context
+     * @param content
+     * @param type
+     */
     public static void showToast(Context context, String content, int type) {
         if (type == 0) {
             Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
@@ -102,7 +114,6 @@ public class Utils {
     public static void lockApp(Context context, int code) {
         switch (code) {
             case 306:
-//                LockManager<MoonlightPinActivity> lockManager = LockManager.getInstance();
                 Intent pin = new Intent(context, MoonlightPinActivity.class);
                 pin.putExtra(AppLock.EXTRA_TYPE, AppLock.UNLOCK_PIN);
                 context.startActivity(pin);
@@ -136,7 +147,7 @@ public class Utils {
         }
     }
 
-    public static NoteLab getNoteFromLocal(){
+    public static NoteLab getNoteFromLocal() {
         String path = Environment
                 .getExternalStorageDirectory().getAbsolutePath();
         try (Reader reader = new FileReader(path + "/Note.json")) {

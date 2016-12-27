@@ -17,8 +17,6 @@ import java.util.ArrayList;
 
 public class MoonlightDetailActivity extends AppCompatActivity {
 
-    private static final String TAG = "MoonlightDetailActivity";
-
     public Toolbar mToolbar;
     private ArrayList<MoonlightDetailActivity.FragmentOnTouchListener> onTouchListeners = new ArrayList<MoonlightDetailActivity.FragmentOnTouchListener>(
             10);
@@ -102,7 +100,7 @@ public class MoonlightDetailActivity extends AppCompatActivity {
     }
 
     public interface FragmentOnTouchListener {
-        public boolean onTouch(MotionEvent ev);
+        boolean onTouch(MotionEvent ev);
     }
 
     @Override

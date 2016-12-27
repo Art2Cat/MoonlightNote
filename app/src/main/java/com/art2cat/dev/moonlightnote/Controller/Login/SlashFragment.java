@@ -32,7 +32,7 @@ public class SlashFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_slash, null);
+        View view = inflater.inflate(R.layout.fragment_slash, container, false);
         MobileAds.initialize(getActivity(), APP_ID);
         NativeExpressAdView adView = (NativeExpressAdView) view.findViewById(R.id.adView);
         AdRequest request = new AdRequest.Builder()
@@ -44,7 +44,6 @@ public class SlashFragment extends Fragment {
         if (!adView.isLoading()) {
             adView.setVisibility(View.GONE);
         }
-
         return view;
     }
 
