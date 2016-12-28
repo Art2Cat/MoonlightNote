@@ -26,6 +26,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import static com.art2cat.dev.moonlightnote.Model.Constants.EXTRA_PIN;
+
 /**
  * Created by art2cat
  * on 8/4/16.
@@ -98,6 +100,12 @@ public class Utils {
         }
     }
 
+    /**
+     * 从FirebaseAuth中获取用户信息
+     *
+     * @param firebaseUser firebase用户类
+     * @return 本地User类
+     */
     public static User getUserInfo(FirebaseUser firebaseUser) {
         User user;
         if (firebaseUser != null) {
@@ -111,9 +119,15 @@ public class Utils {
         return null;
     }
 
+    /**
+     * 锁定App
+     *
+     * @param context 上下文
+     * @param code    锁屏方式代码
+     */
     public static void lockApp(Context context, int code) {
         switch (code) {
-            case 306:
+            case EXTRA_PIN:
                 Intent pin = new Intent(context, MoonlightPinActivity.class);
                 pin.putExtra(AppLock.EXTRA_TYPE, AppLock.UNLOCK_PIN);
                 context.startActivity(pin);
@@ -123,9 +137,15 @@ public class Utils {
         }
     }
 
+    /**
+     * 解锁App
+     *
+     * @param context 上下文
+     * @param code    锁屏方式代码
+     */
     public static void unLockApp(Context context, int code) {
         switch (code) {
-            case 306:
+            case EXTRA_PIN:
                 Intent pin = new Intent(context, MoonlightPinActivity.class);
                 pin.putExtra(AppLock.EXTRA_TYPE, AppLock.DISABLE_PINLOCK);
                 context.startActivity(pin);
@@ -136,6 +156,11 @@ public class Utils {
     }
 
 
+    /**
+     * 保存笔记数据到本地
+     *
+     * @param noteLab 数据集合
+     */
     public static void saveNoteToLocal(NoteLab noteLab) {
         String path = Environment
                 .getExternalStorageDirectory().getAbsolutePath();
@@ -147,6 +172,11 @@ public class Utils {
         }
     }
 
+    /**
+     * 从本地获取笔记数据
+     *
+     * @return 数据集合
+     */
     public static NoteLab getNoteFromLocal() {
         String path = Environment
                 .getExternalStorageDirectory().getAbsolutePath();

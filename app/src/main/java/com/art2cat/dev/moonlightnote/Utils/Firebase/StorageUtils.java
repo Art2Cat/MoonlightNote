@@ -23,7 +23,6 @@ import java.io.File;
 
 public class StorageUtils {
     private static final String TAG = "StorageUtils";
-    private File localFile = null;
 
     private static String getPath(int type) {
         if (type == 0) {
@@ -42,7 +41,7 @@ public class StorageUtils {
             return;
         }
 
-        StorageReference islandRef = storageReference.child(userID).child("photos").child(imageName);
+        StorageReference imageRef = storageReference.child(userID).child("photos").child(imageName);
         File localFile = null;
         String path = getPath(0);
         if (path != null) {
@@ -51,7 +50,7 @@ public class StorageUtils {
         }
 
         if (localFile != null) {
-            islandRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            imageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 
@@ -73,10 +72,9 @@ public class StorageUtils {
             return;
         }
 
-        StorageReference islandRef = storageReference.child(userId).child("audios").child(audioName);
+        StorageReference audioRef = storageReference.child(userId).child("audios").child(audioName);
         File localFile = null;
         String path = MyApplication.mContext.getCacheDir().toString();
-//        String path = getPath(1);
         if (path != null) {
             File dir = new File(path, "/audio");
             if (!dir.exists()) {
@@ -90,7 +88,7 @@ public class StorageUtils {
         }
 
         if (localFile != null) {
-            islandRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            audioRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
 

@@ -14,11 +14,12 @@ import android.view.View;
 public class MenuUtils {
 
     /**
+     * 显示Popup菜单
      *
-     * @param context
-     * @param v
-     * @param menu
-     * @param listener
+     * @param context  上下文
+     * @param v        视图
+     * @param menu     菜单资源文件
+     * @param listener 菜单项目点击监听器
      */
     public static void showPopupMenu(@NonNull Context context, @NonNull View v, @MenuRes int menu,
                                      @NonNull PopupMenu.OnMenuItemClickListener listener) {

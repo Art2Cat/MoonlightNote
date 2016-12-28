@@ -36,16 +36,6 @@ import java.util.Map;
 
 public class FDatabaseUtils {
     private static final String TAG = "FDatabaseUtils";
-    public User user;
-    public Moonlight moonlight;
-    private Context mContext;
-    private boolean complete;
-    private String mUserId;
-    public String mJson;
-    private DatabaseReference mDatabaseReference;
-    private DatabaseReference mDatabaseReference1;
-    private ValueEventListener mValueEventListener;
-    private ValueEventListener mValueEventListener1;
     private static Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -53,6 +43,16 @@ public class FDatabaseUtils {
             Utils.showToast(MyApplication.mContext, "Restore succeed!", 1);
         }
     };
+    public User user;
+    public Moonlight moonlight;
+    public String mJson;
+    private Context mContext;
+    private boolean complete;
+    private String mUserId;
+    private DatabaseReference mDatabaseReference;
+    private DatabaseReference mDatabaseReference1;
+    private ValueEventListener mValueEventListener;
+    private ValueEventListener mValueEventListener1;
 
     public FDatabaseUtils() {
 
@@ -68,10 +68,15 @@ public class FDatabaseUtils {
         return new FDatabaseUtils(context, userId);
     }
 
-    public static void emptyTrash(String mUserId) {
+    /**
+     * 清空回收站全部内容
+     *
+     * @param userId 用户ID
+     */
+    public static void emptyTrash(String userId) {
         try {
             FirebaseDatabase.getInstance().getReference().child("users-moonlight")
-                    .child(mUserId).child("trash").removeValue(new DatabaseReference.CompletionListener() {
+                    .child(userId).child("trash").removeValue(new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                     Log.d(TAG, "emptyTrash onComplete: ");
@@ -83,10 +88,15 @@ public class FDatabaseUtils {
     }
 
 
-    public static void emptyNote(String mUserId) {
+    /**
+     * 清空全部笔记内容
+     *
+     * @param userId 用户ID
+     */
+    public static void emptyNote(String userId) {
         try {
             FirebaseDatabase.getInstance().getReference().child("users-moonlight")
-                    .child(mUserId).child("note").removeValue(
+                    .child(userId).child("note").removeValue(
                     new DatabaseReference.CompletionListener() {
                         @Override
                         public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
@@ -98,12 +108,21 @@ public class FDatabaseUtils {
         }
     }
 
+    /**
+     * 更新实时数据库中Moonlight数据
+     *
+     * @param userId    用户ID
+     * @param keyId     Moonlight定位ID
+     * @param moonlight Moonlight
+     * @param type      操作类型
+     */
     public static void updateMoonlight(final String userId, @Nullable String keyId, final Moonlight moonlight, final int type) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        Moonlight moonlightE = null;
+        Moonlight moonlightE;
         String mKey;
-        String oldKey = null;
+        String oldKey;
         oldKey = moonlight.getId();
+        //当KeyId为null时，向实时数据库推送获取ID
         if (keyId == null) {
             mKey = databaseReference.child("moonlight").push().getKey();
             moonlight.setId(mKey);
@@ -111,10 +130,12 @@ public class FDatabaseUtils {
             mKey = keyId;
         }
 
+        //对数据进行加密
         moonlightE = MoonlightEncryptUtils.encryptMoonlight(moonlight);
         Map<String, Object> moonlightValues = moonlightE.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
 
+        //按照不同操作类型，更新数据到指定树状表中
         if (type == Constants.EXTRA_TYPE_MOONLIGHT || type == Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT) {
             childUpdates.put("/users-moonlight/" + userId + "/note/" + mKey, moonlightValues);
             Log.d(TAG, "updateMoonlight: " + mKey);
@@ -192,9 +213,15 @@ public class FDatabaseUtils {
 
     public void getDataFromDatabase(@Nullable String keyId, final int type) {
         if (type == Constants.EXTRA_TYPE_MOONLIGHT) {
+            if (keyId == null) {
+                return;
+            }
             mDatabaseReference = FirebaseDatabase.getInstance().getReference()
                     .child("users-moonlight").child(mUserId).child("note").child(keyId);
         } else if (type == Constants.EXTRA_TYPE_TRASH) {
+            if (keyId == null) {
+                return;
+            }
             mDatabaseReference = FirebaseDatabase.getInstance().getReference()
                     .child("users-moonlight").child(mUserId).child("trash").child(keyId);
         } else if (type == Constants.EXTRA_TYPE_USER) {
@@ -248,7 +275,7 @@ public class FDatabaseUtils {
                             Utils.saveNoteToLocal(noteLab);
                             Utils.showToast(MyApplication.mContext,
                                     "Back up succeed! save in internal storage root named Note.json"
-                            , 1);
+                                    , 1);
                             BusEventUtils.post(Constants.BUS_FLAG_EXPORT_DATA_DONE, null);
                         } else if (type == 1) {
                             Gson gson = new Gson();

@@ -16,6 +16,12 @@ import java.util.Map;
 
 public class UserUtils {
 
+    /**
+     * 缓存用户资料到本地
+     *
+     * @param context 上下文
+     * @param user    用户信息
+     */
     public static void saveUserToCache(Context context, User user) {
         if (user != null) {
             if (user.getUid() != null) {
@@ -50,6 +56,12 @@ public class UserUtils {
         }
     }
 
+    /**
+     * 从缓存中获取用户信息
+     *
+     * @param context 上下文
+     * @return 用户信息
+     */
     public static User getUserFromCache(Context context) {
         User user = new User();
         user.setUid(SPUtils.getString(context, "User", "Id", null));
@@ -60,6 +72,12 @@ public class UserUtils {
         return user;
     }
 
+    /**
+     * 更新用户信息到服务器
+     *
+     * @param userId 用户ID
+     * @param user   用户信息
+     */
     public static void updateUser(String userId, User user) {
         DatabaseReference databaseReference =
                 FirebaseDatabase.getInstance().getReference();

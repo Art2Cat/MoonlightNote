@@ -37,9 +37,9 @@ public class FragmentUtils {
      * @param fragment 需要切换的fragment
      */
     public static void replaceFragment(FragmentManager fm, @IdRes int id, Fragment fragment, int type) {
-        if (type == 101) {
+        if (type == REPLACE_BACK_STACK) {
             replaceBackStackFragment(fm, id, fragment);
-        } else if (type == 102) {
+        } else if (type == REPLACE_NORMAL) {
             replaceFragment(fm, id, fragment);
         }
     }
