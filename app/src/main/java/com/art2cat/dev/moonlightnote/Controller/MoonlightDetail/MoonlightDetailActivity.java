@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,8 +26,10 @@ public class MoonlightDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setTransition();
         setContentView(R.layout.activity_common);
+
+        postponeEnterTransition();
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -60,6 +63,13 @@ public class MoonlightDetailActivity extends AppCompatActivity {
                     break;
             }
         }
+    }
+
+    private void setTransition() {
+        Fade fade = new Fade();
+        fade.setDuration(100);
+        getWindow().setEnterTransition(fade);
+        getWindow().setReturnTransition(fade);
     }
 
     @Override
@@ -99,13 +109,13 @@ public class MoonlightDetailActivity extends AppCompatActivity {
         onTouchListeners.remove(fragmentOnTouchListener);
     }
 
-    public interface FragmentOnTouchListener {
-        boolean onTouch(MotionEvent ev);
-    }
-
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         return super.dispatchKeyEvent(event);
+    }
+
+    public interface FragmentOnTouchListener {
+        boolean onTouch(MotionEvent ev);
     }
 
 

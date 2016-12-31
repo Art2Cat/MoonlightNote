@@ -343,6 +343,7 @@
     <string name="confirmation_delete_image">Delete image?</string>
     <string name="moonlight_image">image</string>
     <string name="transition_name">transitionName</string>
+    <string name="trans_moonlight">moonlight</string>
     <string name="toolbar">toolbar</string>
     <string name="action_empty_note">Empty Note</string>
     <string name="dialog_empty_note_title">Empty Note?</string>

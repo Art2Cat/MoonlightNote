@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
+import android.app.ActivityOptions;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Build;
@@ -255,17 +256,19 @@ public abstract class MoonlightListFragment extends Fragment {
                         public void onClick(View view) {
                             if (isLogin) {
                                 Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
+                                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                                        mTransitionItem, getString(R.string.trans_moonlight)).toBundle();
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");
                                     intent.putExtra("Fragment", Constants.EXTRA_TRASH_FRAGMENT);
                                     intent.putExtra("moonlight", moonlightD);
-                                    startActivity(intent);
+                                    startActivity(intent, bundle);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 } else {
                                     Log.d(TAG, "onClick: edit");
                                     intent.putExtra("Fragment", Constants.EXTRA_EDIT_FRAGMENT);
                                     intent.putExtra("moonlight", moonlightD);
-                                    startActivity(intent);
+                                    startActivity(intent, bundle);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 }
                                 changeToolbar(null, 1);

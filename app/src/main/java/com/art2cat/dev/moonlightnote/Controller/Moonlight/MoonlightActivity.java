@@ -13,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -76,6 +77,7 @@ public class MoonlightActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTransition();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moonlight);
 
@@ -112,6 +114,13 @@ public class MoonlightActivity extends AppCompatActivity
                 isRateMyApp(mUserId, "emmmm, My app is not good enough and I need to improve it", false);
             }
         });
+    }
+
+    private void setTransition() {
+        Fade fade = new Fade();
+        fade.setDuration(100);
+        getWindow().setExitTransition(fade);
+        getWindow().setReenterTransition(fade);
     }
 
     @Override

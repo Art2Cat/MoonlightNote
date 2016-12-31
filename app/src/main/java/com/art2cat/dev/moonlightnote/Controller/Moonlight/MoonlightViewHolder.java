@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.bumptech.glide.Glide;
 
 import jp.wasabeef.recyclerview.animators.holder.AnimateViewHolder;
@@ -30,8 +29,6 @@ public class MoonlightViewHolder extends AnimateViewHolder {
     public AppCompatTextView mContent;
     public AppCompatImageView mImage;
     public LinearLayoutCompat mAudio;
-    private Context context;
-    private BitmapUtils bitmapUtils;
 
     public MoonlightViewHolder(View itemView) {
         super(itemView);
