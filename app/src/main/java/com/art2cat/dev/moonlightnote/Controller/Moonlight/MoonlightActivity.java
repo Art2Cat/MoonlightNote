@@ -92,6 +92,7 @@ public class MoonlightActivity extends AppCompatActivity
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         //获取FirebaseAuth实例
         mAuth = getInstance();
+        //noinspection ConstantConditions
         mUserId = mAuth.getCurrentUser().getUid();
         mFDatabaseUtils = new FDatabaseUtils(this, mUserId);
         mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
@@ -273,6 +274,7 @@ public class MoonlightActivity extends AppCompatActivity
                 isLogin = false;
                 BusEventUtils.post(Constants.BUS_FLAG_SIGN_OUT, null);
                 SPUtils.clear(this, "User");
+                SPUtils.clear(this, Constants.USER_CONFIG);
                 SnackBarUtils.shortSnackBar(mCoordinatorLayout, "Your account have been remove!",
                         SnackBarUtils.TYPE_ALERT).show();
                 break;

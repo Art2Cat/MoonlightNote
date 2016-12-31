@@ -118,7 +118,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
         mBitmapUtils = new BitmapUtils(getActivity());
 
-        mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance();
+        mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance(getString(R.string.prograssBar_uploading));
     }
 
     @Override

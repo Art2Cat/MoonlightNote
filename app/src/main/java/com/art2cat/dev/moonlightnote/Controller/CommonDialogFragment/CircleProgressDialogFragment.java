@@ -1,12 +1,10 @@
 package com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment;
 
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.app.DialogFragment;
-
-import com.art2cat.dev.moonlightnote.R;
 
 /**
  * Created by Rorschach
@@ -19,12 +17,22 @@ public class CircleProgressDialogFragment extends DialogFragment {
         return new CircleProgressDialogFragment();
     }
 
+    public static CircleProgressDialogFragment newInstance(String message) {
+        CircleProgressDialogFragment circle = new CircleProgressDialogFragment();
+        Bundle args = new Bundle();
+        args.putString("message", message);
+        circle.setArguments(args);
+        return circle;
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         ProgressDialog dialog = new ProgressDialog(getActivity());
-        dialog.setMessage(getString(R.string.prograssBar_uploading));
+        if (getArguments() != null) {
+            dialog.setMessage(getArguments().getString("message"));
+        }
         dialog.setIndeterminate(true);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.setCancelable(false);

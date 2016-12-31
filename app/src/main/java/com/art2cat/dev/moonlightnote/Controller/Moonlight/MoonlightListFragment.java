@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -54,7 +53,6 @@ import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
  */
 public abstract class MoonlightListFragment extends Fragment {
     private static final String TAG = "MoonlightListFragment";
-    public LinearLayoutCompat mTransitionItem;
     private DatabaseReference mDatabase;
     private FDatabaseUtils mFDatabaseUtils;
     private FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder> mFirebaseRecyclerAdapter;
@@ -250,14 +248,13 @@ public abstract class MoonlightListFragment extends Fragment {
                         viewHolder.mAudio.setVisibility(View.GONE);
                     }
 
-                    mTransitionItem = viewHolder.mTransitionItem;
                     viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             if (isLogin) {
                                 Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
                                 Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                                        viewHolder.mImage, getString(R.string.moonlight_image)).toBundle();
+                                        viewHolder.mTransitionItem, viewHolder.mTransitionItem.getTransitionName()).toBundle();
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");
                                     intent.putExtra("Fragment", Constants.EXTRA_TRASH_FRAGMENT);
@@ -280,8 +277,6 @@ public abstract class MoonlightListFragment extends Fragment {
                     viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(View view) {
-                            Log.d(TAG, moonlightKey);
-                            Log.d(TAG, moonlightD.getId());
                             moonlightD.setId(moonlightKey);
                             if (moonlightKey.equals(moonlightD.getId())) {
                                 if (!isTrash()) {

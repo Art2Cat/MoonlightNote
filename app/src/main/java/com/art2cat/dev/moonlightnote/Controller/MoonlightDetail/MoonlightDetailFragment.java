@@ -228,7 +228,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         mContent.setOnFocusChangeListener(this);
         mAudioPlayer = new AudioPlayer(audioPlayerPB, mShowDuration);
 
-        mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance();
+        mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance(getString(R.string.prograssBar_uploading));
 
         if (mEditable) {
             //获取系统当前时间

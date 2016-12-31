@@ -23,6 +23,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.art2cat.dev.moonlightnote.BuildConfig;
+import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.CircleProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.Constants;
@@ -324,6 +326,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         private String mData;
         private int mType;
         private boolean fileOperation = false;
+        private CircleProgressDialogFragment mCircleProgressDialogFragment;
 
         /**
          * This is Result result handler of Drive contents.
@@ -355,6 +358,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             setHasOptionsMenu(true);
             String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
             mFDatabaseUtils = new FDatabaseUtils(getActivity(), userId);
+            mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance();
             Preference connectToDrive = findPreference(CONNECT_TO_DRIVE);
             Preference backupToDrive = findPreference(BACKUP_TO_DRIVE);
             Preference restoreFromDrive = findPreference(RESTORE_FROM_DRIVE);
@@ -398,7 +402,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 case RESTORE_FROM_DRIVE:
                     if (mGoogleApiClient != null) {
                         fileOperation = false;
-                        mFDatabaseUtils.exportNote(1);
                         Drive.DriveApi.newDriveContents(mGoogleApiClient)
                                 .setResultCallback(driveContentsCallback);
                     } else {
@@ -483,6 +486,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
 
         private void connectToDrive() {
+
             if (mGoogleApiClient == null) {
                 // Create the API client and bind it to an instance variable.
                 // We use this instance as the callback for connection and connection
@@ -494,6 +498,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         .addConnectionCallbacks(this)
                         .addOnConnectionFailedListener(this)
                         .build();
+                mCircleProgressDialogFragment.show(getFragmentManager(), "progressbar");
             }
             // Connect the client. Once connected, the camera is launched.
             mGoogleApiClient.connect();
@@ -525,12 +530,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             builder.append(line);
                         }
                         String contentsAsString = builder.toString();
+                        if (BuildConfig.DEBUG) Log.d(TAG, contentsAsString);
                         Gson gson = new Gson();
                         NoteLab noteLab = gson.fromJson(contentsAsString, NoteLab.class);
                         Log.d(TAG, "onResult: " + noteLab.getMoonlights().size());
-                        if (noteLab.getMoonlights().size() != 0) {
+//                        if (noteLab.getMoonlights().size() != 0) {
                             mFDatabaseUtils.restoreAll(noteLab);
-                        }
+//                        }
                     } catch (IOException e) {
                         Log.e(TAG, "IOException while reading from the stream", e);
                     }
@@ -613,6 +619,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         @Override
         public void onConnectionFailed(ConnectionResult result) {
+            mCircleProgressDialogFragment.dismiss();
             // Called whenever the API client fails to connect.
             Log.i(TAG, "GoogleApiClient connection failed: " + result.toString());
             if (!result.hasResolution()) {
@@ -633,12 +640,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         @Override
         public void onConnected(Bundle connectionHint) {
+            mCircleProgressDialogFragment.dismiss();
             Log.i(TAG, "API client connected.");
             SnackBarUtils.shortSnackBar(getView(), "Google Drive connected!", SnackBarUtils.TYPE_INFO).show();
         }
 
         @Override
         public void onConnectionSuspended(int cause) {
+            mCircleProgressDialogFragment.dismiss();
             Log.i(TAG, "GoogleApiClient connection suspended");
         }
 
