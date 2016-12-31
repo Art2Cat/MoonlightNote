@@ -299,8 +299,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             }
         });
 
-        getActivity().postponeEnterTransition();
-
         return mView;
     }
 

@@ -201,7 +201,7 @@ public abstract class MoonlightListFragment extends Fragment {
                     moonlightsQuery) {
 
                 @Override
-                protected void populateViewHolder(MoonlightViewHolder viewHolder, Moonlight model, final int position) {
+                protected void populateViewHolder(final MoonlightViewHolder viewHolder, Moonlight model, final int position) {
                     DatabaseReference moonlightRef = getRef(position);
                     final String moonlightKey = moonlightRef.getKey();
 
@@ -257,7 +257,7 @@ public abstract class MoonlightListFragment extends Fragment {
                             if (isLogin) {
                                 Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
                                 Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
-                                        mTransitionItem, getString(R.string.trans_moonlight)).toBundle();
+                                        viewHolder.mImage, getString(R.string.moonlight_image)).toBundle();
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");
                                     intent.putExtra("Fragment", Constants.EXTRA_TRASH_FRAGMENT);

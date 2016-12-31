@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
+import android.app.ActivityOptions;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -117,10 +118,17 @@ public class MoonlightActivity extends AppCompatActivity
     }
 
     private void setTransition() {
+
         Fade fade = new Fade();
-        fade.setDuration(100);
+        fade.setDuration(500);
+        fade.setMode(Fade.MODE_OUT);
+
+        Fade fade1 = new Fade();
+        fade1.setDuration(500);
+        fade1.setMode(Fade.MODE_IN);
+
         getWindow().setExitTransition(fade);
-        getWindow().setReenterTransition(fade);
+        getWindow().setReenterTransition(fade1);
     }
 
     @Override
@@ -296,7 +304,8 @@ public class MoonlightActivity extends AppCompatActivity
                 if (isLogin) {
                     Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
                     intent.putExtra("Fragment", Constants.EXTRA_CREATE_FRAGMENT);
-                    startActivity(intent);
+                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MoonlightActivity.this).toBundle();
+                    startActivity(intent, bundle);
                     checkLockStatus();
                 } else {
                     SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
