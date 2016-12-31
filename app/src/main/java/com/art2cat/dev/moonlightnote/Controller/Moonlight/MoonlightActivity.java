@@ -49,6 +49,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.content.Intent.*;
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 public class MoonlightActivity extends AppCompatActivity
@@ -244,14 +245,21 @@ public class MoonlightActivity extends AppCompatActivity
                 checkLockStatus();
                 startActivity(intent);
                 break;
+            case R.id.nav_feedback:
+                Intent feedback = new Intent(ACTION_SEND);
+                feedback.putExtra(EXTRA_EMAIL, new String[]{"dev@art2cat.com"});
+                feedback.putExtra(EXTRA_SUBJECT, "Feedback");
+                feedback.setType("message/rfc822");
+                startActivity(Intent.createChooser(feedback, "Send Email..."));
+                break;
             case R.id.nav_rate_app:
                 RateThisApp.showRateDialog(this);
                 break;
             case R.id.nav_share:
                 //启动Intent分享
-                Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT,
-                        "Hey check out my app at: https://play.google.com/store/apps/details?id=com.art2cat.dev.moonlightnote");
+                Intent sendIntent = new Intent(ACTION_SEND);
+                sendIntent.putExtra(EXTRA_TEXT,
+                        "Hey, I found a great app at: https://play.google.com/store/apps/details?id=com.art2cat.dev.moonlightnote");
                 sendIntent.setType("text/plain");
 
                 Bundle bundle = new Bundle();
@@ -260,7 +268,7 @@ public class MoonlightActivity extends AppCompatActivity
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
                 //设置分享选择器
-                sendIntent = Intent.createChooser(sendIntent, "Share to");
+                sendIntent = createChooser(sendIntent, "Share to");
                 startActivity(sendIntent);
                 break;
             case R.id.nav_login:

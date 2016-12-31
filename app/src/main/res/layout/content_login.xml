@@ -26,11 +26,6 @@
         android:layout_height="match_parent"
         android:scrollbars="none">
 
-        <android.support.v7.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
             <android.support.v7.widget.ContentFrameLayout
                 android:id="@+id/login_form"
                 android:layout_width="match_parent"
@@ -131,6 +126,5 @@
 
                 </android.support.v7.widget.LinearLayoutCompat>
             </android.support.v7.widget.ContentFrameLayout>
-        </android.support.v7.widget.LinearLayoutCompat>
     </ScrollView>
 </android.support.v7.widget.LinearLayoutCompat>

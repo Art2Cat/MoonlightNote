@@ -335,7 +335,7 @@
         Copyright:\n
         Art2Cat\n\n
         Disclaimer statement:\n
-        see Policy page
+        see Privacy Policy page
     </string>
     <string name="confirmation_disable_security">Disable protection and decrypt all your data?</string>
     <string name="confirmation_title">Confirmation</string>
@@ -366,5 +366,6 @@
     <string name="settings_connect_to_drive_summary">To use Google Drive backup and restore please connect to your Google Drive account first.</string>
     <string name="select_your_color">Select your color:</string>
     <string name="test">TEST ONLY</string>
+    <string name="menu_feedback">Feedback</string>
 
 </resources>

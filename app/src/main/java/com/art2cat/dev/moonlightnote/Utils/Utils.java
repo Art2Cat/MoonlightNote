@@ -1,13 +1,17 @@
 package com.art2cat.dev.moonlightnote.Utils;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.Controller.Settings.MoonlightPinActivity;
 import com.art2cat.dev.moonlightnote.Model.NoteLab;
 import com.art2cat.dev.moonlightnote.Model.User;
@@ -23,9 +27,11 @@ import java.io.Reader;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.art2cat.dev.moonlightnote.Model.Constants.EXTRA_PIN;
 
 /**
@@ -197,6 +203,67 @@ public class Utils {
     public static boolean isXLargeTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+    }
+
+    /**
+     * 打开email客户端
+     *
+     * @param context 上下文
+     */
+    public static void openMailClient(Context context) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("message/rfc822");
+//        intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+        List<ResolveInfo> resInfo = context.getPackageManager().queryIntentActivities(intent, 0);
+        String email = "email";
+        String gmail = "gm";
+        String inbox = "inbox";
+        String outlook = "outlook";
+        String qqmail = "qqmail";
+
+        String packages = null;
+        if (!resInfo.isEmpty()) {
+            for (ResolveInfo info : resInfo) {
+                if (info.activityInfo.packageName.toLowerCase().contains(inbox) || info.activityInfo.name.toLowerCase().contains(inbox)) {
+                    packages = info.activityInfo.packageName;
+                    if (BuildConfig.DEBUG) Log.d("Utils", info.activityInfo.packageName);
+//                    break;
+                } else if (info.activityInfo.packageName.toLowerCase().contains(gmail) || info.activityInfo.name.toLowerCase().contains(gmail)) {
+                    packages = info.activityInfo.packageName;
+                    if (BuildConfig.DEBUG) Log.d("Utils", info.activityInfo.packageName);
+//                    break;
+                } else if (info.activityInfo.packageName.toLowerCase().contains(email) || info.activityInfo.name.toLowerCase().contains(email)) {
+                    packages = info.activityInfo.packageName;
+                    if (BuildConfig.DEBUG) Log.d("Utils", info.activityInfo.packageName);
+
+//                    break;
+                } else if (info.activityInfo.packageName.toLowerCase().contains(outlook) || info.activityInfo.name.toLowerCase().contains(outlook)) {
+                    packages = info.activityInfo.packageName;
+                    if (BuildConfig.DEBUG) Log.d("Utils", info.activityInfo.packageName);
+
+//                    break;
+                } else if (info.activityInfo.packageName.toLowerCase().contains(qqmail) || info.activityInfo.name.toLowerCase().contains(qqmail)) {
+                    packages = info.activityInfo.packageName;
+                    if (BuildConfig.DEBUG) Log.d("Utils", info.activityInfo.packageName);
+//                    break;
+                }
+            }
+
+            if (packages == null) {
+                return;
+            }
+            if (BuildConfig.DEBUG) Log.d("Utils", packages);
+            Intent intent1 = new Intent(Intent.ACTION_VIEW);
+            intent1.setPackage(packages);
+            intent1.addFlags(FLAG_ACTIVITY_NEW_TASK);
+            try {
+                context.startActivity(intent1);
+//                context.startActivity(createChooser(intent1, "Open with..."));
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
+                Utils.showToast(context, "Email client no found!", 1);
+            }
+        }
     }
 
 }
