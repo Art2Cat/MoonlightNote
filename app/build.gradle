@@ -10,8 +10,8 @@ android {
         applicationId "com.art2cat.dev.moonlightnote"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 8
-        versionName "1.0.161224"
+        versionCode 9
+        versionName "1.0.161231"
         // Enabling multidex support.
         multiDexEnabled true
     }
@@ -73,7 +73,7 @@ dependencies {
     compile 'com.firebase:firebase-client-android:2.5.2'
     compile 'com.firebaseui:firebase-ui-database:1.0.0'
     compile 'de.hdodenhof:circleimageview:2.1.0'
-    compile 'pub.devrel:easypermissions:0.1.9'
+    compile 'pub.devrel:easypermissions:0.2.1'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.turki-alkhateeb:materialcolorpicker:1.0.7'
     compile 'io.github.kobakei:ratethisapp:1.1.0'
