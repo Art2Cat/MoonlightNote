@@ -17,6 +17,10 @@ import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
 
 import java.util.ArrayList;
 
+import static com.art2cat.dev.moonlightnote.Model.Constants.EXTRA_CREATE_FRAGMENT;
+import static com.art2cat.dev.moonlightnote.Model.Constants.EXTRA_EDIT_FRAGMENT;
+import static com.art2cat.dev.moonlightnote.Model.Constants.EXTRA_TRASH_FRAGMENT;
+
 public class MoonlightDetailActivity extends AppCompatActivity {
 
     public Toolbar mToolbar;
@@ -44,20 +48,19 @@ public class MoonlightDetailActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getFragmentManager();
         Fragment fragment;
         int flag = getIntent().getIntExtra("Fragment", 0);
+        Moonlight moonlight = getIntent().getParcelableExtra("moonlight");
         if (flag != 0) {
             switch (flag) {
-                case 208:
+                case EXTRA_CREATE_FRAGMENT:
                     fragment = new CreateMoonlightFragment().newInstance();
                     FragmentUtils.addFragment(fragmentManager, R.id.common_fragment_container, fragment);
                     break;
-                case 209:
-                    Moonlight moonlight = getIntent().getParcelableExtra("moonlight");
+                case EXTRA_EDIT_FRAGMENT:
                     fragment = new EditMoonlightFragment().newInstance(moonlight);
                     FragmentUtils.addFragment(fragmentManager, R.id.common_fragment_container, fragment);
                     break;
-                case 210:
-                    Moonlight moonlight1 = getIntent().getParcelableExtra("moonlight");
-                    fragment = new TrashDetailFragment().newInstance(moonlight1);
+                case EXTRA_TRASH_FRAGMENT:
+                    fragment = new TrashDetailFragment().newInstance(moonlight);
                     FragmentUtils.addFragment(fragmentManager, R.id.common_fragment_container, fragment);
                     break;
             }

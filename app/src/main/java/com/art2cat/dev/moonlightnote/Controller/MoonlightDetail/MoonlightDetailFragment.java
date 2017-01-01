@@ -430,6 +430,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     public void onStop() {
         super.onStop();
         Log.i(TAG, "onStop");
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -451,7 +452,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                         Constants.EXTRA_TYPE_MOONLIGHT);
             }
         }
-        EventBus.getDefault().unregister(this);
         mAudioPlayer.releasePlayer();
         RefWatcher refWatcher = MyApplication.getRefWatcher(getActivity());
         refWatcher.watch(this);
