@@ -10,8 +10,8 @@ android {
         applicationId "com.art2cat.dev.moonlightnote"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 9
-        versionName "1.0.161231"
+        versionCode 10
+        versionName "1.0.170106"
         // Enabling multidex support.
         multiDexEnabled true
     }
