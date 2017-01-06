@@ -412,9 +412,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     break;
                 case BACKUP_TO_SD:
                     mType = 0;
+                    requestPermission(0);
                     break;
                 case RESTORE_FROM_SD:
                     mType = 1;
+                    requestPermission(1);
                     break;
             }
             return false;
@@ -533,6 +535,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         if (BuildConfig.DEBUG) Log.d(TAG, contentsAsString);
                         Gson gson = new Gson();
                         NoteLab noteLab = gson.fromJson(contentsAsString, NoteLab.class);
+                        if (noteLab == null) {
+                            return;
+                        }
                         Log.d(TAG, "onResult: " + noteLab.getMoonlights().size());
 //                        if (noteLab.getMoonlights().size() != 0) {
                             mFDatabaseUtils.restoreAll(noteLab);
