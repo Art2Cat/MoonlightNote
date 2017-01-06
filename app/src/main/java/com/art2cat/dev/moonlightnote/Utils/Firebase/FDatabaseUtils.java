@@ -126,6 +126,7 @@ public class FDatabaseUtils {
         if (keyId == null) {
             mKey = databaseReference.child("moonlight").push().getKey();
             moonlight.setId(mKey);
+            if (BuildConfig.DEBUG) Log.d(TAG, "keyId: " + mKey);
         } else {
             mKey = keyId;
         }

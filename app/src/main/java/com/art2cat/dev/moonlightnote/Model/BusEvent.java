@@ -9,6 +9,8 @@ public class BusEvent {
 
     private String message;
 
+    private Moonlight moonlight;
+
     private int flag;
 
     public BusEvent() {}
@@ -29,4 +31,12 @@ public class BusEvent {
         this.flag = flag;
     }
 
+
+    public Moonlight getMoonlight() {
+        return moonlight;
+    }
+
+    public void setMoonlight(Moonlight moonlight) {
+        this.moonlight = moonlight;
+    }
 }

@@ -66,7 +66,6 @@ public abstract class MoonlightListFragment extends Fragment {
     private MenuInflater mMenuInflater;
     private boolean isLogin = true;
     private boolean isInflate = false;
-    private boolean isNotify;
 
     public MoonlightListFragment() {
     }
@@ -122,14 +121,12 @@ public abstract class MoonlightListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-//        notifyChange();
     }
 
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        isNotify = true;
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mLinearLayoutManager.setReverseLayout(true);
         mLinearLayoutManager.setStackFromEnd(true);
@@ -252,6 +249,7 @@ public abstract class MoonlightListFragment extends Fragment {
                         @Override
                         public void onClick(View view) {
                             if (isLogin) {
+                                moonlightD.setId(moonlightKey);
                                 Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
                                 Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
                                         viewHolder.mTransitionItem, viewHolder.mTransitionItem.getTransitionName()).toBundle();
@@ -267,6 +265,7 @@ public abstract class MoonlightListFragment extends Fragment {
                                     intent.putExtra("moonlight", moonlightD);
                                     startActivity(intent, bundle);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
+                                    BusEventUtils.post(null, 111);
                                 }
                                 changeToolbar(null, 1);
                                 setParams(0);
@@ -313,25 +312,16 @@ public abstract class MoonlightListFragment extends Fragment {
                 public void onItemRangeInserted(int positionStart, int itemCount) {
                     super.onItemRangeInserted(positionStart, itemCount);
                     mRecyclerView.smoothScrollToPosition(mFirebaseRecyclerAdapter.getItemCount());
-                    if (isNotify) {
-                        notifyChange();
-                    }
                 }
 
                 @Override
                 public void onItemRangeRemoved(int positionStart, int itemCount) {
                     super.onItemRangeRemoved(positionStart, itemCount);
-                    if (isNotify) {
-                        notifyChange();
-                    }
                 }
 
                 @Override
                 public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
                     super.onItemRangeMoved(fromPosition, toPosition, itemCount);
-                    if (isNotify) {
-                        notifyChange();
-                    }
                 }
             };
 
@@ -464,9 +454,6 @@ public abstract class MoonlightListFragment extends Fragment {
                 case Constants.BUS_FLAG_SIGN_OUT:
                     isLogin = false;
                     break;
-                case Constants.BUS_FLAG_MAKE_COPY_DONE:
-                    isNotify = true;
-                    break;
             }
         }
     }
@@ -531,7 +518,6 @@ public abstract class MoonlightListFragment extends Fragment {
                                 getActivity().setTitle(R.string.app_name);
                                 break;
                             case R.id.action_make_a_copy:
-                                isNotify = true;
                                 FDatabaseUtils.addMoonlight(getUid(),
                                         moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
                                 getActivity().setTitle(R.string.app_name);

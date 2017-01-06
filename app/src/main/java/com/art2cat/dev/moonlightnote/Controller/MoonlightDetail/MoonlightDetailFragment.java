@@ -51,6 +51,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 
+import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.CircleProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
@@ -179,6 +180,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             moonlight = getArguments().getParcelable("moonlight");
             if (moonlight != null) {
                 mKeyId = moonlight.getId();
+                if (BuildConfig.DEBUG) Log.d(TAG, "keyId: " + mKeyId);
             }
             int trashTag = getArguments().getInt("trash");
             if (trashTag == 0) {
@@ -439,6 +441,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         if (mCreateFlag && mEditable) {
             if (!isEmpty(moonlight)) {
                 FDatabaseUtils.addMoonlight(mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                Utils.showToast(getActivity(), "create", 0);
             }
         }
         //当editFlag为true且moonlight不为空时更新moonlight信息到服务器
@@ -447,9 +450,11 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 FDatabaseUtils.updateMoonlight(mUserId,
                         mKeyId, MoonlightEncryptUtils.decryptMoonlight(moonlight),
                         Constants.EXTRA_TYPE_MOONLIGHT);
+                Utils.showToast(getActivity(), "make", 0);
             } else {
                 FDatabaseUtils.updateMoonlight(mUserId, mKeyId, moonlight,
                         Constants.EXTRA_TYPE_MOONLIGHT);
+                Utils.showToast(getActivity(), "update", 0);
             }
         }
         mAudioPlayer.releasePlayer();
@@ -605,10 +610,11 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             case R.id.bottom_sheet_item_move_to_trash:
                 if (!isEmpty(moonlight)) {
                     FDatabaseUtils.moveToTrash(mUserId, moonlight);
+//                    BusEventUtils.post(moonlight, Constants.BUS_FLAG_DELETE);
                 } else {
                     BusEventUtils.post(Constants.BUS_FLAG_NULL, null);
                 }
-                startActivity(new Intent(getActivity(), MoonlightActivity.class));
+                getActivity().onBackPressed();
                 mEditable = false;
                 break;
             case R.id.bottom_sheet_item_permanent_delete:
@@ -618,20 +624,23 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     if (mKeyId != null) {
                         FDatabaseUtils.removeMoonlight(mUserId, mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
                     }
+//                    BusEventUtils.post(moonlight, Constants.BUS_FLAG_PERMENAT_DELETE);
                     moonlight = null;
                 } else {
                     BusEventUtils.post(Constants.BUS_FLAG_NULL, null);
                 }
-                startActivity(new Intent(getActivity(), MoonlightActivity.class));
+                getActivity().onBackPressed();
                 break;
             case R.id.bottom_sheet_item_make_a_copy:
                 if (!isEmpty(moonlight)) {
                     Log.d(TAG, "onClick: " + moonlight.getTitle());
                     FDatabaseUtils.addMoonlight(mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+//                    BusEventUtils.post(moonlight, Constants.BUS_FLAG_MAKE_A_COPY);
                     BusEventUtils.post(Constants.BUS_FLAG_MAKE_COPY_DONE, null);
                     SnackBarUtils.shortSnackBar(mContentFrameLayout,
                             "Note Copy complete.", SnackBarUtils.TYPE_INFO).show();
                     changeBottomSheetState();
+                    if (BuildConfig.DEBUG) Log.d(TAG, "keyId: " + mKeyId);
                     isMakeACopy = true;
                 } else {
                     SnackBarUtils.shortSnackBar(mContentFrameLayout,

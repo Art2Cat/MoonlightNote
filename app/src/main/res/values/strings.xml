@@ -15,25 +15,15 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">Contacts permissions are needed for providing email
-        completions.
-    </string>
     <!-- Strings related to nav_drawer -->
-    <string name="summary">Balance</string>
     <string name="menu_communicate">Communicate</string>
     <string name="menu_share">Share</string>
-    <string name="menu_output">Output</string>
-    <string name="menu_income">Income</string>
     <string name="click_to_change_user_info">Click picture to set up you account</string>
     <string name="nav_header_email">your@email.com</string>
-    <string name="nav_spinner_login">Login</string>
-    <string name="nav_spinner_sign_out">Sign Out</string>
 
     <string name="menu_login">Add account</string>
     <string name="menu_logout">Remove active account</string>
-    <string name="dialog_enter_new_label">Enter new label</string>
     <string name="user_change_password">Change Password</string>
     <string name="user_email">Email:</string>
     <string name="user_nickname">Nickname:</string>
@@ -43,20 +33,12 @@
     <string name="dialog_album">Album</string>
     <string name="login_reset_password">Forgot password?</string>
     <string name="dialog_reset_password">Send a password reset email</string>
-    <string name="dialog_ok">OK</string>
-    <string name="dialog_cancel">Cancel</string>
     <string name="google_title_text">Sign In with Google</string>
-    <string name="desc_firebase_lockup">Firebase logo and name</string>
     <string name="login_send_email_succeed">Reset password email have been send to your email</string>
-    <string name="ChoseEmailClient">Chose email app</string>
     <string name="dialog_enter_your_register_email">Enter your register email</string>
     <string name="moonlight_detail_title">Title</string>
     <string name="moonlight_detail_note">Note</string>
     <string name="prograssBar_uploading">Uploading&#8230;</string>
-    <string name="menu_about_app">About App</string>
-    <string name="fragment_audio_play">Play</string>
-    <string name="fragment_audio_record">Record</string>
-    <string name="fragment_audio_stop">Stop</string>
     <string name="action_trash">Trash</string>
     <string name="action_notes">Notes</string>
     <string name="bottom_sheet_left_take_photo">Take photo</string>
@@ -73,7 +55,6 @@
     <string name="trash_restore_action">Restore</string>
     <string name="login_request">Please sign in!</string>
     <string name="fragment_login">Sign In</string>
-    <string name="action_create">Create</string>
     <string name="menu_rate_app">Rate this app</string>
 
     <string name="delete_moonlight">Delete succeed!</string>
@@ -99,7 +80,6 @@
     <string name="new_password_hint">Enter your new password</string>
     <string name="action_change_password">Change password</string>
 
-    <string name="settings_secure">Secure</string>
     <string name="settings_policy">Privacy Policy</string>
     <string name="settings_license">Open Source License</string>
     <string name="settings_about">About App</string>
@@ -142,22 +122,9 @@
         This library is distributed under an Apache 2.0 License.\n\n
     </string>
     <string name="settings_security_pin">Pin</string>
-    <string name="settings_security_lock_app">Note Security</string>
     <string name="settings_security_title">Security</string>
     <string name="settings_security_password">Password</string>
     <string name="settings_security_pattern">Pattern</string>
-    <string name="activity_not_locked_text">Nothing should happen on this page, here for test purpose
-    </string>
-    <string name="activity_dialog_title">Forgot you Pincode?</string>
-    <string name="activity_dialog_accept">OK</string>
-    <string name="activity_dialog_decline">Cancel</string>
-    <string name="activity_dialog_content">Tap \'OK\' to log out, when you log back in you\'ll be
-        able to create a new Pincode.\n\nIf you remember your Pincode, tap \'Cancel\' to go back.
-    </string>
-    <string name="activity_appcompat_message">I am a PinCompatActivity!</string>
-    <string name="settings_security_enable">Enable</string>
-    <string name="settings_security_pin_change">change pincode</string>
-    <string name="settings_security_pin_enable">enable pincode</string>
     <string name="settings_security">Security</string>
     <string name="settings_security_disable_all">Disable Security</string>
     <string name="settings_policy_content">
@@ -339,10 +306,8 @@
     </string>
     <string name="confirmation_disable_security">Disable protection and decrypt all your data?</string>
     <string name="confirmation_title">Confirmation</string>
-    <string name="action_export_data">Export all data</string>
     <string name="confirmation_delete_image">Delete image?</string>
     <string name="moonlight_image">image</string>
-    <string name="transition_name">transitionName</string>
     <string name="trans_moonlight">moonlight</string>
     <string name="toolbar">toolbar</string>
     <string name="action_empty_note">Empty Note</string>
@@ -354,7 +319,6 @@
     <string name="pref_header_security">App Security</string>
     <string name="pref_enable_protect">Disable protection</string>
     <string name="pref_security_pin">PinCode</string>
-    <string name="pref_security_password">Password</string>
     <string name="pref_security_pattern">Pattern</string>
     <string name="backup_to_drive">Back up to Google Drive</string>
     <string name="settings_backup_to_drive">Back up data</string>

@@ -49,7 +49,11 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static android.content.Intent.*;
+import static android.content.Intent.ACTION_SEND;
+import static android.content.Intent.EXTRA_EMAIL;
+import static android.content.Intent.EXTRA_SUBJECT;
+import static android.content.Intent.EXTRA_TEXT;
+import static android.content.Intent.createChooser;
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 public class MoonlightActivity extends AppCompatActivity
