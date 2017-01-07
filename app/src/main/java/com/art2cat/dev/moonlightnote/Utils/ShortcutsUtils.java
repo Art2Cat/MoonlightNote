@@ -58,6 +58,17 @@ public class ShortcutsUtils {
         }
     }
 
+    public static void addShortcuts(Context context, List<ShortcutInfo> shortcuts) {
+        //获取应用快捷键管理器
+        ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
+        try {
+            //动态设置应用快捷键
+            shortcutManager.addDynamicShortcuts(shortcuts);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 删除应用快捷键
      *
@@ -74,12 +85,27 @@ public class ShortcutsUtils {
     }
 
     /**
-     * 隐藏应用快捷键
+     * 启用应用快捷键
      *
      * @param context     上下文
      * @param shortcutIds 快捷键ID列表
      */
-    public static void hideShortcuts(Context context, List<String> shortcutIds) {
+    public static void enableShortcuts(Context context, List<String> shortcutIds) {
+        ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
+        try {
+            shortcutManager.enableShortcuts(shortcutIds);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 停用应用快捷键
+     *
+     * @param context     上下文
+     * @param shortcutIds 快捷键ID列表
+     */
+    public static void disableShortcuts(Context context, List<String> shortcutIds) {
         ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
         try {
             shortcutManager.disableShortcuts(shortcutIds);
