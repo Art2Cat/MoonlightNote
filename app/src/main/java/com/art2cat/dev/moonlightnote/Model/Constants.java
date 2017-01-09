@@ -92,13 +92,4 @@ public class Constants {
      * File Provider
      */
     public static final String FILE_PROVIDER = "com.art2cat.dev.moonlightnote.fileprovider";
-    /**
-     * 此为AESKey（可修改）
-     */
-    public static final String AES_KEY = "0123456789abcdef";
-    /**
-     * AES偏移量 （可修改）
-     */
-    public static final String IV_PARAMERER = "1020304050607080";
-
 }
