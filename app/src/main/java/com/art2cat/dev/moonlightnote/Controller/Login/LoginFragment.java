@@ -321,8 +321,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                 startActivityForResult(signInIntent, RC_SIGN_IN);
                 break;
             case R.id.test_btn:
-                Utils.openMailClient(getActivity());
-//                signInAnonymously();
+//                Utils.openMailClient(getActivity());
+                signInAnonymously();
                 break;
         }
     }

@@ -1,11 +1,17 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
+import android.annotation.TargetApi;
 import android.app.ActivityOptions;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -35,9 +41,14 @@ import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
+import com.art2cat.dev.moonlightnote.Utils.ShortcutsUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -47,12 +58,16 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.Intent.ACTION_SEND;
 import static android.content.Intent.EXTRA_EMAIL;
 import static android.content.Intent.EXTRA_SUBJECT;
 import static android.content.Intent.EXTRA_TEXT;
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static android.content.Intent.createChooser;
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
@@ -80,6 +95,11 @@ public class MoonlightActivity extends AppCompatActivity
     private FirebaseAnalytics mFirebaseAnalytics;
     private FragmentManager mFragmentManager;
     private int mLock;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +141,13 @@ public class MoonlightActivity extends AppCompatActivity
                 isRateMyApp(mUserId, "emmmm, My app is not good enough and I need to improve it", false);
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            initShortcuts();
+        }
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private void setTransition() {
@@ -166,7 +193,12 @@ public class MoonlightActivity extends AppCompatActivity
 
     @Override
     protected void onStart() {
-        super.onStart();
+        super.onStart();// ATTENTION: This was auto-generated to implement the App Indexing API.
+// See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
     }
 
     @Override
@@ -193,9 +225,14 @@ public class MoonlightActivity extends AppCompatActivity
 
     @Override
     protected void onStop() {
-        super.onStop();
+        super.onStop();// ATTENTION: This was auto-generated to implement the App Indexing API.
+// See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
         Log.d(TAG, "onStop: ");
         mFDatabaseUtils.removeListener();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.disconnect();
     }
 
     @Override
@@ -476,5 +513,53 @@ public class MoonlightActivity extends AppCompatActivity
         bundle.putString("remarks", remarks);
         bundle.putBoolean("Rate_my_app", isRate);
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
+    private void initShortcuts() {
+        ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+        List<ShortcutInfo> shortcutInfoList = shortcutManager.getDynamicShortcuts();
+        if (shortcutInfoList.isEmpty()) {
+            enableShortcuts();
+        }
+    }
+
+
+    @TargetApi(Build.VERSION_CODES.N_MR1)
+    private void enableShortcuts() {
+
+        Intent intent = new Intent(this, MoonlightDetailActivity.class);
+
+        intent.setAction("com.art2cat.dev.moonlight.COMPOSE");
+//        intent.setAction(Intent.ACTION_VIEW);
+//        intent.setPackage("com.art2cat.dev.moonligtnote");
+//        intent.setClassName("com.art2cat.dev.moonligtnote", "com.art2cat.dev.moonligtnote.Controller.MoonlightDetail.MoonlightDetailActivity");
+//        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+        ShortcutInfo compose = ShortcutsUtils.createShortcut(this,
+                "compose",
+                "Compose",
+                "Compose new note",
+                R.drawable.ic_edit_black_24dp,
+                intent);
+        List<ShortcutInfo> shortcutInfoList = new ArrayList<ShortcutInfo>();
+        shortcutInfoList.add(compose);
+        ShortcutsUtils.setShortcuts(this, shortcutInfoList);
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Moonlight Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
     }
 }

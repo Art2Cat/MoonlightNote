@@ -135,6 +135,9 @@ public class FDatabaseUtils {
         moonlightE = MoonlightEncryptUtils.encryptMoonlight(moonlight);
         Map<String, Object> moonlightValues = moonlightE.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
+        //对上传后数据进行还原，
+        moonlightE = MoonlightEncryptUtils.decryptMoonlight(moonlightE);
+        if (BuildConfig.DEBUG) Log.d(TAG, "updateMoonlight: " + moonlightE.hashCode());
 
         //按照不同操作类型，更新数据到指定树状表中
         if (type == Constants.EXTRA_TYPE_MOONLIGHT || type == Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT) {
@@ -162,7 +165,6 @@ public class FDatabaseUtils {
                 }
             }
         });
-
     }
 
     public static void removeMoonlight(String userId, String keyId, final int type) {

@@ -65,7 +65,6 @@ import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
 import com.art2cat.dev.moonlightnote.Utils.MaterialAnimation.CircularRevealUtils;
-import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
@@ -135,7 +134,6 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private boolean mEditable = true;
     private boolean mStartPlaying = true;
     private boolean isLeftOrRight;
-    private boolean isMakeACopy = false;
     private String mUserId;
     private String mKeyId;
     private int mPaddingBottom;
@@ -446,16 +444,9 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         }
         //当editFlag为true且moonlight不为空时更新moonlight信息到服务器
         if (mEditable && mEditFlag && moonlight != null && !moonlight.isTrash()) {
-            if (isMakeACopy) {
-                FDatabaseUtils.updateMoonlight(mUserId,
-                        mKeyId, MoonlightEncryptUtils.decryptMoonlight(moonlight),
-                        Constants.EXTRA_TYPE_MOONLIGHT);
-                if (BuildConfig.DEBUG) Utils.showToast(getActivity(), "make", 0);
-            } else {
-                FDatabaseUtils.updateMoonlight(mUserId, mKeyId, moonlight,
-                        Constants.EXTRA_TYPE_MOONLIGHT);
-                if (BuildConfig.DEBUG) Utils.showToast(getActivity(), "update", 0);
-            }
+            FDatabaseUtils.updateMoonlight(mUserId, mKeyId, moonlight,
+                    Constants.EXTRA_TYPE_MOONLIGHT);
+            if (BuildConfig.DEBUG) Utils.showToast(getActivity(), "update", 0);
         }
         mAudioPlayer.releasePlayer();
         RefWatcher refWatcher = MyApplication.getRefWatcher(getActivity());
@@ -633,15 +624,11 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 break;
             case R.id.bottom_sheet_item_make_a_copy:
                 if (!isEmpty(moonlight)) {
-                    Log.d(TAG, "onClick: " + moonlight.getTitle());
                     FDatabaseUtils.addMoonlight(mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
 //                    BusEventUtils.post(moonlight, Constants.BUS_FLAG_MAKE_A_COPY);
-                    BusEventUtils.post(Constants.BUS_FLAG_MAKE_COPY_DONE, null);
                     SnackBarUtils.shortSnackBar(mContentFrameLayout,
                             "Note Copy complete.", SnackBarUtils.TYPE_INFO).show();
                     changeBottomSheetState();
-                    if (BuildConfig.DEBUG) Log.d(TAG, "keyId: " + mKeyId);
-                    isMakeACopy = true;
                 } else {
                     SnackBarUtils.shortSnackBar(mContentFrameLayout,
                             getString(R.string.note_binned), SnackBarUtils.TYPE_INFO).show();
