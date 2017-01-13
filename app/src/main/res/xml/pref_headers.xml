@@ -9,7 +9,7 @@
 
     <header
         android:fragment="com.art2cat.dev.moonlightnote.Controller.Settings.SettingsActivity$BackPreferenceFragment"
-        android:icon="@drawable/ic_backup_black_24dp"
+        android:icon="@drawable/ic_cloud_black_24dp"
         android:title="@string/pref_header_back_up_and_restore" />
 
     <header

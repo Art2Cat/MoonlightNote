@@ -205,7 +205,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         mToolbar = ((MoonlightDetailActivity) getActivity()).mToolbar;
-        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_24dp);
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_grey_700_24dp);
 
         mContentFrameLayout = (ContentFrameLayout) mView.findViewById(R.id.view_parent);
         mTitle = (TextInputEditText) mView.findViewById(R.id.title_TIET);
@@ -324,7 +324,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             String url = moonlight.getImageUrl();
             Glide.with(getActivity())
                     .load(Uri.parse(url))
-                    .placeholder(R.drawable.ic_cloud_download_white_48dp)
+                    .placeholder(R.drawable.ic_cloud_download_black_24dp)
                     .crossFade()
                     .into(mImage);
             mImage.post(new Runnable() {
@@ -561,7 +561,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                         mAudioPlayer.prepare(moonlight.getAudioName());
                     }
                     mAudioPlayer.startPlaying();
-                    mPlayingAudio.setBackgroundResource(R.drawable.ic_pause_circle_filled_lime_a700_48dp);
+                    mPlayingAudio.setBackgroundResource(R.drawable.ic_pause_circle_outline_lime_a700_24dp);
                     mAudioPlayer.mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mediaPlayer) {
@@ -1122,7 +1122,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         if (mFileUri != null) {
             Glide.with(getActivity())
                     .load(mFileUri)
-                    .placeholder(R.drawable.ic_cloud_download_white_48dp)
+                    .placeholder(R.drawable.ic_cloud_download_black_24dp)
                     .into(mImage);
             mImage.post(new Runnable() {
                 @Override

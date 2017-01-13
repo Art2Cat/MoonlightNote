@@ -385,12 +385,12 @@ public class MoonlightActivity extends AppCompatActivity
                     if (!isClicked) {
                         mNavigationView.getMenu().clear();
                         mNavigationView.inflateMenu(R.menu.activity_main_drawer_account);
-                        mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_sort_up, null));
+                        mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_arrow_drop_up_black_24dp, null));
                         isClicked = !isClicked;
                     } else {
                         mNavigationView.getMenu().clear();
                         mNavigationView.inflateMenu(R.menu.activity_main_drawer);
-                        mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_sort_down, null));
+                        mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_arrow_drop_down_black_24dp, null));
                         isClicked = !isClicked;
                     }
                 } else {

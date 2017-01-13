@@ -83,7 +83,7 @@ public class MoonlightViewHolder extends AnimateViewHolder {
             Log.d(TAG, "displayImage: succeed");
             Glide.with(context)
                     .load(Uri.parse(url))
-                    .placeholder(R.drawable.ic_cloud_download_white_48dp)
+                    .placeholder(R.drawable.ic_cloud_download_black_24dp)
                     .crossFade()
                     .into(mImage);
             mImage.setVisibility(View.VISIBLE);

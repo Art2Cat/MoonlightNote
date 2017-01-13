@@ -9,7 +9,7 @@
             android:title="@string/action_notes" />
         <item
             android:id="@+id/nav_trash"
-            android:icon="@drawable/ic_nav_delete_black_24dp"
+            android:icon="@drawable/ic_delete_black_24dp"
             android:title="@string/action_trash" />
         <item
             android:id="@+id/nav_settings"
