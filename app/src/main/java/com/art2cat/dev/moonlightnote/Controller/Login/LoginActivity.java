@@ -1,25 +1,39 @@
 package com.art2cat.dev.moonlightnote.Controller.Login;
 
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
+import com.art2cat.dev.moonlightnote.Utils.ShortcutsUtils;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.Thing;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 public class LoginActivity extends AppCompatActivity {
@@ -30,8 +44,10 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FDatabaseUtils mFDatabaseUtils;
+    private ShortcutsUtils mShortcutsUtils;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +62,8 @@ public class LoginActivity extends AppCompatActivity {
             signIn();
         }
 
+        mShortcutsUtils = ShortcutsUtils.newInstance(this);
+        initShortcuts();
         startAdFragment();
     }
 
@@ -165,5 +183,40 @@ public class LoginActivity extends AppCompatActivity {
                         .commitAllowingStateLoss();
             }
         }
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
+    private void initShortcuts() {
+        if (!mShortcutsUtils.isShortcutsEnable()) {
+            enableShortcuts();
+        }
+    }
+
+
+    @TargetApi(Build.VERSION_CODES.N_MR1)
+    private void enableShortcuts() {
+
+        Intent intent = new Intent(this, MoonlightDetailActivity.class);
+        Intent[] intents = new Intent[] {
+                new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MoonlightActivity.class),
+                new Intent("com.art2cat.dev.moonlight.COMPOSE", Uri.EMPTY, this, MoonlightDetailActivity.class)
+        };
+
+//        intent.setAction("com.art2cat.dev.moonlight.COMPOSE");
+//        intent.setAction(Intent.ACTION_VIEW);
+//        intent.setPackage("com.art2cat.dev.moonligtnote");
+//        intent.setClassName("com.art2cat.dev.moonligtnote", "com.art2cat.dev.moonligtnote.Controller.MoonlightDetail.MoonlightDetailActivity");
+//        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+        ShortcutInfo compose = mShortcutsUtils.createShortcut(
+                "compose",
+                "Compose",
+                "Compose new note",
+                R.drawable.ic_edit_black_24dp,
+                intents);
+        List<ShortcutInfo> shortcutInfoList = new ArrayList<ShortcutInfo>();
+        shortcutInfoList.add(compose);
+        mShortcutsUtils.setShortcuts(shortcutInfoList);
     }
 }

@@ -142,9 +142,6 @@ public class MoonlightActivity extends AppCompatActivity
             }
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            initShortcuts();
-        }
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -509,38 +506,6 @@ public class MoonlightActivity extends AppCompatActivity
         bundle.putString("remarks", remarks);
         bundle.putBoolean("Rate_my_app", isRate);
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
-    private void initShortcuts() {
-        ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-        List<ShortcutInfo> shortcutInfoList = shortcutManager.getDynamicShortcuts();
-        if (shortcutInfoList.isEmpty()) {
-            enableShortcuts();
-        }
-    }
-
-
-    @TargetApi(Build.VERSION_CODES.N_MR1)
-    private void enableShortcuts() {
-
-        Intent intent = new Intent(this, MoonlightDetailActivity.class);
-
-        intent.setAction("com.art2cat.dev.moonlight.COMPOSE");
-//        intent.setAction(Intent.ACTION_VIEW);
-//        intent.setPackage("com.art2cat.dev.moonligtnote");
-//        intent.setClassName("com.art2cat.dev.moonligtnote", "com.art2cat.dev.moonligtnote.Controller.MoonlightDetail.MoonlightDetailActivity");
-//        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-        ShortcutInfo compose = ShortcutsUtils.createShortcut(this,
-                "compose",
-                "Compose",
-                "Compose new note",
-                R.drawable.ic_edit_black_24dp,
-                intent);
-        List<ShortcutInfo> shortcutInfoList = new ArrayList<ShortcutInfo>();
-        shortcutInfoList.add(compose);
-        ShortcutsUtils.setShortcuts(this, shortcutInfoList);
     }
 
     /**
