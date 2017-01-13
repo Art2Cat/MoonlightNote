@@ -28,7 +28,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.art2cat.dev.moonlightnote.Controller.CommonActivity;
+import com.art2cat.dev.moonlightnote.Controller.User.UserActivity;
 import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
 import com.art2cat.dev.moonlightnote.Controller.Settings.SettingsActivity;
@@ -274,9 +274,6 @@ public class MoonlightActivity extends AppCompatActivity
                 }
                 break;
             case R.id.nav_settings:
-//                Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
-//                intent.putExtra("Fragment", Constants.EXTRA_SETTINGS_FRAGMENT);
-//                startActivity(intent);
                 Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
                 if (Utils.isXLargeTablet(this)) {
 //                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -410,8 +407,7 @@ public class MoonlightActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (isLogin) {
-                    Intent intent = new Intent(MoonlightActivity.this, CommonActivity.class);
-                    intent.putExtra("Fragment", Constants.EXTRA_USER_FRAGMENT);
+                    Intent intent = new Intent(MoonlightActivity.this, UserActivity.class);
                     startActivity(intent);
                     checkLockStatus();
                 } else {

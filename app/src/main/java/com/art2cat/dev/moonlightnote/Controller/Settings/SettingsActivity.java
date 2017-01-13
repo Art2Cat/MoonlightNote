@@ -34,6 +34,7 @@ import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
+import com.art2cat.dev.moonlightnote.Utils.ToastUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.google.android.gms.common.ConnectionResult;
@@ -607,11 +608,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onActivityResult(requestCode, resultCode, data);
             switch (requestCode) {
                 case REQUEST_CODE_CREATOR:
-                    Utils.showToast(getActivity(), "Done", 1);
+                    ToastUtils.with(getActivity()).setMessage("Done").showShortToast();
                     if (resultCode == Activity.RESULT_OK) {
                         //startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE),
 //                                REQUEST_CODE_SAVE_TO_DRIVE);
-                        Utils.showToast(getActivity(), "Done", 1);
+                        ToastUtils.with(getActivity()).setMessage("Done").showShortToast();
                     }
                     break;
                 case REQUEST_CODE_SAVE_TO_DRIVE:

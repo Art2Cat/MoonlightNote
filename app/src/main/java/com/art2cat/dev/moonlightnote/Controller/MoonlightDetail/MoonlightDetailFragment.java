@@ -439,14 +439,12 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         if (mCreateFlag && mEditable) {
             if (!isEmpty(moonlight)) {
                 FDatabaseUtils.addMoonlight(mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
-                if (BuildConfig.DEBUG) Utils.showToast(getActivity(), "create", 0);
             }
         }
         //当editFlag为true且moonlight不为空时更新moonlight信息到服务器
         if (mEditable && mEditFlag && moonlight != null && !moonlight.isTrash()) {
             FDatabaseUtils.updateMoonlight(mUserId, mKeyId, moonlight,
                     Constants.EXTRA_TYPE_MOONLIGHT);
-            if (BuildConfig.DEBUG) Utils.showToast(getActivity(), "update", 0);
         }
         mAudioPlayer.releasePlayer();
         RefWatcher refWatcher = MyApplication.getRefWatcher(getActivity());

@@ -94,19 +94,6 @@ public class Utils {
     }
 
     /**
-     * @param context
-     * @param content
-     * @param type
-     */
-    public static void showToast(Context context, String content, int type) {
-        if (type == 0) {
-            Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
-        } else if (type == 1) {
-            Toast.makeText(context, content, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    /**
      * 从FirebaseAuth中获取用户信息
      *
      * @param firebaseUser firebase用户类
@@ -261,7 +248,7 @@ public class Utils {
 //                context.startActivity(createChooser(intent1, "Open with..."));
             } catch (ActivityNotFoundException e) {
                 e.printStackTrace();
-                Utils.showToast(context, "Email client no found!", 1);
+                ToastUtils.with(context).setMessage( "Email client no found!").showShortToast();
             }
         }
     }

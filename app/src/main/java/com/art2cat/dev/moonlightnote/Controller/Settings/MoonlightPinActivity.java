@@ -2,6 +2,7 @@ package com.art2cat.dev.moonlightnote.Controller.Settings;
 
 import android.util.Log;
 
+import com.art2cat.dev.moonlightnote.Utils.ToastUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.github.orangegangsters.lollipin.lib.managers.AppLockActivity;
@@ -59,8 +60,9 @@ public class MoonlightPinActivity extends AppLockActivity {
 
     @Override
     public void showForgotDialog() {
-        Utils.showToast(this, "For security this feature has been disabled!", 1);
-
+        ToastUtils.with(this)
+                .setMessage("For security this feature has been disabled!")
+                .showShortToast();
     }
 
     @Override
@@ -82,7 +84,9 @@ public class MoonlightPinActivity extends AppLockActivity {
     protected void onPinCodeSuccess() {
         super.onPinCodeSuccess();
         if (getIntent().getIntExtra(AppLock.EXTRA_TYPE, 78)== 0) {
-            Utils.showToast(getApplicationContext(), "App protection will enable next time.", 1);
+            ToastUtils.with(this)
+                    .setMessage("App protection will enable next time.")
+                    .showShortToast();
         }
     }
 

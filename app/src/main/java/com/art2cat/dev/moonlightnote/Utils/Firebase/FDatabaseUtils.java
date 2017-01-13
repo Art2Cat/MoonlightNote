@@ -15,6 +15,7 @@ import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.MyApplication;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
+import com.art2cat.dev.moonlightnote.Utils.ToastUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -40,7 +41,7 @@ public class FDatabaseUtils {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Utils.showToast(MyApplication.mContext, "Restore succeed!", 1);
+            ToastUtils.with(MyApplication.mContext).setMessage("Restore succeed!").showShortToast();
         }
     };
     public User user;
@@ -276,9 +277,9 @@ public class FDatabaseUtils {
                     if (count == noteLab.getMoonlights().size()) {
                         if (type == 0) {
                             Utils.saveNoteToLocal(noteLab);
-                            Utils.showToast(MyApplication.mContext,
-                                    "Back up succeed! save in internal storage root named Note.json"
-                                    , 1);
+                            ToastUtils.with(MyApplication.mContext)
+                                    .setMessage("Back up succeed! save in internal storage root named Note.json")
+                                    .showShortToast();
                             BusEventUtils.post(Constants.BUS_FLAG_EXPORT_DATA_DONE, null);
                         } else if (type == 1) {
                             Gson gson = new Gson();

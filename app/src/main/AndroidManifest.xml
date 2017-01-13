@@ -58,7 +58,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Controller.CommonActivity"
+            android:name=".Controller.User.UserActivity"
             android:parentActivityName=".Controller.Moonlight.MoonlightActivity"
             android:theme="@style/AppTheme.NoActionBarForLoginFragment">
             <meta-data
