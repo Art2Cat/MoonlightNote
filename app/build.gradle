@@ -12,7 +12,6 @@ android {
         targetSdkVersion 25
         versionCode 12
         versionName "1.0.170106"
-        // Enabling multidex support.
         multiDexEnabled true
     }
     buildTypes {

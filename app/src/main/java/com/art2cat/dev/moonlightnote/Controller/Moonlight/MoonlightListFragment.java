@@ -24,7 +24,7 @@ import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailA
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
-import com.art2cat.dev.moonlightnote.MyApplication;
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
@@ -362,7 +362,7 @@ public abstract class MoonlightListFragment extends Fragment {
 
         mFDatabaseUtils.removeListener();
 
-        RefWatcher refWatcher = MyApplication.getRefWatcher(getActivity());
+        RefWatcher refWatcher = MoonlightApplication.getRefWatcher(getActivity());
         refWatcher.watch(this);
     }
 

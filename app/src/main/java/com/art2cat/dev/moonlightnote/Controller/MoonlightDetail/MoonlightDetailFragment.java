@@ -58,7 +58,7 @@ import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
-import com.art2cat.dev.moonlightnote.MyApplication;
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.AudioPlayer;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
@@ -447,7 +447,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     Constants.EXTRA_TYPE_MOONLIGHT);
         }
         mAudioPlayer.releasePlayer();
-        RefWatcher refWatcher = MyApplication.getRefWatcher(getActivity());
+        RefWatcher refWatcher = MoonlightApplication.getRefWatcher(getActivity());
         refWatcher.watch(this);
         super.onDestroy();
     }

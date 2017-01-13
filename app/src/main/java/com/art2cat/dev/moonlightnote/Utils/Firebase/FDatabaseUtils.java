@@ -12,7 +12,7 @@ import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.Model.NoteLab;
 import com.art2cat.dev.moonlightnote.Model.User;
-import com.art2cat.dev.moonlightnote.MyApplication;
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
 import com.art2cat.dev.moonlightnote.Utils.ToastUtils;
@@ -41,7 +41,7 @@ public class FDatabaseUtils {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            ToastUtils.with(MyApplication.mContext).setMessage("Restore succeed!").showShortToast();
+            ToastUtils.with(MoonlightApplication.mContext).setMessage("Restore succeed!").showShortToast();
         }
     };
     public User user;
@@ -277,7 +277,7 @@ public class FDatabaseUtils {
                     if (count == noteLab.getMoonlights().size()) {
                         if (type == 0) {
                             Utils.saveNoteToLocal(noteLab);
-                            ToastUtils.with(MyApplication.mContext)
+                            ToastUtils.with(MoonlightApplication.mContext)
                                     .setMessage("Back up succeed! save in internal storage root named Note.json")
                                     .showShortToast();
                             BusEventUtils.post(Constants.BUS_FLAG_EXPORT_DATA_DONE, null);

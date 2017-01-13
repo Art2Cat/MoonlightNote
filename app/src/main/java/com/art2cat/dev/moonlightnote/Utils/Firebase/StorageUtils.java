@@ -6,7 +6,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.MyApplication;
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -74,7 +74,7 @@ public class StorageUtils {
 
         StorageReference audioRef = storageReference.child(userId).child("audios").child(audioName);
         File localFile = null;
-        String path = MyApplication.mContext.getCacheDir().toString();
+        String path = MoonlightApplication.mContext.getCacheDir().toString();
         if (path != null) {
             File dir = new File(path, "/audio");
             if (!dir.exists()) {

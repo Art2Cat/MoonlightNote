@@ -2,27 +2,22 @@ package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Slide;
+import android.transition.Explode;
+import android.transition.Visibility;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
-import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
-import com.art2cat.dev.moonlightnote.Utils.SPUtils;
-import com.art2cat.dev.moonlightnote.Utils.UserUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 
@@ -32,13 +27,13 @@ import static com.art2cat.dev.moonlightnote.Model.Constants.EXTRA_TRASH_FRAGMENT
 
 public class MoonlightDetailActivity extends AppCompatActivity {
 
+    private static final String TAG = "MoonlightDetailActivity";
     public Toolbar mToolbar;
     private ArrayList<MoonlightDetailActivity.FragmentOnTouchListener> onTouchListeners = new ArrayList<MoonlightDetailActivity.FragmentOnTouchListener>(
             10);
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private int mFlag;
-    private static final String TAG = "MoonlightDetailActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,14 +84,15 @@ public class MoonlightDetailActivity extends AppCompatActivity {
     }
 
     private void setTransition() {
-        Slide enter = new Slide();
-        enter.setSlideEdge(Gravity.END);
+        Explode enter = new Explode();
         enter.setDuration(200);
-        Slide reSlide = new Slide();
-        reSlide.setSlideEdge(Gravity.END);
-        reSlide.setDuration(200);
+        enter.setMode(Visibility.MODE_IN);
+
+        Explode re = new Explode();
+        re.setDuration(200);
+        re.setMode(Visibility.MODE_OUT);
         getWindow().setEnterTransition(enter);
-        getWindow().setReturnTransition(reSlide);
+        getWindow().setReturnTransition(re);
     }
 
     @Override
@@ -148,10 +144,6 @@ public class MoonlightDetailActivity extends AppCompatActivity {
         return super.dispatchKeyEvent(event);
     }
 
-    public interface FragmentOnTouchListener {
-        boolean onTouch(MotionEvent ev);
-    }
-
     public void signIn() {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -174,5 +166,9 @@ public class MoonlightDetailActivity extends AppCompatActivity {
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+    }
+
+    public interface FragmentOnTouchListener {
+        boolean onTouch(MotionEvent ev);
     }
 }

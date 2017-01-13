@@ -18,9 +18,9 @@ import static android.os.Build.VERSION_CODES.GINGERBREAD;
  * on 11/4/16 6:11 PM.
  */
 
-public class MyApplication extends Application {
+public class MoonlightApplication extends Application {
     public static RefWatcher getRefWatcher(Context context) {
-        MyApplication application = (MyApplication) context.getApplicationContext();
+        MoonlightApplication application = (MoonlightApplication) context.getApplicationContext();
         return application.mRefWatcher;
     }
 
