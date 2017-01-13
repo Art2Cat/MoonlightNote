@@ -129,6 +129,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
     private BottomSheetBehavior mLeftBottomSheetBehavior;
     private InputMethodManager mInputMethodManager;
     private Moonlight moonlight;
+    private MoonlightDetailActivity.FragmentOnTouchListener mFragmentOnTouchListener;
     private boolean mCreateFlag = true;
     private boolean mEditFlag = false;
     private boolean mEditable = true;
@@ -151,9 +152,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
         // Required empty public constructor
     }
 
-    public abstract MoonlightDetailFragment newInstance();
-
-    public abstract MoonlightDetailFragment newInstance(Moonlight moonlight);
+    public abstract MoonlightDetailFragment setArgs(Moonlight moonlight);
 
     @TargetApi(Build.VERSION_CODES.N)
     @Override
@@ -401,7 +400,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                         }
                     });
 
-            MoonlightDetailActivity.FragmentOnTouchListener fragmentOnTouchListener = new MoonlightDetailActivity.FragmentOnTouchListener() {
+            mFragmentOnTouchListener = new MoonlightDetailActivity.FragmentOnTouchListener() {
                 @Override
                 public boolean onTouch(MotionEvent ev) {
                     if (!snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {
@@ -410,7 +409,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     return false;
                 }
             };
-            ((MoonlightDetailActivity) getActivity()).registerFragmentOnTouchListener(fragmentOnTouchListener);
+            ((MoonlightDetailActivity) getActivity()).registerFragmentOnTouchListener(mFragmentOnTouchListener);
         }
     }
 
@@ -447,6 +446,10 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                     Constants.EXTRA_TYPE_MOONLIGHT);
         }
         mAudioPlayer.releasePlayer();
+        //移除FragmentOnTouchListener
+        if (mFragmentOnTouchListener != null) {
+            ((MoonlightDetailActivity) getActivity()).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
+        }
         RefWatcher refWatcher = MoonlightApplication.getRefWatcher(getActivity());
         refWatcher.watch(this);
         super.onDestroy();

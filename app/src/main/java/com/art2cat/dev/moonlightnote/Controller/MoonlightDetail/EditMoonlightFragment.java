@@ -10,17 +10,12 @@ import com.art2cat.dev.moonlightnote.Model.Moonlight;
  */
 
 public class EditMoonlightFragment extends MoonlightDetailFragment {
-    @Override
-    public MoonlightDetailFragment newInstance() {
-        return null;
-    }
 
     @Override
-    public MoonlightDetailFragment newInstance(Moonlight moonlight) {
-        MoonlightDetailFragment moonlightDetailFragment = new EditMoonlightFragment();
+    public MoonlightDetailFragment setArgs(Moonlight moonlight) {
         Bundle args = new Bundle();
         args.putParcelable("moonlight", moonlight);
-        moonlightDetailFragment.setArguments(args);
-        return moonlightDetailFragment;
+        this.setArguments(args);
+        return this;
     }
 }

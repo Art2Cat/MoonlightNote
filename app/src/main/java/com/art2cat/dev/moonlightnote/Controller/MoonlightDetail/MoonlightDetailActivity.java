@@ -1,6 +1,5 @@
 package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
 
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -59,27 +58,29 @@ public class MoonlightDetailActivity extends AppCompatActivity {
         });
 
         FragmentManager fragmentManager = getFragmentManager();
-        Fragment fragment;
-
         Moonlight moonlight = getIntent().getParcelableExtra("moonlight");
+
         if (mFlag != 0) {
             switch (mFlag) {
                 case EXTRA_CREATE_FRAGMENT:
-                    fragment = new CreateMoonlightFragment().newInstance();
-                    FragmentUtils.addFragment(fragmentManager, R.id.common_fragment_container, fragment);
+                    CreateMoonlightFragment create = new CreateMoonlightFragment();
+                    FragmentUtils.addFragment(fragmentManager, R.id.common_fragment_container, create);
                     break;
                 case EXTRA_EDIT_FRAGMENT:
-                    fragment = new EditMoonlightFragment().newInstance(moonlight);
-                    FragmentUtils.addFragment(fragmentManager, R.id.common_fragment_container, fragment);
+                    EditMoonlightFragment edit = new EditMoonlightFragment();
+                    edit
+                            .setArgs(moonlight);
+                    FragmentUtils.addFragment(fragmentManager, R.id.common_fragment_container, edit);
                     break;
                 case EXTRA_TRASH_FRAGMENT:
-                    fragment = new TrashDetailFragment().newInstance(moonlight);
-                    FragmentUtils.addFragment(fragmentManager, R.id.common_fragment_container, fragment);
+                    TrashDetailFragment trash = new TrashDetailFragment();
+                    trash.setArgs(moonlight);
+                    FragmentUtils.addFragment(fragmentManager, R.id.common_fragment_container, trash);
                     break;
             }
         } else {
-            fragment = new CreateMoonlightFragment().newInstance();
-            FragmentUtils.addFragment(fragmentManager, R.id.common_fragment_container, fragment);
+            CreateMoonlightFragment create = new CreateMoonlightFragment();
+            FragmentUtils.addFragment(fragmentManager, R.id.common_fragment_container, create);
         }
     }
 
@@ -124,7 +125,7 @@ public class MoonlightDetailActivity extends AppCompatActivity {
     /**
      * 提供给Fragment通过getActivity()方法来注册自己的触摸事件的方法
      *
-     * @param fragmentOnTouchListener
+     * @param fragmentOnTouchListener Fragment触控事件监听器
      */
     public void registerFragmentOnTouchListener(MoonlightDetailActivity.FragmentOnTouchListener fragmentOnTouchListener) {
         onTouchListeners.add(fragmentOnTouchListener);
@@ -133,7 +134,7 @@ public class MoonlightDetailActivity extends AppCompatActivity {
     /**
      * 提供给Fragment通过getActivity()方法来取消注册自己的触摸事件的方法
      *
-     * @param fragmentOnTouchListener
+     * @param fragmentOnTouchListener Fragment触控事件监听器
      */
     public void unregisterFragmentOnTouchListener(MoonlightDetailActivity.FragmentOnTouchListener fragmentOnTouchListener) {
         onTouchListeners.remove(fragmentOnTouchListener);
