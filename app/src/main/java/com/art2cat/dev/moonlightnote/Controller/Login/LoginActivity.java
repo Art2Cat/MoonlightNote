@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
-import android.content.pm.ShortcutManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,8 +24,6 @@ import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.ShortcutsUtils;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.Thing;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -63,7 +60,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         mShortcutsUtils = ShortcutsUtils.newInstance(this);
-        initShortcuts();
         startAdFragment();
     }
 
@@ -97,6 +93,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void signIn() {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N_MR1)
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -105,11 +102,12 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
                     mFDatabaseUtils = new FDatabaseUtils(LoginActivity.this, user.getUid());
                     mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
-
+                    initShortcuts();
                     mLoginState = true;
                 } else {
                     mLoginState = false;
                     Log.d(TAG, "onAuthStateChanged:signed_out:");
+                    mShortcutsUtils.removeShortcuts();
                 }
             }
         };
@@ -155,6 +153,39 @@ public class LoginActivity extends AppCompatActivity {
         System.exit(1);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
+    private void initShortcuts() {
+        if (!mShortcutsUtils.isShortcutsEnable()) {
+            enableShortcuts();
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.N_MR1)
+    private void enableShortcuts() {
+
+        Intent intent = new Intent(this, MoonlightDetailActivity.class);
+        Intent[] intents = new Intent[]{
+//                new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MoonlightActivity.class),
+                new Intent("com.art2cat.dev.moonlight.COMPOSE", Uri.EMPTY, this, MoonlightDetailActivity.class)
+        };
+
+//        intent.setAction("com.art2cat.dev.moonlight.COMPOSE");
+//        intent.setAction(Intent.ACTION_VIEW);
+//        intent.setPackage("com.art2cat.dev.moonligtnote");
+//        intent.setClassName("com.art2cat.dev.moonligtnote", "com.art2cat.dev.moonligtnote.Controller.MoonlightDetail.MoonlightDetailActivity");
+//        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+        ShortcutInfo compose = mShortcutsUtils.createShortcut(
+                "compose",
+                "Compose",
+                "Compose new note",
+                R.drawable.ic_edit_black_24dp,
+                intents);
+        List<ShortcutInfo> shortcutInfoList = new ArrayList<ShortcutInfo>();
+        shortcutInfoList.add(compose);
+        mShortcutsUtils.setShortcuts(shortcutInfoList);
+    }
+
     /**
      * 自定义一个Runnable类，在这里进行UI的更新
      */
@@ -183,40 +214,5 @@ public class LoginActivity extends AppCompatActivity {
                         .commitAllowingStateLoss();
             }
         }
-    }
-
-
-    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
-    private void initShortcuts() {
-        if (!mShortcutsUtils.isShortcutsEnable()) {
-            enableShortcuts();
-        }
-    }
-
-
-    @TargetApi(Build.VERSION_CODES.N_MR1)
-    private void enableShortcuts() {
-
-        Intent intent = new Intent(this, MoonlightDetailActivity.class);
-        Intent[] intents = new Intent[] {
-                new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MoonlightActivity.class),
-                new Intent("com.art2cat.dev.moonlight.COMPOSE", Uri.EMPTY, this, MoonlightDetailActivity.class)
-        };
-
-//        intent.setAction("com.art2cat.dev.moonlight.COMPOSE");
-//        intent.setAction(Intent.ACTION_VIEW);
-//        intent.setPackage("com.art2cat.dev.moonligtnote");
-//        intent.setClassName("com.art2cat.dev.moonligtnote", "com.art2cat.dev.moonligtnote.Controller.MoonlightDetail.MoonlightDetailActivity");
-//        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-        ShortcutInfo compose = mShortcutsUtils.createShortcut(
-                "compose",
-                "Compose",
-                "Compose new note",
-                R.drawable.ic_edit_black_24dp,
-                intents);
-        List<ShortcutInfo> shortcutInfoList = new ArrayList<ShortcutInfo>();
-        shortcutInfoList.add(compose);
-        mShortcutsUtils.setShortcuts(shortcutInfoList);
     }
 }

@@ -27,35 +27,26 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-        <!-- [START fcm_default_icon] -->
-        <!--
-             Set custom default icon. This is used when no icon is set for incoming notification messages.
-             See README(https://goo.gl/l4GJaQ) for more.
-        -->
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_launcher" />
-        <!--
-             Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more.
-        -->
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
-        <!-- [END fcm_default_icon] -->
 
         <activity
             android:name=".Controller.Moonlight.MoonlightActivity"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
         <activity
             android:name=".Controller.Login.LoginActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBarForLoginFragment">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -107,8 +98,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.art2cat.dev.moonlightnote.Controller.Settings.SettingsActivity" />
-        </activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        </activity>
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

@@ -9,6 +9,7 @@ import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.RequiresApi;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -104,13 +105,24 @@ public class ShortcutsUtils {
     }
 
     /**
-     * 删除应用快捷键
+     * 移除应用快捷键
      *
      * @param shortcutIds 快捷键ID列表
      */
-    public void deleteShortcuts(List<String> shortcutIds) {
+    public void removeShortcuts(List<String> shortcutIds) {
         try {
             shortcutManager.removeDynamicShortcuts(shortcutIds);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 移除应用快捷键
+     */
+    public void removeShortcuts() {
+        try {
+            shortcutManager.removeDynamicShortcuts(getShortcutIds());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -142,8 +154,30 @@ public class ShortcutsUtils {
         }
     }
 
+    /**
+     * 检查应用快捷键是否已经启用
+     *
+     * @return isEnable
+     */
     public boolean isShortcutsEnable() {
         List<ShortcutInfo> shortcutInfoList = shortcutManager.getDynamicShortcuts();
         return !shortcutInfoList.isEmpty();
+    }
+
+    /**
+     * 获取应用快捷键ID列表
+     *
+     * @return ID列表
+     */
+    public List<String> getShortcutIds() {
+        List<String> shortcutIdList = new ArrayList<String>();
+        List<ShortcutInfo> shortcutInfoList = shortcutManager.getDynamicShortcuts();
+        if (shortcutInfoList.isEmpty()) {
+            return null;
+        }
+        for (ShortcutInfo shortcutInfo : shortcutInfoList) {
+            shortcutIdList.add(shortcutInfo.getId());
+        }
+        return shortcutIdList;
     }
 }

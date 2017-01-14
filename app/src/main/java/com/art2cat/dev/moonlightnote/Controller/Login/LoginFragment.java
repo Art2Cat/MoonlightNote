@@ -37,7 +37,6 @@ import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserUtils;
-import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -92,11 +91,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        if (Utils.isXLargeTablet(getActivity())) {
-            mView = inflater.inflate(R.layout.fragment_login_tablet, container, false);
-        } else {
-            mView = inflater.inflate(R.layout.fragment_login, container, false);
-        }
+
+        mView = inflater.inflate(R.layout.fragment_login, container, false);
+
         mEmailView = (AppCompatEditText) mView.findViewById(R.id.email);
 
         Toolbar toolbar = (Toolbar) mView.findViewById(R.id.toolbar);
@@ -344,7 +341,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                     Uri photoUrl = user.getPhotoUrl();
                     String nickname = user.getDisplayName();
                     String email = user.getEmail();
-                    String token =  FirebaseInstanceId.getInstance().getToken();
+                    String token = FirebaseInstanceId.getInstance().getToken();
                     User user1 = new User();
                     user1.setUid(user.getUid());
                     if (nickname != null) {

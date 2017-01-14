@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -36,6 +37,7 @@ import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
+import com.art2cat.dev.moonlightnote.Utils.ShortcutsUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.UserUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
@@ -76,8 +78,8 @@ public class MoonlightActivity extends AppCompatActivity
     private boolean isClicked = false;
     private boolean isLogin = true;
     private boolean isLock;
-    private TextView emailTV;
-    private TextView nickTV;
+    private TextView mEmailTextView;
+    private TextView mNicknameTextView;
     private String mUserId;
     private FirebaseUser mFirebaseUser;
     private FDatabaseUtils mFDatabaseUtils;
@@ -85,11 +87,7 @@ public class MoonlightActivity extends AppCompatActivity
     private FirebaseAnalytics mFirebaseAnalytics;
     private FragmentManager mFragmentManager;
     private int mLock;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
+    private GoogleApiClient mClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,9 +130,7 @@ public class MoonlightActivity extends AppCompatActivity
             }
         });
 
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        mClient = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private void setTransition() {
@@ -180,12 +176,9 @@ public class MoonlightActivity extends AppCompatActivity
 
     @Override
     protected void onStart() {
-        super.onStart();// ATTENTION: This was auto-generated to implement the App Indexing API.
-// See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+        super.onStart();
+        mClient.connect();
+        AppIndex.AppIndexApi.start(mClient, getIndexApiAction());
     }
 
     @Override
@@ -212,14 +205,11 @@ public class MoonlightActivity extends AppCompatActivity
 
     @Override
     protected void onStop() {
-        super.onStop();// ATTENTION: This was auto-generated to implement the App Indexing API.
-// See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        super.onStop();
+        AppIndex.AppIndexApi.end(mClient, getIndexApiAction());
         Log.d(TAG, "onStop: ");
         mFDatabaseUtils.removeListener();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.disconnect();
+        mClient.disconnect();
     }
 
     @Override
@@ -305,6 +295,9 @@ public class MoonlightActivity extends AppCompatActivity
             case R.id.nav_logout:
                 mAuth.signOut();
                 isLogin = false;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                    ShortcutsUtils.newInstance(MoonlightActivity.this).removeShortcuts();
+                }
                 BusEventUtils.post(Constants.BUS_FLAG_SIGN_OUT, null);
                 SPUtils.clear(this, "User");
                 SPUtils.clear(this, Constants.USER_CONFIG);
@@ -405,8 +398,8 @@ public class MoonlightActivity extends AppCompatActivity
         });
 
         //TextView实例化
-        emailTV = (TextView) headerView.findViewById(R.id.nav_header_email);
-        nickTV = (TextView) headerView.findViewById(R.id.nav_header_nickname);
+        mEmailTextView = (TextView) headerView.findViewById(R.id.nav_header_email);
+        mNicknameTextView = (TextView) headerView.findViewById(R.id.nav_header_nickname);
 
         if (mUserId != null) {
             Fragment fragment = mFragmentManager.findFragmentById(R.id.main_fragment_container);
@@ -474,11 +467,11 @@ public class MoonlightActivity extends AppCompatActivity
             Log.d(TAG, "displayUserInfo: " + user.getUid());
             String username = user.getNickname();
             if (username != null) {
-                nickTV.setText(user.getNickname());
+                mNicknameTextView.setText(user.getNickname());
             }
             String email = user.getEmail();
             if (email != null) {
-                emailTV.setText(email);
+                mEmailTextView.setText(email);
             }
             String photoUrl = user.getPhotoUrl();
             if (photoUrl != null) {
@@ -506,7 +499,7 @@ public class MoonlightActivity extends AppCompatActivity
         Thing object = new Thing.Builder()
                 .setName("Moonlight Page") // TODO: Define a title for the content shown.
                 // TODO: Make sure this auto-generated URL is correct.
-                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .setUrl(Uri.parse("https://play.google.com/store/apps/details?id=com.art2cat.dev.moonlightnote"))
                 .build();
         return new Action.Builder(Action.TYPE_VIEW)
                 .setObject(object)
