@@ -44,7 +44,6 @@ public class LoginActivity extends AppCompatActivity {
     private ShortcutsUtils mShortcutsUtils;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +58,9 @@ public class LoginActivity extends AppCompatActivity {
             signIn();
         }
 
-        mShortcutsUtils = ShortcutsUtils.newInstance(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            mShortcutsUtils = ShortcutsUtils.newInstance(this);
+        }
         startAdFragment();
     }
 
@@ -102,12 +103,17 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
                     mFDatabaseUtils = new FDatabaseUtils(LoginActivity.this, user.getUid());
                     mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
-                    initShortcuts();
+                    if (mShortcutsUtils != null) {
+                        initShortcuts();
+                    }
+
                     mLoginState = true;
                 } else {
                     mLoginState = false;
                     Log.d(TAG, "onAuthStateChanged:signed_out:");
-                    mShortcutsUtils.removeShortcuts();
+                    if (mShortcutsUtils != null) {
+                        mShortcutsUtils.removeShortcuts();
+                    }
                 }
             }
         };
