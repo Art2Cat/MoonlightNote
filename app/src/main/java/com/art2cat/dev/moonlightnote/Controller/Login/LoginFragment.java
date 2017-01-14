@@ -362,6 +362,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
 
                     if (mEncryptKey!= null) {
                         user1.setEncryptKey(mEncryptKey);
+                    } else {
+                        user1.setEncryptKey(user.getUid());
                     }
 
                     if (isNewUser) {
