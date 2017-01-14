@@ -53,6 +53,12 @@ public class UserUtils {
             } else {
                 SPUtils.putString(context, "User", "Token", null);
             }
+
+            if (user.getEncryptKey() != null) {
+                SPUtils.putString(context, "User", "EncryptKey", user.getEncryptKey());
+            }else {
+                SPUtils.putString(context, "User", "EncryptKey", null);
+            }
         }
     }
 
@@ -69,6 +75,7 @@ public class UserUtils {
         user.setEmail(SPUtils.getString(context, "User", "Email", null));
         user.setPhotoUrl(SPUtils.getString(context, "User", "PhotoUrl", null));
         user.setToken(SPUtils.getString(context, "User", "Token", null));
+        user.setEncryptKey(SPUtils.getString(context, "User", "EncryptKey", null));
         return user;
     }
 

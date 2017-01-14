@@ -21,7 +21,7 @@ import javax.crypto.spec.SecretKeySpec;
  * Created by art2cat
  * on 7/25/16.
  */
-class AESUtils {
+public class AESUtils {
 
 
     private static final String AES_KEY = "0123456789abcdef";   //此为AESKey（可修改）

@@ -13,17 +13,19 @@ public class User {
     public String uid;
     public String photoUrl;
     public String token;
+    public String encryptKey;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String nickname, String email, String photoUrl, String uid, String token) {
+    public User(String nickname, String email, String photoUrl, String uid, String token, String encryptKey) {
         this.nickname = nickname;
         this.email = email;
         this.photoUrl = photoUrl;
         this.uid = uid;
         this.token = token;
+        this.encryptKey = encryptKey;
     }
 
     public String getPhotoUrl() {
@@ -66,6 +68,14 @@ public class User {
         this.token = token;
     }
 
+    public String getEncryptKey() {
+        return encryptKey;
+    }
+
+    public void setEncryptKey(String encryptKey) {
+        this.encryptKey = encryptKey;
+    }
+
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("nickname", nickname);
@@ -73,6 +83,7 @@ public class User {
         result.put("uid", uid);
         result.put("photoUrl", photoUrl);
         result.put("token", token);
+        result.put("encryptKey", encryptKey);
         return result;
     }
 }
