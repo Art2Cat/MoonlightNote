@@ -1,20 +1,21 @@
-## Moonlight Note
+# Moonlight Note
 StudyJams Advanced Learning Project
 
 Moonlight Note Based on Firebase and in accordance with the Material Design standard development of a simple and efficient cloud note application.
 
  *Google Play*: https://goo.gl/rd5Z5A
 
-# Features Include:
+## Features Include:
 - Material Design UI and easy usability
 - All notes stored in Firebase Database(not local)*
 - If you want you can Share with your friends
-- Multi-Window Support(require Android 7.0 Nougat)
+- Multi-Window Support(System requirements Android 7.0 Nougat)
+- App shortcuts Support(System requirements Android 7.0 Nougat)
 - Password Protect Program(Current use PinCode, pattern coming soon)
 - Encrypt/Decrypt Note(AES encryption)
 - Back up to SD card and Google Drive(Restore data from them)
 
-# To Do:
+## To Do:
 - Sorting notes (a-z, date)
 - Add more Material Design Animation
 
@@ -22,9 +23,9 @@ I'm a members from the 2016 Google Developer StudyJams Chinese activities, thank
 
 *Only text notes stored in Firebase Database, images and audios stored int Firebase Storage.
 
-#Privacy Policy
+##Privacy Policy
 
-https://github.com/Art2Cat/MoonlightNote/blob/master/PRIVACY%20POLICY.md
+http://i.art2cat.com/2017/01/15/privacy_policy.html
 
 
 ## License
