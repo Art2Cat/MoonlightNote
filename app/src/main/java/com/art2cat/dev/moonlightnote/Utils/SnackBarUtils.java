@@ -2,14 +2,12 @@ package com.art2cat.dev.moonlightnote.Utils;
 
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
 import android.support.annotation.LayoutRes;
 import android.support.design.widget.Snackbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 
 /**
@@ -18,10 +16,10 @@ import android.widget.TextView;
  */
 public class SnackBarUtils {
 
-    public static final int TYPE_INFO = 1;
-    public static final int TYPE_CONFIRM = 2;
-    public static final int TYPE_WARNING = 3;
-    public static final int TYPE_ALERT = 4;
+    public static final int TYPE_INFO = 101;
+    public static final int TYPE_CONFIRM = 102;
+    public static final int TYPE_WARNING = 103;
+    public static final int TYPE_ALERT = 104;
 
     public static int MATERIAL_RED = 0xfff44336;
     public static int MATERIAL_GREEN = 0xff4caf50;
