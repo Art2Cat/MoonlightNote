@@ -27,6 +27,7 @@ import android.widget.TextView;
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.InputDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
@@ -62,7 +63,7 @@ import org.greenrobot.eventbus.ThreadMode;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LoginFragment extends Fragment implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
+public class LoginFragment extends BaseFragment implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
     private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "LoginFragment";
     protected View mView;
@@ -277,7 +278,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                 isNewUser = true;
             } else {
                 showProgress(false);
-                SnackBarUtils.shortSnackBar(mView, "Google Sign In failed" + result.toString(), SnackBarUtils.TYPE_INFO).show();
+                showShortSnackBar(mView, "Google Sign In failed", SnackBarUtils.TYPE_INFO);
                 Log.d(TAG, "Google Sign In failed");
             }
         }
@@ -328,8 +329,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        SnackBarUtils.shortSnackBar(mView, connectionResult.getErrorMessage(),
-                SnackBarUtils.TYPE_ALERT).show();
+        showShortSnackBar(mView, connectionResult.getErrorMessage(), SnackBarUtils.TYPE_ALERT);
     }
 
     public void signIn() {
@@ -396,14 +396,14 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                             Log.w(TAG, "signInWithCredential", task.getException());
                             //noinspection ThrowableResultOfMethodCallIgnored,ConstantConditions
                             String exception = task.getException().getMessage();
-                            SnackBarUtils.shortSnackBar(mView, "Authentication failed: " + exception,
-                                    SnackBarUtils.TYPE_WARNING).show();
+                            showShortSnackBar(mView, "Authentication failed: " + exception,
+                                    SnackBarUtils.TYPE_WARNING);
                         } else {
                             showProgress(false);
                             Intent intent = new Intent(getActivity(), MoonlightActivity.class);
                             isNewUser = true;
                             getActivity().startActivity(intent);
-                            SnackBarUtils.shortSnackBar(mView, "Google Sign In succeed", SnackBarUtils.TYPE_INFO).show();
+                            showShortSnackBar(mView, "Google Sign In succeed", SnackBarUtils.TYPE_INFO);
                             SPUtils.putBoolean(getActivity(), "User", "google", true);
                             getActivity().finish();
                         }
@@ -429,8 +429,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
             @Override
             public void onFailure(@NonNull Exception e) {
                 showProgress(false);
-                SnackBarUtils.shortSnackBar(mView, "Sign In Failed: " + e.toString(),
-                        SnackBarUtils.TYPE_WARNING).show();
+                showShortSnackBar(mView, "Sign In Failed: " + e.toString(),
+                        SnackBarUtils.TYPE_WARNING);
             }
         });
     }
@@ -443,8 +443,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             showProgress(false);
-                            SnackBarUtils.longSnackBar(mView, "Sign Up succeed!",
-                                    SnackBarUtils.TYPE_WARNING).show();
+                            showLongSnackBar(mView, "Sign Up succeed!",
+                                    SnackBarUtils.TYPE_WARNING);
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             assert user != null;
                             user.sendEmailVerification()
@@ -465,8 +465,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
                             isNewUser = false;
                             //noinspection ThrowableResultOfMethodCallIgnored,ConstantConditions
                             String exception = task.getException().getMessage();
-                            SnackBarUtils.longSnackBar(mView, "Sign Up Failed: " + exception,
-                                    SnackBarUtils.TYPE_WARNING).show();
+                            showLongSnackBar(mView, "Sign Up Failed: " + exception,
+                                    SnackBarUtils.TYPE_WARNING);
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -512,8 +512,8 @@ public class LoginFragment extends Fragment implements View.OnClickListener, Goo
         if (busEvent.getMessage().contains("@")) {
             AuthUtils.sendRPEmail(getActivity(), mView, busEvent.getMessage());
         } else {
-            SnackBarUtils.shortSnackBar(mView, "Invalid email address",
-                    SnackBarUtils.TYPE_WARNING).show();
+            showShortSnackBar(mView, "Invalid email address",
+                    SnackBarUtils.TYPE_WARNING);
         }
     }
 

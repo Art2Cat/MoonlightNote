@@ -185,7 +185,7 @@ public class LoginActivity extends AppCompatActivity {
                 "compose",
                 "Compose",
                 "Compose new note",
-                R.drawable.ic_edit_black_24dp,
+                R.mipmap.ic_shortcuts_create,
                 intents);
         List<ShortcutInfo> shortcutInfoList = new ArrayList<ShortcutInfo>();
         shortcutInfoList.add(compose);

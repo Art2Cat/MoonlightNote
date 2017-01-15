@@ -55,6 +55,7 @@ import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.CircleProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
@@ -105,7 +106,7 @@ import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public abstract class MoonlightDetailFragment extends Fragment implements
+public abstract class MoonlightDetailFragment extends BaseFragment implements
         View.OnClickListener, View.OnFocusChangeListener, PopupMenu.OnMenuItemClickListener {
     private static final String TAG = "MoonlightDetailFragment";
     private View mView;
@@ -627,12 +628,12 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 if (!isEmpty(moonlight)) {
                     FDatabaseUtils.addMoonlight(mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
 //                    BusEventUtils.post(moonlight, Constants.BUS_FLAG_MAKE_A_COPY);
-                    SnackBarUtils.shortSnackBar(mContentFrameLayout,
-                            "Note Copy complete.", SnackBarUtils.TYPE_INFO).show();
+                    showShortSnackBar(mContentFrameLayout,
+                            "Note Copy complete.", SnackBarUtils.TYPE_INFO);
                     changeBottomSheetState();
                 } else {
-                    SnackBarUtils.shortSnackBar(mContentFrameLayout,
-                            getString(R.string.note_binned), SnackBarUtils.TYPE_INFO).show();
+                    showShortSnackBar(mContentFrameLayout,
+                            getString(R.string.note_binned), SnackBarUtils.TYPE_INFO);
                     changeBottomSheetState();
                 }
                 break;
@@ -787,7 +788,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             mEditable = false;
             Log.d(TAG, "onCameraClick: ");
         } else {
-            SnackBarUtils.longSnackBar(mView, "No Camera!", SnackBarUtils.TYPE_WARNING).show();
+            showLongSnackBar(mView, "No Camera!", SnackBarUtils.TYPE_WARNING);
         }
     }
 
@@ -824,7 +825,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
             startActivityForResult(albumIntent, ALBUM_CHOOSE);
             mEditable = false;
         } else {
-            SnackBarUtils.longSnackBar(mView, "No Album!", SnackBarUtils.TYPE_WARNING).show();
+            showLongSnackBar(mView, "No Album!", SnackBarUtils.TYPE_WARNING);
         }
     }
 
@@ -902,7 +903,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
                     Log.d(TAG, "onPaused: ");
                     mCircleProgressDialogFragment.dismiss();
-                    SnackBarUtils.shortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO).show();
+                    showShortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO);
                 }
             });
         } else if (type == 3) {
@@ -936,7 +937,7 @@ public abstract class MoonlightDetailFragment extends Fragment implements
                 public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
                     Log.d(TAG, "onPaused: ");
                     mCircleProgressDialogFragment.dismiss();
-                    SnackBarUtils.shortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO).show();
+                    showShortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO);
                 }
             });
         }

@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.view.View;
-import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
+import com.art2cat.dev.moonlightnote.Utils.ToastUtils;
 
 /**
  * Created by Rorschach
@@ -22,15 +22,19 @@ public class BaseFragment extends Fragment {
         mActivity = getActivity();
     }
 
-    public void showShortSnackbar(View view, String content) {
-        SnackBarUtils.shortSnackBar(view, content, SnackBarUtils.TYPE_INFO).show();
+    public void showShortSnackBar(View view, String content, int type) {
+        SnackBarUtils.shortSnackBar(view, content, type).show();
     }
 
-    public void showLongSnackbar(View view, String content) {
-        SnackBarUtils.longSnackBar(view, content, SnackBarUtils.TYPE_INFO).show();
+    public void showLongSnackBar(View view, String content, int type) {
+        SnackBarUtils.longSnackBar(view, content, type).show();
     }
 
-    public void showToast(String content) {
-        Toast.makeText(mActivity, content, Toast.LENGTH_SHORT).show();
+    public void showShortToast(String content) {
+        ToastUtils.with(mActivity).setMessage(content).showShortToast();
+    }
+
+    public void showLongToast(String content) {
+        ToastUtils.with(mActivity).setMessage(content).showLongToast();
     }
 }
