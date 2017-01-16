@@ -5,7 +5,6 @@ package com.art2cat.dev.moonlightnote.Utils;
 
 
 import android.text.TextUtils;
-import android.util.Base64;
 
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
@@ -31,7 +30,7 @@ public class AESUtils {
     private static final char[] HEX_ARRAY = HEX.toCharArray();
     private static final int SALT_LENGTH = 32;
     private static final int KEY_LENGTH = 256;
-    private static final int ITERATION_COUNT = 1000;
+    private static final int ITERATION_COUNT = 32; //迭代次数越大，计算耗时越长，会造成UI卡顿（高于100）
 
     /**
      * 生成AES密钥
@@ -75,7 +74,8 @@ public class AESUtils {
         }
         try {
             byte[] result = encrypt(key, unencrypted.getBytes());
-            return Base64.encodeToString(result, Base64.CRLF);
+//            return Base64.encodeToString(result, Base64.CRLF);
+            return byteArrayToHexString(result);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,7 +109,8 @@ public class AESUtils {
             return encrypted;
         }
         try {
-            byte[] enc = Base64.decode(encrypted, Base64.CRLF);
+//            byte[] enc = Base64.decode(encrypted, Base64.CRLF);
+            byte[] enc = hexStringToByteArray(encrypted);
             byte[] result = decrypt(key, enc);
             return new String(result);
         } catch (Exception e) {
@@ -134,18 +135,17 @@ public class AESUtils {
     }
 
 
-    public static String byteArrayToHexString(byte[] bytes) {
+    private static String byteArrayToHexString(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
             int v = bytes[j] & 0xFF;
             hexChars[j * 2] = HEX_ARRAY[v >>> 4];
             hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
         }
-        String key = new String(hexChars);
-        return key;
+        return new String(hexChars);
     }
 
-    public static byte[] hexStringToByteArray(String s) {
+    private static byte[] hexStringToByteArray(String s) {
         int len = s.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {

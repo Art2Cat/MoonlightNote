@@ -30,7 +30,6 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 public class LoginActivity extends AppCompatActivity {
@@ -169,7 +168,7 @@ public class LoginActivity extends AppCompatActivity {
     @TargetApi(Build.VERSION_CODES.N_MR1)
     private void enableShortcuts() {
 
-        Intent intent = new Intent(this, MoonlightDetailActivity.class);
+//        Intent intent = new Intent(this, MoonlightDetailActivity.class);
         Intent[] intents = new Intent[]{
 //                new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MoonlightActivity.class),
                 new Intent("com.art2cat.dev.moonlight.COMPOSE", Uri.EMPTY, this, MoonlightDetailActivity.class)
@@ -180,14 +179,14 @@ public class LoginActivity extends AppCompatActivity {
 //        intent.setPackage("com.art2cat.dev.moonligtnote");
 //        intent.setClassName("com.art2cat.dev.moonligtnote", "com.art2cat.dev.moonligtnote.Controller.MoonlightDetail.MoonlightDetailActivity");
 //        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+//        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
         ShortcutInfo compose = mShortcutsUtils.createShortcut(
                 "compose",
                 "Compose",
                 "Compose new note",
                 R.mipmap.ic_shortcuts_create,
                 intents);
-        List<ShortcutInfo> shortcutInfoList = new ArrayList<ShortcutInfo>();
+        List<ShortcutInfo> shortcutInfoList = new ArrayList<>();
         shortcutInfoList.add(compose);
         mShortcutsUtils.setShortcuts(shortcutInfoList);
     }

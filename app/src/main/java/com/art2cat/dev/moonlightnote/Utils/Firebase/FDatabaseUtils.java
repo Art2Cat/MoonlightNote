@@ -46,7 +46,7 @@ public class FDatabaseUtils {
     };
     public User user;
     public Moonlight moonlight;
-    public String mJson;
+    private String mJson;
     private Context mContext;
     private boolean complete;
     private String mUserId;
@@ -133,11 +133,11 @@ public class FDatabaseUtils {
         }
 
         //对数据进行加密
-        moonlightE = MoonlightEncryptUtils.encryptMoonlight(moonlight);
+        moonlightE = MoonlightEncryptUtils.newInstance().encryptMoonlight(moonlight);
         Map<String, Object> moonlightValues = moonlightE.toMap();
         Map<String, Object> childUpdates = new HashMap<>();
         //对上传后数据进行还原，
-        moonlightE = MoonlightEncryptUtils.decryptMoonlight(moonlightE);
+        moonlightE = MoonlightEncryptUtils.newInstance().decryptMoonlight(moonlightE);
         if (BuildConfig.DEBUG) Log.d(TAG, "updateMoonlight: " + moonlightE.hashCode());
 
         //按照不同操作类型，更新数据到指定树状表中
@@ -271,14 +271,14 @@ public class FDatabaseUtils {
                     int count = (int) dataSnapshot.getChildrenCount();
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         Moonlight moonlight = child.getValue(Moonlight.class);
-                        noteLab.setMoonlight(MoonlightEncryptUtils.decryptMoonlight(moonlight));
+                        noteLab.setMoonlight(MoonlightEncryptUtils.newInstance().decryptMoonlight(moonlight));
                     }
 
                     if (count == noteLab.getMoonlights().size()) {
                         if (type == 0) {
                             Utils.saveNoteToLocal(noteLab);
                             ToastUtils.with(MoonlightApplication.mContext)
-                                    .setMessage("Back up succeed! save in internal storage root named Note.json")
+                                    .setMessage("Back up succeed! save in internal storage root name Note.json")
                                     .showShortToast();
                             BusEventUtils.post(Constants.BUS_FLAG_EXPORT_DATA_DONE, null);
                         } else if (type == 1) {

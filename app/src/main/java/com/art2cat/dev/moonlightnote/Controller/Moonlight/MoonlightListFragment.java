@@ -200,7 +200,9 @@ public abstract class MoonlightListFragment extends Fragment {
                     DatabaseReference moonlightRef = getRef(position);
                     final String moonlightKey = moonlightRef.getKey();
 
-                    final Moonlight moonlightD = MoonlightEncryptUtils.decryptMoonlight(model);
+                    final Moonlight moonlightD = MoonlightEncryptUtils.newInstance().decryptMoonlight(model);
+
+                    if (moonlightD == null) return;
 
                     if (moonlightD.getTitle() != null) {
                         viewHolder.displayTitle(moonlightD.getTitle());
@@ -438,6 +440,7 @@ public abstract class MoonlightListFragment extends Fragment {
         super.onOptionsMenuClosed(menu);
     }
 
+    @SuppressWarnings("ConstantConditions")
     public String getUid() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }

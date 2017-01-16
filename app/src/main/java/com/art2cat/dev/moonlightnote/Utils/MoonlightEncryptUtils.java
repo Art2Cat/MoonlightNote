@@ -1,7 +1,14 @@
 package com.art2cat.dev.moonlightnote.Utils;
 
+import android.os.AsyncTask;
+import android.support.annotation.AnyThread;
+import android.util.Log;
+
+import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Rorschach
@@ -10,19 +17,19 @@ import com.art2cat.dev.moonlightnote.MoonlightApplication;
 
 public class MoonlightEncryptUtils {
 
-    public static Moonlight decryptMoonlight(Moonlight moonlight) {
+    private String key;
 
-        return decrypt(moonlight);
+    private MoonlightEncryptUtils() {
+        key = SPUtils.getString(MoonlightApplication.mContext, "User", "EncryptKey", null);
     }
 
-    public static Moonlight encryptMoonlight(Moonlight moonlight) {
-
-        return encrypt(moonlight);
+    public static MoonlightEncryptUtils newInstance() {
+        return new MoonlightEncryptUtils();
     }
 
-    private static Moonlight encrypt(Moonlight moonlight) {
+    @AnyThread
+    private static Moonlight encrypt(String key, Moonlight moonlight) {
         String[] metadata = getMetadata(moonlight);
-        String key = SPUtils.getString(MoonlightApplication.mContext, "User", "EncryptKey", null);
         if (key != null) {
             try {
 
@@ -58,10 +65,10 @@ public class MoonlightEncryptUtils {
         return null;
     }
 
-    private static Moonlight decrypt(Moonlight moonlight) {
+    @AnyThread
+    private static Moonlight decrypt(String key, Moonlight moonlight) {
 
         String[] metadata = getMetadata(moonlight);
-        String key = SPUtils.getString(MoonlightApplication.mContext, "User", "EncryptKey", null);
         if (key != null) {
             try {
 
@@ -106,6 +113,66 @@ public class MoonlightEncryptUtils {
         String audioName = moonlight.getAudioName();
 
         return new String[]{title, content, imageUrl, audioUrl, imageName, audioName};
+    }
+
+    public Moonlight decryptMoonlight(Moonlight moonlight) {
+        MoonlightEncryptTask task = new MoonlightEncryptTask(MoonlightEncryptTask.DECRYPT, key);
+        task.execute(moonlight);
+        Moonlight moonlight1 = null;
+        try {
+            moonlight1 = task.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        if (moonlight1 != null) {
+            if (BuildConfig.DEBUG)
+                Log.d("MoonlightEncryptTask", "moonlight:" + moonlight1.getContent());
+        }
+
+        return moonlight1;
+    }
+
+    public Moonlight encryptMoonlight(Moonlight moonlight) {
+        MoonlightEncryptTask task = new MoonlightEncryptTask(MoonlightEncryptTask.ENCRYPT, key);
+        task.execute(moonlight);
+        Moonlight moonlight1 = null;
+        try {
+            moonlight1 = task.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        if (moonlight1 != null) {
+            if (BuildConfig.DEBUG)
+                Log.d("MoonlightEncryptTask", "moonlight:" + moonlight1.getContent());
+        }
+
+        return moonlight1;
+    }
+
+    private class MoonlightEncryptTask extends AsyncTask<Moonlight, Void, Moonlight> {
+        static final int ENCRYPT = 101;
+        static final int DECRYPT = 102;
+        int flag;
+        String key;
+
+        MoonlightEncryptTask() {
+        }
+
+        MoonlightEncryptTask(int flag, String key) {
+            this.flag = flag;
+            this.key = key;
+        }
+
+        @Override
+        protected Moonlight doInBackground(Moonlight... moonlights) {
+            if (BuildConfig.DEBUG) Log.d("MoonlightEncryptTask", Thread.currentThread().getName());
+            if (flag == ENCRYPT) {
+                return encrypt(key, moonlights[0]);
+            } else if (flag == DECRYPT) {
+                return decrypt(key, moonlights[0]);
+            }
+            return null;
+        }
     }
 
 

@@ -1,15 +1,10 @@
 package com.art2cat.dev.moonlightnote.Utils.ImageLoader;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.ImageView;
@@ -23,7 +18,7 @@ import java.io.FileOutputStream;
  * Created by art2cat
  * on 16-7-15.
  */
-public class LocalCacheUtils {
+class LocalCacheUtils {
 
     private Context mContext;
     private NetCacheUtils mNetCacheUtils;
@@ -36,13 +31,13 @@ public class LocalCacheUtils {
     public LocalCacheUtils() {
     }
 
-    public LocalCacheUtils(Context context, @Nullable MemoryCacheUtils memoryCacheUtils) {
+    LocalCacheUtils(Context context, @Nullable MemoryCacheUtils memoryCacheUtils) {
         mMemoryCacheUtils = memoryCacheUtils;
         mContext = context;
         getCachePath();
     }
 
-    public void getBitmapFromLocal(NetCacheUtils netCacheUtils, ImageView imageView, String url) {
+    void getBitmapFromLocal(NetCacheUtils netCacheUtils, ImageView imageView, String url) {
         mNetCacheUtils = netCacheUtils;
         BitmapTask bitmapTask = new BitmapTask(imageView);
         bitmapTask.execute(url);
@@ -54,11 +49,11 @@ public class LocalCacheUtils {
      * @param url 图片url地址
      * @return bitmap图片
      */
-    public Bitmap getBitmapFromLocal(String url) {
+    private Bitmap getBitmapFromLocal(String url) {
         if (mCachePath == null) {
             getCachePath();
         }
-        Bitmap bitmap = null;
+        Bitmap bitmap;
         File file = new File(mCachePath, url);
         try {
             //BitmapFactory.Options options = new BitmapFactory.Options();
@@ -82,7 +77,7 @@ public class LocalCacheUtils {
      * @param url    图片url地址
      * @param bitmap bitmap图片
      */
-    public void setBitmapToLocal(String url, Bitmap bitmap) {
+    void setBitmapToLocal(String url, Bitmap bitmap) {
         try {
             if (mCachePath == null) {
                 getCachePath();
@@ -121,7 +116,7 @@ public class LocalCacheUtils {
         private int width;
         private int height;
 
-        public BitmapTask(ImageView imageView) {
+        BitmapTask(ImageView imageView) {
             this.ivPic = imageView;
         }
         @Override

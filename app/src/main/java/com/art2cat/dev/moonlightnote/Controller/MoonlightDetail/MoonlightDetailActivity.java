@@ -24,16 +24,15 @@ public class MoonlightDetailActivity extends AppCompatActivity {
 
     private static final String TAG = "MoonlightDetailActivity";
     public Toolbar mToolbar;
-    private ArrayList<MoonlightDetailActivity.FragmentOnTouchListener> onTouchListeners = new ArrayList<MoonlightDetailActivity.FragmentOnTouchListener>(
+    private ArrayList<MoonlightDetailActivity.FragmentOnTouchListener> onTouchListeners = new ArrayList<>(
             10);
-    private int mFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTransition();
         setContentView(R.layout.activity_common);
-        mFlag = getIntent().getIntExtra("Fragment", 0);
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
 
@@ -41,20 +40,14 @@ public class MoonlightDetailActivity extends AppCompatActivity {
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mFlag == 0) {
-                    moveTaskToBack(false);
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                    System.exit(1);
-                } else {
-                    onBackPressed();
-                }
+                onBackPressed();
             }
         });
-
+        int flag = getIntent().getIntExtra("Fragment", 0);
         FragmentManager fragmentManager = getFragmentManager();
         Moonlight moonlight = getIntent().getParcelableExtra("moonlight");
-        if (mFlag != 0) {
-            switch (mFlag) {
+        if (flag != 0) {
+            switch (flag) {
                 case EXTRA_CREATE_FRAGMENT:
                     CreateMoonlightFragment create = new CreateMoonlightFragment();
                     FragmentUtils.addFragment(fragmentManager, R.id.common_fragment_container, create);
