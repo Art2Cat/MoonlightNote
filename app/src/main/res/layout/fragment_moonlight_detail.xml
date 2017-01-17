@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipToPadding="false"
-    tools:context="com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailFragment">
+    tools:context="com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightDetailFragment">
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/bottom_sheet_container"

@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
+package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
 
 import android.Manifest;
@@ -21,6 +21,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback;
 import android.support.design.widget.CoordinatorLayout;
@@ -54,7 +55,6 @@ import android.widget.ProgressBar;
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.CircleProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
-import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
@@ -111,6 +111,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private static final String TAG = "MoonlightDetailFragment";
     private View mView;
     private Toolbar mToolbar;
+    private AppBarLayout.LayoutParams mParams;
     private ContentFrameLayout mContentFrameLayout;
     private LinearLayoutCompat mBottomBarContainer;
     private LinearLayoutCompat mAudioContainer;
@@ -130,7 +131,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private BottomSheetBehavior mLeftBottomSheetBehavior;
     private InputMethodManager mInputMethodManager;
     private Moonlight moonlight;
-    private MoonlightDetailActivity.FragmentOnTouchListener mFragmentOnTouchListener;
+    private MoonlightActivity.FragmentOnTouchListener mFragmentOnTouchListener;
     private boolean mCreateFlag = true;
     private boolean mEditFlag = false;
     private boolean mEditable = true;
@@ -205,8 +206,18 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
-//        mToolbar = ((MoonlightDetailActivity) mActivity).mToolbar;
-        mToolbar = ((MoonlightActivity) mActivity).mToolbar;
+//        mToolbar = ((MoonlightActivity) mActivity).mToolbar;
+        mToolbar = ((MoonlightActivity) mActivity).mToolbar2;
+        mToolbar.setVisibility(View.VISIBLE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mToolbar.setBackgroundColor(getResources().getColor(R.color.white, null));
+        } else {
+            mToolbar.setBackgroundColor(getResources().getColor(R.color.white));
+        }
+        ((MoonlightActivity) mActivity).setSupportActionBar(mToolbar);
+        mParams = (AppBarLayout.LayoutParams) ((MoonlightActivity) mActivity).mToolbar.getLayoutParams();
+        mParams.setScrollFlags(0);
+        ((MoonlightActivity) mActivity).mToolbar.setVisibility(View.GONE);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_grey_700_24dp);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -405,11 +416,11 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
                             BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
                             FDatabaseUtils.restoreToNote(mUserId, moonlight);
-                            startActivity(new Intent(mActivity, MoonlightActivity.class));
+                            getFragmentManager().popBackStack();
                         }
                     });
 
-            mFragmentOnTouchListener = new MoonlightDetailActivity.FragmentOnTouchListener() {
+            mFragmentOnTouchListener = new MoonlightActivity.FragmentOnTouchListener() {
                 @Override
                 public boolean onTouch(MotionEvent ev) {
                     if (!snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {
@@ -418,7 +429,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                     return false;
                 }
             };
-            ((MoonlightDetailActivity) mActivity).registerFragmentOnTouchListener(mFragmentOnTouchListener);
+            ((MoonlightActivity) mActivity).registerFragmentOnTouchListener(mFragmentOnTouchListener);
         }
     }
 
@@ -457,14 +468,20 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mAudioPlayer.releasePlayer();
         //移除FragmentOnTouchListener
         if (mFragmentOnTouchListener != null) {
-            ((MoonlightDetailActivity) mActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
+            ((MoonlightActivity) mActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
         }
 
         ((DrawerLocker) mActivity).setDrawerEnabled(true);
-        mToolbar.setNavigationOnClickListener(null);
+        mToolbar.setVisibility(View.GONE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mToolbar.setBackgroundColor(getResources().getColor(R.color.light_green, null));
+        } else {
+            mToolbar.setBackgroundColor(getResources().getColor(R.color.light_green));
+        }
+        mParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+                | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+        ((MoonlightActivity) mActivity).mToolbar.setVisibility(View.VISIBLE);
         ((MoonlightActivity) mActivity).mFAB.show();
-        ((MoonlightActivity) mActivity).mDrawerLayout.addDrawerListener(((MoonlightActivity) mActivity).mActionBarDrawerToggle);
-        ((MoonlightActivity) mActivity).mActionBarDrawerToggle.syncState();
         RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
         refWatcher.watch(this);
         super.onDestroy();

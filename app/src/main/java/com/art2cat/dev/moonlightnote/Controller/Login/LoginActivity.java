@@ -16,7 +16,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
-import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
@@ -168,11 +167,15 @@ public class LoginActivity extends AppCompatActivity {
     @TargetApi(Build.VERSION_CODES.N_MR1)
     private void enableShortcuts() {
 
-//        Intent intent = new Intent(this, MoonlightDetailActivity.class);
-        Intent[] intents = new Intent[]{
+        Intent intent = new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MoonlightActivity.class);
+
+//        Intent[] intents = new Intent[]{
 //                new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MoonlightActivity.class),
-                new Intent("com.art2cat.dev.moonlight.COMPOSE", Uri.EMPTY, this, MoonlightDetailActivity.class)
-        };
+//                new Intent("com.art2cat.dev.moonlight.COMPOSE", Uri.EMPTY, this, MoonlightDetailActivity.class)
+//        };
+
+        intent.putExtra("type", 101);
+
 
 //        intent.setAction("com.art2cat.dev.moonlight.COMPOSE");
 //        intent.setAction(Intent.ACTION_VIEW);
@@ -185,7 +188,7 @@ public class LoginActivity extends AppCompatActivity {
                 "Compose",
                 "Compose new note",
                 R.mipmap.ic_shortcuts_create,
-                intents);
+                intent);
         List<ShortcutInfo> shortcutInfoList = new ArrayList<>();
         shortcutInfoList.add(compose);
         mShortcutsUtils.setShortcuts(shortcutInfoList);

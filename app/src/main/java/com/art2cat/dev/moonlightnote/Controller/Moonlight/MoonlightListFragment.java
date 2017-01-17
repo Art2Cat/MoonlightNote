@@ -1,6 +1,5 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
-import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
 import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
@@ -29,6 +27,7 @@ import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
+import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -252,22 +251,34 @@ public abstract class MoonlightListFragment extends BaseFragment {
                         public void onClick(View view) {
                             if (isLogin) {
                                 moonlightD.setId(moonlightKey);
-                                Intent intent = new Intent(mActivity, MoonlightDetailActivity.class);
-                                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(mActivity,
-                                        viewHolder.mTransitionItem, viewHolder.mTransitionItem.getTransitionName()).toBundle();
+//                                Intent intent = new Intent(mActivity, MoonlightDetailActivity.class);
+//                                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(mActivity,
+//                                        viewHolder.mTransitionItem, viewHolder.mTransitionItem.getTransitionName()).toBundle();
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");
-                                    intent.putExtra("Fragment", Constants.EXTRA_TRASH_FRAGMENT);
-                                    intent.putExtra("moonlight", moonlightD);
-                                    startActivity(intent, bundle);
+//                                    intent.putExtra("Fragment", Constants.EXTRA_TRASH_FRAGMENT);
+//                                    intent.putExtra("moonlight", moonlightD);
+//                                    startActivity(intent, bundle);
+                                    TrashDetailFragment trashDetailFragment = new TrashDetailFragment();
+                                    trashDetailFragment.setArgs(moonlightD, 12);
+                                    FragmentUtils.replaceFragment(getFragmentManager(),
+                                            R.id.main_fragment_container,
+                                            trashDetailFragment,
+                                            FragmentUtils.REPLACE_BACK_STACK);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 } else {
                                     Log.d(TAG, "onClick: edit");
-                                    intent.putExtra("Fragment", Constants.EXTRA_EDIT_FRAGMENT);
-                                    intent.putExtra("moonlight", moonlightD);
-                                    startActivity(intent, bundle);
+//                                    intent.putExtra("Fragment", Constants.EXTRA_EDIT_FRAGMENT);
+//                                    intent.putExtra("moonlight", moonlightD);
+//                                    startActivity(intent, bundle);
+                                    EditMoonlightFragment editMoonlightFragment = new EditMoonlightFragment();
+                                    editMoonlightFragment.setArgs(moonlightD, 0);
+                                    FragmentUtils.replaceFragment(getFragmentManager(),
+                                            R.id.main_fragment_container,
+                                            editMoonlightFragment,
+                                            FragmentUtils.REPLACE_BACK_STACK);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
-                                    BusEventUtils.post(null, 111);
+//                                    BusEventUtils.post(null, 111);
                                 }
                                 changeToolbar(null, 1);
                                 setParams(0);

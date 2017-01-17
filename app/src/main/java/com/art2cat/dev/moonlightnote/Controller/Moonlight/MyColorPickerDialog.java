@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.MoonlightDetail;
+package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
 import android.annotation.TargetApi;
 import android.content.Context;

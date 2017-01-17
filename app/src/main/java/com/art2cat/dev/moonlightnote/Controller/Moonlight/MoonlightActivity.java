@@ -1,6 +1,5 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.net.Uri;
@@ -25,7 +24,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
-import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.CreateMoonlightFragment;
 import com.art2cat.dev.moonlightnote.Controller.Settings.SettingsActivity;
 import com.art2cat.dev.moonlightnote.Controller.User.UserActivity;
 import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
@@ -73,6 +71,8 @@ public class MoonlightActivity extends AppCompatActivity
     public Toolbar mToolbar;
     public Toolbar mToolbar2;
     public FloatingActionButton mFAB;
+    public DrawerLayout mDrawerLayout;
+    public ActionBarDrawerToggle mActionBarDrawerToggle;
     private NavigationView mNavigationView;
     private CoordinatorLayout mCoordinatorLayout;
     private Button mSortButton;
@@ -90,8 +90,6 @@ public class MoonlightActivity extends AppCompatActivity
     private FirebaseAnalytics mFirebaseAnalytics;
     private FragmentManager mFragmentManager;
     private int mLock;
-    public DrawerLayout mDrawerLayout;
-    public ActionBarDrawerToggle mActionBarDrawerToggle;
     private GoogleApiClient mClient;
     private ArrayList<MoonlightActivity.FragmentOnTouchListener> onTouchListeners = new ArrayList<>(
             10);
@@ -411,15 +409,19 @@ public class MoonlightActivity extends AppCompatActivity
         //TextView实例化
         mEmailTextView = (TextView) headerView.findViewById(R.id.nav_header_email);
         mNicknameTextView = (TextView) headerView.findViewById(R.id.nav_header_nickname);
-
+        int type = getIntent().getIntExtra("type", 0);
         if (mUserId != null) {
-            Fragment fragment = mFragmentManager.findFragmentById(R.id.main_fragment_container);
-            if (fragment == null) {
-                fragment = new MoonlightFragment();
-                mFragmentManager.beginTransaction()
-                        .add(R.id.main_fragment_container, fragment)
-                        .commit();
+            FragmentUtils.addFragment(getFragmentManager(),
+                    R.id.main_fragment_container,
+                    new MoonlightFragment());
+
+            if (type == 101) {
+                FragmentUtils.replaceFragment(getFragmentManager(),
+                        R.id.main_fragment_container,
+                        new CreateMoonlightFragment(),
+                        FragmentUtils.REPLACE_BACK_STACK);
             }
+
         }
     }
 
