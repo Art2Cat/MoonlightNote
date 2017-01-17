@@ -497,9 +497,8 @@ public class MoonlightActivity extends AppCompatActivity
      */
     public Action getIndexApiAction() {
         Thing object = new Thing.Builder()
-                .setName("Moonlight Page") // TODO: Define a title for the content shown.
-                // TODO: Make sure this auto-generated URL is correct.
-                .setUrl(Uri.parse("https://play.google.com/store/apps/details?id=com.art2cat.dev.moonlightnote"))
+                .setName("Moonlight Page")
+                .setUrl(Uri.parse("https://art2cat.com/2017/01/15/moonlight_note.html"))
                 .build();
         return new Action.Builder(Action.TYPE_VIEW)
                 .setObject(object)
