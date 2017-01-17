@@ -1,7 +1,6 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
 import android.app.ActivityOptions;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +20,7 @@ import android.view.ViewGroup;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
+import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
@@ -51,7 +51,7 @@ import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
  * Created by art2cat
  * on 9/17/16.
  */
-public abstract class MoonlightListFragment extends Fragment {
+public abstract class MoonlightListFragment extends BaseFragment {
     private static final String TAG = "MoonlightListFragment";
     private DatabaseReference mDatabase;
     private FDatabaseUtils mFDatabaseUtils;
@@ -75,7 +75,7 @@ public abstract class MoonlightListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         //获取Bus单例，并注册
         EventBus.getDefault().register(this);
-        mFDatabaseUtils = FDatabaseUtils.newInstance(getActivity(), getUid());
+        mFDatabaseUtils = FDatabaseUtils.newInstance(mActivity, getUid());
     }
 
     @Override
@@ -85,23 +85,23 @@ public abstract class MoonlightListFragment extends Fragment {
         Log.d(TAG, "onCreateView: ");
         View rootView = inflater.inflate(R.layout.fragment_moonlight, container, false);
 
-        MoonlightActivity moonlightActivity = (MoonlightActivity) getActivity();
+        MoonlightActivity moonlightActivity = (MoonlightActivity) mActivity;
         mToolbar = moonlightActivity.mToolbar;
         mToolbar2 = moonlightActivity.mToolbar2;
         mParams = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
 
 
         if (isTrash()) {
-            getActivity().setTitle(R.string.fragment_trash);
+            mActivity.setTitle(R.string.fragment_trash);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mToolbar.setBackgroundColor(getResources().getColor(R.color.grey, getActivity().getTheme()));
+                mToolbar.setBackgroundColor(getResources().getColor(R.color.grey, mActivity.getTheme()));
             } else {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.grey));
             }
         } else {
-            getActivity().setTitle(R.string.app_name);
+            mActivity.setTitle(R.string.app_name);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary, getActivity().getTheme()));
+                mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary, mActivity.getTheme()));
             } else {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
             }
@@ -127,7 +127,7 @@ public abstract class MoonlightListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(mActivity);
         mLinearLayoutManager.setReverseLayout(true);
         mLinearLayoutManager.setStackFromEnd(true);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
@@ -220,7 +220,7 @@ public abstract class MoonlightListFragment extends Fragment {
                         Log.i(TAG, "populateViewHolder: " + moonlightD.getImageName());
                         viewHolder.mImage.setImageResource(R.drawable.ic_cloud_download_black_24dp);
 //                        viewHolder.mImage.setTag(moonlightD.getImageName());
-                        viewHolder.displayImage(getActivity(), moonlightD.getImageUrl());
+                        viewHolder.displayImage(mActivity, moonlightD.getImageUrl());
                     } else {
                         viewHolder.mImage.setVisibility(View.GONE);
                     }
@@ -229,9 +229,9 @@ public abstract class MoonlightListFragment extends Fragment {
                         viewHolder.setColor(moonlightD.getColor());
                     } else {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            viewHolder.setColor(getActivity().getResources().getColor(R.color.white, null));
+                            viewHolder.setColor(mActivity.getResources().getColor(R.color.white, null));
                         } else {
-                            viewHolder.setColor(getActivity().getResources().getColor(R.color.white));
+                            viewHolder.setColor(mActivity.getResources().getColor(R.color.white));
                         }
                     }
 
@@ -252,8 +252,8 @@ public abstract class MoonlightListFragment extends Fragment {
                         public void onClick(View view) {
                             if (isLogin) {
                                 moonlightD.setId(moonlightKey);
-                                Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
-                                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(getActivity(),
+                                Intent intent = new Intent(mActivity, MoonlightDetailActivity.class);
+                                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(mActivity,
                                         viewHolder.mTransitionItem, viewHolder.mTransitionItem.getTransitionName()).toBundle();
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");
@@ -333,7 +333,7 @@ public abstract class MoonlightListFragment extends Fragment {
     }
 
     private boolean isAudioFileExists(String audioName) {
-        File dir = new File(getActivity().getCacheDir(), "/audio");
+        File dir = new File(mActivity.getCacheDir(), "/audio");
         if (audioName.contains(".amr")) {
             File file = new File(dir, audioName);
             return file.exists();
@@ -364,7 +364,7 @@ public abstract class MoonlightListFragment extends Fragment {
 
         mFDatabaseUtils.removeListener();
 
-        RefWatcher refWatcher = MoonlightApplication.getRefWatcher(getActivity());
+        RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
         refWatcher.watch(this);
     }
 
@@ -415,11 +415,11 @@ public abstract class MoonlightListFragment extends Fragment {
                                 getString(R.string.dialog_empty_trash_content),
                                 Constants.EXTRA_TYPE_CDF_EMPTY_TRASH);
                 emptyTrash.show(getFragmentManager(), "Empty Trash");
-                getActivity().setTitle(R.string.fragment_trash);
+                mActivity.setTitle(R.string.fragment_trash);
                 break;
             case R.id.action_restore:
                 FDatabaseUtils.restoreToNote(getUid(), mMoonlight);
-                getActivity().setTitle(R.string.fragment_trash);
+                mActivity.setTitle(R.string.fragment_trash);
                 changeOptionsMenu(3);
                 break;
             case R.id.action_trash_delete_forever:
@@ -427,7 +427,7 @@ public abstract class MoonlightListFragment extends Fragment {
                 StorageUtils.removeAudio(null, getUid(), mMoonlight.getAudioName());
                 FDatabaseUtils.removeMoonlight(getUid(), mMoonlight.getId(), Constants.EXTRA_TYPE_DELETE_TRASH);
                 mMoonlight = null;
-                getActivity().setTitle(R.string.fragment_trash);
+                mActivity.setTitle(R.string.fragment_trash);
                 changeOptionsMenu(3);
                 break;
         }
@@ -506,7 +506,7 @@ public abstract class MoonlightListFragment extends Fragment {
                         switch (item.getItemId()) {
                             case R.id.action_delete:
                                 FDatabaseUtils.moveToTrash(getUid(), moonlight);
-                                getActivity().setTitle(R.string.app_name);
+                                mActivity.setTitle(R.string.app_name);
                                 break;
                             case R.id.action_delete_forever:
                                 if (moonlight.getImageUrl() != null) {
@@ -518,12 +518,12 @@ public abstract class MoonlightListFragment extends Fragment {
                                 FDatabaseUtils.removeMoonlight(getUid(),
                                         moonlight.getId(),
                                         Constants.EXTRA_TYPE_MOONLIGHT);
-                                getActivity().setTitle(R.string.app_name);
+                                mActivity.setTitle(R.string.app_name);
                                 break;
                             case R.id.action_make_a_copy:
                                 FDatabaseUtils.addMoonlight(getUid(),
                                         moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
-                                getActivity().setTitle(R.string.app_name);
+                                mActivity.setTitle(R.string.app_name);
                                 break;
                             case R.id.action_send:
                                 //启动Intent分享
@@ -543,11 +543,11 @@ public abstract class MoonlightListFragment extends Fragment {
                                 //设置分享选择器
                                 in = Intent.createChooser(in, "Send to");
                                 startActivity(in);
-                                getActivity().setTitle(R.string.app_name);
+                                mActivity.setTitle(R.string.app_name);
                                 break;
                             case R.id.action_restore:
                                 FDatabaseUtils.restoreToNote(getUid(), moonlight);
-                                getActivity().setTitle(R.string.fragment_trash);
+                                mActivity.setTitle(R.string.fragment_trash);
                                 break;
                             case R.id.action_trash_delete_forever:
                                 if (moonlight.getImageUrl() != null) {
@@ -559,7 +559,7 @@ public abstract class MoonlightListFragment extends Fragment {
                                 FDatabaseUtils.removeMoonlight(getUid(),
                                         moonlight.getId(),
                                         Constants.EXTRA_TYPE_DELETE_TRASH);
-                                getActivity().setTitle(R.string.fragment_trash);
+                                mActivity.setTitle(R.string.fragment_trash);
                                 break;
                         }
                         setParams(0);

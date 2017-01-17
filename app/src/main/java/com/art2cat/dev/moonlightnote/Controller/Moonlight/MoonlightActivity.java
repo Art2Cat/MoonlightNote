@@ -1,6 +1,5 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
-import android.app.ActivityOptions;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -20,14 +19,16 @@ import android.transition.Fade;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
-import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.MoonlightDetailActivity;
+import com.art2cat.dev.moonlightnote.Controller.MoonlightDetail.CreateMoonlightFragment;
 import com.art2cat.dev.moonlightnote.Controller.Settings.SettingsActivity;
 import com.art2cat.dev.moonlightnote.Controller.User.UserActivity;
+import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.User;
@@ -54,6 +55,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.content.Intent.ACTION_SEND;
@@ -64,7 +67,7 @@ import static android.content.Intent.createChooser;
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 public class MoonlightActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, BaseFragment.DrawerLocker {
 
     private static final String TAG = "MoonlightActivity";
     public Toolbar mToolbar;
@@ -87,7 +90,11 @@ public class MoonlightActivity extends AppCompatActivity
     private FirebaseAnalytics mFirebaseAnalytics;
     private FragmentManager mFragmentManager;
     private int mLock;
+    public DrawerLayout mDrawerLayout;
+    public ActionBarDrawerToggle mActionBarDrawerToggle;
     private GoogleApiClient mClient;
+    private ArrayList<MoonlightActivity.FragmentOnTouchListener> onTouchListeners = new ArrayList<>(
+            10);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -330,10 +337,14 @@ public class MoonlightActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (isLogin) {
-                    Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
-                    intent.putExtra("Fragment", Constants.EXTRA_CREATE_FRAGMENT);
-                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MoonlightActivity.this).toBundle();
-                    startActivity(intent, bundle);
+//                    Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
+//                    intent.putExtra("Fragment", Constants.EXTRA_CREATE_FRAGMENT);
+//                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MoonlightActivity.this).toBundle();
+//                    startActivity(intent, bundle);
+                    FragmentUtils.replaceFragment(mFragmentManager,
+                            R.id.main_fragment_container,
+                            new CreateMoonlightFragment(),
+                            FragmentUtils.REPLACE_BACK_STACK);
                     checkLockStatus();
                 } else {
                     SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
@@ -343,11 +354,11 @@ public class MoonlightActivity extends AppCompatActivity
         });
 
         //DrawerLayout实例化
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mActionBarDrawerToggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
+        mActionBarDrawerToggle.syncState();
 
         //NavigationView实例化
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -492,6 +503,50 @@ public class MoonlightActivity extends AppCompatActivity
     }
 
     /**
+     * 分发触摸事件给所有注册了MyOnTouchListener的接口
+     */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        for (MoonlightActivity.FragmentOnTouchListener listener : onTouchListeners) {
+            if (listener != null) {
+                listener.onTouch(ev);
+            }
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    /**
+     * 提供给Fragment通过getActivity()方法来注册自己的触摸事件的方法
+     *
+     * @param fragmentOnTouchListener Fragment触控事件监听器
+     */
+    public void registerFragmentOnTouchListener(MoonlightActivity.FragmentOnTouchListener fragmentOnTouchListener) {
+        onTouchListeners.add(fragmentOnTouchListener);
+    }
+
+    /**
+     * 提供给Fragment通过getActivity()方法来取消注册自己的触摸事件的方法
+     *
+     * @param fragmentOnTouchListener Fragment触控事件监听器
+     */
+    public void unregisterFragmentOnTouchListener(MoonlightActivity.FragmentOnTouchListener fragmentOnTouchListener) {
+        onTouchListeners.remove(fragmentOnTouchListener);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    public void setDrawerEnabled(boolean enabled) {
+        int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :
+                DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+        mDrawerLayout.setDrawerLockMode(lockMode);
+        mActionBarDrawerToggle.setDrawerIndicatorEnabled(enabled);
+    }
+
+    /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
@@ -504,5 +559,9 @@ public class MoonlightActivity extends AppCompatActivity
                 .setObject(object)
                 .setActionStatus(Action.STATUS_TYPE_COMPLETED)
                 .build();
+    }
+
+    public interface FragmentOnTouchListener {
+        boolean onTouch(MotionEvent ev);
     }
 }

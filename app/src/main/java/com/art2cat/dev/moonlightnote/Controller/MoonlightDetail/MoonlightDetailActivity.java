@@ -10,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
@@ -54,13 +55,12 @@ public class MoonlightDetailActivity extends AppCompatActivity {
                     break;
                 case EXTRA_EDIT_FRAGMENT:
                     EditMoonlightFragment edit = new EditMoonlightFragment();
-                    edit
-                            .setArgs(moonlight);
+                    edit.setArgs(moonlight, 0);
                     FragmentUtils.addFragment(fragmentManager, R.id.common_fragment_container, edit);
                     break;
                 case EXTRA_TRASH_FRAGMENT:
                     TrashDetailFragment trash = new TrashDetailFragment();
-                    trash.setArgs(moonlight);
+                    trash.setArgs(moonlight, Constants.EXTRA_TYPE_TRASH);
                     FragmentUtils.addFragment(fragmentManager, R.id.common_fragment_container, trash);
                     break;
             }

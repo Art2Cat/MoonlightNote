@@ -3,8 +3,10 @@ package com.art2cat.dev.moonlightnote.CustomView;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.View;
 
+import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.ToastUtils;
 
@@ -36,5 +38,17 @@ public class BaseFragment extends Fragment {
 
     public void showLongToast(String content) {
         ToastUtils.with(mActivity).setMessage(content).showLongToast();
+    }
+
+    public BaseFragment setArgs(Moonlight moonlight, int flag) {
+        Bundle args = new Bundle();
+        args.putParcelable("moonlight", moonlight);
+        args.putInt("flag", flag);
+        this.setArguments(args);
+        return this;
+    }
+
+    public interface DrawerLocker {
+        public void setDrawerEnabled(boolean enabled);
     }
 }

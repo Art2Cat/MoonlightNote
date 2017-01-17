@@ -153,8 +153,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         // Required empty public constructor
     }
 
-    public abstract MoonlightDetailFragment setArgs(Moonlight moonlight);
-
     @TargetApi(Build.VERSION_CODES.N)
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -170,7 +168,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
         mStorageReference = firebaseStorage.getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE);
 
-        mInputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        mInputMethodManager = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
 
         mPaddingBottom = getResources().getDimensionPixelOffset(R.dimen.padding_bottom);
 
@@ -180,7 +178,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 mKeyId = moonlight.getId();
                 if (BuildConfig.DEBUG) Log.d(TAG, "keyId: " + mKeyId);
             }
-            int trashTag = getArguments().getInt("trash");
+            int trashTag = getArguments().getInt("flag");
             if (trashTag == 0) {
                 mEditFlag = true;
                 mCreateFlag = false;
@@ -192,6 +190,9 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         } else {
             moonlight = new Moonlight();
         }
+
+        ((DrawerLocker) mActivity).setDrawerEnabled(false);
+        ((MoonlightActivity) mActivity).mFAB.hide();
     }
 
     @Override
@@ -200,12 +201,19 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         //视图初始化
         mView = inflater.inflate(R.layout.fragment_moonlight_detail, container, false);
 
-        getActivity().setTitle(null);
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        mActivity.setTitle(null);
+        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
-        mToolbar = ((MoonlightDetailActivity) getActivity()).mToolbar;
+//        mToolbar = ((MoonlightDetailActivity) mActivity).mToolbar;
+        mToolbar = ((MoonlightActivity) mActivity).mToolbar;
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_grey_700_24dp);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getFragmentManager().popBackStack();
+            }
+        });
 
         mContentFrameLayout = (ContentFrameLayout) mView.findViewById(R.id.view_parent);
         mTitle = (TextInputEditText) mView.findViewById(R.id.title_TIET);
@@ -234,7 +242,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             //获取系统当前时间
             long date = System.currentTimeMillis();
             moonlight.setDate(date);
-            String time = Utils.timeFormat(getActivity().getApplicationContext(), new Date(date));
+            String time = Utils.timeFormat(mActivity.getApplicationContext(), new Date(date));
             if (time != null) {
                 String timeFormat = "Edited: " + time;
                 displayTime.setText(timeFormat);
@@ -255,7 +263,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             });
             mDeleteAudio.setOnClickListener(this);
             mPlayingAudio.setOnClickListener(this);
-//            if (!Utils.isXLargeTablet(getActivity())) {
+//            if (!Utils.isXLargeTablet(mActivity)) {
             showBottomSheet();
 //            }
 
@@ -322,7 +330,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         }
         if (moonlight.getImageUrl() != null) {
             String url = moonlight.getImageUrl();
-            Glide.with(getActivity())
+            Glide.with(mActivity)
                     .load(Uri.parse(url))
                     .placeholder(R.drawable.ic_cloud_download_black_24dp)
                     .crossFade()
@@ -381,14 +389,14 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 //        CircularRevealUtils.show(mContentFrameLayout);
-        changeUIColor(R.color.white, getActivity().getTheme());
+        changeUIColor(R.color.white, mActivity.getTheme());
 
         initView(mEditable);
 
         if (!mEditable) {
             Log.d(TAG, "onActivityCreated: SnackBar");
             //禁用软键盘
-            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+            mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             final Snackbar snackbar = SnackBarUtils.longSnackBar(mView, getString(R.string.trash_restore),
                     SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_restore_action,
                     new View.OnClickListener() {
@@ -397,7 +405,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
                             BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
                             FDatabaseUtils.restoreToNote(mUserId, moonlight);
-                            startActivity(new Intent(getActivity(), MoonlightActivity.class));
+                            startActivity(new Intent(mActivity, MoonlightActivity.class));
                         }
                     });
 
@@ -410,7 +418,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                     return false;
                 }
             };
-            ((MoonlightDetailActivity) getActivity()).registerFragmentOnTouchListener(mFragmentOnTouchListener);
+            ((MoonlightDetailActivity) mActivity).registerFragmentOnTouchListener(mFragmentOnTouchListener);
         }
     }
 
@@ -449,9 +457,15 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mAudioPlayer.releasePlayer();
         //移除FragmentOnTouchListener
         if (mFragmentOnTouchListener != null) {
-            ((MoonlightDetailActivity) getActivity()).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
+            ((MoonlightDetailActivity) mActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
         }
-        RefWatcher refWatcher = MoonlightApplication.getRefWatcher(getActivity());
+
+        ((DrawerLocker) mActivity).setDrawerEnabled(true);
+        mToolbar.setNavigationOnClickListener(null);
+        ((MoonlightActivity) mActivity).mFAB.show();
+        ((MoonlightActivity) mActivity).mDrawerLayout.addDrawerListener(((MoonlightActivity) mActivity).mActionBarDrawerToggle);
+        ((MoonlightActivity) mActivity).mActionBarDrawerToggle.syncState();
+        RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
         refWatcher.watch(this);
         super.onDestroy();
     }
@@ -484,7 +498,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         switch (item.getItemId()) {
             case R.id.menu_color_picker:
                 if (mEditable) {
-                    MyColorPickerDialog dialog = new MyColorPickerDialog(getActivity());
+                    MyColorPickerDialog dialog = new MyColorPickerDialog(mActivity);
                     dialog.setTitle("Color Picker");
                     dialog.setColorListener(new ColorListener() {
                         @Override
@@ -519,7 +533,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                         Log.d(TAG, "handleMessage: " + busEvent.getMessage());
                         File file = new File(new File(Environment.getExternalStorageDirectory()
                                 + "/MoonlightNote/.audio"), busEvent.getMessage());
-                        Uri mAudioUri = FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, file);
+                        Uri mAudioUri = FileProvider.getUriForFile(mActivity, Constants.FILE_PROVIDER, file);
                         uploadFromUri(mAudioUri, mUserId, 3);
                     }
                     break;
@@ -537,16 +551,16 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bottom_bar_left:
-//                if (Utils.isXLargeTablet(getActivity())) {
-//                    MenuUtils.showPopupMenu(getActivity(), mView, R.menu.menu_detail_left, this);
+//                if (Utils.isXLargeTablet(mActivity)) {
+//                    MenuUtils.showPopupMenu(mActivity, mView, R.menu.menu_detail_left, this);
 //                } else {
                 isLeftOrRight = true;
                 hideSoftKeyboard();
 //                }
                 break;
             case R.id.bottom_bar_right:
-//                if (Utils.isXLargeTablet(getActivity())) {
-//                    MenuUtils.showPopupMenu(getActivity(), mView, R.menu.menu_detail_right, this);
+//                if (Utils.isXLargeTablet(mActivity)) {
+//                    MenuUtils.showPopupMenu(mActivity, mView, R.menu.menu_detail_right, this);
 //                } else {
                 isLeftOrRight = false;
                 hideSoftKeyboard();
@@ -607,7 +621,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 } else {
                     BusEventUtils.post(Constants.BUS_FLAG_NULL, null);
                 }
-                getActivity().onBackPressed();
+                mActivity.onBackPressed();
                 mEditable = false;
                 break;
             case R.id.bottom_sheet_item_permanent_delete:
@@ -622,7 +636,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 } else {
                     BusEventUtils.post(Constants.BUS_FLAG_NULL, null);
                 }
-                getActivity().onBackPressed();
+                mActivity.onBackPressed();
                 break;
             case R.id.bottom_sheet_item_make_a_copy:
                 if (!isEmpty(moonlight)) {
@@ -703,8 +717,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     }
 
     private Uri copyAudioFile(Uri uri) {
-        ContentResolver contentResolver = getActivity().getContentResolver();
-        String pwd = getActivity().getCacheDir().getAbsolutePath();
+        ContentResolver contentResolver = mActivity.getContentResolver();
+        String pwd = mActivity.getCacheDir().getAbsolutePath();
         File dir = new File(pwd + "/audio");
         if (!dir.exists()) {
             boolean isDirCreate = dir.mkdirs();
@@ -746,18 +760,18 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         // Check that we have permission to read images from external storage.
         String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
         String perm1 = Manifest.permission.CAMERA;
-        if (!EasyPermissions.hasPermissions(getActivity(), perm) &&
-                !EasyPermissions.hasPermissions(getActivity(), perm1)) {
-            PermissionUtils.requestStorage(getActivity(), perm);
-            PermissionUtils.requestCamera(getActivity(), perm1);
+        if (!EasyPermissions.hasPermissions(mActivity, perm) &&
+                !EasyPermissions.hasPermissions(mActivity, perm1)) {
+            PermissionUtils.requestStorage(mActivity, perm);
+            PermissionUtils.requestCamera(mActivity, perm1);
             return;
         }
-        if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
-            PermissionUtils.requestStorage(getActivity(), perm);
+        if (!EasyPermissions.hasPermissions(mActivity, perm)) {
+            PermissionUtils.requestStorage(mActivity, perm);
             return;
         }
-        if (!EasyPermissions.hasPermissions(getActivity(), perm1)) {
-            PermissionUtils.requestCamera(getActivity(), perm1);
+        if (!EasyPermissions.hasPermissions(mActivity, perm1)) {
+            PermissionUtils.requestCamera(mActivity, perm1);
             return;
         }
         // Choose file storage location, must be listed in res/xml/file_paths.xml
@@ -777,13 +791,13 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         // Create content:// URI for file, required since Android N
         // See: https://developer.android.com/reference/android/support/v4/content/FileProvider.html
 
-        mFileUri = FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, mFile);
+        mFileUri = FileProvider.getUriForFile(mActivity, Constants.FILE_PROVIDER, mFile);
         Log.i(TAG, "file: " + mFileUri);
 
         Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         takePicIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
 
-        if (takePicIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+        if (takePicIntent.resolveActivity(mActivity.getPackageManager()) != null) {
             startActivityForResult(takePicIntent, TAKE_PICTURE);
             mEditable = false;
             Log.d(TAG, "onCameraClick: ");
@@ -797,8 +811,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private void onAlbumClick() {
         // Check that we have permission to read images from external storage.
         String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
-            PermissionUtils.requestStorage(getActivity(), perm);
+        if (!EasyPermissions.hasPermissions(mActivity, perm)) {
+            PermissionUtils.requestStorage(mActivity, perm);
             return;
         }
 
@@ -816,12 +830,12 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             Log.e(TAG, "file.createNewFile" + mFile.getAbsolutePath() + ":FAILED", e);
         }
 
-        Uri fileUri = FileProvider.getUriForFile(getActivity(), Constants.FILE_PROVIDER, mFile);
+        Uri fileUri = FileProvider.getUriForFile(mActivity, Constants.FILE_PROVIDER, mFile);
         Intent albumIntent = new Intent(Intent.ACTION_PICK);
         albumIntent.setType("image/*");
         albumIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 
-        if (albumIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+        if (albumIntent.resolveActivity(mActivity.getPackageManager()) != null) {
             startActivityForResult(albumIntent, ALBUM_CHOOSE);
             mEditable = false;
         } else {
@@ -834,19 +848,19 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         // Check that we have permission to read images from external storage.
         String perm = Manifest.permission.RECORD_AUDIO;
         String perm1 = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        if (!EasyPermissions.hasPermissions(getActivity(), perm) &&
-                !EasyPermissions.hasPermissions(getActivity(), perm1)) {
-            PermissionUtils.requestStorage(getActivity(), perm1);
-            PermissionUtils.requestRecAudio(getActivity(), perm);
+        if (!EasyPermissions.hasPermissions(mActivity, perm) &&
+                !EasyPermissions.hasPermissions(mActivity, perm1)) {
+            PermissionUtils.requestStorage(mActivity, perm1);
+            PermissionUtils.requestRecAudio(mActivity, perm);
             return;
         }
-        if (!EasyPermissions.hasPermissions(getActivity(), perm1)) {
-            PermissionUtils.requestStorage(getActivity(), perm1);
+        if (!EasyPermissions.hasPermissions(mActivity, perm1)) {
+            PermissionUtils.requestStorage(mActivity, perm1);
             return;
         }
 
-        if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
-            PermissionUtils.requestRecAudio(getActivity(), perm);
+        if (!EasyPermissions.hasPermissions(mActivity, perm)) {
+            PermissionUtils.requestRecAudio(mActivity, perm);
             return;
         }
         // Choose file storage location, must be listed in res/xml/file_paths.xml
@@ -1023,7 +1037,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private void hideSoftKeyboard() {
         if (mInputMethodManager != null) {
             if (mEditable) {
-                mInputMethodManager.hideSoftInputFromWindow(getActivity().getWindow().getDecorView().getWindowToken(), 0);
+                mInputMethodManager.hideSoftInputFromWindow(mActivity.getWindow().getDecorView().getWindowToken(), 0);
                 mHandler.postDelayed(new BottomSheet(), 100);
             }
         }
@@ -1031,7 +1045,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
     private void showSoftKeyboard() {
         if (mInputMethodManager != null) {
-            mInputMethodManager.showSoftInput(getActivity().getWindow().getDecorView(), 0);
+            mInputMethodManager.showSoftInput(mActivity.getWindow().getDecorView(), 0);
         }
     }
 
@@ -1098,7 +1112,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                                 int heightDiff = mView.getRootView().getHeight() - view.getHeight();
                                 if (heightDiff > 100) {
                                     //大小超过100时，一般为显示虚拟键盘事件
-                                    if (mEditable && !Utils.isXLargeTablet(getActivity())) {
+                                    if (mEditable && !Utils.isXLargeTablet(mActivity)) {
                                         if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                                             mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                                         }
@@ -1124,7 +1138,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         //当图片地址不为空时，首先从本地读取bitmap设置图片，bitmap为空，则从网络加载
         //图片地址为空则不加载图片
         if (mFileUri != null) {
-            Glide.with(getActivity())
+            Glide.with(mActivity)
                     .load(mFileUri)
                     .placeholder(R.drawable.ic_cloud_download_black_24dp)
                     .into(mImage);
