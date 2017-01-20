@@ -291,6 +291,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             }
             onCheckSoftKeyboardState(mView);
             //mDeleteImage.setOnClickListener(this);
+            mImage.setOnClickListener(this);
             mImage.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
@@ -624,9 +625,13 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 break;
             case R.id.moonlight_image:
                 //网页浏览图片。。。
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(moonlight.getImageUrl()));
-                startActivity(intent);
+                ScaleFragment scaleFragment = ScaleFragment.newInstance(moonlight.getImageUrl());
+                getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.main_fragment_container, scaleFragment)
+                        .addSharedElement(mImage, mImage.getTransitionName())
+                        .addToBackStack("scale")
+                        .commit();
                 break;
             case R.id.playing_audio_button:
                 if (moonlight.getAudioName() != null && mStartPlaying) {
