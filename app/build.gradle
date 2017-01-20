@@ -10,8 +10,8 @@ android {
         applicationId "com.art2cat.dev.moonlightnote"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 14
-        versionName "1.0.17011614"
+        versionCode 15
+        versionName "1.0.17011715"
         multiDexEnabled true
     }
     buildTypes {
@@ -82,5 +82,6 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.0'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
+    compile 'com.squareup.okhttp3:okhttp:3.5.0'
 }
 apply plugin: 'com.google.gms.google-services'

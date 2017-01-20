@@ -29,10 +29,28 @@ import java.util.List;
 
 class MyColorPickerDialog extends ColorChooserDialog {
 
-    MyColorPickerDialog(Context context) {
-        super(context);
-    }
-
+    //CONSTANTS
+    public static final int Red = 0xffF44336;
+    public static final int Pink = 0xffE91E63;
+    public static final int Purple = 0xff9C27B0;
+    public static final int DeepPurple = 0xff673AB7;
+    public static final int Indigo = 0xff3F51B5;
+    public static final int Blue = 0xff2196F3;
+    public static final int LightBlue = 0xff03A9F4;
+    public static final int Cyan = 0xff00BCD4;
+    public static final int Teal = 0xff009688;
+    public static final int Green = 0xff4CAF50;
+    public static final int LightGreen = 0xff8BC34A;
+    public static final int Lime = 0xffCDDC39;
+    public static final int Yellow = 0xffFFEB3B;
+    public static final int Amber = 0xffFFC107;
+    public static final int Orange = 0xffFF9800;
+    public static final int DeepOrange = 0xffFF5722;
+    public static final int Brown = 0xff795548;
+    public static final int Grey = 0xff9E9E9E;
+    public static final int BlueGray = 0xff607D8B;
+    //    public final int Black =      0xff000000;
+    public static final int White = 0xffffffff;
     private ImageButton one;
     private ImageButton two;
     private ImageButton three;
@@ -53,11 +71,20 @@ class MyColorPickerDialog extends ColorChooserDialog {
     private ImageButton eighteen;
     private ImageButton nineteen;
     private Button twentyOne;
-
     private List<Integer> colors;
     private List<ImageButton> buttons;
-
     private ColorListener myColorListener;
+    private View.OnClickListener listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (myColorListener != null)
+                myColorListener.OnColorClick(v, (int) v.getTag());
+            dismiss();
+        }
+    };
+    MyColorPickerDialog(Context context) {
+        super(context);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,33 +95,32 @@ class MyColorPickerDialog extends ColorChooserDialog {
 //        int padding = getContext().getResources().getDimensionPixelOffset(R.dimen.padding);
 //        view.setPadding(padding, padding, padding, 0);
 
-        one =      (ImageButton)findViewById(R.id.b1);
-        two =      (ImageButton)findViewById(R.id.b2);
-        three =    (ImageButton)findViewById(R.id.b3);
-        four =     (ImageButton)findViewById(R.id.b4);
-        five =     (ImageButton)findViewById(R.id.b5);
-        six =      (ImageButton)findViewById(R.id.b6);
-        seven =    (ImageButton)findViewById(R.id.b7);
-        eight =    (ImageButton)findViewById(R.id.b8);
-        nine =     (ImageButton)findViewById(R.id.b9);
-        ten =      (ImageButton)findViewById(R.id.b10);
-        eleven =   (ImageButton)findViewById(R.id.b11);
-        twelve =   (ImageButton)findViewById(R.id.b12);
-        thirteen = (ImageButton)findViewById(R.id.b13);
-        fourteen = (ImageButton)findViewById(R.id.b14);
-        fifteen =  (ImageButton)findViewById(R.id.b15);
-        sixteen =  (ImageButton)findViewById(R.id.b16);
-        seventeen =(ImageButton)findViewById(R.id.b17);
-        eighteen = (ImageButton)findViewById(R.id.b18);
-        nineteen = (ImageButton)findViewById(R.id.b19);
+        one = (ImageButton) findViewById(R.id.b1);
+        two = (ImageButton) findViewById(R.id.b2);
+        three = (ImageButton) findViewById(R.id.b3);
+        four = (ImageButton) findViewById(R.id.b4);
+        five = (ImageButton) findViewById(R.id.b5);
+        six = (ImageButton) findViewById(R.id.b6);
+        seven = (ImageButton) findViewById(R.id.b7);
+        eight = (ImageButton) findViewById(R.id.b8);
+        nine = (ImageButton) findViewById(R.id.b9);
+        ten = (ImageButton) findViewById(R.id.b10);
+        eleven = (ImageButton) findViewById(R.id.b11);
+        twelve = (ImageButton) findViewById(R.id.b12);
+        thirteen = (ImageButton) findViewById(R.id.b13);
+        fourteen = (ImageButton) findViewById(R.id.b14);
+        fifteen = (ImageButton) findViewById(R.id.b15);
+        sixteen = (ImageButton) findViewById(R.id.b16);
+        seventeen = (ImageButton) findViewById(R.id.b17);
+        eighteen = (ImageButton) findViewById(R.id.b18);
+        nineteen = (ImageButton) findViewById(R.id.b19);
         ImageButton twenty = (ImageButton) findViewById(R.id.b20);
-        twentyOne =(Button)findViewById(R.id.b21);
-
+        twentyOne = (Button) findViewById(R.id.b21);
 
 
         colors = new ArrayList<>();
-        colors.add(red);
-        colors.add(pink);
+        colors.add(Red);
+        colors.add(Pink);
         colors.add(Purple);
         colors.add(DeepPurple);
         colors.add(Indigo);
@@ -138,11 +164,9 @@ class MyColorPickerDialog extends ColorChooserDialog {
 //        buttons.add(twenty);
 
 
-
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             Colorize();
-        }else{
+        } else {
             ColorizeOld();
         }
 
@@ -151,15 +175,6 @@ class MyColorPickerDialog extends ColorChooserDialog {
 
         setListeners();
     }
-
-    private View.OnClickListener listener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if(myColorListener != null)
-                myColorListener.OnColorClick(v, (int)v.getTag());
-            dismiss();
-        }
-    };
 
     private void setListeners() {
         for (int i = 0; i < buttons.size(); i++) {
@@ -201,13 +216,12 @@ class MyColorPickerDialog extends ColorChooserDialog {
         animate();
     }
 
-
-    private void animate(){
-        Log.e("animate","true");
+    private void animate() {
+        Log.e("animate", "true");
         Runnable r1 = new Runnable() {
             @Override
             public void run() {
-                Log.e("animator 1","r");
+                Log.e("animator 1", "r");
                 animator(one);
             }
         };
@@ -276,7 +290,7 @@ class MyColorPickerDialog extends ColorChooserDialog {
         Runnable r9 = new Runnable() {
             @Override
             public void run() {
-                Animation animation = AnimationUtils.loadAnimation(getContext(),android.R.anim.fade_in);
+                Animation animation = AnimationUtils.loadAnimation(getContext(), android.R.anim.fade_in);
                 animation.setInterpolator(new AccelerateInterpolator());
                 twentyOne.setAnimation(animation);
                 twentyOne.setVisibility(View.VISIBLE);
@@ -285,22 +299,20 @@ class MyColorPickerDialog extends ColorChooserDialog {
         };
 
 
-
         android.os.Handler handler = new android.os.Handler();
         int counter = 85;
-        handler.postDelayed(r1,counter);
-        handler.postDelayed(r2,counter * 2);
-        handler.postDelayed(r3,counter * 3);
-        handler.postDelayed(r4,counter * 4);
-        handler.postDelayed(r5,counter * 5);
-        handler.postDelayed(r6,counter * 6);
-        handler.postDelayed(r7,counter * 7);
+        handler.postDelayed(r1, counter);
+        handler.postDelayed(r2, counter * 2);
+        handler.postDelayed(r3, counter * 3);
+        handler.postDelayed(r4, counter * 4);
+        handler.postDelayed(r5, counter * 5);
+        handler.postDelayed(r6, counter * 6);
+        handler.postDelayed(r7, counter * 7);
 //        handler.postDelayed(r8,counter * 8);
-        handler.postDelayed(r9,counter * 8);
+        handler.postDelayed(r9, counter * 8);
     }
 
-
-    private void animator(final ImageButton imageButton){
+    private void animator(final ImageButton imageButton) {
         Animation animation = AnimationUtils.loadAnimation(getContext(), com.turkialkhateeb.materialcolorpicker.R.anim.color_item);
         animation.setInterpolator(new AccelerateInterpolator());
         imageButton.setAnimation(animation);
@@ -308,31 +320,7 @@ class MyColorPickerDialog extends ColorChooserDialog {
         animation.start();
     }
 
-    //CONSTANTS
-    public final int red =        0xffF44336;
-    public final int pink =       0xffE91E63;
-    public final int Purple =     0xff9C27B0;
-    public final int DeepPurple = 0xff673AB7;
-    public final int Indigo =     0xff3F51B5;
-    public final int Blue =       0xff2196F3;
-    public final int LightBlue =  0xff03A9F4;
-    public final int Cyan =       0xff00BCD4;
-    public final int Teal =       0xff009688;
-    public final int Green =      0xff4CAF50;
-    public final int LightGreen = 0xff8BC34A;
-    public final int Lime =       0xffCDDC39;
-    public final int Yellow =     0xffFFEB3B;
-    public final int Amber =      0xffFFC107;
-    public final int Orange =     0xffFF9800;
-    public final int DeepOrange = 0xffFF5722;
-    public final int Brown =      0xff795548;
-    public final int Grey =       0xff9E9E9E;
-    public final int BlueGray =   0xff607D8B;
-//    public final int Black =      0xff000000;
-    public final int White =      0xffffffff;
-
-
-    public void setColorListener(ColorListener listener){
+    public void setColorListener(ColorListener listener) {
         this.myColorListener = listener;
     }
 

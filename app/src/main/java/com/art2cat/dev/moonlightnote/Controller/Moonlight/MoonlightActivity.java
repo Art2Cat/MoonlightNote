@@ -544,6 +544,9 @@ public class MoonlightActivity extends AppCompatActivity
     public void setDrawerEnabled(boolean enabled) {
         int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :
                 DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+        if (mDrawerLayout == null) {
+            return;
+        }
         mDrawerLayout.setDrawerLockMode(lockMode);
         mActionBarDrawerToggle.setDrawerIndicatorEnabled(enabled);
     }

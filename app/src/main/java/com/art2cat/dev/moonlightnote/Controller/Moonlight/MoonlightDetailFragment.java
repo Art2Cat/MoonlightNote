@@ -90,7 +90,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -98,7 +100,9 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.app.Activity.RESULT_OK;
 import static com.art2cat.dev.moonlightnote.Model.Constants.ALBUM_CHOOSE;
+import static com.art2cat.dev.moonlightnote.Model.Constants.BLUE_DARK;
 import static com.art2cat.dev.moonlightnote.Model.Constants.CAMERA_PERMS;
+import static com.art2cat.dev.moonlightnote.Model.Constants.CYAN_DARK;
 import static com.art2cat.dev.moonlightnote.Model.Constants.RECORD_AUDIO;
 import static com.art2cat.dev.moonlightnote.Model.Constants.STORAGE_PERMS;
 import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
@@ -149,6 +153,9 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private File mFile;
     private Handler mHandler = new Handler();
     private AudioPlayer mAudioPlayer;
+    private List<Integer> mColorList;
+    private List<Integer> mColorDarkList;
+    private Map<Integer, Integer> mColorMaps;
 
     public MoonlightDetailFragment() {
         // Required empty public constructor
@@ -194,6 +201,74 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
         ((DrawerLocker) mActivity).setDrawerEnabled(false);
         ((MoonlightActivity) mActivity).mFAB.hide();
+
+        initColor();
+
+    }
+
+    private void initColor() {
+        mColorMaps = new HashMap<>();
+        mColorMaps.put(Constants.AMBER, Constants.AMBER_DARK);
+        mColorMaps.put(Constants.BLUE, BLUE_DARK);
+        mColorMaps.put(Constants.BLUE_GRAY, Constants.BLUE_GRAY_DARK);
+        mColorMaps.put(Constants.BROWN, Constants.BROWN_DARK);
+        mColorMaps.put(Constants.CYAN, Constants.CYAN_DARK);
+        mColorMaps.put(Constants.DEEP_ORANGE, Constants.DEEP_ORANGE_DARK);
+        mColorMaps.put(Constants.DEEP_PURPLE, Constants.DEEP_PURPLE_DARK);
+        mColorMaps.put(Constants.GREEN, Constants.GREEN_DARK);
+        mColorMaps.put(Constants.GREY, Constants.GREY_DARK);
+        mColorMaps.put(Constants.INDIGO, Constants.INDIGO_DARK);
+        mColorMaps.put(Constants.LIGHT_BLUE, Constants.LIGHT_BLUE_DARK);
+        mColorMaps.put(Constants.LIGHT_GREEN, Constants.LIGHT_GREEN_DARK);
+        mColorMaps.put(Constants.LIME, Constants.LIME_DARK);
+        mColorMaps.put(Constants.ORANGE, Constants.ORANGE_DARK);
+        mColorMaps.put(Constants.PINK, Constants.PINK_DARK);
+        mColorMaps.put(Constants.PURPLE, Constants.PURPLE_DARK);
+        mColorMaps.put(Constants.RED, Constants.RED_DARK);
+        mColorMaps.put(Constants.TEAL, Constants.TEAL_DARK);
+        mColorMaps.put(Constants.YELLOW, Constants.YELLOW_DARK);
+//        mColorList = new ArrayList<Integer>();
+//        mColorDarkList = new ArrayList<Integer>();
+//        mColorList.add(Constants.AMBER);
+//        mColorList.add(Constants.BLUE);
+//        mColorList.add(Constants.BLUE_GRAY);
+//        mColorList.add(Constants.BROWN);
+//        mColorList.add(Constants.CYAN);
+//        mColorList.add(Constants.DEEP_ORANGE);
+//        mColorList.add(Constants.DEEP_PURPLE);
+//        mColorList.add(Constants.GREEN);
+//        mColorList.add(Constants.GREY);
+//        mColorList.add(Constants.INDIGO);
+//        mColorList.add(Constants.LIGHT_BLUE);
+//        mColorList.add(Constants.LIGHT_GREEN);
+//        mColorList.add(Constants.LIME);
+//        mColorList.add(Constants.ORANGE);
+//        mColorList.add(Constants.PINK);
+//        mColorList.add(Constants.PURPLE);
+//        mColorList.add(Constants.RED);
+//        mColorList.add(Constants.TEAL);
+//        mColorList.add(Constants.YELLOW);
+//
+//        mColorDarkList.add(Constants.AMBER_DARK);
+//        mColorDarkList.add(Constants.BLUE_DARK);
+//        mColorDarkList.add(Constants.BLUE_GRAY_DARK);
+//        mColorDarkList.add(Constants.BROWN_DARK);
+//        mColorDarkList.add(Constants.CYAN_DARK);
+//        mColorDarkList.add(Constants.DEEP_ORANGE_DARK);
+//        mColorDarkList.add(Constants.DEEP_PURPLE_DARK);
+//        mColorDarkList.add(Constants.GREEN_DARK);
+//        mColorDarkList.add(Constants.GREY_DARK);
+//        mColorDarkList.add(Constants.INDIGO_DARK);
+//        mColorDarkList.add(Constants.LIGHT_BLUE_DARK);
+//        mColorDarkList.add(Constants.LIGHT_GREEN_DARK);
+//        mColorDarkList.add(Constants.LIME_DARK);
+//        mColorDarkList.add(Constants.ORANGE_DARK);
+//        mColorDarkList.add(Constants.PINK_DARK);
+//        mColorDarkList.add(Constants.PURPLE_DARK);
+//        mColorDarkList.add(Constants.RED_DARK);
+//        mColorDarkList.add(Constants.TEAL_DARK);
+//        mColorDarkList.add(Constants.YELLOW_DARK);
+
     }
 
     @Override
@@ -367,9 +442,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         }
 
         if (moonlight.getColor() != 0) {
-            mContentFrameLayout.setBackgroundColor(moonlight.getColor());
             changeUIColor(moonlight.getColor());
-            mAudioContainer.setBackgroundColor(moonlight.getColor());
         }
     }
 
@@ -384,9 +457,20 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     }
 
     private void changeUIColor(@ColorInt int color) {
+        mContentFrameLayout.setBackgroundColor(color);
         mToolbar.setBackgroundColor(color);
+        mAudioContainer.setBackgroundColor(moonlight.getColor());
         mBottomBarContainer.setBackgroundColor(color);
+        changeStatusBarColor(color);
+    }
 
+    private void changeStatusBarColor(int color) {
+        for (Integer integer : mColorMaps.keySet()) {
+            if (integer == color) {
+                mActivity.getWindow().setStatusBarColor(mColorMaps.get(color));
+                break;
+            }
+        }
     }
 
     @Override
@@ -401,7 +485,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         super.onActivityCreated(savedInstanceState);
 //        CircularRevealUtils.show(mContentFrameLayout);
         changeUIColor(R.color.white, mActivity.getTheme());
-
+        mActivity.setTitle(null);
         initView(mEditable);
 
         if (!mEditable) {
@@ -471,7 +555,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             ((MoonlightActivity) mActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
         }
 
-        ((DrawerLocker) mActivity).setDrawerEnabled(true);
+
         mToolbar.setVisibility(View.GONE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mToolbar.setBackgroundColor(getResources().getColor(R.color.light_green, null));
@@ -482,6 +566,9 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
         ((MoonlightActivity) mActivity).mToolbar.setVisibility(View.VISIBLE);
         ((MoonlightActivity) mActivity).mFAB.show();
+        ((MoonlightActivity) mActivity).setSupportActionBar(((MoonlightActivity) mActivity).mToolbar);
+        ((DrawerLocker) mActivity).setDrawerEnabled(true);
+        mActivity.getWindow().setStatusBarColor(CYAN_DARK);
         RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
         refWatcher.watch(this);
         super.onDestroy();
@@ -521,8 +608,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                         @Override
                         public void OnColorClick(View v, int color) {
                             moonlight.setColor(color);
-                            mContentFrameLayout.setBackgroundColor(color);
-                            mAudioContainer.setBackgroundColor(color);
                             changeUIColor(color);
                             mEditable = true;
                             mEditable = true;
