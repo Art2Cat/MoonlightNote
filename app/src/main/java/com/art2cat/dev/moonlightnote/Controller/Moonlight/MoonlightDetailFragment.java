@@ -153,8 +153,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private File mFile;
     private Handler mHandler = new Handler();
     private AudioPlayer mAudioPlayer;
-    private List<Integer> mColorList;
-    private List<Integer> mColorDarkList;
     private Map<Integer, Integer> mColorMaps;
 
     public MoonlightDetailFragment() {
@@ -206,6 +204,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
     }
 
+    @SuppressLint("UseSparseArrays")
     private void initColor() {
         mColorMaps = new HashMap<>();
         mColorMaps.put(Constants.AMBER, Constants.AMBER_DARK);
@@ -227,48 +226,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mColorMaps.put(Constants.RED, Constants.RED_DARK);
         mColorMaps.put(Constants.TEAL, Constants.TEAL_DARK);
         mColorMaps.put(Constants.YELLOW, Constants.YELLOW_DARK);
-//        mColorList = new ArrayList<Integer>();
-//        mColorDarkList = new ArrayList<Integer>();
-//        mColorList.add(Constants.AMBER);
-//        mColorList.add(Constants.BLUE);
-//        mColorList.add(Constants.BLUE_GRAY);
-//        mColorList.add(Constants.BROWN);
-//        mColorList.add(Constants.CYAN);
-//        mColorList.add(Constants.DEEP_ORANGE);
-//        mColorList.add(Constants.DEEP_PURPLE);
-//        mColorList.add(Constants.GREEN);
-//        mColorList.add(Constants.GREY);
-//        mColorList.add(Constants.INDIGO);
-//        mColorList.add(Constants.LIGHT_BLUE);
-//        mColorList.add(Constants.LIGHT_GREEN);
-//        mColorList.add(Constants.LIME);
-//        mColorList.add(Constants.ORANGE);
-//        mColorList.add(Constants.PINK);
-//        mColorList.add(Constants.PURPLE);
-//        mColorList.add(Constants.RED);
-//        mColorList.add(Constants.TEAL);
-//        mColorList.add(Constants.YELLOW);
-//
-//        mColorDarkList.add(Constants.AMBER_DARK);
-//        mColorDarkList.add(Constants.BLUE_DARK);
-//        mColorDarkList.add(Constants.BLUE_GRAY_DARK);
-//        mColorDarkList.add(Constants.BROWN_DARK);
-//        mColorDarkList.add(Constants.CYAN_DARK);
-//        mColorDarkList.add(Constants.DEEP_ORANGE_DARK);
-//        mColorDarkList.add(Constants.DEEP_PURPLE_DARK);
-//        mColorDarkList.add(Constants.GREEN_DARK);
-//        mColorDarkList.add(Constants.GREY_DARK);
-//        mColorDarkList.add(Constants.INDIGO_DARK);
-//        mColorDarkList.add(Constants.LIGHT_BLUE_DARK);
-//        mColorDarkList.add(Constants.LIGHT_GREEN_DARK);
-//        mColorDarkList.add(Constants.LIME_DARK);
-//        mColorDarkList.add(Constants.ORANGE_DARK);
-//        mColorDarkList.add(Constants.PINK_DARK);
-//        mColorDarkList.add(Constants.PURPLE_DARK);
-//        mColorDarkList.add(Constants.RED_DARK);
-//        mColorDarkList.add(Constants.TEAL_DARK);
-//        mColorDarkList.add(Constants.YELLOW_DARK);
-
     }
 
     @Override
@@ -277,7 +234,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         //视图初始化
         mView = inflater.inflate(R.layout.fragment_moonlight_detail, container, false);
 
-        mActivity.setTitle(null);
         mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
@@ -397,7 +353,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     }
 
     private void initView(boolean editable) {
-
         if (editable) {
             if (moonlight.getTitle() != null) {
                 mTitle.setText(moonlight.getTitle());
@@ -485,7 +440,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         super.onActivityCreated(savedInstanceState);
 //        CircularRevealUtils.show(mContentFrameLayout);
         changeUIColor(R.color.white, mActivity.getTheme());
-        mActivity.setTitle(null);
+        mToolbar.setTitle(null);
         initView(mEditable);
 
         if (!mEditable) {
@@ -566,7 +521,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
         ((MoonlightActivity) mActivity).mToolbar.setVisibility(View.VISIBLE);
         ((MoonlightActivity) mActivity).mFAB.show();
-        ((MoonlightActivity) mActivity).setSupportActionBar(((MoonlightActivity) mActivity).mToolbar);
         ((DrawerLocker) mActivity).setDrawerEnabled(true);
         mActivity.getWindow().setStatusBarColor(CYAN_DARK);
         RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);

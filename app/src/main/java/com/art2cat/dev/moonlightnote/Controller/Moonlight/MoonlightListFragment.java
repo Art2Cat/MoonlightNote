@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
@@ -132,7 +133,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
 
         SlideInRightAnimator animator = new SlideInRightAnimator();
-//        animator.setInterpolator(new OvershootInterpolator());
+        animator.setInterpolator(new OvershootInterpolator());
         mRecyclerView.setItemAnimator(animator);
         mRecyclerView.getItemAnimator().setAddDuration(500);
         mRecyclerView.getItemAnimator().setRemoveDuration(500);
