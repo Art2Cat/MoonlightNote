@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,7 +14,7 @@ import android.view.ViewTreeObserver;
  * on 2017/1/20 下午4:23.
  */
 
-public class ScaleImageView extends AppCompatImageView {
+public class ZoomImageView extends RecyclerImageView {
 
     /**
      * ImageView高度
@@ -62,19 +61,18 @@ public class ScaleImageView extends AppCompatImageView {
      */
     private PointF firstPointF;
 
-    public ScaleImageView(Context context) {
+    public ZoomImageView(Context context) {
         super(context);
         initUI();
     }
 
-    public ScaleImageView(Context context, AttributeSet attrs) {
+    public ZoomImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initUI();
     }
 
-    public ScaleImageView(Context context, AttributeSet attrs, int defStyle) {
+    public ZoomImageView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        // TODO Auto-generated constructor stub
         initUI();
     }
 

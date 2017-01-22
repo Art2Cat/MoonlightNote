@@ -4,11 +4,13 @@ package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -54,7 +56,6 @@ import android.widget.ProgressBar;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.CircleProgressDialogFragment;
-import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
@@ -69,7 +70,6 @@ import com.art2cat.dev.moonlightnote.Utils.MaterialAnimation.CircularRevealUtils
 import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.Utils;
-import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -79,6 +79,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.leakcanary.RefWatcher;
+import com.squareup.picasso.Picasso;
 import com.turkialkhateeb.materialcolorpicker.ColorListener;
 
 import org.greenrobot.eventbus.EventBus;
@@ -89,6 +90,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -106,6 +108,8 @@ import static com.art2cat.dev.moonlightnote.Model.Constants.CYAN_DARK;
 import static com.art2cat.dev.moonlightnote.Model.Constants.RECORD_AUDIO;
 import static com.art2cat.dev.moonlightnote.Model.Constants.STORAGE_PERMS;
 import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
+import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
+import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -157,6 +161,35 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
     public MoonlightDetailFragment() {
         // Required empty public constructor
+    }
+
+    public static void setOverflowButtonColor(final Activity activity) {
+        final String overflowDescription = activity.getString(R.string.abc_action_menu_overflow_description);
+        final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
+        final ViewTreeObserver viewTreeObserver = decorView.getViewTreeObserver();
+        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                final ArrayList<View> outViews = new ArrayList<View>();
+                decorView.findViewsWithText(outViews, overflowDescription,
+                        View.FIND_VIEWS_WITH_CONTENT_DESCRIPTION);
+                if (outViews.isEmpty()) {
+                    return;
+                }
+                AppCompatImageView overflow = (AppCompatImageView) outViews.get(0);
+//                overflow.setColorFilter(Color.CYAN);
+                overflow.setColorFilter(0xFF616161);
+                removeOnGlobalLayoutListener(decorView, this);
+            }
+        });
+    }
+
+    public static void removeOnGlobalLayoutListener(View v, ViewTreeObserver.OnGlobalLayoutListener listener) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            v.getViewTreeObserver().removeGlobalOnLayoutListener(listener);
+        } else {
+            v.getViewTreeObserver().removeOnGlobalLayoutListener(listener);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -295,12 +328,12 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             mImage.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    ConfirmationDialogFragment confirmationDialogFragment =
-                            ConfirmationDialogFragment.newInstance(
-                                    getString(R.string.confirmation_title),
-                                    getString(R.string.confirmation_delete_image),
-                                    Constants.EXTRA_TYPE_CDF_DELETE_IMAGE);
-                    confirmationDialogFragment.show(getFragmentManager(), "delete image");
+//                    ConfirmationDialogFragment confirmationDialogFragment =
+//                            ConfirmationDialogFragment.newInstance(
+//                                    getString(R.string.confirmation_title),
+//                                    getString(R.string.confirmation_delete_image),
+//                                    Constants.EXTRA_TYPE_CDF_DELETE_IMAGE);
+//                    confirmationDialogFragment.show(getFragmentManager(), "delete image");
                     return false;
                 }
             });
@@ -372,10 +405,10 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         }
         if (moonlight.getImageUrl() != null) {
             String url = moonlight.getImageUrl();
-            Glide.with(mActivity)
+            Picasso.with(mActivity)
                     .load(Uri.parse(url))
+                    .memoryPolicy(NO_CACHE, NO_STORE)
                     .placeholder(R.drawable.ic_cloud_download_black_24dp)
-                    .crossFade()
                     .into(mImage);
             mImage.post(new Runnable() {
                 @Override
@@ -435,7 +468,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         super.onStart();
     }
 
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -443,6 +475,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         changeUIColor(R.color.white, mActivity.getTheme());
         mToolbar.setTitle(null);
         initView(mEditable);
+        setOverflowButtonColor(mActivity);
 
         if (!mEditable) {
             Log.d(TAG, "onActivityCreated: SnackBar");
@@ -548,7 +581,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         super.onCreateOptionsMenu(menu, inflater);
         //如mEditFlag为true，加载edit_moonlight_menu，反之则加载create_moonlight_menu
         if (mCreateFlag || mEditFlag) {
-            inflater.inflate(R.menu.moonlight_detail_menu, menu);
+            inflater.inflate(R.menu.menu_moonlight_detail, menu);
         }
     }
 
@@ -572,6 +605,13 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                     dialog.show();
                 }
                 break;
+            case R.id.action_remove_image:
+                if (BuildConfig.DEBUG) showShortToast("delete image");
+                StorageUtils.removePhoto(mView, mUserId, moonlight.getImageName());
+                CircularRevealUtils.hide(mImage);
+                moonlight.setImageName(null);
+                moonlight.setImageUrl(null);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -593,12 +633,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                         Uri mAudioUri = FileProvider.getUriForFile(mActivity, Constants.FILE_PROVIDER, file);
                         uploadFromUri(mAudioUri, mUserId, 3);
                     }
-                    break;
-                case Constants.BUS_FLAG_DELETE_IMAGE:
-                    StorageUtils.removePhoto(mView, mUserId, moonlight.getImageName());
-                    CircularRevealUtils.hide(mImage);
-                    moonlight.setImageName(null);
-                    moonlight.setImageUrl(null);
                     break;
             }
         }
@@ -1199,9 +1233,11 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         //当图片地址不为空时，首先从本地读取bitmap设置图片，bitmap为空，则从网络加载
         //图片地址为空则不加载图片
         if (mFileUri != null) {
-            Glide.with(mActivity)
+            Picasso.with(mActivity)
                     .load(mFileUri)
+                    .memoryPolicy(NO_CACHE, NO_STORE)
                     .placeholder(R.drawable.ic_cloud_download_black_24dp)
+                    .config(Bitmap.Config.RGB_565)
                     .into(mImage);
             mImage.post(new Runnable() {
                 @Override

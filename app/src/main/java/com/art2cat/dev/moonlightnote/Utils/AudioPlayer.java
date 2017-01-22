@@ -63,7 +63,7 @@ public class AudioPlayer {
     public void prepare(String filename) {
         try {
             //获取数据源文件目录地址
-            String dirPath = MoonlightApplication.mContext.getCacheDir().getAbsolutePath() + "/audio/";
+            String dirPath = MoonlightApplication.getContext().getCacheDir().getAbsolutePath() + "/audio/";
 
             //检查文件名是否有".amr",如果没有就添加
             if (!filename.contains(".amr")) {

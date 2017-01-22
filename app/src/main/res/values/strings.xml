@@ -105,9 +105,15 @@
         Copyright 2015 Wasabeef\n
         This library is distributed under an Apache 2.0 License.\n\n
 
-        Glide:\n
-        Copyright 2013 Sam Judd\n
+        Picasso:\n
+        Copyright 2013 Square, Inc.\n
         This library is distributed under an Apache 2.0 License.\n\n
+
+
+        OkHttp:\n
+        Copyright 2016 Square, Inc.\n
+        This library is distributed under an Apache 2.0 License.\n\n
+
 
         LolliPin:\n
         Copyright 2015 OrangeGangsters\n
@@ -296,7 +302,7 @@
     </string>
     <string name="settings_about_app_content">Moonlight Note\n\n
         Version:\n
-        1.0.17011715\n\n
+        1.0.17012215\n\n
         Credit:\n
         StudyJamscn(www.studyjamscn.com)\n\n
         Copyright:\n
@@ -331,8 +337,6 @@
     <string name="select_your_color">Select your color:</string>
     <string name="test">TEST ONLY</string>
     <string name="menu_feedback">Feedback</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menu_delete">Remove image</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
@@ -12,9 +13,13 @@ import android.util.Log;
 import android.view.View;
 
 import com.art2cat.dev.moonlightnote.R;
-import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
 
 import jp.wasabeef.recyclerview.animators.holder.AnimateViewHolder;
+
+import static android.R.attr.tag;
+import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
+import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 
 /**
  * Created by Rorschach
@@ -81,10 +86,12 @@ public class MoonlightViewHolder extends AnimateViewHolder {
     public void displayImage(Context context, String url) {
         if (url != null) {
             Log.d(TAG, "displayImage: succeed");
-            Glide.with(context)
+            Picasso.with(context)
                     .load(Uri.parse(url))
+                    .memoryPolicy(NO_CACHE, NO_STORE)
                     .placeholder(R.drawable.ic_cloud_download_black_24dp)
-                    .crossFade()
+                    .tag(tag)
+                    .config(Bitmap.Config.RGB_565)
                     .into(mImage);
             mImage.setVisibility(View.VISIBLE);
         } else {

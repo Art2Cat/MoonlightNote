@@ -2,6 +2,7 @@ package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
 
 import android.app.Fragment;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,9 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
-import com.art2cat.dev.moonlightnote.CustomView.ScaleImageView;
+import com.art2cat.dev.moonlightnote.CustomView.ZoomImageView;
 import com.art2cat.dev.moonlightnote.R;
-import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
+
+import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
+import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,19 +50,14 @@ public class ScaleFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_scale, container, false);
-        ScaleImageView imageView = (ScaleImageView) view.findViewById(R.id.imageView);
-        Glide.with(mActivity)
+        ZoomImageView imageView = (ZoomImageView) view.findViewById(R.id.imageView);
+        Picasso.with(mActivity)
                 .load(Uri.parse(mUrl))
                 .placeholder(R.drawable.ic_cloud_download_black_24dp)
-                .crossFade()
+                .memoryPolicy(NO_CACHE, NO_STORE)
+                .config(Bitmap.Config.RGB_565)
                 .into(imageView);
-
         imageView.initUI();
         return view;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
     }
 }

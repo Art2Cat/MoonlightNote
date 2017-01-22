@@ -74,7 +74,7 @@ public class StorageUtils {
 
         StorageReference audioRef = storageReference.child(userId).child("audios").child(audioName);
         File localFile = null;
-        String path = MoonlightApplication.mContext.getCacheDir().toString();
+        String path = MoonlightApplication.getContext().getCacheDir().toString();
         if (path != null) {
             File dir = new File(path, "/audio");
             if (!dir.exists()) {

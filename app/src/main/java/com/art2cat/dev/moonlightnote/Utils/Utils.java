@@ -7,14 +7,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.Controller.Settings.MoonlightPinActivity;
 import com.art2cat.dev.moonlightnote.Model.NoteLab;
 import com.art2cat.dev.moonlightnote.Model.User;
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
@@ -251,6 +253,56 @@ public class Utils {
                 ToastUtils.with(context).setMessage( "Email client no found!").showShortToast();
             }
         }
+    }
+
+    /**
+     * 是否有网络
+     * @return
+     */
+    public static boolean isNetworkConnected()
+    {
+        Context context = MoonlightApplication.getContext();
+        if (context != null)
+        {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+            if (mNetworkInfo != null)
+            {
+                return mNetworkInfo.isAvailable();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 是否连上wifi
+     * @return 是否连上wifi
+     */
+    static public boolean isWifiConnected() {
+
+        ConnectivityManager mConnectivityManager = (ConnectivityManager)  MoonlightApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        return mWiFiNetworkInfo != null && mWiFiNetworkInfo.isAvailable();
+    }
+
+    /**
+     * 是否有数据网络
+     *
+     * @param context 上下文
+     * @return 是否
+     */
+    static public boolean isMobileConnected(Context context)
+    {
+        if (context != null)
+        {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mMobileNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            if (mMobileNetworkInfo != null)
+            {
+                return mMobileNetworkInfo.isAvailable();
+            }
+        }
+        return false;
     }
 
 }

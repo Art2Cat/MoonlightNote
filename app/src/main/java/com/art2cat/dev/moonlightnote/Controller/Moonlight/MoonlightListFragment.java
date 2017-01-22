@@ -37,6 +37,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.leakcanary.RefWatcher;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -45,6 +46,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
+
+import static android.R.attr.tag;
 
 
 /**
@@ -150,22 +153,18 @@ public abstract class MoonlightListFragment extends BaseFragment {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-//                if (!isTrash()) {
-//                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-//                        isScroll= false;
-//                        Log.d(TAG, "onScrollStateChanged: " + mFAB.getVisibility());
-//                        Log.d(TAG, "onScrollStateChanged: S 0");
-//                            showFAB(mFAB);
-//                    }
-//                    if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-//                        hideFAB(mFAB);
-//                    }
-//                    if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-//                        hideFAB(mFAB);
-//                    }
-//                }
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    Picasso.with(mActivity).resumeTag(tag);
 
+                } else {
+                    Picasso.with(mActivity).pauseTag(tag);
+                }
+//                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+//                }
+//                if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
+//                }
             }
+
         });
     }
 
@@ -262,6 +261,11 @@ public abstract class MoonlightListFragment extends BaseFragment {
 //                                    startActivity(intent, bundle);
                                     TrashDetailFragment trashDetailFragment = new TrashDetailFragment();
                                     trashDetailFragment.setArgs(moonlightD, 12);
+//                                    getFragmentManager().beginTransaction()
+//                                            .replace(R.id.main_fragment_container, trashDetailFragment)
+//                                            .addToBackStack("trash")
+//                                            .addSharedElement(viewHolder.itemView, viewHolder.itemView.getTransitionName())
+//                                            .commit();
                                     FragmentUtils.replaceFragment(getFragmentManager(),
                                             R.id.main_fragment_container,
                                             trashDetailFragment,
@@ -274,6 +278,11 @@ public abstract class MoonlightListFragment extends BaseFragment {
 //                                    startActivity(intent, bundle);
                                     EditMoonlightFragment editMoonlightFragment = new EditMoonlightFragment();
                                     editMoonlightFragment.setArgs(moonlightD, 0);
+//                                    getFragmentManager().beginTransaction()
+//                                            .replace(R.id.main_fragment_container, editMoonlightFragment)
+//                                            .addToBackStack("moonlight")
+//                                            .addSharedElement(viewHolder.itemView, viewHolder.itemView.getTransitionName())
+//                                            .commit();
                                     FragmentUtils.replaceFragment(getFragmentManager(),
                                             R.id.main_fragment_container,
                                             editMoonlightFragment,
@@ -397,16 +406,16 @@ public abstract class MoonlightListFragment extends BaseFragment {
         mMenu.clear();
         switch (type) {
             case 0:
-                mMenuInflater.inflate(R.menu.long_click_moonlight_menu, mMenu);
+                mMenuInflater.inflate(R.menu.menu_long_click_moonlight, mMenu);
                 break;
             case 1:
-                mMenuInflater.inflate(R.menu.long_click_trash_menu, mMenu);
+                mMenuInflater.inflate(R.menu.menu_long_click_trash, mMenu);
                 break;
             case 2:
-                mMenuInflater.inflate(R.menu.trash_menu, mMenu);
+                mMenuInflater.inflate(R.menu.menu_trash, mMenu);
                 break;
             case 3:
-                mMenuInflater.inflate(R.menu.moonlight_menu, mMenu);
+                mMenuInflater.inflate(R.menu.menu_moonlight, mMenu);
                 break;
         }
     }
@@ -494,11 +503,11 @@ public abstract class MoonlightListFragment extends BaseFragment {
 
                 if (isTrash() && !isInflate) {
                     mToolbar2.getMenu().clear();
-                    mToolbar2.inflateMenu(R.menu.long_click_trash_menu);
+                    mToolbar2.inflateMenu(R.menu.menu_long_click_trash);
                 } else {
                     if (!isInflate) {
                         mToolbar2.getMenu().clear();
-                        mToolbar2.inflateMenu(R.menu.long_click_moonlight_menu);
+                        mToolbar2.inflateMenu(R.menu.menu_long_click_moonlight);
                     }
                 }
 

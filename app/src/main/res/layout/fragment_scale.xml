@@ -5,7 +5,7 @@
     android:orientation="vertical"
     tools:context="com.art2cat.dev.moonlightnote.Controller.Moonlight.ScaleFragment">
 
-    <com.art2cat.dev.moonlightnote.CustomView.ScaleImageView
+    <com.art2cat.dev.moonlightnote.CustomView.ZoomImageView
         android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

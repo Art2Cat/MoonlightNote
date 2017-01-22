@@ -20,7 +20,7 @@ public class MoonlightEncryptUtils {
     private String key;
 
     private MoonlightEncryptUtils() {
-        key = SPUtils.getString(MoonlightApplication.mContext, "User", "EncryptKey", null);
+        key = SPUtils.getString(MoonlightApplication.getContext(), "User", "EncryptKey", null);
     }
 
     public static MoonlightEncryptUtils newInstance() {

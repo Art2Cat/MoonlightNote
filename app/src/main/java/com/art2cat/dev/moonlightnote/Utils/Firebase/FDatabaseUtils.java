@@ -41,7 +41,7 @@ public class FDatabaseUtils {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            ToastUtils.with(MoonlightApplication.mContext).setMessage("Restore succeed!").showShortToast();
+            ToastUtils.with(MoonlightApplication.getContext()).setMessage("Restore succeed!").showShortToast();
         }
     };
     public User user;
@@ -277,7 +277,7 @@ public class FDatabaseUtils {
                     if (count == noteLab.getMoonlights().size()) {
                         if (type == 0) {
                             Utils.saveNoteToLocal(noteLab);
-                            ToastUtils.with(MoonlightApplication.mContext)
+                            ToastUtils.with(MoonlightApplication.getContext())
                                     .setMessage("Back up succeed! save in internal storage root name Note.json")
                                     .showShortToast();
                             BusEventUtils.post(Constants.BUS_FLAG_EXPORT_DATA_DONE, null);

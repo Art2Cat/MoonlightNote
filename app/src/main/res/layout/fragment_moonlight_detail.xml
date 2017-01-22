@@ -46,7 +46,7 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="16dp"
-                        android:background="@drawable/ic_camera_black_24dp" />
+                        android:src="@drawable/ic_camera_black_24dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -68,7 +68,7 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="16dp"
-                        android:background="@drawable/ic_photo_album_black_24dp" />
+                        android:src="@drawable/ic_photo_album_black_24dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -90,7 +90,7 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="16dp"
-                        android:background="@drawable/ic_settings_voice_black_24dp" />
+                        android:src="@drawable/ic_settings_voice_black_24dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -111,7 +111,7 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="16dp"
-                        android:background="@mipmap/ic_launcher" />
+                        android:src="@mipmap/ic_launcher" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -155,7 +155,7 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="16dp"
-                        android:background="@drawable/ic_delete_black_24dp" />
+                        android:src="@drawable/ic_delete_black_24dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -177,7 +177,7 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="16dp"
-                        android:background="@drawable/ic_delete_forever_black_24dp" />
+                        android:src="@drawable/ic_delete_forever_black_24dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -199,7 +199,7 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="16dp"
-                        android:background="@drawable/ic_content_copy_black_24dp" />
+                        android:src="@drawable/ic_content_copy_black_24dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -221,7 +221,7 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="16dp"
-                        android:background="@drawable/ic_send_black_24dp" />
+                        android:src="@drawable/ic_send_black_24dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -242,7 +242,7 @@
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="16dp"
-                        android:background="@mipmap/ic_launcher" />
+                        android:src="@mipmap/ic_launcher" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -265,7 +265,7 @@
                 android:transitionName="@string/trans_moonlight"
                 android:orientation="vertical">
 
-                <android.support.v7.widget.AppCompatImageView
+                <com.art2cat.dev.moonlightnote.CustomView.RecyclerImageView
                     android:id="@+id/moonlight_image"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
