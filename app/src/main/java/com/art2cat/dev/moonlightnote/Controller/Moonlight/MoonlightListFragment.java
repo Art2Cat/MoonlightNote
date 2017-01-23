@@ -78,7 +78,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         //获取Bus单例，并注册
         EventBus.getDefault().register(this);
-        mFDatabaseUtils = FDatabaseUtils.newInstance(mActivity, getUid());
+        mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.getContext(), getUid());
     }
 
     @Override

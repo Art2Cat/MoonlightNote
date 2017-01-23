@@ -13,10 +13,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.Fade;
 import android.util.Log;
 
 import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.Model.Constants;
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
@@ -45,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTransition();
         setContentView(R.layout.activity_login);
         mFragmentManager = getFragmentManager();
         //初始化Admob
@@ -87,7 +90,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        finish();
     }
 
     public void signIn() {
@@ -99,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
-                    mFDatabaseUtils = new FDatabaseUtils(LoginActivity.this, user.getUid());
+                    mFDatabaseUtils = new FDatabaseUtils(MoonlightApplication.getContext(), user.getUid());
                     mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
                     if (mShortcutsUtils != null) {
                         initShortcuts();
@@ -140,6 +142,22 @@ public class LoginActivity extends AppCompatActivity {
             startLoginFragment();
         }
 
+    }
+
+    private void setTransition() {
+
+        Fade fade = new Fade();
+        fade.setDuration(500);
+        fade.setMode(Fade.MODE_IN);
+
+        Fade fade1 = new Fade();
+        fade1.setDuration(500);
+        fade1.setMode(Fade.MODE_OUT);
+
+        getWindow().setEnterTransition(fade);
+        getWindow().setReenterTransition(fade);
+        getWindow().setReturnTransition(fade1);
+        getWindow().setExitTransition(fade1);
     }
 
     /**
@@ -210,7 +228,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 startActivity(new Intent(LoginActivity.this, MoonlightActivity.class));
                 //这里调用Activity.finish()方法销毁当前Activity
-                finish();
+                finishAfterTransition();
             } else {
                 Fragment fragment = new LoginFragment();
                 mFragmentManager.beginTransaction()

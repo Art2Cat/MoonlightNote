@@ -249,7 +249,7 @@ public class ZoomImageView extends RecyclerImageView {
                 // 手指离开屏幕
                 case MotionEvent.ACTION_UP:
                     setDoubleTouchEvent(event);
-
+                    break;
                 case MotionEvent.ACTION_POINTER_UP:
                     // System.out.println("ACTION_POINTER_UP");
                     mode = 0;
@@ -282,7 +282,7 @@ public class ZoomImageView extends RecyclerImageView {
         private float distance(MotionEvent event) {
             float dx = event.getX(1) - event.getX(0);
             float dy = event.getY(1) - event.getY(0);
-           /** 使用勾股定理返回两点之间的距离 */
+            /** 使用勾股定理返回两点之间的距离 */
             return (float) Math.sqrt(dx * dx + dy * dy);
         }
 

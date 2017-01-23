@@ -630,7 +630,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                         Log.d(TAG, "handleMessage: " + busEvent.getMessage());
                         File file = new File(new File(Environment.getExternalStorageDirectory()
                                 + "/MoonlightNote/.audio"), busEvent.getMessage());
-                        Uri mAudioUri = FileProvider.getUriForFile(mActivity, Constants.FILE_PROVIDER, file);
+                        Uri mAudioUri = FileProvider.getUriForFile(MoonlightApplication.getContext(), Constants.FILE_PROVIDER, file);
                         uploadFromUri(mAudioUri, mUserId, 3);
                     }
                     break;

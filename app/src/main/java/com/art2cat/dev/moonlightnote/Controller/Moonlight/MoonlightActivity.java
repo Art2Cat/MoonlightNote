@@ -30,6 +30,7 @@ import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
 import com.art2cat.dev.moonlightnote.Model.BusEvent;
 import com.art2cat.dev.moonlightnote.Model.Constants;
 import com.art2cat.dev.moonlightnote.Model.User;
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
@@ -100,7 +101,7 @@ public class MoonlightActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moonlight);
 
-        mLock = SPUtils.getInt(this, Constants.USER_CONFIG, Constants.USER_CONFIG_SECURITY_ENABLE, 0);
+        mLock = SPUtils.getInt(MoonlightApplication.getContext(), Constants.USER_CONFIG, Constants.USER_CONFIG_SECURITY_ENABLE, 0);
         if (mLock != 0) {
             isLock = true;
         }
@@ -112,7 +113,7 @@ public class MoonlightActivity extends AppCompatActivity
         mAuth = getInstance();
         //noinspection ConstantConditions
         mUserId = mAuth.getCurrentUser().getUid();
-        mFDatabaseUtils = new FDatabaseUtils(this, mUserId);
+        mFDatabaseUtils = new FDatabaseUtils(MoonlightApplication.getContext(), mUserId);
         mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
         //获取Bus单例，并注册
         EventBus.getDefault().register(this);
@@ -148,8 +149,10 @@ public class MoonlightActivity extends AppCompatActivity
         fade1.setDuration(500);
         fade1.setMode(Fade.MODE_IN);
 
-        getWindow().setExitTransition(fade);
-        getWindow().setReenterTransition(fade1);
+        getWindow().setEnterTransition(fade);
+        getWindow().setReenterTransition(fade);
+        getWindow().setReturnTransition(fade1);
+        getWindow().setExitTransition(fade1);
     }
 
     @Override
@@ -204,7 +207,7 @@ public class MoonlightActivity extends AppCompatActivity
         super.onResume();
         Log.d(TAG, "onResume: ");
         if (isLock) {
-            Utils.lockApp(this, mLock);
+            Utils.lockApp(MoonlightApplication.getContext(), mLock);
         }
     }
 
@@ -304,8 +307,8 @@ public class MoonlightActivity extends AppCompatActivity
                     ShortcutsUtils.newInstance(MoonlightActivity.this).removeShortcuts();
                 }
                 BusEventUtils.post(Constants.BUS_FLAG_SIGN_OUT, null);
-                SPUtils.clear(this, "User");
-                SPUtils.clear(this, Constants.USER_CONFIG);
+                SPUtils.clear(MoonlightApplication.getContext(), "User");
+                SPUtils.clear(MoonlightApplication.getContext(), Constants.USER_CONFIG);
                 SnackBarUtils.shortSnackBar(mCoordinatorLayout, "Your account have been remove!",
                         SnackBarUtils.TYPE_ALERT).show();
                 break;
@@ -475,7 +478,7 @@ public class MoonlightActivity extends AppCompatActivity
         // Name, email address, and profile imageUrl Url
         if (mFirebaseUser != null) {
 
-            User user = UserUtils.getUserFromCache(this.getApplicationContext());
+            User user = UserUtils.getUserFromCache(MoonlightApplication.getContext());
 
             Log.d(TAG, "displayUserInfo: " + user.getUid());
             String username = user.getNickname();
@@ -488,7 +491,7 @@ public class MoonlightActivity extends AppCompatActivity
             }
             String photoUrl = user.getPhotoUrl();
             if (photoUrl != null) {
-                BitmapUtils bitmapUtils = new BitmapUtils(this);
+                BitmapUtils bitmapUtils = new BitmapUtils(MoonlightApplication.getContext());
                 Log.d(TAG, "displayUserInfo: " + photoUrl);
                 bitmapUtils.display(mCircleImageView, photoUrl);
             }
