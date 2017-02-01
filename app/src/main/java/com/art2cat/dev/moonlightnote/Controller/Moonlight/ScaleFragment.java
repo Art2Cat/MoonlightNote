@@ -57,7 +57,7 @@ public class ScaleFragment extends BaseFragment {
                 .memoryPolicy(NO_CACHE, NO_STORE)
                 .config(Bitmap.Config.RGB_565)
                 .into(imageView);
-        imageView.initUI();
+//        imageView.initUI();
         return view;
     }
 }

@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -163,7 +164,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         // Required empty public constructor
     }
 
-    public static void setOverflowButtonColor(final Activity activity) {
+    public static void setOverflowButtonColor(final Activity activity, final int color) {
         final String overflowDescription = activity.getString(R.string.abc_action_menu_overflow_description);
         final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
         final ViewTreeObserver viewTreeObserver = decorView.getViewTreeObserver();
@@ -177,8 +178,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                     return;
                 }
                 AppCompatImageView overflow = (AppCompatImageView) outViews.get(0);
-//                overflow.setColorFilter(Color.CYAN);
-                overflow.setColorFilter(0xFF616161);
+                overflow.setColorFilter(color);
                 removeOnGlobalLayoutListener(decorView, this);
             }
         });
@@ -475,7 +475,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         changeUIColor(R.color.white, mActivity.getTheme());
         mToolbar.setTitle(null);
         initView(mEditable);
-        setOverflowButtonColor(mActivity);
+        setOverflowButtonColor(mActivity, Constants.GREY_DARK);
 
         if (!mEditable) {
             Log.d(TAG, "onActivityCreated: SnackBar");
@@ -544,7 +544,16 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             ((MoonlightActivity) mActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
         }
 
+        revertUI();
+        RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
+        refWatcher.watch(this);
+        super.onDestroy();
+    }
 
+    /**
+     * 恢复原来的UI界面
+     */
+    private void revertUI() {
         mToolbar.setVisibility(View.GONE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mToolbar.setBackgroundColor(getResources().getColor(R.color.light_green, null));
@@ -557,9 +566,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         ((MoonlightActivity) mActivity).mFAB.show();
         ((DrawerLocker) mActivity).setDrawerEnabled(true);
         mActivity.getWindow().setStatusBarColor(CYAN_DARK);
-        RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
-        refWatcher.watch(this);
-        super.onDestroy();
+        mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+        setOverflowButtonColor(mActivity, Color.WHITE);
     }
 
     @SuppressLint("LogConditional")
