@@ -243,19 +243,21 @@ public class MoonlightActivity extends AppCompatActivity
                                 new MoonlightFragment(),
                                 FragmentUtils.REPLACE_NORMAL);
                         mFAB.setVisibility(View.VISIBLE);
-                        isHome = !isHome;
+                        isHome = true;
                     }
                 }
                 break;
             case R.id.nav_trash:
                 if (mUserId != null) {
                     Log.d(TAG, "nav_trash: " + isHome);
-                    FragmentUtils.replaceFragment(mFragmentManager,
-                            container,
-                            new TrashFragment(),
-                            FragmentUtils.REPLACE_NORMAL);
-                    mFAB.setVisibility(View.GONE);
-                    isHome = !isHome;
+                    if (isHome) {
+                        FragmentUtils.replaceFragment(mFragmentManager,
+                                container,
+                                new TrashFragment(),
+                                FragmentUtils.REPLACE_NORMAL);
+                        mFAB.setVisibility(View.GONE);
+                        isHome = false;
+                    }
                 }
                 break;
             case R.id.nav_settings:
@@ -417,7 +419,6 @@ public class MoonlightActivity extends AppCompatActivity
             FragmentUtils.addFragment(getFragmentManager(),
                     R.id.main_fragment_container,
                     new MoonlightFragment());
-
             if (type == 101) {
                 FragmentUtils.replaceFragment(getFragmentManager(),
                         R.id.main_fragment_container,

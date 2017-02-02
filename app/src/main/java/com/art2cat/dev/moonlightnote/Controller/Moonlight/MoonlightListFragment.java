@@ -1,6 +1,7 @@
 package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -95,19 +96,24 @@ public abstract class MoonlightListFragment extends BaseFragment {
 
 
         if (isTrash()) {
-            mActivity.setTitle(R.string.fragment_trash);
+            mToolbar.setTitle(R.string.fragment_trash);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.grey, mActivity.getTheme()));
             } else {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.grey));
             }
+            mActivity.getWindow().setStatusBarColor(Constants.GREY_DARK);
+            mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
         } else {
-            mActivity.setTitle(R.string.app_name);
+            mToolbar.setTitle(R.string.app_name);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary, mActivity.getTheme()));
             } else {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
             }
+
+            mActivity.getWindow().setStatusBarColor(Constants.CYAN_DARK);
+            mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
         setHasOptionsMenu(true);
 

@@ -105,6 +105,7 @@ import static com.art2cat.dev.moonlightnote.Model.Constants.ALBUM_CHOOSE;
 import static com.art2cat.dev.moonlightnote.Model.Constants.BLUE_DARK;
 import static com.art2cat.dev.moonlightnote.Model.Constants.CAMERA_PERMS;
 import static com.art2cat.dev.moonlightnote.Model.Constants.CYAN_DARK;
+import static com.art2cat.dev.moonlightnote.Model.Constants.GREY_DARK;
 import static com.art2cat.dev.moonlightnote.Model.Constants.RECORD_AUDIO;
 import static com.art2cat.dev.moonlightnote.Model.Constants.STORAGE_PERMS;
 import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
@@ -220,7 +221,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mColorMaps.put(Constants.DEEP_ORANGE, Constants.DEEP_ORANGE_DARK);
         mColorMaps.put(Constants.DEEP_PURPLE, Constants.DEEP_PURPLE_DARK);
         mColorMaps.put(Constants.GREEN, Constants.GREEN_DARK);
-        mColorMaps.put(Constants.GREY, Constants.GREY_DARK);
+        mColorMaps.put(Constants.GREY, GREY_DARK);
         mColorMaps.put(Constants.INDIGO, Constants.INDIGO_DARK);
         mColorMaps.put(Constants.LIGHT_BLUE, Constants.LIGHT_BLUE_DARK);
         mColorMaps.put(Constants.LIGHT_GREEN, Constants.LIGHT_GREEN_DARK);
@@ -448,12 +449,12 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         changeUIColor(R.color.white, mActivity.getTheme());
         mToolbar.setTitle(null);
         initView(mEditable);
-        setOverflowButtonColor(mActivity, Constants.GREY_DARK);
+        setOverflowButtonColor(mActivity, GREY_DARK);
 
         if (Utils.isXLargeTablet(mActivity)) {
             LinearLayout.LayoutParams lp =
                     new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    mToolbar.getHeight());
+                            mToolbar.getHeight());
             mBottomBarContainer.setLayoutParams(lp);
         }
 
@@ -553,8 +554,15 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         ((MoonlightActivity) mActivity).mToolbar.setVisibility(View.VISIBLE);
         ((MoonlightActivity) mActivity).mFAB.show();
         ((DrawerLocker) mActivity).setDrawerEnabled(true);
-        mActivity.getWindow().setStatusBarColor(CYAN_DARK);
-        mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+
+        if (!mEditable) {
+            mActivity.getWindow().setStatusBarColor(GREY_DARK);
+            mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+        } else {
+            mActivity.getWindow().setStatusBarColor(CYAN_DARK);
+            mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
+
     }
 
     @SuppressLint("LogConditional")

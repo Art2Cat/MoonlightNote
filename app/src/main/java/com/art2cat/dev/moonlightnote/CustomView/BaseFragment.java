@@ -9,11 +9,12 @@ import android.support.v7.widget.AppCompatImageView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.Model.Moonlight;
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
-import com.art2cat.dev.moonlightnote.Utils.ToastUtils;
 
 import java.util.ArrayList;
 
@@ -80,11 +81,11 @@ public class BaseFragment extends Fragment {
     }
 
     public void showShortToast(String content) {
-        ToastUtils.with(mActivity).setMessage(content).showShortToast();
+        Toast.makeText(MoonlightApplication.getContext(), content, Toast.LENGTH_SHORT).show();
     }
 
     public void showLongToast(String content) {
-        ToastUtils.with(mActivity).setMessage(content).showLongToast();
+        Toast.makeText(MoonlightApplication.getContext(), content, Toast.LENGTH_LONG).show();
     }
 
     public BaseFragment setArgs(Moonlight moonlight, int flag) {
