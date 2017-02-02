@@ -35,7 +35,6 @@ import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.Model.User;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.AESUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.AuthUtils;
 import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
@@ -78,7 +77,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     private GoogleApiClient mGoogleApiClient;
     private int flag = 0;
     private boolean isNewUser = false;
-    private String mEncryptKey;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -362,11 +360,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                         user1.setToken(token);
                     }
 
-                    if (mEncryptKey != null) {
-                        user1.setEncryptKey(mEncryptKey);
-                    } else {
-                        user1.setEncryptKey(user.getUid());
-                    }
+                    user1.setEncryptKey(user.getUid());
 
                     if (isNewUser) {
                         commitMoonlight(user.getUid());
@@ -464,7 +458,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                                         }
                                     });
 
-                            mEncryptKey = AESUtils.generateKey();
                             signInWithEmail(email, password);
                             isNewUser = true;
                         } else {

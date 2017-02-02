@@ -4,7 +4,6 @@ package com.art2cat.dev.moonlightnote.Controller.Moonlight;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -53,6 +52,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
@@ -91,7 +91,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -149,6 +148,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private String mUserId;
     private String mKeyId;
     private int mPaddingBottom;
+    private int mBottomBarHeight;
     private Uri mFileUri = null;
     private StorageReference mStorageReference;
     private String mImageFileName;
@@ -162,34 +162,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
     public MoonlightDetailFragment() {
         // Required empty public constructor
-    }
-
-    public static void setOverflowButtonColor(final Activity activity, final int color) {
-        final String overflowDescription = activity.getString(R.string.abc_action_menu_overflow_description);
-        final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
-        final ViewTreeObserver viewTreeObserver = decorView.getViewTreeObserver();
-        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                final ArrayList<View> outViews = new ArrayList<View>();
-                decorView.findViewsWithText(outViews, overflowDescription,
-                        View.FIND_VIEWS_WITH_CONTENT_DESCRIPTION);
-                if (outViews.isEmpty()) {
-                    return;
-                }
-                AppCompatImageView overflow = (AppCompatImageView) outViews.get(0);
-                overflow.setColorFilter(color);
-                removeOnGlobalLayoutListener(decorView, this);
-            }
-        });
-    }
-
-    public static void removeOnGlobalLayoutListener(View v, ViewTreeObserver.OnGlobalLayoutListener listener) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            v.getViewTreeObserver().removeGlobalOnLayoutListener(listener);
-        } else {
-            v.getViewTreeObserver().removeOnGlobalLayoutListener(listener);
-        }
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -278,6 +250,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         } else {
             mToolbar.setBackgroundColor(getResources().getColor(R.color.white));
         }
+
         ((MoonlightActivity) mActivity).setSupportActionBar(mToolbar);
         mParams = (AppBarLayout.LayoutParams) ((MoonlightActivity) mActivity).mToolbar.getLayoutParams();
         mParams.setScrollFlags(0);
@@ -286,7 +259,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getFragmentManager().popBackStack();
+//                getFragmentManager().popBackStack();
+                mActivity.onBackPressed();
             }
         });
 
@@ -382,7 +356,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
             }
         });
-
         return mView;
     }
 
@@ -477,6 +450,13 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         initView(mEditable);
         setOverflowButtonColor(mActivity, Constants.GREY_DARK);
 
+        if (Utils.isXLargeTablet(mActivity)) {
+            LinearLayout.LayoutParams lp =
+                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    mToolbar.getHeight());
+            mBottomBarContainer.setLayoutParams(lp);
+        }
+
         if (!mEditable) {
             Log.d(TAG, "onActivityCreated: SnackBar");
             //禁用软键盘
@@ -526,7 +506,15 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
+    @Override
     public void onDestroy() {
+
+        revertUI();
+
         //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
         if (mCreateFlag && mEditable) {
             if (!isEmpty(moonlight)) {
@@ -544,7 +532,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             ((MoonlightActivity) mActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
         }
 
-        revertUI();
         RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
         refWatcher.watch(this);
         super.onDestroy();
@@ -554,6 +541,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
      * 恢复原来的UI界面
      */
     private void revertUI() {
+
         mToolbar.setVisibility(View.GONE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mToolbar.setBackgroundColor(getResources().getColor(R.color.light_green, null));
@@ -567,7 +555,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         ((DrawerLocker) mActivity).setDrawerEnabled(true);
         mActivity.getWindow().setStatusBarColor(CYAN_DARK);
         mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
-        setOverflowButtonColor(mActivity, Color.WHITE);
     }
 
     @SuppressLint("LogConditional")

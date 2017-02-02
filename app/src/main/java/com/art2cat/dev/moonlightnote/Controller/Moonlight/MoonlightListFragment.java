@@ -166,6 +166,8 @@ public abstract class MoonlightListFragment extends BaseFragment {
             }
 
         });
+
+        setOverflowButtonColor(mActivity, 0xFFFFFFFF);
     }
 
     @Override
@@ -183,6 +185,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         Log.d(TAG, "onDestroyView: ");
+        isInflate = false;
         mFDatabaseUtils.removeListener();
         mFirebaseRecyclerAdapter.unregisterAdapterDataObserver(mAdapterDataObserver);
     }
@@ -399,7 +402,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
         } else {
             changeOptionsMenu(2);
         }
-        //this.menu = menu;
     }
 
     private void changeOptionsMenu(int type) {

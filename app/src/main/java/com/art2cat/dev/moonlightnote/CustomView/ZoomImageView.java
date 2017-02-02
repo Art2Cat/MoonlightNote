@@ -108,12 +108,11 @@ public class ZoomImageView extends RecyclerImageView {
     private void getImageViewWidthHeight() {
         ViewTreeObserver vto2 = getViewTreeObserver();
         vto2.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @SuppressWarnings("deprecation")
+            @Override
             public void onGlobalLayout() {
-                getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 imgWidth = getWidth();
                 imgHeight = getHeight();
-
             }
         });
     }

@@ -216,16 +216,12 @@ public class FDatabaseUtils {
     }
 
     public void getDataFromDatabase(@Nullable String keyId, final int type) {
+        if (keyId == null) return;
         if (type == Constants.EXTRA_TYPE_MOONLIGHT) {
-            if (keyId == null) {
-                return;
-            }
             mDatabaseReference = FirebaseDatabase.getInstance().getReference()
                     .child("users-moonlight").child(mUserId).child("note").child(keyId);
         } else if (type == Constants.EXTRA_TYPE_TRASH) {
-            if (keyId == null) {
-                return;
-            }
+
             mDatabaseReference = FirebaseDatabase.getInstance().getReference()
                     .child("users-moonlight").child(mUserId).child("trash").child(keyId);
         } else if (type == Constants.EXTRA_TYPE_USER) {
