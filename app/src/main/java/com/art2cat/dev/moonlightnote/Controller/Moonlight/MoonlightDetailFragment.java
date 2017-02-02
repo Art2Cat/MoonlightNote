@@ -557,7 +557,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
         if (!mEditable) {
             mActivity.getWindow().setStatusBarColor(GREY_DARK);
-            mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
         } else {
             mActivity.getWindow().setStatusBarColor(CYAN_DARK);
             mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);

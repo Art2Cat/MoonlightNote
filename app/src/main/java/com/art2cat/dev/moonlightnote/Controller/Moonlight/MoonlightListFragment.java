@@ -98,21 +98,24 @@ public abstract class MoonlightListFragment extends BaseFragment {
         if (isTrash()) {
             mToolbar.setTitle(R.string.fragment_trash);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mToolbar.setBackgroundColor(getResources().getColor(R.color.grey, mActivity.getTheme()));
+                mToolbar.setBackgroundColor(getResources().getColor(R.color.grey,
+                        mActivity.getTheme()));
+                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.grey_dark,
+                        mActivity.getTheme()));
             } else {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.grey));
+                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.grey_dark));
             }
-            mActivity.getWindow().setStatusBarColor(Constants.GREY_DARK);
-            mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
         } else {
             mToolbar.setTitle(R.string.app_name);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary, mActivity.getTheme()));
+                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark,
+                        mActivity.getTheme()));
             } else {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
             }
-
-            mActivity.getWindow().setStatusBarColor(Constants.CYAN_DARK);
             mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
         setHasOptionsMenu(true);
