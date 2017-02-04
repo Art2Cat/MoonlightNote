@@ -271,10 +271,16 @@ public class MoonlightActivity extends AppCompatActivity
                 startActivity(intent);
                 break;
             case R.id.nav_feedback:
-                Intent feedback = new Intent(ACTION_SEND);
+                String systemInfos = "Debug-infos:";
+                systemInfos += "\nOS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")";
+                systemInfos += "\nOS API Level: " + android.os.Build.VERSION.SDK_INT;
+                systemInfos += "\nDevice: " + android.os.Build.DEVICE;
+                systemInfos += "\nModel (and Product): " + android.os.Build.MODEL + " (" + android.os.Build.PRODUCT + ")\n";
+                Intent feedback = new Intent(Intent.ACTION_SENDTO);
+                feedback.setData(Uri.parse("mailto:"));
                 feedback.putExtra(EXTRA_EMAIL, new String[]{"dev@art2cat.com"});
                 feedback.putExtra(EXTRA_SUBJECT, "Feedback");
-                feedback.setType("message/rfc822");
+                feedback.putExtra(Intent.EXTRA_TEXT, systemInfos);
                 startActivity(Intent.createChooser(feedback, "Send Email..."));
                 break;
             case R.id.nav_rate_app:
