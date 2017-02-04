@@ -54,6 +54,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -272,10 +273,15 @@ public class MoonlightActivity extends AppCompatActivity
                 break;
             case R.id.nav_feedback:
                 String systemInfos = "Debug-infos:";
-                systemInfos += "\nOS Version: " + System.getProperty("os.version") + "(" + android.os.Build.VERSION.INCREMENTAL + ")";
+
+                systemInfos += "\nOS Version: " + "Android " + getOSVersion()
+                        + " (" + Build.VERSION.RELEASE + ")";
                 systemInfos += "\nOS API Level: " + android.os.Build.VERSION.SDK_INT;
+                systemInfos += "\nKernel Version: " + System.getProperty("os.version")
+                        + "(" + android.os.Build.VERSION.INCREMENTAL + ")";
                 systemInfos += "\nDevice: " + android.os.Build.DEVICE;
-                systemInfos += "\nModel (and Product): " + android.os.Build.MODEL + " (" + android.os.Build.PRODUCT + ")\n";
+                systemInfos += "\nModel (and Product): " + android.os.Build.MODEL
+                        + " (" + android.os.Build.PRODUCT + ")\n";
                 Intent feedback = new Intent(Intent.ACTION_SENDTO);
                 feedback.setData(Uri.parse("mailto:"));
                 feedback.putExtra(EXTRA_EMAIL, new String[]{"dev@art2cat.com"});
@@ -327,6 +333,26 @@ public class MoonlightActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private String getOSVersion() {
+
+        Field[] fields = Build.VERSION_CODES.class.getFields();
+        for (Field field : fields) {
+            String fieldName = field.getName();
+            int fieldValue = -1;
+
+            try {
+                fieldValue = field.getInt(new Object());
+            } catch (IllegalArgumentException | IllegalAccessException | NullPointerException e) {
+                e.printStackTrace();
+            }
+
+            if (fieldValue == Build.VERSION.SDK_INT) {
+                return fieldName;
+            }
+        }
+        return null;
     }
 
     /**
