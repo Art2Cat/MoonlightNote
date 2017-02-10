@@ -114,7 +114,7 @@ public class MoonlightActivity extends AppCompatActivity
         mAuth = getInstance();
         //noinspection ConstantConditions
         mUserId = mAuth.getCurrentUser().getUid();
-        mFDatabaseUtils = new FDatabaseUtils(MoonlightApplication.getContext(), mUserId);
+        mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.getContext(), mUserId);
         mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
         //获取Bus单例，并注册
         EventBus.getDefault().register(this);

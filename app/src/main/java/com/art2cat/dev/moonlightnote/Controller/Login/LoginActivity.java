@@ -54,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         MobileAds.initialize(this, AD_UNIT_ID);
         //获得FirebaseAuth对象
         mAuth = getInstance();
+
         boolean flag = SPUtils.getBoolean(this, Constants.USER_CONFIG, Constants.USER_CONFIG_AUTO_LOGIN, false);
         if (!flag) {
             signIn();
@@ -101,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
-                    mFDatabaseUtils = new FDatabaseUtils(MoonlightApplication.getContext(), user.getUid());
+                    mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.getContext(), user.getUid());
                     mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
                     if (mShortcutsUtils != null) {
                         initShortcuts();

@@ -35,7 +35,6 @@ import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.Utils.SPUtils;
 import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.Utils.ToastUtils;
-import com.art2cat.dev.moonlightnote.Utils.Utils;
 import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -358,7 +357,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_back_up);
             setHasOptionsMenu(true);
             String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            mFDatabaseUtils = new FDatabaseUtils(getActivity(), userId);
+            mFDatabaseUtils = FDatabaseUtils.newInstance(getActivity(), userId);
             mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance();
             Preference connectToDrive = findPreference(CONNECT_TO_DRIVE);
             Preference backupToDrive = findPreference(BACKUP_TO_DRIVE);

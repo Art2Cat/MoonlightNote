@@ -37,35 +37,42 @@ import java.util.Map;
 
 public class FDatabaseUtils {
     private static final String TAG = "FDatabaseUtils";
-    private static Handler mHandler = new Handler() {
+    private static final ThreadLocal<Handler> mHandler = new ThreadLocal<Handler>() {
         @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            ToastUtils.with(MoonlightApplication.getContext()).setMessage("Restore succeed!").showShortToast();
+        protected Handler initialValue() {
+            return new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    super.handleMessage(msg);
+                    ToastUtils.with(MoonlightApplication.getContext()).setMessage("Restore succeed!").showShortToast();
+                }
+            };
         }
     };
     public User user;
     public Moonlight moonlight;
     private String mJson;
-    private Context mContext;
+    private final Context mContext;
     private boolean complete;
-    private String mUserId;
+    private final String mUserId;
     private DatabaseReference mDatabaseReference;
     private DatabaseReference mDatabaseReference1;
     private ValueEventListener mValueEventListener;
     private ValueEventListener mValueEventListener1;
+    private static HashMap<String, FDatabaseUtils> mHashMap = new HashMap<>();
 
-    public FDatabaseUtils() {
-
-    }
-
-    public FDatabaseUtils(Context context, String userId) {
+    private FDatabaseUtils(Context context, String userId) {
         mContext = context;
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mUserId = userId;
+        mHashMap.put(userId, this);
+
     }
 
     public static FDatabaseUtils newInstance(Context context, String userId) {
+        if (mHashMap.get(userId) != null) {
+            return mHashMap.get(userId);
+        }
         return new FDatabaseUtils(context, userId);
     }
 
@@ -302,7 +309,7 @@ public class FDatabaseUtils {
             for (Moonlight moonlight : noteLab.getMoonlights()) {
                 updateMoonlight(mUserId, null, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
             }
-            mHandler.sendEmptyMessage(0);
+            mHandler.get().sendEmptyMessage(0);
         }
     }
 
@@ -311,7 +318,7 @@ public class FDatabaseUtils {
             for (Moonlight moonlight : noteLab.getMoonlights()) {
                 updateMoonlight(mUserId, null, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
             }
-            mHandler.sendEmptyMessage(0);
+            mHandler.get().sendEmptyMessage(0);
         }
     }
 

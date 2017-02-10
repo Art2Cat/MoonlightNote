@@ -552,14 +552,13 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
                 | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
         ((MoonlightActivity) mActivity).mToolbar.setVisibility(View.VISIBLE);
-        ((MoonlightActivity) mActivity).mFAB.show();
+
         ((DrawerLocker) mActivity).setDrawerEnabled(true);
 
-        if (!mEditable) {
-            mActivity.getWindow().setStatusBarColor(GREY_DARK);
-        } else {
+        if (mEditable) {
             mActivity.getWindow().setStatusBarColor(CYAN_DARK);
             mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+            ((MoonlightActivity) mActivity).mFAB.show();
         }
 
     }

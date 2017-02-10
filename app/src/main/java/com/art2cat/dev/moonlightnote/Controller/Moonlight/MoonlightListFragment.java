@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -58,7 +59,6 @@ import static android.R.attr.tag;
 public abstract class MoonlightListFragment extends BaseFragment {
     private static final String TAG = "MoonlightListFragment";
     private DatabaseReference mDatabase;
-    private FDatabaseUtils mFDatabaseUtils;
     private FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder> mFirebaseRecyclerAdapter;
     private Toolbar mToolbar;
     private Toolbar mToolbar2;
@@ -79,7 +79,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         //获取Bus单例，并注册
         EventBus.getDefault().register(this);
-        mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.getContext(), getUid());
     }
 
     @Override
@@ -100,11 +99,11 @@ public abstract class MoonlightListFragment extends BaseFragment {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.grey,
                         mActivity.getTheme()));
-                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.grey_dark,
-                        mActivity.getTheme()));
+//                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.grey_dark,
+//                        mActivity.getTheme()));
             } else {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.grey));
-                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.grey_dark));
+//                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.grey_dark));
             }
         } else {
             mToolbar.setTitle(R.string.app_name);
@@ -168,12 +167,16 @@ public abstract class MoonlightListFragment extends BaseFragment {
                 } else {
                     Picasso.with(mActivity).pauseTag(tag);
                 }
-//                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-//                }
-//                if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-//                }
             }
 
+        });
+
+        mRecyclerView.setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View view, DragEvent dragEvent) {
+
+                return false;
+            }
         });
 
         setOverflowButtonColor(mActivity, 0xFFFFFFFF);
@@ -195,7 +198,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
         super.onDestroyView();
         Log.d(TAG, "onDestroyView: ");
         isInflate = false;
-        mFDatabaseUtils.removeListener();
         mFirebaseRecyclerAdapter.unregisterAdapterDataObserver(mAdapterDataObserver);
     }
 
@@ -263,14 +265,8 @@ public abstract class MoonlightListFragment extends BaseFragment {
                         public void onClick(View view) {
                             if (isLogin) {
                                 moonlightD.setId(moonlightKey);
-//                                Intent intent = new Intent(mActivity, MoonlightDetailActivity.class);
-//                                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(mActivity,
-//                                        viewHolder.mTransitionItem, viewHolder.mTransitionItem.getTransitionName()).toBundle();
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");
-//                                    intent.putExtra("Fragment", Constants.EXTRA_TRASH_FRAGMENT);
-//                                    intent.putExtra("moonlight", moonlightD);
-//                                    startActivity(intent, bundle);
                                     TrashDetailFragment trashDetailFragment = new TrashDetailFragment();
                                     trashDetailFragment.setArgs(moonlightD, 12);
 //                                    getFragmentManager().beginTransaction()
@@ -285,9 +281,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 } else {
                                     Log.d(TAG, "onClick: edit");
-//                                    intent.putExtra("Fragment", Constants.EXTRA_EDIT_FRAGMENT);
-//                                    intent.putExtra("moonlight", moonlightD);
-//                                    startActivity(intent, bundle);
                                     EditMoonlightFragment editMoonlightFragment = new EditMoonlightFragment();
                                     editMoonlightFragment.setArgs(moonlightD, 0);
 //                                    getFragmentManager().beginTransaction()
@@ -300,7 +293,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
                                             editMoonlightFragment,
                                             FragmentUtils.REPLACE_BACK_STACK);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
-//                                    BusEventUtils.post(null, 111);
                                 }
                                 changeToolbar(null, 1);
                                 setParams(0);
@@ -327,8 +319,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
                 }
             };
 
-
-//            mFirebaseRecyclerAdapter.notifyDataSetChanged();
             mRecyclerView.setAdapter(mFirebaseRecyclerAdapter);
             Log.d(TAG, "setAdapter");
 
@@ -357,6 +347,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
                 @Override
                 public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
                     super.onItemRangeMoved(fromPosition, toPosition, itemCount);
+                    mRecyclerView.smoothScrollToPosition(toPosition);
                 }
             };
 
@@ -394,8 +385,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
             Log.d(TAG, "cleanup");
             mFirebaseRecyclerAdapter.cleanup();
         }
-
-        mFDatabaseUtils.removeListener();
 
         RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
         refWatcher.watch(this);
