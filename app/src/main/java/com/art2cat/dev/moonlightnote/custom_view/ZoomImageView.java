@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.CustomView;
+package com.art2cat.dev.moonlightnote.custom_view;
 
 import android.content.Context;
 import android.graphics.Matrix;
@@ -52,10 +52,6 @@ public class ZoomImageView extends RecyclerImageView {
      * 记录第一次点击的时间
      */
     private long firstTouchTime = 0;
-    /**
-     * 时间点击的间隔
-     */
-    private int intervalTime = 250;
     /**
      * 第一次点完坐标
      */
@@ -140,6 +136,10 @@ public class ZoomImageView extends RecyclerImageView {
         // 存储当前时间
         long currentTime = System.currentTimeMillis();
         // 判断两次点击间距时间是否符合
+        /*
+      时间点击的间隔
+     */
+        int intervalTime = 250;
         if (currentTime - firstTouchTime >= intervalTime) {
             firstTouchTime = currentTime;
             firstPointF = new PointF(event.getX(), event.getY());

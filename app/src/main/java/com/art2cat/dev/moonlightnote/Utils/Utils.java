@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Utils;
+package com.art2cat.dev.moonlightnote.utils;
 
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
@@ -13,9 +13,9 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.Controller.Settings.MoonlightPinActivity;
-import com.art2cat.dev.moonlightnote.Model.NoteLab;
-import com.art2cat.dev.moonlightnote.Model.User;
+import com.art2cat.dev.moonlightnote.controller.settings.MoonlightPinActivity;
+import com.art2cat.dev.moonlightnote.model.NoteLab;
+import com.art2cat.dev.moonlightnote.model.User;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,7 +34,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-import static com.art2cat.dev.moonlightnote.Model.Constants.EXTRA_PIN;
+import static com.art2cat.dev.moonlightnote.model.Constants.EXTRA_PIN;
 
 /**
  * Created by art2cat
@@ -257,7 +257,7 @@ public class Utils {
 
     /**
      * 是否有网络
-     * @return
+     * @return 返回网络状态
      */
     public static boolean isNetworkConnected()
     {

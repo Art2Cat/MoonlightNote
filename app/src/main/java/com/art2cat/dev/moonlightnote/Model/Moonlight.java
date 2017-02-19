@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Model;
+package com.art2cat.dev.moonlightnote.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

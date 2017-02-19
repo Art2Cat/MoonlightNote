@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.Moonlight;
+package com.art2cat.dev.moonlightnote.controller.moonlight;
 
 
 import android.Manifest;
@@ -56,21 +56,21 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.CircleProgressDialogFragment;
-import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
-import com.art2cat.dev.moonlightnote.Model.BusEvent;
-import com.art2cat.dev.moonlightnote.Model.Constants;
-import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.AudioPlayer;
-import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
-import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
-import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
-import com.art2cat.dev.moonlightnote.Utils.MaterialAnimation.CircularRevealUtils;
-import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
-import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
-import com.art2cat.dev.moonlightnote.Utils.Utils;
+import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment;
+import com.art2cat.dev.moonlightnote.custom_view.BaseFragment;
+import com.art2cat.dev.moonlightnote.model.BusEvent;
+import com.art2cat.dev.moonlightnote.model.Constants;
+import com.art2cat.dev.moonlightnote.model.Moonlight;
+import com.art2cat.dev.moonlightnote.utils.AudioPlayer;
+import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.utils.PermissionUtils;
+import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
+import com.art2cat.dev.moonlightnote.utils.Utils;
+import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
+import com.art2cat.dev.moonlightnote.utils.firebase.StorageUtils;
+import com.art2cat.dev.moonlightnote.utils.material_animation.CircularRevealUtils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -101,14 +101,14 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.app.Activity.RESULT_OK;
-import static com.art2cat.dev.moonlightnote.Model.Constants.ALBUM_CHOOSE;
-import static com.art2cat.dev.moonlightnote.Model.Constants.BLUE_DARK;
-import static com.art2cat.dev.moonlightnote.Model.Constants.CAMERA_PERMS;
-import static com.art2cat.dev.moonlightnote.Model.Constants.CYAN_DARK;
-import static com.art2cat.dev.moonlightnote.Model.Constants.GREY_DARK;
-import static com.art2cat.dev.moonlightnote.Model.Constants.RECORD_AUDIO;
-import static com.art2cat.dev.moonlightnote.Model.Constants.STORAGE_PERMS;
-import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
+import static com.art2cat.dev.moonlightnote.model.Constants.ALBUM_CHOOSE;
+import static com.art2cat.dev.moonlightnote.model.Constants.BLUE_DARK;
+import static com.art2cat.dev.moonlightnote.model.Constants.CAMERA_PERMS;
+import static com.art2cat.dev.moonlightnote.model.Constants.CYAN_DARK;
+import static com.art2cat.dev.moonlightnote.model.Constants.GREY_DARK;
+import static com.art2cat.dev.moonlightnote.model.Constants.RECORD_AUDIO;
+import static com.art2cat.dev.moonlightnote.model.Constants.STORAGE_PERMS;
+import static com.art2cat.dev.moonlightnote.model.Constants.TAKE_PICTURE;
 import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
 import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 
@@ -977,7 +977,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             mCircleProgressDialogFragment.show(getFragmentManager(), "progress");
         }
 
-        StorageTask<UploadTask.TaskSnapshot> uploadTask = null;
+        StorageTask<UploadTask.TaskSnapshot> uploadTask;
         if (type == 0) {
 
             // Get a reference to store file at photos/<FILENAME>.jpg

@@ -1,6 +1,5 @@
-package com.art2cat.dev.moonlightnote.Utils.ImageLoader;
+package com.art2cat.dev.moonlightnote.utils.image_loader;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -64,8 +63,7 @@ public class NetCacheUtils {
                 //options.inJustDecodeBounds = true;
                 //options.inSampleSize = 2;//宽高压缩为原来的1/2
                 //options.inPreferredConfig = Bitmap.Config.ARGB_4444;
-                Bitmap bitmap = BitmapFactory.decodeStream(conn.getInputStream(), null, null);
-                return bitmap;
+                return BitmapFactory.decodeStream(conn.getInputStream(), null, null);
             }
         } catch (IOException e) {
             e.printStackTrace();

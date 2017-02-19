@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Utils.Firebase;
+package com.art2cat.dev.moonlightnote.utils.firebase;
 
 import android.content.Context;
 import android.os.Handler;
@@ -6,18 +6,19 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.Model.Constants;
-import com.art2cat.dev.moonlightnote.Model.Moonlight;
-import com.art2cat.dev.moonlightnote.Model.NoteLab;
-import com.art2cat.dev.moonlightnote.Model.User;
+import com.art2cat.dev.moonlightnote.model.Constants;
+import com.art2cat.dev.moonlightnote.model.Moonlight;
+import com.art2cat.dev.moonlightnote.model.NoteLab;
+import com.art2cat.dev.moonlightnote.model.User;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
-import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
-import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
-import com.art2cat.dev.moonlightnote.Utils.ToastUtils;
-import com.art2cat.dev.moonlightnote.Utils.UserUtils;
-import com.art2cat.dev.moonlightnote.Utils.Utils;
+import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.utils.MoonlightEncryptUtils;
+import com.art2cat.dev.moonlightnote.utils.ToastUtils;
+import com.art2cat.dev.moonlightnote.utils.UserUtils;
+import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -37,29 +38,18 @@ import java.util.Map;
 
 public class FDatabaseUtils {
     private static final String TAG = "FDatabaseUtils";
-    private static final ThreadLocal<Handler> mHandler = new ThreadLocal<Handler>() {
-        @Override
-        protected Handler initialValue() {
-            return new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    super.handleMessage(msg);
-                    ToastUtils.with(MoonlightApplication.getContext()).setMessage("Restore succeed!").showShortToast();
-                }
-            };
-        }
-    };
+    private static HashMap<String, FDatabaseUtils> mHashMap = new HashMap<>();
+    private final Handler mHandler = new MyHandler();
+    private final Context mContext;
+    private final String mUserId;
     public User user;
     public Moonlight moonlight;
     private String mJson;
-    private final Context mContext;
     private boolean complete;
-    private final String mUserId;
     private DatabaseReference mDatabaseReference;
     private DatabaseReference mDatabaseReference1;
     private ValueEventListener mValueEventListener;
     private ValueEventListener mValueEventListener1;
-    private static HashMap<String, FDatabaseUtils> mHashMap = new HashMap<>();
 
     private FDatabaseUtils(Context context, String userId) {
         mContext = context;
@@ -94,7 +84,6 @@ public class FDatabaseUtils {
             e.printStackTrace();
         }
     }
-
 
     /**
      * 清空全部笔记内容
@@ -309,7 +298,7 @@ public class FDatabaseUtils {
             for (Moonlight moonlight : noteLab.getMoonlights()) {
                 updateMoonlight(mUserId, null, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
             }
-            mHandler.get().sendEmptyMessage(0);
+            mHandler.sendEmptyMessage(0);
         }
     }
 
@@ -318,7 +307,7 @@ public class FDatabaseUtils {
             for (Moonlight moonlight : noteLab.getMoonlights()) {
                 updateMoonlight(mUserId, null, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
             }
-            mHandler.get().sendEmptyMessage(0);
+            mHandler.sendEmptyMessage(0);
         }
     }
 
@@ -354,5 +343,13 @@ public class FDatabaseUtils {
             return mJson;
         }
         return null;
+    }
+
+    private static class MyHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Toast.makeText(MoonlightApplication.getContext(), "Restore succeed!", Toast.LENGTH_LONG).show();
+        }
     }
 }

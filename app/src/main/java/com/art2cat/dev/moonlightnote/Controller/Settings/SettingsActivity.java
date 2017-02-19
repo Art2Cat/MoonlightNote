@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.Settings;
+package com.art2cat.dev.moonlightnote.controller.settings;
 
 
 import android.Manifest;
@@ -24,17 +24,18 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.CircleProgressDialogFragment;
-import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
-import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
-import com.art2cat.dev.moonlightnote.Model.Constants;
-import com.art2cat.dev.moonlightnote.Model.NoteLab;
+import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment;
+import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ConfirmationDialogFragment;
+import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.model.Constants;
+import com.art2cat.dev.moonlightnote.model.NoteLab;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
-import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
-import com.art2cat.dev.moonlightnote.Utils.SPUtils;
-import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
-import com.art2cat.dev.moonlightnote.Utils.ToastUtils;
+import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
+import com.art2cat.dev.moonlightnote.utils.LogUtils;
+import com.art2cat.dev.moonlightnote.utils.PermissionUtils;
+import com.art2cat.dev.moonlightnote.utils.SPUtils;
+import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
+import com.art2cat.dev.moonlightnote.utils.ToastUtils;
 import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -65,7 +66,7 @@ import java.util.List;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static com.art2cat.dev.moonlightnote.Model.Constants.STORAGE_PERMS;
+import static com.art2cat.dev.moonlightnote.model.Constants.STORAGE_PERMS;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -294,7 +295,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         final private ResultCallback<DriveFolder.DriveFileResult> fileCallback = new
                 ResultCallback<DriveFolder.DriveFileResult>() {
                     @Override
-                    public void onResult(DriveFolder.DriveFileResult result) {
+                    public void onResult(@NonNull DriveFolder.DriveFileResult result) {
                         if (result.getStatus().isSuccess()) {
 
                             Toast.makeText(getActivity(), "file created: " + "" +
@@ -312,14 +313,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         final private ResultCallback<DriveApi.MetadataBufferResult> metadataCallback =
                 new ResultCallback<DriveApi.MetadataBufferResult>() {
                     @Override
-                    public void onResult(DriveApi.MetadataBufferResult result) {
+                    public void onResult(@NonNull DriveApi.MetadataBufferResult result) {
                         if (!result.getStatus().isSuccess()) {
                             Log.d(TAG, "Problem while retrieving results");
                             return;
                         }
 
                         Metadata metadata = result.getMetadataBuffer().get(0);
-                        Log.d(TAG, "metadata.getDriveId():" + metadata.getDriveId());
+                        if (BuildConfig.DEBUG)
+                            Log.d(TAG, "metadata.getDriveId():" + metadata.getDriveId());
                         readFileFromDrive(metadata.getDriveId());
                     }
                 };
@@ -336,7 +338,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         private ResultCallback<DriveApi.DriveContentsResult> driveContentsCallback =
                 new ResultCallback<DriveApi.DriveContentsResult>() {
                     @Override
-                    public void onResult(DriveApi.DriveContentsResult result) {
+                    public void onResult(@NonNull DriveApi.DriveContentsResult result) {
 
                         if (result.getStatus().isSuccess()) {
 
@@ -462,7 +464,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         @Override
         public void onPermissionsDenied(int requestCode, List<String> perms) {
             if (requestCode == STORAGE_PERMS) {
-                Log.d(TAG, "onPermissionsDenied: ");
                 SnackBarUtils.shortSnackBar(getView(), "This action need Storage permission",
                         SnackBarUtils.TYPE_INFO).show();
             }
@@ -517,8 +518,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     DriveApi.DriveContentsResult driveContentsResult =
                             f.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null).await();
                     if (!driveContentsResult.getStatus().isSuccess()) {
-//                        Utils.showToast(getActivity(), "file: null", 1);
-                        Log.d(TAG, "run: " + driveContentsResult.getStatus());
+                        LogUtils.getInstance(TAG).setMessage("run: " + driveContentsResult.getStatus()).debug();
                         return;
                     }
 
@@ -532,18 +532,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             builder.append(line);
                         }
                         String contentsAsString = builder.toString();
-                        if (BuildConfig.DEBUG) Log.d(TAG, contentsAsString);
+                        LogUtils.getInstance(TAG).setMessage(contentsAsString).debug();
                         Gson gson = new Gson();
                         NoteLab noteLab = gson.fromJson(contentsAsString, NoteLab.class);
                         if (noteLab == null) {
                             return;
                         }
-                        Log.d(TAG, "onResult: " + noteLab.getMoonlights().size());
-//                        if (noteLab.getMoonlights().size() != 0) {
-                            mFDatabaseUtils.restoreAll(noteLab);
-//                        }
+                        LogUtils.getInstance(TAG).setMessage("onResult: " + noteLab.getMoonlights().size()).debug();
+                        mFDatabaseUtils.restoreAll(noteLab);
                     } catch (IOException e) {
-                        Log.e(TAG, "IOException while reading from the stream", e);
+                        LogUtils.getInstance(TAG).setMessage("IOException while reading from the stream").error(e);
                     }
 
                     driveContents.discard(mGoogleApiClient);
@@ -580,7 +578,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     if (mData == null) {
                         mData = mFDatabaseUtils.getJson();
                     }
-                    Log.d(TAG, "run: " + mData);
                     if (mData != null) {
                         try {
                             writer.write(mData);
@@ -615,18 +612,21 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     }
                     break;
                 case REQUEST_CODE_SAVE_TO_DRIVE:
-                    if (resultCode == Activity.RESULT_OK) {
-                        // Store the image data as a bitmap for writing later.
-                    }
+//                    if (resultCode == Activity.RESULT_OK) {
+//                        // Store the image data as a bitmap for writing later.
+//                    }
                     break;
             }
         }
 
         @Override
-        public void onConnectionFailed(ConnectionResult result) {
+        public void onConnectionFailed(@NonNull ConnectionResult result) {
             mCircleProgressDialogFragment.dismiss();
             // Called whenever the API client fails to connect.
-            Log.i(TAG, "GoogleApiClient connection failed: " + result.toString());
+
+            LogUtils.getInstance(TAG)
+                    .setMessage("GoogleApiClient connection failed: " + result.toString())
+                    .info();
             if (!result.hasResolution()) {
                 // show the localized error dialog.
                 GoogleApiAvailability.getInstance().getErrorDialog(getActivity(), result.getErrorCode(), 0).show();
@@ -639,21 +639,27 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             try {
                 result.startResolutionForResult(getActivity(), REQUEST_CODE_RESOLUTION);
             } catch (IntentSender.SendIntentException e) {
-                Log.e(TAG, "Exception while starting resolution activity", e);
+                LogUtils.getInstance(TAG)
+                        .setMessage("Exception while starting resolution activity")
+                        .error(e);
             }
         }
 
         @Override
         public void onConnected(Bundle connectionHint) {
             mCircleProgressDialogFragment.dismiss();
-            Log.i(TAG, "API client connected.");
+            LogUtils.getInstance(TAG)
+                    .setMessage("API client connected.")
+                    .info();
             SnackBarUtils.shortSnackBar(getView(), "Google Drive connected!", SnackBarUtils.TYPE_INFO).show();
         }
 
         @Override
         public void onConnectionSuspended(int cause) {
             mCircleProgressDialogFragment.dismiss();
-            Log.i(TAG, "GoogleApiClient connection suspended");
+            LogUtils.getInstance(TAG)
+                    .setMessage("GoogleApiClient connection suspended")
+                    .info();
         }
 
     }

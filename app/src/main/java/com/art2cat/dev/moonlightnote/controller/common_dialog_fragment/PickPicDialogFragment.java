@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment;
+package com.art2cat.dev.moonlightnote.controller.common_dialog_fragment;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -10,9 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import com.art2cat.dev.moonlightnote.Model.Constants;
+import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 
 
 /**

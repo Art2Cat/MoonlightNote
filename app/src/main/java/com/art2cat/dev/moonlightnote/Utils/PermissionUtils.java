@@ -1,12 +1,12 @@
-package com.art2cat.dev.moonlightnote.Utils;
+package com.art2cat.dev.moonlightnote.utils;
 
 import android.content.Context;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static com.art2cat.dev.moonlightnote.Model.Constants.CAMERA_PERMS;
-import static com.art2cat.dev.moonlightnote.Model.Constants.RECORD_AUDIO;
-import static com.art2cat.dev.moonlightnote.Model.Constants.STORAGE_PERMS;
+import static com.art2cat.dev.moonlightnote.model.Constants.CAMERA_PERMS;
+import static com.art2cat.dev.moonlightnote.model.Constants.RECORD_AUDIO;
+import static com.art2cat.dev.moonlightnote.model.Constants.STORAGE_PERMS;
 
 /**
  * Created by Art

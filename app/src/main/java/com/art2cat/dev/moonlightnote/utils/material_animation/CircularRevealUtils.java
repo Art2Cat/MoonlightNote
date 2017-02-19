@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Utils.MaterialAnimation;
+package com.art2cat.dev.moonlightnote.utils.material_animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

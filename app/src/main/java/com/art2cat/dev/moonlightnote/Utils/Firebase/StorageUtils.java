@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Utils.Firebase;
+package com.art2cat.dev.moonlightnote.utils.firebase;
 
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -7,7 +7,7 @@ import android.view.View;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
-import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
+import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FileDownloadTask;

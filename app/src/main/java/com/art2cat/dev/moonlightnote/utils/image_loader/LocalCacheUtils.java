@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Utils.ImageLoader;
+package com.art2cat.dev.moonlightnote.utils.image_loader;
 
 import android.content.Context;
 import android.graphics.Bitmap;

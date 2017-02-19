@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Model;
+package com.art2cat.dev.moonlightnote.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ public class NoteLab {
     public List<Moonlight> MoonlightNote;
 
     public NoteLab() {
-        MoonlightNote = new ArrayList<Moonlight>();
+        MoonlightNote = new ArrayList<>();
     }
 
     public NoteLab(List<Moonlight> MoonlightNote) {

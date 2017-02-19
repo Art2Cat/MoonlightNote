@@ -1,12 +1,12 @@
-package com.art2cat.dev.moonlightnote.Controller.Settings;
+package com.art2cat.dev.moonlightnote.controller.settings;
 
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.art2cat.dev.moonlightnote.Model.Constants;
+import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
+import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
 
 public class SettingsSecondActivity extends AppCompatActivity {
 

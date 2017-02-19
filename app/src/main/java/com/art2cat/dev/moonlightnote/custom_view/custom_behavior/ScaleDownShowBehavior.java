@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.CustomView.CustomBehavior;
+package com.art2cat.dev.moonlightnote.custom_view.custom_behavior;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;

@@ -1,11 +1,11 @@
-package com.art2cat.dev.moonlightnote.Utils;
+package com.art2cat.dev.moonlightnote.utils;
 
 import android.os.AsyncTask;
 import android.support.annotation.AnyThread;
 import android.util.Log;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.Model.Moonlight;
+import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 
 import java.util.concurrent.ExecutionException;

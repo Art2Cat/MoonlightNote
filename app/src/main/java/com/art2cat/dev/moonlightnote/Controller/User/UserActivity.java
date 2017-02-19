@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.User;
+package com.art2cat.dev.moonlightnote.controller.user;
 
 import android.app.FragmentManager;
 import android.os.Bundle;
@@ -8,7 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
+import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
 
 public class UserActivity extends AppCompatActivity {
     public Toolbar mToolbar;

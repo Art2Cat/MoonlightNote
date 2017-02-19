@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Model;
+package com.art2cat.dev.moonlightnote.model;
 
 /**
  * Created by art2cat

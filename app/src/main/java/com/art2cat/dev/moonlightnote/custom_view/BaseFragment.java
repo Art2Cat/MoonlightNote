@@ -1,5 +1,6 @@
-package com.art2cat.dev.moonlightnote.CustomView;
+package com.art2cat.dev.moonlightnote.custom_view;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -11,10 +12,10 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
-import com.art2cat.dev.moonlightnote.Model.Moonlight;
+import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
+import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 
 import java.util.ArrayList;
 
@@ -33,13 +34,14 @@ public class BaseFragment extends Fragment {
      * @param color    颜色
      */
     public static void setOverflowButtonColor(Activity activity, final int color) {
+        @SuppressLint("PrivateResource")
         final String overflowDescription = activity.getString(R.string.abc_action_menu_overflow_description);
         final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
         final ViewTreeObserver viewTreeObserver = decorView.getViewTreeObserver();
         viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                final ArrayList<View> outViews = new ArrayList<View>();
+                final ArrayList<View> outViews = new ArrayList<>();
                 decorView.findViewsWithText(outViews, overflowDescription,
                         View.FIND_VIEWS_WITH_CONTENT_DESCRIPTION);
                 if (outViews.isEmpty()) {
@@ -97,6 +99,6 @@ public class BaseFragment extends Fragment {
     }
 
     public interface DrawerLocker {
-        public void setDrawerEnabled(boolean enabled);
+        void setDrawerEnabled(boolean enabled);
     }
 }

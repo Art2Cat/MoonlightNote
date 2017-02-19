@@ -5,9 +5,9 @@ import android.app.Application;
 import android.content.Context;
 import android.os.StrictMode;
 
-import com.art2cat.dev.moonlightnote.Controller.Settings.MoonlightPinActivity;
-import com.art2cat.dev.moonlightnote.Utils.MInterceptor;
-import com.art2cat.dev.moonlightnote.Utils.OkHttpDownloader;
+import com.art2cat.dev.moonlightnote.controller.settings.MoonlightPinActivity;
+import com.art2cat.dev.moonlightnote.utils.MInterceptor;
+import com.art2cat.dev.moonlightnote.utils.OkHttpDownloader;
 import com.github.orangegangsters.lollipin.lib.managers.LockManager;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
