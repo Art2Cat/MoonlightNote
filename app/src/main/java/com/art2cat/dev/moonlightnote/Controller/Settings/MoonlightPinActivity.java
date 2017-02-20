@@ -1,9 +1,9 @@
-package com.art2cat.dev.moonlightnote.Controller.Settings;
+package com.art2cat.dev.moonlightnote.controller.settings;
 
 import android.util.Log;
 
-import com.art2cat.dev.moonlightnote.Utils.ToastUtils;
-import com.art2cat.dev.moonlightnote.Utils.Utils;
+import com.art2cat.dev.moonlightnote.BuildConfig;
+import com.art2cat.dev.moonlightnote.utils.ToastUtils;
 import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.github.orangegangsters.lollipin.lib.managers.AppLockActivity;
 
@@ -76,7 +76,7 @@ public class MoonlightPinActivity extends AppLockActivity {
 
     @Override
     public void onPinSuccess(int attempts) {
-        Log.d(TAG, "onPinSuccess: " + attempts);
+        if (BuildConfig.DEBUG) Log.d(TAG, "onPinSuccess: " + attempts);
         finish();
     }
 

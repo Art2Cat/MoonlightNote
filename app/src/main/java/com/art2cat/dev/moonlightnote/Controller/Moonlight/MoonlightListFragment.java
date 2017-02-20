@@ -1,6 +1,7 @@
-package com.art2cat.dev.moonlightnote.Controller.Moonlight;
+package com.art2cat.dev.moonlightnote.controller.moonlight;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,18 +20,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 
-import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.ConfirmationDialogFragment;
-import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
-import com.art2cat.dev.moonlightnote.Model.BusEvent;
-import com.art2cat.dev.moonlightnote.Model.Constants;
-import com.art2cat.dev.moonlightnote.Model.Moonlight;
+import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ConfirmationDialogFragment;
+import com.art2cat.dev.moonlightnote.custom_view.BaseFragment;
+import com.art2cat.dev.moonlightnote.model.BusEvent;
+import com.art2cat.dev.moonlightnote.model.Constants;
+import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
-import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
-import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
-import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
-import com.art2cat.dev.moonlightnote.Utils.MoonlightEncryptUtils;
+import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
+import com.art2cat.dev.moonlightnote.utils.firebase.StorageUtils;
+import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
+import com.art2cat.dev.moonlightnote.utils.MoonlightEncryptUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -57,7 +59,6 @@ import static android.R.attr.tag;
 public abstract class MoonlightListFragment extends BaseFragment {
     private static final String TAG = "MoonlightListFragment";
     private DatabaseReference mDatabase;
-    private FDatabaseUtils mFDatabaseUtils;
     private FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder> mFirebaseRecyclerAdapter;
     private Toolbar mToolbar;
     private Toolbar mToolbar2;
@@ -78,7 +79,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         //获取Bus单例，并注册
         EventBus.getDefault().register(this);
-        mFDatabaseUtils = FDatabaseUtils.newInstance(mActivity, getUid());
     }
 
     @Override
@@ -95,19 +95,27 @@ public abstract class MoonlightListFragment extends BaseFragment {
 
 
         if (isTrash()) {
-            mActivity.setTitle(R.string.fragment_trash);
+            mToolbar.setTitle(R.string.fragment_trash);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mToolbar.setBackgroundColor(getResources().getColor(R.color.grey, mActivity.getTheme()));
+                mToolbar.setBackgroundColor(getResources().getColor(R.color.grey,
+                        mActivity.getTheme()));
+//                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.grey_dark,
+//                        mActivity.getTheme()));
             } else {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.grey));
+//                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.grey_dark));
             }
         } else {
-            mActivity.setTitle(R.string.app_name);
+            mToolbar.setTitle(R.string.app_name);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary, mActivity.getTheme()));
+                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark,
+                        mActivity.getTheme()));
             } else {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
             }
+            mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
         setHasOptionsMenu(true);
 
@@ -159,13 +167,19 @@ public abstract class MoonlightListFragment extends BaseFragment {
                 } else {
                     Picasso.with(mActivity).pauseTag(tag);
                 }
-//                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-//                }
-//                if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-//                }
             }
 
         });
+
+        mRecyclerView.setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View view, DragEvent dragEvent) {
+
+                return false;
+            }
+        });
+
+        setOverflowButtonColor(mActivity, 0xFFFFFFFF);
     }
 
     @Override
@@ -183,7 +197,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         Log.d(TAG, "onDestroyView: ");
-        mFDatabaseUtils.removeListener();
+        isInflate = false;
         mFirebaseRecyclerAdapter.unregisterAdapterDataObserver(mAdapterDataObserver);
     }
 
@@ -251,14 +265,8 @@ public abstract class MoonlightListFragment extends BaseFragment {
                         public void onClick(View view) {
                             if (isLogin) {
                                 moonlightD.setId(moonlightKey);
-//                                Intent intent = new Intent(mActivity, MoonlightDetailActivity.class);
-//                                Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(mActivity,
-//                                        viewHolder.mTransitionItem, viewHolder.mTransitionItem.getTransitionName()).toBundle();
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");
-//                                    intent.putExtra("Fragment", Constants.EXTRA_TRASH_FRAGMENT);
-//                                    intent.putExtra("moonlight", moonlightD);
-//                                    startActivity(intent, bundle);
                                     TrashDetailFragment trashDetailFragment = new TrashDetailFragment();
                                     trashDetailFragment.setArgs(moonlightD, 12);
 //                                    getFragmentManager().beginTransaction()
@@ -273,9 +281,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 } else {
                                     Log.d(TAG, "onClick: edit");
-//                                    intent.putExtra("Fragment", Constants.EXTRA_EDIT_FRAGMENT);
-//                                    intent.putExtra("moonlight", moonlightD);
-//                                    startActivity(intent, bundle);
                                     EditMoonlightFragment editMoonlightFragment = new EditMoonlightFragment();
                                     editMoonlightFragment.setArgs(moonlightD, 0);
 //                                    getFragmentManager().beginTransaction()
@@ -288,7 +293,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
                                             editMoonlightFragment,
                                             FragmentUtils.REPLACE_BACK_STACK);
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
-//                                    BusEventUtils.post(null, 111);
                                 }
                                 changeToolbar(null, 1);
                                 setParams(0);
@@ -315,8 +319,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
                 }
             };
 
-
-//            mFirebaseRecyclerAdapter.notifyDataSetChanged();
             mRecyclerView.setAdapter(mFirebaseRecyclerAdapter);
             Log.d(TAG, "setAdapter");
 
@@ -345,6 +347,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
                 @Override
                 public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
                     super.onItemRangeMoved(fromPosition, toPosition, itemCount);
+                    mRecyclerView.smoothScrollToPosition(toPosition);
                 }
             };
 
@@ -383,8 +386,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
             mFirebaseRecyclerAdapter.cleanup();
         }
 
-        mFDatabaseUtils.removeListener();
-
         RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
         refWatcher.watch(this);
     }
@@ -399,7 +400,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
         } else {
             changeOptionsMenu(2);
         }
-        //this.menu = menu;
     }
 
     private void changeOptionsMenu(int type) {

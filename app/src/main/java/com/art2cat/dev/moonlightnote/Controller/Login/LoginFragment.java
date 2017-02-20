@@ -1,9 +1,10 @@
-package com.art2cat.dev.moonlightnote.Controller.Login;
+package com.art2cat.dev.moonlightnote.controller.login;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.ActivityOptions;
 import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
@@ -25,20 +26,20 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.InputDialogFragment;
-import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
-import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
-import com.art2cat.dev.moonlightnote.Model.BusEvent;
-import com.art2cat.dev.moonlightnote.Model.Constants;
-import com.art2cat.dev.moonlightnote.Model.Moonlight;
-import com.art2cat.dev.moonlightnote.Model.User;
+import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.InputDialogFragment;
+import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.custom_view.BaseFragment;
+import com.art2cat.dev.moonlightnote.model.BusEvent;
+import com.art2cat.dev.moonlightnote.model.Constants;
+import com.art2cat.dev.moonlightnote.model.Moonlight;
+import com.art2cat.dev.moonlightnote.model.User;
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.AESUtils;
-import com.art2cat.dev.moonlightnote.Utils.Firebase.AuthUtils;
-import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
-import com.art2cat.dev.moonlightnote.Utils.SPUtils;
-import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
-import com.art2cat.dev.moonlightnote.Utils.UserUtils;
+import com.art2cat.dev.moonlightnote.utils.firebase.AuthUtils;
+import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
+import com.art2cat.dev.moonlightnote.utils.SPUtils;
+import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
+import com.art2cat.dev.moonlightnote.utils.UserUtils;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -76,7 +77,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     private GoogleApiClient mGoogleApiClient;
     private int flag = 0;
     private boolean isNewUser = false;
-    private String mEncryptKey;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -295,7 +295,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                             .newInstance(getString(R.string.dialog_reset_password), 0);
                     inputDialogFragment.show(getFragmentManager(), "resetPassword");
                 } else {
-                    AuthUtils.sendRPEmail(getActivity(), mView, email);
+                    AuthUtils.sendRPEmail(MoonlightApplication.getContext(), mView, email);
                 }
                 break;
             case R.id.email_sign_in_button:
@@ -339,7 +339,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    SPUtils.putString(getActivity(), "User", "Id", user.getUid());
+                    SPUtils.putString(MoonlightApplication.getContext(), "User", "Id", user.getUid());
                     Uri photoUrl = user.getPhotoUrl();
                     String nickname = user.getDisplayName();
                     String email = user.getEmail();
@@ -360,18 +360,14 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                         user1.setToken(token);
                     }
 
-                    if (mEncryptKey!= null) {
-                        user1.setEncryptKey(mEncryptKey);
-                    } else {
-                        user1.setEncryptKey(user.getUid());
-                    }
+                    user1.setEncryptKey(user.getUid());
 
                     if (isNewUser) {
                         commitMoonlight(user.getUid());
                     }
 
                     UserUtils.updateUser(user.getUid(), user1);
-                    UserUtils.saveUserToCache(getActivity().getApplicationContext(), user1);
+                    UserUtils.saveUserToCache(MoonlightApplication.getContext(), user1);
                 } else {
                     Log.d(TAG, "onAuthStateChanged:signed_out:");
                 }
@@ -401,11 +397,13 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                         } else {
                             showProgress(false);
                             Intent intent = new Intent(getActivity(), MoonlightActivity.class);
-                            isNewUser = true;
-                            getActivity().startActivity(intent);
+                            Bundle bundle = ActivityOptions
+                                    .makeSceneTransitionAnimation(getActivity()).toBundle();
+                            getActivity().startActivity(intent, bundle);
                             showShortSnackBar(mView, "Google Sign In succeed", SnackBarUtils.TYPE_INFO);
-                            SPUtils.putBoolean(getActivity(), "User", "google", true);
-                            getActivity().finish();
+                            isNewUser = true;
+                            SPUtils.putBoolean(MoonlightApplication.getContext(), "User", "google", true);
+                            getActivity().finishAfterTransition();
                         }
                     }
                 });
@@ -419,9 +417,12 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                         if (task.isSuccessful()) {
                             showProgress(false);
                             Intent intent = new Intent(getActivity(), MoonlightActivity.class);
-                            getActivity().startActivity(intent);
+                            Bundle bundle = ActivityOptions
+                                    .makeSceneTransitionAnimation(getActivity()).toBundle();
+                            getActivity().startActivity(intent, bundle);
+
                             //销毁当前Activity
-                            getActivity().finish();
+                            getActivity().finishAfterTransition();
                             Log.d(TAG, "signIn:onComplete:" + task.isSuccessful());
                         }
                     }
@@ -457,7 +458,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                                         }
                                     });
 
-                            mEncryptKey = AESUtils.generateKey();
                             signInWithEmail(email, password);
                             isNewUser = true;
                         } else {
@@ -510,7 +510,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void busAction(BusEvent busEvent) {
         if (busEvent.getMessage().contains("@")) {
-            AuthUtils.sendRPEmail(getActivity(), mView, busEvent.getMessage());
+            AuthUtils.sendRPEmail(MoonlightApplication.getContext(), mView, busEvent.getMessage());
         } else {
             showShortSnackBar(mView, "Invalid email address",
                     SnackBarUtils.TYPE_WARNING);

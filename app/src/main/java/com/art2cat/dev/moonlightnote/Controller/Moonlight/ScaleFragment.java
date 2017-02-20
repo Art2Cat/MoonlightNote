@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.Moonlight;
+package com.art2cat.dev.moonlightnote.controller.moonlight;
 
 
 import android.app.Fragment;
@@ -9,8 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
-import com.art2cat.dev.moonlightnote.CustomView.ZoomImageView;
+import com.art2cat.dev.moonlightnote.custom_view.BaseFragment;
+import com.art2cat.dev.moonlightnote.custom_view.ZoomImageView;
 import com.art2cat.dev.moonlightnote.R;
 import com.squareup.picasso.Picasso;
 
@@ -57,7 +57,6 @@ public class ScaleFragment extends BaseFragment {
                 .memoryPolicy(NO_CACHE, NO_STORE)
                 .config(Bitmap.Config.RGB_565)
                 .into(imageView);
-        imageView.initUI();
         return view;
     }
 }

@@ -127,12 +127,6 @@
         Copyright 2014 - 2016 Henning Dodenhof\n
         This library is distributed under an Apache 2.0 License.\n\n
     </string>
-    <string name="settings_security_pin">Pin</string>
-    <string name="settings_security_title">Security</string>
-    <string name="settings_security_password">Password</string>
-    <string name="settings_security_pattern">Pattern</string>
-    <string name="settings_security">Security</string>
-    <string name="settings_security_disable_all">Disable Security</string>
     <string name="settings_policy_content">
         Moonlight Note Privacy Policy\n\n
 
@@ -302,7 +296,7 @@
     </string>
     <string name="settings_about_app_content">Moonlight Note\n\n
         Version:\n
-        1.0.17012216\n\n
+        1.0.17020217\n\n
         Credit:\n
         StudyJamscn(www.studyjamscn.com)\n\n
         Copyright:\n
@@ -312,7 +306,6 @@
     </string>
     <string name="confirmation_disable_security">Disable protection and decrypt all your data?</string>
     <string name="confirmation_title">Confirmation</string>
-    <string name="confirmation_delete_image">Delete image?</string>
     <string name="moonlight_image">image</string>
     <string name="trans_moonlight">moonlight</string>
     <string name="toolbar">toolbar</string>

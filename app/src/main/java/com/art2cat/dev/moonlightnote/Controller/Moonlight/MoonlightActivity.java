@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.Moonlight;
+package com.art2cat.dev.moonlightnote.controller.moonlight;
 
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -23,23 +23,24 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.art2cat.dev.moonlightnote.Controller.Login.LoginActivity;
-import com.art2cat.dev.moonlightnote.Controller.Settings.SettingsActivity;
-import com.art2cat.dev.moonlightnote.Controller.User.UserActivity;
-import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
-import com.art2cat.dev.moonlightnote.Model.BusEvent;
-import com.art2cat.dev.moonlightnote.Model.Constants;
-import com.art2cat.dev.moonlightnote.Model.User;
+import com.art2cat.dev.moonlightnote.controller.login.LoginActivity;
+import com.art2cat.dev.moonlightnote.controller.settings.SettingsActivity;
+import com.art2cat.dev.moonlightnote.controller.user.UserActivity;
+import com.art2cat.dev.moonlightnote.custom_view.BaseFragment;
+import com.art2cat.dev.moonlightnote.model.BusEvent;
+import com.art2cat.dev.moonlightnote.model.Constants;
+import com.art2cat.dev.moonlightnote.model.User;
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
-import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
-import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
-import com.art2cat.dev.moonlightnote.Utils.ImageLoader.BitmapUtils;
-import com.art2cat.dev.moonlightnote.Utils.SPUtils;
-import com.art2cat.dev.moonlightnote.Utils.ShortcutsUtils;
-import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
-import com.art2cat.dev.moonlightnote.Utils.UserUtils;
-import com.art2cat.dev.moonlightnote.Utils.Utils;
+import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
+import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
+import com.art2cat.dev.moonlightnote.utils.image_loader.BitmapUtils;
+import com.art2cat.dev.moonlightnote.utils.SPUtils;
+import com.art2cat.dev.moonlightnote.utils.ShortcutsUtils;
+import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
+import com.art2cat.dev.moonlightnote.utils.UserUtils;
+import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
@@ -53,6 +54,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -100,7 +102,7 @@ public class MoonlightActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_moonlight);
 
-        mLock = SPUtils.getInt(this, Constants.USER_CONFIG, Constants.USER_CONFIG_SECURITY_ENABLE, 0);
+        mLock = SPUtils.getInt(MoonlightApplication.getContext(), Constants.USER_CONFIG, Constants.USER_CONFIG_SECURITY_ENABLE, 0);
         if (mLock != 0) {
             isLock = true;
         }
@@ -112,7 +114,7 @@ public class MoonlightActivity extends AppCompatActivity
         mAuth = getInstance();
         //noinspection ConstantConditions
         mUserId = mAuth.getCurrentUser().getUid();
-        mFDatabaseUtils = new FDatabaseUtils(this, mUserId);
+        mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.getContext(), mUserId);
         mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
         //获取Bus单例，并注册
         EventBus.getDefault().register(this);
@@ -148,8 +150,10 @@ public class MoonlightActivity extends AppCompatActivity
         fade1.setDuration(500);
         fade1.setMode(Fade.MODE_IN);
 
-        getWindow().setExitTransition(fade);
-        getWindow().setReenterTransition(fade1);
+        getWindow().setEnterTransition(fade);
+        getWindow().setReenterTransition(fade);
+        getWindow().setReturnTransition(fade1);
+        getWindow().setExitTransition(fade1);
     }
 
     @Override
@@ -204,7 +208,7 @@ public class MoonlightActivity extends AppCompatActivity
         super.onResume();
         Log.d(TAG, "onResume: ");
         if (isLock) {
-            Utils.lockApp(this, mLock);
+            Utils.lockApp(MoonlightApplication.getContext(), mLock);
         }
     }
 
@@ -240,19 +244,21 @@ public class MoonlightActivity extends AppCompatActivity
                                 new MoonlightFragment(),
                                 FragmentUtils.REPLACE_NORMAL);
                         mFAB.setVisibility(View.VISIBLE);
-                        isHome = !isHome;
+                        isHome = true;
                     }
                 }
                 break;
             case R.id.nav_trash:
                 if (mUserId != null) {
                     Log.d(TAG, "nav_trash: " + isHome);
-                    FragmentUtils.replaceFragment(mFragmentManager,
-                            container,
-                            new TrashFragment(),
-                            FragmentUtils.REPLACE_NORMAL);
-                    mFAB.setVisibility(View.GONE);
-                    isHome = !isHome;
+                    if (isHome) {
+                        FragmentUtils.replaceFragment(mFragmentManager,
+                                container,
+                                new TrashFragment(),
+                                FragmentUtils.REPLACE_NORMAL);
+                        mFAB.setVisibility(View.GONE);
+                        isHome = false;
+                    }
                 }
                 break;
             case R.id.nav_settings:
@@ -266,10 +272,21 @@ public class MoonlightActivity extends AppCompatActivity
                 startActivity(intent);
                 break;
             case R.id.nav_feedback:
-                Intent feedback = new Intent(ACTION_SEND);
+                String systemInfos = "Debug-infos:";
+
+                systemInfos += "\nOS Version: " + "Android " + getOSVersion()
+                        + " (" + Build.VERSION.RELEASE + ")";
+                systemInfos += "\nOS API Level: " + android.os.Build.VERSION.SDK_INT;
+                systemInfos += "\nKernel Version: " + System.getProperty("os.version")
+                        + "(" + android.os.Build.VERSION.INCREMENTAL + ")";
+                systemInfos += "\nDevice: " + android.os.Build.DEVICE;
+                systemInfos += "\nModel (and Product): " + android.os.Build.MODEL
+                        + " (" + android.os.Build.PRODUCT + ")\n";
+                Intent feedback = new Intent(Intent.ACTION_SENDTO);
+                feedback.setData(Uri.parse("mailto:"));
                 feedback.putExtra(EXTRA_EMAIL, new String[]{"dev@art2cat.com"});
                 feedback.putExtra(EXTRA_SUBJECT, "Feedback");
-                feedback.setType("message/rfc822");
+                feedback.putExtra(Intent.EXTRA_TEXT, systemInfos);
                 startActivity(Intent.createChooser(feedback, "Send Email..."));
                 break;
             case R.id.nav_rate_app:
@@ -304,8 +321,8 @@ public class MoonlightActivity extends AppCompatActivity
                     ShortcutsUtils.newInstance(MoonlightActivity.this).removeShortcuts();
                 }
                 BusEventUtils.post(Constants.BUS_FLAG_SIGN_OUT, null);
-                SPUtils.clear(this, "User");
-                SPUtils.clear(this, Constants.USER_CONFIG);
+                SPUtils.clear(MoonlightApplication.getContext(), "User");
+                SPUtils.clear(MoonlightApplication.getContext(), Constants.USER_CONFIG);
                 SnackBarUtils.shortSnackBar(mCoordinatorLayout, "Your account have been remove!",
                         SnackBarUtils.TYPE_ALERT).show();
                 break;
@@ -316,6 +333,26 @@ public class MoonlightActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private String getOSVersion() {
+
+        Field[] fields = Build.VERSION_CODES.class.getFields();
+        for (Field field : fields) {
+            String fieldName = field.getName();
+            int fieldValue = -1;
+
+            try {
+                fieldValue = field.getInt(new Object());
+            } catch (IllegalArgumentException | IllegalAccessException | NullPointerException e) {
+                e.printStackTrace();
+            }
+
+            if (fieldValue == Build.VERSION.SDK_INT) {
+                return fieldName;
+            }
+        }
+        return null;
     }
 
     /**
@@ -414,7 +451,6 @@ public class MoonlightActivity extends AppCompatActivity
             FragmentUtils.addFragment(getFragmentManager(),
                     R.id.main_fragment_container,
                     new MoonlightFragment());
-
             if (type == 101) {
                 FragmentUtils.replaceFragment(getFragmentManager(),
                         R.id.main_fragment_container,
@@ -475,7 +511,7 @@ public class MoonlightActivity extends AppCompatActivity
         // Name, email address, and profile imageUrl Url
         if (mFirebaseUser != null) {
 
-            User user = UserUtils.getUserFromCache(this.getApplicationContext());
+            User user = UserUtils.getUserFromCache(MoonlightApplication.getContext());
 
             Log.d(TAG, "displayUserInfo: " + user.getUid());
             String username = user.getNickname();
@@ -488,7 +524,7 @@ public class MoonlightActivity extends AppCompatActivity
             }
             String photoUrl = user.getPhotoUrl();
             if (photoUrl != null) {
-                BitmapUtils bitmapUtils = new BitmapUtils(this);
+                BitmapUtils bitmapUtils = new BitmapUtils(MoonlightApplication.getContext());
                 Log.d(TAG, "displayUserInfo: " + photoUrl);
                 bitmapUtils.display(mCircleImageView, photoUrl);
             }

@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.CustomView;
+package com.art2cat.dev.moonlightnote.custom_view;
 
 import android.content.Context;
 import android.graphics.Matrix;
@@ -53,10 +53,6 @@ public class ZoomImageView extends RecyclerImageView {
      */
     private long firstTouchTime = 0;
     /**
-     * 时间点击的间隔
-     */
-    private int intervalTime = 250;
-    /**
      * 第一次点完坐标
      */
     private PointF firstPointF;
@@ -108,12 +104,11 @@ public class ZoomImageView extends RecyclerImageView {
     private void getImageViewWidthHeight() {
         ViewTreeObserver vto2 = getViewTreeObserver();
         vto2.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @SuppressWarnings("deprecation")
+            @Override
             public void onGlobalLayout() {
-                getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 imgWidth = getWidth();
                 imgHeight = getHeight();
-
             }
         });
     }
@@ -141,6 +136,10 @@ public class ZoomImageView extends RecyclerImageView {
         // 存储当前时间
         long currentTime = System.currentTimeMillis();
         // 判断两次点击间距时间是否符合
+        /*
+      时间点击的间隔
+     */
+        int intervalTime = 250;
         if (currentTime - firstTouchTime >= intervalTime) {
             firstTouchTime = currentTime;
             firstPointF = new PointF(event.getX(), event.getY());
@@ -249,7 +248,7 @@ public class ZoomImageView extends RecyclerImageView {
                 // 手指离开屏幕
                 case MotionEvent.ACTION_UP:
                     setDoubleTouchEvent(event);
-
+                    break;
                 case MotionEvent.ACTION_POINTER_UP:
                     // System.out.println("ACTION_POINTER_UP");
                     mode = 0;
@@ -282,7 +281,7 @@ public class ZoomImageView extends RecyclerImageView {
         private float distance(MotionEvent event) {
             float dx = event.getX(1) - event.getX(0);
             float dy = event.getY(1) - event.getY(0);
-           /** 使用勾股定理返回两点之间的距离 */
+            /** 使用勾股定理返回两点之间的距离 */
             return (float) Math.sqrt(dx * dx + dy * dy);
         }
 

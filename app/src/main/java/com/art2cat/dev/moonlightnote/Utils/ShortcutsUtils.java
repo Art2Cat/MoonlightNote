@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Utils;
+package com.art2cat.dev.moonlightnote.utils;
 
 import android.content.Context;
 import android.content.Intent;
@@ -170,7 +170,7 @@ public class ShortcutsUtils {
      * @return ID列表
      */
     public List<String> getShortcutIds() {
-        List<String> shortcutIdList = new ArrayList<String>();
+        List<String> shortcutIdList = new ArrayList<>();
         List<ShortcutInfo> shortcutInfoList = shortcutManager.getDynamicShortcuts();
         if (shortcutInfoList.isEmpty()) {
             return null;

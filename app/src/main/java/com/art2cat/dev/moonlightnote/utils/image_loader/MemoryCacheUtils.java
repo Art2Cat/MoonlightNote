@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Utils.ImageLoader;
+package com.art2cat.dev.moonlightnote.utils.image_loader;
 
 import android.graphics.Bitmap;
 import android.util.LruCache;
@@ -20,8 +20,7 @@ public class MemoryCacheUtils {
             //用于计算每个条目的大小
             @Override
             protected int sizeOf(String key, Bitmap value) {
-                int byteCount = value.getByteCount();
-                return byteCount;
+                return value.getByteCount();
             }
         };
 
@@ -40,8 +39,7 @@ public class MemoryCacheUtils {
                 return bitmap;
             }
             */
-        Bitmap bitmap = mMemoryCache.get(url);
-        return bitmap;
+        return mMemoryCache.get(url);
 
     }
 

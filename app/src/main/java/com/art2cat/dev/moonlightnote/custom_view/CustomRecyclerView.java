@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.CustomView;
+package com.art2cat.dev.moonlightnote.custom_view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

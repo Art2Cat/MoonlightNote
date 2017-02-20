@@ -1,16 +1,16 @@
-package com.art2cat.dev.moonlightnote.Controller.Moonlight;
+package com.art2cat.dev.moonlightnote.controller.moonlight;
 
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -55,21 +55,21 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment.CircleProgressDialogFragment;
-import com.art2cat.dev.moonlightnote.CustomView.BaseFragment;
-import com.art2cat.dev.moonlightnote.Model.BusEvent;
-import com.art2cat.dev.moonlightnote.Model.Constants;
-import com.art2cat.dev.moonlightnote.Model.Moonlight;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.AudioPlayer;
-import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
-import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
-import com.art2cat.dev.moonlightnote.Utils.Firebase.StorageUtils;
-import com.art2cat.dev.moonlightnote.Utils.MaterialAnimation.CircularRevealUtils;
-import com.art2cat.dev.moonlightnote.Utils.PermissionUtils;
-import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
-import com.art2cat.dev.moonlightnote.Utils.Utils;
+import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment;
+import com.art2cat.dev.moonlightnote.custom_view.BaseFragment;
+import com.art2cat.dev.moonlightnote.model.BusEvent;
+import com.art2cat.dev.moonlightnote.model.Constants;
+import com.art2cat.dev.moonlightnote.model.Moonlight;
+import com.art2cat.dev.moonlightnote.utils.AudioPlayer;
+import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.utils.PermissionUtils;
+import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
+import com.art2cat.dev.moonlightnote.utils.Utils;
+import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
+import com.art2cat.dev.moonlightnote.utils.firebase.StorageUtils;
+import com.art2cat.dev.moonlightnote.utils.material_animation.CircularRevealUtils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -90,7 +90,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -101,13 +100,14 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.app.Activity.RESULT_OK;
-import static com.art2cat.dev.moonlightnote.Model.Constants.ALBUM_CHOOSE;
-import static com.art2cat.dev.moonlightnote.Model.Constants.BLUE_DARK;
-import static com.art2cat.dev.moonlightnote.Model.Constants.CAMERA_PERMS;
-import static com.art2cat.dev.moonlightnote.Model.Constants.CYAN_DARK;
-import static com.art2cat.dev.moonlightnote.Model.Constants.RECORD_AUDIO;
-import static com.art2cat.dev.moonlightnote.Model.Constants.STORAGE_PERMS;
-import static com.art2cat.dev.moonlightnote.Model.Constants.TAKE_PICTURE;
+import static com.art2cat.dev.moonlightnote.model.Constants.ALBUM_CHOOSE;
+import static com.art2cat.dev.moonlightnote.model.Constants.BLUE_DARK;
+import static com.art2cat.dev.moonlightnote.model.Constants.CAMERA_PERMS;
+import static com.art2cat.dev.moonlightnote.model.Constants.CYAN_DARK;
+import static com.art2cat.dev.moonlightnote.model.Constants.GREY_DARK;
+import static com.art2cat.dev.moonlightnote.model.Constants.RECORD_AUDIO;
+import static com.art2cat.dev.moonlightnote.model.Constants.STORAGE_PERMS;
+import static com.art2cat.dev.moonlightnote.model.Constants.TAKE_PICTURE;
 import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
 import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 
@@ -148,6 +148,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private String mUserId;
     private String mKeyId;
     private int mPaddingBottom;
+    private int mBottomBarHeight;
     private Uri mFileUri = null;
     private StorageReference mStorageReference;
     private String mImageFileName;
@@ -161,35 +162,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
     public MoonlightDetailFragment() {
         // Required empty public constructor
-    }
-
-    public static void setOverflowButtonColor(final Activity activity) {
-        final String overflowDescription = activity.getString(R.string.abc_action_menu_overflow_description);
-        final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
-        final ViewTreeObserver viewTreeObserver = decorView.getViewTreeObserver();
-        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                final ArrayList<View> outViews = new ArrayList<View>();
-                decorView.findViewsWithText(outViews, overflowDescription,
-                        View.FIND_VIEWS_WITH_CONTENT_DESCRIPTION);
-                if (outViews.isEmpty()) {
-                    return;
-                }
-                AppCompatImageView overflow = (AppCompatImageView) outViews.get(0);
-//                overflow.setColorFilter(Color.CYAN);
-                overflow.setColorFilter(0xFF616161);
-                removeOnGlobalLayoutListener(decorView, this);
-            }
-        });
-    }
-
-    public static void removeOnGlobalLayoutListener(View v, ViewTreeObserver.OnGlobalLayoutListener listener) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            v.getViewTreeObserver().removeGlobalOnLayoutListener(listener);
-        } else {
-            v.getViewTreeObserver().removeOnGlobalLayoutListener(listener);
-        }
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -248,7 +220,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mColorMaps.put(Constants.DEEP_ORANGE, Constants.DEEP_ORANGE_DARK);
         mColorMaps.put(Constants.DEEP_PURPLE, Constants.DEEP_PURPLE_DARK);
         mColorMaps.put(Constants.GREEN, Constants.GREEN_DARK);
-        mColorMaps.put(Constants.GREY, Constants.GREY_DARK);
+        mColorMaps.put(Constants.GREY, GREY_DARK);
         mColorMaps.put(Constants.INDIGO, Constants.INDIGO_DARK);
         mColorMaps.put(Constants.LIGHT_BLUE, Constants.LIGHT_BLUE_DARK);
         mColorMaps.put(Constants.LIGHT_GREEN, Constants.LIGHT_GREEN_DARK);
@@ -278,6 +250,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         } else {
             mToolbar.setBackgroundColor(getResources().getColor(R.color.white));
         }
+
         ((MoonlightActivity) mActivity).setSupportActionBar(mToolbar);
         mParams = (AppBarLayout.LayoutParams) ((MoonlightActivity) mActivity).mToolbar.getLayoutParams();
         mParams.setScrollFlags(0);
@@ -286,7 +259,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getFragmentManager().popBackStack();
+//                getFragmentManager().popBackStack();
+                mActivity.onBackPressed();
             }
         });
 
@@ -382,7 +356,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
             }
         });
-
         return mView;
     }
 
@@ -475,7 +448,14 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         changeUIColor(R.color.white, mActivity.getTheme());
         mToolbar.setTitle(null);
         initView(mEditable);
-        setOverflowButtonColor(mActivity);
+        setOverflowButtonColor(mActivity, GREY_DARK);
+
+//        if (Utils.isXLargeTablet(mActivity)) {
+//            LinearLayout.LayoutParams lp =
+//                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+//                            mToolbar.getHeight());
+//            mBottomBarContainer.setLayoutParams(lp);
+//        }
 
         if (!mEditable) {
             Log.d(TAG, "onActivityCreated: SnackBar");
@@ -526,7 +506,19 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
+    @Override
     public void onDestroy() {
+        if (mInputMethodManager != null) {
+            mInputMethodManager.hideSoftInputFromWindow(
+                    mActivity.getWindow().getDecorView().getWindowToken(), 0);
+
+        }
+        revertUI();
+
         //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
         if (mCreateFlag && mEditable) {
             if (!isEmpty(moonlight)) {
@@ -544,6 +536,15 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             ((MoonlightActivity) mActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
         }
 
+        RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
+        refWatcher.watch(this);
+        super.onDestroy();
+    }
+
+    /**
+     * 恢复原来的UI界面
+     */
+    private void revertUI() {
 
         mToolbar.setVisibility(View.GONE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -554,12 +555,15 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
                 | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
         ((MoonlightActivity) mActivity).mToolbar.setVisibility(View.VISIBLE);
-        ((MoonlightActivity) mActivity).mFAB.show();
+
         ((DrawerLocker) mActivity).setDrawerEnabled(true);
-        mActivity.getWindow().setStatusBarColor(CYAN_DARK);
-        RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
-        refWatcher.watch(this);
-        super.onDestroy();
+
+        if (mEditable) {
+            mActivity.getWindow().setStatusBarColor(CYAN_DARK);
+            mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+            ((MoonlightActivity) mActivity).mFAB.show();
+        }
+
     }
 
     @SuppressLint("LogConditional")
@@ -630,7 +634,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                         Log.d(TAG, "handleMessage: " + busEvent.getMessage());
                         File file = new File(new File(Environment.getExternalStorageDirectory()
                                 + "/MoonlightNote/.audio"), busEvent.getMessage());
-                        Uri mAudioUri = FileProvider.getUriForFile(mActivity, Constants.FILE_PROVIDER, file);
+                        Uri mAudioUri = FileProvider.getUriForFile(MoonlightApplication.getContext(), Constants.FILE_PROVIDER, file);
                         uploadFromUri(mAudioUri, mUserId, 3);
                     }
                     break;
@@ -976,7 +980,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             mCircleProgressDialogFragment.show(getFragmentManager(), "progress");
         }
 
-        StorageTask<UploadTask.TaskSnapshot> uploadTask = null;
+        StorageTask<UploadTask.TaskSnapshot> uploadTask;
         if (type == 0) {
 
             // Get a reference to store file at photos/<FILENAME>.jpg

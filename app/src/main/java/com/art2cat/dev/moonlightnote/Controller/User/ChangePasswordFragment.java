@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.User;
+package com.art2cat.dev.moonlightnote.controller.user;
 
 
 import android.app.Fragment;
@@ -16,7 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.SnackBarUtils;
+import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;

@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.Moonlight;
+package com.art2cat.dev.moonlightnote.controller.moonlight;
 
 /**
  * Created by art2cat

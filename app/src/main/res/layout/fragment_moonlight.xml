@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:clipToPadding="false"
     android:orientation="vertical"
-    tools:context=".Controller.Moonlight.MoonlightFragment">
+    tools:context=".controller.moonlight.MoonlightFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"

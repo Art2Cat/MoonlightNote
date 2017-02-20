@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Utils;
+package com.art2cat.dev.moonlightnote.utils;
 
 import android.app.Fragment;
 import android.app.FragmentManager;

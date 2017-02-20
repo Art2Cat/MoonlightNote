@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Service;
+package com.art2cat.dev.moonlightnote.service;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -7,10 +7,10 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
-import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.utils.LogUtils;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -29,16 +29,22 @@ public class NotificationService extends FirebaseMessagingService {
      */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
+        LogUtils.getInstance(TAG)
+                .setMessage("From: " + remoteMessage.getFrom())
+                .debug();
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            LogUtils.getInstance(TAG)
+                    .setMessage("Message data payload: " + remoteMessage.getData())
+                    .debug();
         }
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            LogUtils.getInstance(TAG)
+                    .setMessage("Message Notification Body: " + remoteMessage.getNotification().getBody())
+                    .debug();
             sendNotification(remoteMessage.getNotification().getBody());
         }
 

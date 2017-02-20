@@ -1,9 +1,8 @@
-package com.art2cat.dev.moonlightnote.Service;
+package com.art2cat.dev.moonlightnote.service;
 
-import android.util.Log;
-
-import com.art2cat.dev.moonlightnote.Model.User;
-import com.art2cat.dev.moonlightnote.Utils.UserUtils;
+import com.art2cat.dev.moonlightnote.model.User;
+import com.art2cat.dev.moonlightnote.utils.LogUtils;
+import com.art2cat.dev.moonlightnote.utils.UserUtils;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
@@ -14,12 +13,12 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 
 public class NotificationInstanceIDService extends FirebaseInstanceIdService {
     private static final String TAG = "NotificationInstanceIDS";
+
     @Override
     public void onTokenRefresh() {
         // Get updated InstanceID token.
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(TAG, "Refreshed token: " + refreshedToken);
-
+        LogUtils.getInstance(TAG).setMessage("Refreshed token: " + refreshedToken).debug();
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.

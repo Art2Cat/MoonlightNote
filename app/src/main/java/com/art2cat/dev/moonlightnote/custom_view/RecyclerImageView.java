@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.CustomView;
+package com.art2cat.dev.moonlightnote.custom_view;
 
 import android.content.Context;
 import android.support.v7.widget.AppCompatImageView;

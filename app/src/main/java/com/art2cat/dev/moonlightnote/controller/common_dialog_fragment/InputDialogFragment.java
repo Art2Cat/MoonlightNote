@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.CommonDialogFragment;
+package com.art2cat.dev.moonlightnote.controller.common_dialog_fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -16,9 +16,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.art2cat.dev.moonlightnote.Model.Constants;
+import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 
 /**
  * Created by Rorschach
@@ -27,7 +27,6 @@ import com.art2cat.dev.moonlightnote.Utils.BusEventUtils;
 
 public class InputDialogFragment extends DialogFragment {
     private static final String TAG = "InputDialogFragment";
-    private TextInputLayout mTextInputLayout;
     private TextInputEditText mTextInputEditText;
     private int mType;
     private String mTitle;
@@ -61,16 +60,16 @@ public class InputDialogFragment extends DialogFragment {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         @SuppressLint("InflateParams")
         View view = inflater.inflate(R.layout.dialog_input, null);
-        mTextInputLayout = (TextInputLayout) view.findViewById(R.id.inputLayout);
+        TextInputLayout textInputLayout = (TextInputLayout) view.findViewById(R.id.inputLayout);
         mTextInputEditText = (TextInputEditText) view.findViewById(R.id.dialog_editText);
         if (mType == 0) {
-            mTextInputLayout.setHint(getString(R.string.dialog_enter_your_register_email));
+            textInputLayout.setHint(getString(R.string.dialog_enter_your_register_email));
             mTextInputEditText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         } else if (mType == 1) {
-            mTextInputLayout.setHint(getString(R.string.dialog_enter_your_nickname));
+            textInputLayout.setHint(getString(R.string.dialog_enter_your_nickname));
             mTextInputEditText.setInputType(InputType.TYPE_CLASS_TEXT);
         } else if (mType == 2) {
-            mTextInputLayout.setHint(getString(R.string.dialog_enter_your_password));
+            textInputLayout.setHint(getString(R.string.dialog_enter_your_password));
             mTextInputEditText.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
             //设置密码隐藏
             mTextInputEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());

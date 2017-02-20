@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.Controller.Login;
+package com.art2cat.dev.moonlightnote.controller.login;
 
 import android.annotation.TargetApi;
 import android.app.Fragment;
@@ -13,15 +13,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.Fade;
 import android.util.Log;
 
-import com.art2cat.dev.moonlightnote.Controller.Moonlight.MoonlightActivity;
-import com.art2cat.dev.moonlightnote.Model.Constants;
+import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.model.Constants;
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.Utils.Firebase.FDatabaseUtils;
-import com.art2cat.dev.moonlightnote.Utils.FragmentUtils;
-import com.art2cat.dev.moonlightnote.Utils.SPUtils;
-import com.art2cat.dev.moonlightnote.Utils.ShortcutsUtils;
+import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
+import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
+import com.art2cat.dev.moonlightnote.utils.SPUtils;
+import com.art2cat.dev.moonlightnote.utils.ShortcutsUtils;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -45,12 +47,14 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTransition();
         setContentView(R.layout.activity_login);
         mFragmentManager = getFragmentManager();
         //初始化Admob
         MobileAds.initialize(this, AD_UNIT_ID);
         //获得FirebaseAuth对象
         mAuth = getInstance();
+
         boolean flag = SPUtils.getBoolean(this, Constants.USER_CONFIG, Constants.USER_CONFIG_AUTO_LOGIN, false);
         if (!flag) {
             signIn();
@@ -87,7 +91,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        finish();
     }
 
     public void signIn() {
@@ -99,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (user != null) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
-                    mFDatabaseUtils = new FDatabaseUtils(LoginActivity.this, user.getUid());
+                    mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.getContext(), user.getUid());
                     mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
                     if (mShortcutsUtils != null) {
                         initShortcuts();
@@ -142,6 +145,22 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    private void setTransition() {
+
+        Fade fade = new Fade();
+        fade.setDuration(500);
+        fade.setMode(Fade.MODE_IN);
+
+        Fade fade1 = new Fade();
+        fade1.setDuration(500);
+        fade1.setMode(Fade.MODE_OUT);
+
+        getWindow().setEnterTransition(fade);
+        getWindow().setReenterTransition(fade);
+        getWindow().setReturnTransition(fade1);
+        getWindow().setExitTransition(fade1);
+    }
+
     /**
      * 启动登录界面
      */
@@ -167,14 +186,14 @@ public class LoginActivity extends AppCompatActivity {
     @TargetApi(Build.VERSION_CODES.N_MR1)
     private void enableShortcuts() {
 
-        Intent intent = new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MoonlightActivity.class);
+        Intent intent = new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MoonlightActivity.class).putExtra("type", 101);
 
 //        Intent[] intents = new Intent[]{
 //                new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MoonlightActivity.class),
 //                new Intent("com.art2cat.dev.moonlight.COMPOSE", Uri.EMPTY, this, MoonlightDetailActivity.class)
 //        };
 
-        intent.putExtra("type", 101);
+        ;
 
 
 //        intent.setAction("com.art2cat.dev.moonlight.COMPOSE");
@@ -210,7 +229,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 startActivity(new Intent(LoginActivity.this, MoonlightActivity.class));
                 //这里调用Activity.finish()方法销毁当前Activity
-                finish();
+                finishAfterTransition();
             } else {
                 Fragment fragment = new LoginFragment();
                 mFragmentManager.beginTransaction()

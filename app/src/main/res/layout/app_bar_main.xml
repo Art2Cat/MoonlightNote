@@ -36,6 +36,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_action_create"
-        app:layout_behavior="com.art2cat.dev.moonlightnote.CustomView.CustomBehavior.ScaleDownShowBehavior" />
+        app:layout_behavior="com.art2cat.dev.moonlightnote.custom_view.custom_behavior.ScaleDownShowBehavior" />
 
 </android.support.design.widget.CoordinatorLayout>

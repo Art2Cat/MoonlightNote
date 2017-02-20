@@ -1,10 +1,11 @@
 /**
  * AES加密工具
  */
-package com.art2cat.dev.moonlightnote.Utils;
+package com.art2cat.dev.moonlightnote.utils;
 
 
 import android.text.TextUtils;
+import android.util.Base64;
 
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
@@ -41,7 +42,7 @@ public class AESUtils {
         SecureRandom localSecureRandom = new SecureRandom();
         byte[] bytesKey = new byte[SALT_LENGTH];
         localSecureRandom.nextBytes(bytesKey);
-        return byteArrayToHexString(bytesKey);
+        return Base64.encodeToString(bytesKey, Base64.CRLF);
     }
 
     /**
@@ -74,8 +75,7 @@ public class AESUtils {
         }
         try {
             byte[] result = encrypt(key, unencrypted.getBytes());
-//            return Base64.encodeToString(result, Base64.CRLF);
-            return byteArrayToHexString(result);
+            return Base64.encodeToString(result, Base64.CRLF);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,8 +109,7 @@ public class AESUtils {
             return encrypted;
         }
         try {
-//            byte[] enc = Base64.decode(encrypted, Base64.CRLF);
-            byte[] enc = hexStringToByteArray(encrypted);
+            byte[] enc = Base64.decode(encrypted, Base64.CRLF);
             byte[] result = decrypt(key, enc);
             return new String(result);
         } catch (Exception e) {
