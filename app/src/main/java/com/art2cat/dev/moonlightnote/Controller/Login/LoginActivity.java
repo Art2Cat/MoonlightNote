@@ -186,14 +186,14 @@ public class LoginActivity extends AppCompatActivity {
     @TargetApi(Build.VERSION_CODES.N_MR1)
     private void enableShortcuts() {
 
-        Intent intent = new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MoonlightActivity.class);
+        Intent intent = new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MoonlightActivity.class).putExtra("type", 101);
 
 //        Intent[] intents = new Intent[]{
 //                new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MoonlightActivity.class),
 //                new Intent("com.art2cat.dev.moonlight.COMPOSE", Uri.EMPTY, this, MoonlightDetailActivity.class)
 //        };
 
-        intent.putExtra("type", 101);
+        ;
 
 
 //        intent.setAction("com.art2cat.dev.moonlight.COMPOSE");

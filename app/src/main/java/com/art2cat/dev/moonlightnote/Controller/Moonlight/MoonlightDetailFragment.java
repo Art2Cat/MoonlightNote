@@ -52,7 +52,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
@@ -451,12 +450,12 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         initView(mEditable);
         setOverflowButtonColor(mActivity, GREY_DARK);
 
-        if (Utils.isXLargeTablet(mActivity)) {
-            LinearLayout.LayoutParams lp =
-                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                            mToolbar.getHeight());
-            mBottomBarContainer.setLayoutParams(lp);
-        }
+//        if (Utils.isXLargeTablet(mActivity)) {
+//            LinearLayout.LayoutParams lp =
+//                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+//                            mToolbar.getHeight());
+//            mBottomBarContainer.setLayoutParams(lp);
+//        }
 
         if (!mEditable) {
             Log.d(TAG, "onActivityCreated: SnackBar");
@@ -513,7 +512,11 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
     @Override
     public void onDestroy() {
+        if (mInputMethodManager != null) {
+            mInputMethodManager.hideSoftInputFromWindow(
+                    mActivity.getWindow().getDecorView().getWindowToken(), 0);
 
+        }
         revertUI();
 
         //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
