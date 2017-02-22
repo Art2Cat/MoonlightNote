@@ -64,6 +64,7 @@ import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.utils.AudioPlayer;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.utils.LogUtils;
 import com.art2cat.dev.moonlightnote.utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.utils.Utils;
@@ -168,6 +169,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LogUtils.getInstance(TAG).setMessage("onCreate").debug();
         //设置显示OptionsMenu
         setHasOptionsMenu(true);
         //获取Bus单例，并注册
@@ -203,7 +205,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         }
 
         ((DrawerLocker) mActivity).setDrawerEnabled(false);
-        ((MoonlightActivity) mActivity).mFAB.hide();
 
         initColor();
 
@@ -236,6 +237,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        LogUtils.getInstance(TAG).setMessage("onCreate").debug();
         //视图初始化
         mView = inflater.inflate(R.layout.fragment_moonlight_detail, container, false);
 
@@ -259,8 +261,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                getFragmentManager().popBackStack();
-                mActivity.onBackPressed();
+                getFragmentManager().popBackStack();
+//                mActivity.onBackPressed();
             }
         });
 
@@ -297,20 +299,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 displayTime.setText(timeFormat);
             }
             onCheckSoftKeyboardState(mView);
-            //mDeleteImage.setOnClickListener(this);
             mImage.setOnClickListener(this);
-            mImage.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-//                    ConfirmationDialogFragment confirmationDialogFragment =
-//                            ConfirmationDialogFragment.newInstance(
-//                                    getString(R.string.confirmation_title),
-//                                    getString(R.string.confirmation_delete_image),
-//                                    Constants.EXTRA_TYPE_CDF_DELETE_IMAGE);
-//                    confirmationDialogFragment.show(getFragmentManager(), "delete image");
-                    return false;
-                }
-            });
             mDeleteAudio.setOnClickListener(this);
             mPlayingAudio.setOnClickListener(this);
 //            if (!Utils.isXLargeTablet(mActivity)) {
@@ -447,6 +436,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 //        CircularRevealUtils.show(mContentFrameLayout);
         changeUIColor(R.color.white, mActivity.getTheme());
         mToolbar.setTitle(null);
+        ((MoonlightActivity) mActivity).mToolbar.setTitle(null);
+        ((MoonlightActivity) mActivity).hideFAB();
         initView(mEditable);
         setOverflowButtonColor(mActivity, GREY_DARK);
 
@@ -555,13 +546,18 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
                 | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
         ((MoonlightActivity) mActivity).mToolbar.setVisibility(View.VISIBLE);
+        ((MoonlightActivity) mActivity).mToolbar.setTitle(getString(R.string.app_name));
 
         ((DrawerLocker) mActivity).setDrawerEnabled(true);
 
         if (mEditable) {
             mActivity.getWindow().setStatusBarColor(CYAN_DARK);
             mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
-            ((MoonlightActivity) mActivity).mFAB.show();
+
+            if (((MoonlightActivity) mActivity).mFAB != null) {
+                ((MoonlightActivity) mActivity).mFAB.show();
+            }
+
         }
 
     }

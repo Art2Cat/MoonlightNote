@@ -20,18 +20,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
+import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.custom_view.BaseFragment;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
 import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
-import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
+import com.art2cat.dev.moonlightnote.utils.LogUtils;
+import com.art2cat.dev.moonlightnote.utils.MoonlightEncryptUtils;
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.utils.firebase.StorageUtils;
-import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
-import com.art2cat.dev.moonlightnote.utils.MoonlightEncryptUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -79,20 +80,20 @@ public abstract class MoonlightListFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         //获取Bus单例，并注册
         EventBus.getDefault().register(this);
+        LogUtils.getInstance(TAG).setMessage("onCreate").debug();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        Log.d(TAG, "onCreateView: ");
+        LogUtils.getInstance(TAG).setMessage("onCreateView").debug();
         View rootView = inflater.inflate(R.layout.fragment_moonlight, container, false);
 
         MoonlightActivity moonlightActivity = (MoonlightActivity) mActivity;
         mToolbar = moonlightActivity.mToolbar;
         mToolbar2 = moonlightActivity.mToolbar2;
         mParams = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
-
 
         if (isTrash()) {
             mToolbar.setTitle(R.string.fragment_trash);
@@ -132,12 +133,19 @@ public abstract class MoonlightListFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        LogUtils.getInstance(TAG).setMessage("onResume").debug();
     }
 
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (isTrash()) {
+            ((MoonlightActivity) mActivity).hideFAB();
+            MoonlightActivity.isHome = false;
+        }
+
+        LogUtils.getInstance(TAG).setMessage("onActivityCreated").debug();
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(mActivity);
         mLinearLayoutManager.setReverseLayout(true);
         mLinearLayoutManager.setStackFromEnd(true);
@@ -180,23 +188,26 @@ public abstract class MoonlightListFragment extends BaseFragment {
         });
 
         setOverflowButtonColor(mActivity, 0xFFFFFFFF);
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        LogUtils.getInstance(TAG).setMessage("onPause").debug();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        LogUtils.getInstance(TAG).setMessage("onStop").debug();
     }
 
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d(TAG, "onDestroyView: ");
+        LogUtils.getInstance(TAG).setMessage("onDestroyView").debug();
         isInflate = false;
         mFirebaseRecyclerAdapter.unregisterAdapterDataObserver(mAdapterDataObserver);
     }
@@ -386,6 +397,8 @@ public abstract class MoonlightListFragment extends BaseFragment {
             mFirebaseRecyclerAdapter.cleanup();
         }
 
+        LogUtils.getInstance(TAG).setMessage("onDestroy").debug();
+
         RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
         refWatcher.watch(this);
     }
@@ -393,6 +406,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+        LogUtils.getInstance(TAG).setMessage("onCreateOptionsMenu").debug();
         mMenu = menu;
         mMenuInflater = inflater;
         if (!isTrash()) {
@@ -415,6 +429,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
                 mMenuInflater.inflate(R.menu.menu_trash, mMenu);
                 break;
             case 3:
+                Log.d(TAG, "changeOptionsMenu: ");
                 mMenuInflater.inflate(R.menu.menu_moonlight, mMenu);
                 break;
         }

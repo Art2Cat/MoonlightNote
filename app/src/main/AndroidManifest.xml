@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.art2cat.dev.moonlightnote">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -38,15 +39,22 @@
         <activity
             android:name=".controller.moonlight.MoonlightActivity"
             android:launchMode="singleTask"
+            android:resizeableActivity="true"
             android:theme="@style/AppTheme.NoActionBar">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:host="art2cat.com"
+                    android:pathPrefix="/schedule"
+                    android:scheme="https" />
             </intent-filter>
+
         </activity>
         <activity
             android:name=".controller.login.LoginActivity"
+            android:resizeableActivity="true"
             android:theme="@style/AppTheme.NoActionBarForLoginFragment">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -57,6 +65,7 @@
         <activity
             android:name=".controller.user.UserActivity"
             android:parentActivityName=".controller.moonlight.MoonlightActivity"
+            android:resizeableActivity="true"
             android:theme="@style/AppTheme.NoActionBarForLoginFragment">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -74,16 +83,21 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".controller.settings.MoonlightPinActivity" />
+        <activity
+            android:name=".controller.settings.MoonlightPinActivity"
+            android:resizeableActivity="true" />
         <activity
             android:name=".controller.settings.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".controller.moonlight.MoonlightActivity">
+            android:parentActivityName=".controller.moonlight.MoonlightActivity"
+            android:resizeableActivity="true">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity" />
         </activity>
-        <activity android:name=".controller.settings.SettingsSecondActivity">
+        <activity
+            android:name=".controller.settings.SettingsSecondActivity"
+            android:resizeableActivity="true">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.art2cat.dev.moonlightnote.controller.settings.SettingsActivity" />

@@ -27,6 +27,7 @@ public class LogUtils {
         return ourInstance;
     }
 
+
     public LogUtils setMessage(String message) {
         this.message = message;
         return this;

@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote.controller.moonlight;
 
+import android.annotation.TargetApi;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.net.Uri;
@@ -70,6 +71,7 @@ public class MoonlightActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, BaseFragment.DrawerLocker {
 
     private static final String TAG = "MoonlightActivity";
+    public static boolean isHome = true;
     public Toolbar mToolbar;
     public Toolbar mToolbar2;
     public FloatingActionButton mFAB;
@@ -79,7 +81,6 @@ public class MoonlightActivity extends AppCompatActivity
     private CoordinatorLayout mCoordinatorLayout;
     private Button mSortButton;
     private CircleImageView mCircleImageView;
-    private boolean isHome = true;
     private boolean isClicked = false;
     private boolean isLogin = true;
     private boolean isLock;
@@ -138,6 +139,7 @@ public class MoonlightActivity extends AppCompatActivity
         });
 
         mClient = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
     }
 
     private void setTransition() {
@@ -333,6 +335,19 @@ public class MoonlightActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    @TargetApi(Build.VERSION_CODES.N)
+    public void hideFAB() {
+        if (mFAB == null) {
+            return;
+        }
+        if (isInMultiWindowMode()) {
+            mFAB.hide();
+        } else {
+            mFAB.hide();
+        }
     }
 
     private String getOSVersion() {
@@ -605,4 +620,5 @@ public class MoonlightActivity extends AppCompatActivity
     public interface FragmentOnTouchListener {
         boolean onTouch(MotionEvent ev);
     }
+
 }

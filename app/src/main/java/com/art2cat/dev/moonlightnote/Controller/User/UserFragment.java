@@ -40,6 +40,8 @@ import com.art2cat.dev.moonlightnote.utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.utils.UserUtils;
+import com.art2cat.dev.moonlightnote.utils.material_animation.CircularRevealUtils;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -162,6 +164,14 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             mNickname.setOnClickListener(this);
             setHasOptionsMenu(true);
         }
+
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                CircularRevealUtils.show(mAdView);
+            }
+        });
     }
 
     @Override
