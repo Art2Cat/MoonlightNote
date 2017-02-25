@@ -10,8 +10,8 @@ android {
         applicationId "com.art2cat.dev.moonlightnote"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 19
-        versionName "1.0.17022019"
+        versionCode 20
+        versionName "1.0.17022520"
         multiDexEnabled true
     }
     buildTypes {
