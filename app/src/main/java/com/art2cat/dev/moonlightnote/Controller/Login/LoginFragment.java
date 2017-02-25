@@ -5,13 +5,13 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActivityOptions;
-import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
@@ -28,7 +28,7 @@ import android.widget.TextView;
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.InputDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
-import com.art2cat.dev.moonlightnote.custom_view.BaseFragment;
+import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
 import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
@@ -293,7 +293,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 if (TextUtils.isEmpty(email)) {
                     InputDialogFragment inputDialogFragment = InputDialogFragment
                             .newInstance(getString(R.string.dialog_reset_password), 0);
-                    inputDialogFragment.show(getFragmentManager(), "resetPassword");
+                    inputDialogFragment.show(mActivity.getFragmentManager(), "resetPassword");
                 } else {
                     AuthUtils.sendRPEmail(MoonlightApplication.getContext(), mView, email);
                 }

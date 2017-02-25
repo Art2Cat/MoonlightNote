@@ -1,10 +1,11 @@
 package com.art2cat.dev.moonlightnote.utils;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.support.annotation.IdRes;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 
 import com.art2cat.dev.moonlightnote.R;
+
 
 /**
  * Created by Rorschach
@@ -47,10 +48,11 @@ public class FragmentUtils {
 
     private static void replaceBackStackFragment(FragmentManager fm, @IdRes int id, Fragment fragment) {
         fm.beginTransaction()
-                .setCustomAnimations(R.animator.fragment_slide_left_enter,
-                        R.animator.fragment_slide_left_exit,
-                        R.animator.fragment_slide_right_enter,
-                        R.animator.fragment_slide_right_exit)
+                .setTransition(android.support.transition.R.id.transition_current_scene)
+                .setCustomAnimations(R.anim.fragment_slide_left_enter,
+                        R.anim.fragment_slide_left_exit,
+                        R.anim.fragment_slide_right_enter,
+                        R.anim.fragment_slide_right_exit)
                 .replace(id, fragment)
                 .addToBackStack(null)
                 .commit();
@@ -58,12 +60,11 @@ public class FragmentUtils {
 
     private static void replaceFragment(FragmentManager fm, @IdRes int id, Fragment fragment) {
         fm.beginTransaction()
-                .setCustomAnimations(R.animator.fragment_slide_left_enter,
-                        R.animator.fragment_slide_left_exit,
-                        R.animator.fragment_slide_right_enter,
-                        R.animator.fragment_slide_right_exit)
+                .setCustomAnimations(R.anim.fragment_slide_left_enter,
+                        R.anim.fragment_slide_left_exit,
+                        R.anim.fragment_slide_right_enter,
+                        R.anim.fragment_slide_right_exit)
                 .replace(id, fragment)
                 .commit();
     }
-
 }

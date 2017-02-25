@@ -22,8 +22,8 @@ import android.view.animation.OvershootInterpolator;
 
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ConfirmationDialogFragment;
-import com.art2cat.dev.moonlightnote.custom_view.BaseFragment;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
 import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
@@ -445,14 +445,14 @@ public abstract class MoonlightListFragment extends BaseFragment {
                         .newInstance(getUid(), getString(R.string.dialog_empty_note_title),
                                 getString(R.string.dialog_empty_note_content),
                                 Constants.EXTRA_TYPE_CDF_EMPTY_NOTE);
-                emptyNote.show(getFragmentManager(), "Empty Note");
+                emptyNote.show(mActivity.getFragmentManager(), "Empty Note");
                 break;
             case R.id.menu_empty_trash:
                 ConfirmationDialogFragment emptyTrash = ConfirmationDialogFragment
                         .newInstance(getUid(), getString(R.string.dialog_empty_trash_title),
                                 getString(R.string.dialog_empty_trash_content),
                                 Constants.EXTRA_TYPE_CDF_EMPTY_TRASH);
-                emptyTrash.show(getFragmentManager(), "Empty Trash");
+                emptyTrash.show(mActivity.getFragmentManager(), "Empty Trash");
                 mActivity.setTitle(R.string.fragment_trash);
                 break;
             case R.id.action_restore:

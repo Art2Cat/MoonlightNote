@@ -1,11 +1,11 @@
 package com.art2cat.dev.moonlightnote.controller.settings;
 
-import android.app.FragmentManager;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
-import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
 
 public class SettingsSecondActivity extends AppCompatActivity {
@@ -22,7 +22,7 @@ public class SettingsSecondActivity extends AppCompatActivity {
 
         int type = getIntent().getIntExtra(Constants.EXTRA_TYPE_FRAGMENT, 0);
 
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         int id = R.id.activity_security;
         switch (type) {
             case Constants.FRAGMENT_POLICY:

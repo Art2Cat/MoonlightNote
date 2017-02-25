@@ -1,6 +1,5 @@
 package com.art2cat.dev.moonlightnote.controller.user;
 
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ContentFrameLayout;
@@ -31,8 +30,7 @@ public class UserActivity extends AppCompatActivity {
             }
         });
 
-        FragmentManager fm = getFragmentManager();
-        FragmentUtils.addFragment(fm, R.id.common_fragment_container, new UserFragment());
+        FragmentUtils.addFragment(getSupportFragmentManager(), R.id.common_fragment_container, new UserFragment());
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.art2cat.dev.moonlightnote.controller.user;
 
 
 import android.Manifest;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
+import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.InputDialogFragment;
@@ -29,17 +30,16 @@ import com.art2cat.dev.moonlightnote.controller.login.LoginActivity;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
 import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.User;
-import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
-import com.art2cat.dev.moonlightnote.utils.firebase.AuthUtils;
-import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
-import com.art2cat.dev.moonlightnote.utils.image_loader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.utils.LogUtils;
 import com.art2cat.dev.moonlightnote.utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.utils.UserUtils;
+import com.art2cat.dev.moonlightnote.utils.firebase.AuthUtils;
+import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
+import com.art2cat.dev.moonlightnote.utils.image_loader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.utils.material_animation.CircularRevealUtils;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -212,7 +212,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                         ConfirmationDialogFragment.newInstance(getString(R.string.delete_account_title),
                                 getString(R.string.delete_account_content),
                                 Constants.EXTRA_TYPE_CDF_DELETE_ACCOUNT);
-                confirmationDialogFragment.show(getFragmentManager(), "delete account");
+                confirmationDialogFragment.show(getActivity().getFragmentManager(), "delete account");
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -270,7 +270,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             case 1:
                 InputDialogFragment inputDialogFragment1 = InputDialogFragment
                         .newInstance(getString(R.string.dialog_set_nickname), 1);
-                inputDialogFragment1.show(getFragmentManager(), "setNickname");
+                inputDialogFragment1.show(getActivity().getFragmentManager(), "setNickname");
                 break;
         }
     }
@@ -481,7 +481,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     private void uploadFromUri(Uri fileUri, String userId) {
 
-        mCircleProgressDialogFragment.show(getFragmentManager(), "progress");
+        mCircleProgressDialogFragment.show(getActivity().getFragmentManager(), "progress");
 
         StorageReference photoRef = mStorageReference.child(userId).child("avatar")
                 .child(fileUri.getLastPathSegment());

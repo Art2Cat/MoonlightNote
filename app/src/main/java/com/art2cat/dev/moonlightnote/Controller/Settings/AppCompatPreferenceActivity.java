@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote.controller.settings;
 
+import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -105,5 +106,10 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
             mDelegate = AppCompatDelegate.create(this, null);
         }
         return mDelegate;
+    }
+
+    @Override
+    public FragmentManager getFragmentManager() {
+        return super.getFragmentManager();
     }
 }

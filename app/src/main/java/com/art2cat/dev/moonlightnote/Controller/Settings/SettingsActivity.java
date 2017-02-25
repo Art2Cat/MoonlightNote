@@ -257,7 +257,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                                     getActivity().getString(R.string.confirmation_title),
                                     getActivity().getString(R.string.confirmation_disable_security),
                                     Constants.EXTRA_TYPE_CDF_DISABLE_SECURITY);
-                    confirmationDialogFragment.show((getActivity()).getFragmentManager(), null);
+                    confirmationDialogFragment.show(getActivity().getFragmentManager(), "cf");
                     break;
                 case PIN:
                     Intent pin = new Intent(getActivity(), MoonlightPinActivity.class);
@@ -501,6 +501,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         .addConnectionCallbacks(this)
                         .addOnConnectionFailedListener(this)
                         .build();
+                mCircleProgressDialogFragment.show(getFragmentManager(), "tag");
                 mCircleProgressDialogFragment.show(getFragmentManager(), "progressbar");
             }
             // Connect the client. Once connected, the camera is launched.

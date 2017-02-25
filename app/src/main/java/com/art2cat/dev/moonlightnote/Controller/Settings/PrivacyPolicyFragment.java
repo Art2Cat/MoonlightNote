@@ -22,7 +22,7 @@ public class PrivacyPolicyFragment extends CommonSettingsFragment {
     }
 
     @Override
-    public Fragment newInstance() {
+    public CommonSettingsFragment newInstance() {
         PrivacyPolicyFragment privacyPolicyFragment = new PrivacyPolicyFragment();
         Bundle args = new Bundle();
         args.putInt("type", TYPE_RIVACY_POLICY);

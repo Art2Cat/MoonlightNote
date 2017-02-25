@@ -1,20 +1,20 @@
-package com.art2cat.dev.moonlightnote.custom_view;
+package com.art2cat.dev.moonlightnote.controller;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatImageView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
-import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
  */
 
 public class BaseFragment extends Fragment {
-    public Activity mActivity;
+    protected Activity mActivity;
 
     /**
      * 更改toolbar三个点颜色
@@ -71,7 +71,7 @@ public class BaseFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mActivity = getActivity();
+        this.mActivity = (Activity) context;
     }
 
     public void showShortSnackBar(View view, String content, int type) {

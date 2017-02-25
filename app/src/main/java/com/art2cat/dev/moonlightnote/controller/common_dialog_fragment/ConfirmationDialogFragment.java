@@ -9,12 +9,12 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
-import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
-import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.Utils;
+import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
 
 /**
  * Created by Rorschach
@@ -22,11 +22,11 @@ import com.art2cat.dev.moonlightnote.utils.Utils;
  */
 
 public class ConfirmationDialogFragment extends DialogFragment {
+    private static final String TAG = "ConfirmationDialog";
     private String mUserId;
     private String mTitle;
     private String mMessage;
     private int mType;
-    private static final String TAG = "ConfirmationDialog";
 
     public static ConfirmationDialogFragment newInstance(String title, String message, int type) {
         ConfirmationDialogFragment confirmationDialogFragment = new ConfirmationDialogFragment();

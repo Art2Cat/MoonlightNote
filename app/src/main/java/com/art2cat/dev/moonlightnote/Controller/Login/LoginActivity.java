@@ -1,8 +1,6 @@
 package com.art2cat.dev.moonlightnote.controller.login;
 
 import android.annotation.TargetApi;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.net.Uri;
@@ -12,18 +10,20 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Fade;
 import android.util.Log;
 
-import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
-import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
+import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.ShortcutsUtils;
+import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setTransition();
         setContentView(R.layout.activity_login);
-        mFragmentManager = getFragmentManager();
+        mFragmentManager = getSupportFragmentManager();
         //初始化Admob
         MobileAds.initialize(this, AD_UNIT_ID);
         //获得FirebaseAuth对象
@@ -233,10 +233,10 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 Fragment fragment = new LoginFragment();
                 mFragmentManager.beginTransaction()
-                        .setCustomAnimations(R.animator.fragment_slide_left_enter,
-                                R.animator.fragment_slide_left_exit,
-                                R.animator.fragment_slide_right_enter,
-                                R.animator.fragment_slide_right_exit)
+                        .setCustomAnimations(R.anim.fragment_slide_left_enter,
+                                R.anim.fragment_slide_left_exit,
+                                R.anim.fragment_slide_right_enter,
+                                R.anim.fragment_slide_right_exit)
                         .replace(R.id.login_container, fragment)
                         .commitAllowingStateLoss();
             }

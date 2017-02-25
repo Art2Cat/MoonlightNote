@@ -1,7 +1,6 @@
 package com.art2cat.dev.moonlightnote.controller.settings;
 
 
-import android.app.Fragment;
 import android.os.Bundle;
 
 import com.art2cat.dev.moonlightnote.R;
@@ -22,7 +21,7 @@ public class AboutAppFragment extends CommonSettingsFragment {
     }
 
     @Override
-    public Fragment newInstance() {
+    public CommonSettingsFragment newInstance() {
         AboutAppFragment aboutAppFragment = new AboutAppFragment();
         Bundle args = new Bundle();
         args.putInt("type", TYPE_ABOUT_APP);
