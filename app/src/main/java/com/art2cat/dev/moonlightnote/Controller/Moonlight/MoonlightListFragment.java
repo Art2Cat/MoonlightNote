@@ -417,7 +417,9 @@ public abstract class MoonlightListFragment extends BaseFragment {
     }
 
     private void changeOptionsMenu(int type) {
-        mMenu.clear();
+        if (mMenu != null) {
+            mMenu.clear();
+        }
         switch (type) {
             case 0:
                 mMenuInflater.inflate(R.menu.menu_long_click_moonlight, mMenu);

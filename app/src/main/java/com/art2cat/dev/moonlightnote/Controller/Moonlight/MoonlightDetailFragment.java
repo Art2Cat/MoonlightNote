@@ -42,6 +42,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -53,6 +54,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
@@ -141,6 +143,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private InputMethodManager mInputMethodManager;
     private Moonlight moonlight;
     private MoonlightActivity.FragmentOnTouchListener mFragmentOnTouchListener;
+    private MoonlightActivity.FragmentOnKeyDownListener mFragmentOnKeyDownListener;
     private boolean mCreateFlag = true;
     private boolean mEditFlag = false;
     private boolean mEditable = true;
@@ -262,6 +265,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             @Override
             public void onClick(View view) {
                 getFragmentManager().popBackStack();
+                commitMoonlight();
 //                mActivity.onBackPressed();
             }
         });
@@ -448,33 +452,44 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 //            mBottomBarContainer.setLayoutParams(lp);
 //        }
 
-        if (!mEditable) {
-            Log.d(TAG, "onActivityCreated: SnackBar");
-            //禁用软键盘
-            mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-            final Snackbar snackbar = SnackBarUtils.longSnackBar(mView, getString(R.string.trash_restore),
-                    SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_restore_action,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
+        Log.d(TAG, "onActivityCreated: SnackBar");
+        //禁用软键盘
+        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        final Snackbar snackbar = SnackBarUtils.longSnackBar(mView, getString(R.string.trash_restore),
+                SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_restore_action,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-                            BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
-                            FDatabaseUtils.restoreToNote(mUserId, moonlight);
-                            getFragmentManager().popBackStack();
-                        }
-                    });
-
-            mFragmentOnTouchListener = new MoonlightActivity.FragmentOnTouchListener() {
-                @Override
-                public boolean onTouch(MotionEvent ev) {
-                    if (!snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {
-                        snackbar.show();
+                        BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
+                        FDatabaseUtils.restoreToNote(mUserId, moonlight);
+                        getFragmentManager().popBackStack();
                     }
-                    return false;
+                });
+
+        mFragmentOnTouchListener = new MoonlightActivity.FragmentOnTouchListener() {
+            @Override
+            public boolean onTouch(MotionEvent ev) {
+                if (!mEditable && !snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {
+                    snackbar.show();
                 }
-            };
-            ((MoonlightActivity) mActivity).registerFragmentOnTouchListener(mFragmentOnTouchListener);
-        }
+
+                return false;
+            }
+        };
+        mFragmentOnKeyDownListener = new MoonlightActivity.FragmentOnKeyDownListener() {
+
+            @Override
+            public boolean onKeyDown(KeyEvent keyEvent) {
+                if (mEditable && keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                    commitMoonlight();
+                    Toast.makeText(mActivity, "kedo", Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            }
+        };
+        ((MoonlightActivity) mActivity).registerFragmentOnTouchListener(mFragmentOnTouchListener);
+        ((MoonlightActivity) mActivity).registerFragmentOnTouchListener(mFragmentOnTouchListener);
     }
 
     @Override
@@ -508,8 +523,24 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                     mActivity.getWindow().getDecorView().getWindowToken(), 0);
 
         }
+
         revertUI();
 
+        mAudioPlayer.releasePlayer();
+        //移除FragmentOnTouchListener
+        if (mFragmentOnTouchListener != null) {
+            ((MoonlightActivity) mActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
+        }     //移除FragmentOnTouchListener
+        if (mFragmentOnKeyDownListener != null) {
+            ((MoonlightActivity) mActivity).unregisterFragmentOnKeyDownListener(mFragmentOnKeyDownListener);
+        }
+
+        RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
+        refWatcher.watch(this);
+        super.onDestroy();
+    }
+
+    private void commitMoonlight() {
         //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
         if (mCreateFlag && mEditable) {
             if (!isEmpty(moonlight)) {
@@ -521,15 +552,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             FDatabaseUtils.updateMoonlight(mUserId, mKeyId, moonlight,
                     Constants.EXTRA_TYPE_MOONLIGHT);
         }
-        mAudioPlayer.releasePlayer();
-        //移除FragmentOnTouchListener
-        if (mFragmentOnTouchListener != null) {
-            ((MoonlightActivity) mActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
-        }
-
-        RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
-        refWatcher.watch(this);
-        super.onDestroy();
     }
 
     /**

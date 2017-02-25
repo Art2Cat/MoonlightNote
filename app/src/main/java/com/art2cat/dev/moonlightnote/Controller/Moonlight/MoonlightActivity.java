@@ -24,6 +24,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
+import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.controller.login.LoginActivity;
 import com.art2cat.dev.moonlightnote.controller.settings.SettingsActivity;
 import com.art2cat.dev.moonlightnote.controller.user.UserActivity;
@@ -31,17 +33,15 @@ import com.art2cat.dev.moonlightnote.custom_view.BaseFragment;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
 import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.User;
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
-import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
-import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
-import com.art2cat.dev.moonlightnote.utils.image_loader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.ShortcutsUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.utils.UserUtils;
 import com.art2cat.dev.moonlightnote.utils.Utils;
+import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
+import com.art2cat.dev.moonlightnote.utils.image_loader.BitmapUtils;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
@@ -94,8 +94,11 @@ public class MoonlightActivity extends AppCompatActivity
     private FragmentManager mFragmentManager;
     private int mLock;
     private GoogleApiClient mClient;
-    private ArrayList<MoonlightActivity.FragmentOnTouchListener> onTouchListeners = new ArrayList<>(
-            10);
+    private ArrayList<MoonlightActivity.FragmentOnTouchListener> onTouchListeners =
+            new ArrayList<>();
+    private ArrayList<MoonlightActivity.FragmentOnKeyDownListener> onKeyDownListeners =
+            new ArrayList<>(
+                    10);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -586,8 +589,31 @@ public class MoonlightActivity extends AppCompatActivity
         onTouchListeners.remove(fragmentOnTouchListener);
     }
 
+    /**
+     * 提供给Fragment通过getActivity()方法来注册自己的触摸事件的方法
+     *
+     * @param fragmentOnKeyDownListener Fragment触控事件监听器
+     */
+    public void registerFragmentOnKeyDownListener(MoonlightActivity.FragmentOnKeyDownListener fragmentOnKeyDownListener) {
+        onKeyDownListeners.add(fragmentOnKeyDownListener);
+    }
+
+    /**
+     * 提供给Fragment通过getActivity()方法来取消注册自己的触摸事件的方法
+     *
+     * @param fragmentOnKeyDownListener Fragment触控事件监听器
+     */
+    public void unregisterFragmentOnKeyDownListener(MoonlightActivity.FragmentOnKeyDownListener fragmentOnKeyDownListener) {
+        onKeyDownListeners.remove(fragmentOnKeyDownListener);
+    }
+
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        for (MoonlightActivity.FragmentOnKeyDownListener listener : onKeyDownListeners) {
+            if (listener != null) {
+                listener.onKeyDown(event);
+            }
+        }
         return super.dispatchKeyEvent(event);
     }
 
@@ -619,6 +645,10 @@ public class MoonlightActivity extends AppCompatActivity
 
     public interface FragmentOnTouchListener {
         boolean onTouch(MotionEvent ev);
+    }
+
+    public interface FragmentOnKeyDownListener {
+        boolean onKeyDown(KeyEvent keyEvent);
     }
 
 }
