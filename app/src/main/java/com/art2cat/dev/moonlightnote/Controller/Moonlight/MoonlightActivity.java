@@ -1,7 +1,6 @@
 package com.art2cat.dev.moonlightnote.controller.moonlight;
 
 import android.annotation.TargetApi;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -10,10 +9,10 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.util.Log;
@@ -26,13 +25,15 @@ import android.widget.TextView;
 
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.controller.BaseFragment;
+import com.art2cat.dev.moonlightnote.controller.BaseFragmentActivity;
 import com.art2cat.dev.moonlightnote.controller.login.LoginActivity;
 import com.art2cat.dev.moonlightnote.controller.settings.SettingsActivity;
 import com.art2cat.dev.moonlightnote.controller.user.UserActivity;
-import com.art2cat.dev.moonlightnote.custom_view.BaseFragment;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
 import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.User;
+import com.art2cat.dev.moonlightnote.utils.BackHandlerHelper;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
@@ -56,7 +57,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -67,7 +67,7 @@ import static android.content.Intent.EXTRA_TEXT;
 import static android.content.Intent.createChooser;
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
-public class MoonlightActivity extends AppCompatActivity
+public class MoonlightActivity extends BaseFragmentActivity
         implements NavigationView.OnNavigationItemSelectedListener, BaseFragment.DrawerLocker {
 
     private static final String TAG = "MoonlightActivity";
@@ -94,11 +94,6 @@ public class MoonlightActivity extends AppCompatActivity
     private FragmentManager mFragmentManager;
     private int mLock;
     private GoogleApiClient mClient;
-    private ArrayList<MoonlightActivity.FragmentOnTouchListener> onTouchListeners =
-            new ArrayList<>();
-    private ArrayList<MoonlightActivity.FragmentOnKeyDownListener> onKeyDownListeners =
-            new ArrayList<>(
-                    10);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +105,7 @@ public class MoonlightActivity extends AppCompatActivity
         if (mLock != 0) {
             isLock = true;
         }
-        mFragmentManager = getFragmentManager();
+        mFragmentManager = getSupportFragmentManager();
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -162,23 +157,14 @@ public class MoonlightActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_HOME:
-                break;
-            case KeyEvent.KEYCODE_MENU:
-                break;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (!BackHandlerHelper.handleBackPress(this)) {
+                super.onBackPressed();
+            }
         }
     }
 
@@ -466,11 +452,11 @@ public class MoonlightActivity extends AppCompatActivity
         mNicknameTextView = (TextView) headerView.findViewById(R.id.nav_header_nickname);
         int type = getIntent().getIntExtra("type", 0);
         if (mUserId != null) {
-            FragmentUtils.addFragment(getFragmentManager(),
+            FragmentUtils.addFragment(mFragmentManager,
                     R.id.main_fragment_container,
                     new MoonlightFragment());
             if (type == 101) {
-                FragmentUtils.replaceFragment(getFragmentManager(),
+                FragmentUtils.replaceFragment(mFragmentManager,
                         R.id.main_fragment_container,
                         new CreateMoonlightFragment(),
                         FragmentUtils.REPLACE_BACK_STACK);
@@ -556,65 +542,6 @@ public class MoonlightActivity extends AppCompatActivity
         bundle.putString("remarks", remarks);
         bundle.putBoolean("Rate_my_app", isRate);
         mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-    }
-
-    /**
-     * 分发触摸事件给所有注册了MyOnTouchListener的接口
-     */
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        for (MoonlightActivity.FragmentOnTouchListener listener : onTouchListeners) {
-            if (listener != null) {
-                listener.onTouch(ev);
-            }
-        }
-        return super.dispatchTouchEvent(ev);
-    }
-
-    /**
-     * 提供给Fragment通过getActivity()方法来注册自己的触摸事件的方法
-     *
-     * @param fragmentOnTouchListener Fragment触控事件监听器
-     */
-    public void registerFragmentOnTouchListener(MoonlightActivity.FragmentOnTouchListener fragmentOnTouchListener) {
-        onTouchListeners.add(fragmentOnTouchListener);
-    }
-
-    /**
-     * 提供给Fragment通过getActivity()方法来取消注册自己的触摸事件的方法
-     *
-     * @param fragmentOnTouchListener Fragment触控事件监听器
-     */
-    public void unregisterFragmentOnTouchListener(MoonlightActivity.FragmentOnTouchListener fragmentOnTouchListener) {
-        onTouchListeners.remove(fragmentOnTouchListener);
-    }
-
-    /**
-     * 提供给Fragment通过getActivity()方法来注册自己的触摸事件的方法
-     *
-     * @param fragmentOnKeyDownListener Fragment触控事件监听器
-     */
-    public void registerFragmentOnKeyDownListener(MoonlightActivity.FragmentOnKeyDownListener fragmentOnKeyDownListener) {
-        onKeyDownListeners.add(fragmentOnKeyDownListener);
-    }
-
-    /**
-     * 提供给Fragment通过getActivity()方法来取消注册自己的触摸事件的方法
-     *
-     * @param fragmentOnKeyDownListener Fragment触控事件监听器
-     */
-    public void unregisterFragmentOnKeyDownListener(MoonlightActivity.FragmentOnKeyDownListener fragmentOnKeyDownListener) {
-        onKeyDownListeners.remove(fragmentOnKeyDownListener);
-    }
-
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        for (MoonlightActivity.FragmentOnKeyDownListener listener : onKeyDownListeners) {
-            if (listener != null) {
-                listener.onKeyDown(event);
-            }
-        }
-        return super.dispatchKeyEvent(event);
     }
 
     @Override

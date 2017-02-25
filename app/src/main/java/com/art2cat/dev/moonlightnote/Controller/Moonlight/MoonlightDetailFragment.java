@@ -42,7 +42,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,18 +53,18 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment;
-import com.art2cat.dev.moonlightnote.custom_view.BaseFragment;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
 import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.utils.AudioPlayer;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.utils.FragmentBackHandler;
 import com.art2cat.dev.moonlightnote.utils.LogUtils;
 import com.art2cat.dev.moonlightnote.utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
@@ -118,7 +117,8 @@ import static com.squareup.picasso.MemoryPolicy.NO_STORE;
  * A simple {@link Fragment} subclass.
  */
 public abstract class MoonlightDetailFragment extends BaseFragment implements
-        View.OnClickListener, View.OnFocusChangeListener, PopupMenu.OnMenuItemClickListener {
+        View.OnClickListener, View.OnFocusChangeListener, PopupMenu.OnMenuItemClickListener,
+        FragmentBackHandler {
     private static final String TAG = "MoonlightDetailFragment";
     private View mView;
     private Toolbar mToolbar;
@@ -143,7 +143,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private InputMethodManager mInputMethodManager;
     private Moonlight moonlight;
     private MoonlightActivity.FragmentOnTouchListener mFragmentOnTouchListener;
-    private MoonlightActivity.FragmentOnKeyDownListener mFragmentOnKeyDownListener;
     private boolean mCreateFlag = true;
     private boolean mEditFlag = false;
     private boolean mEditable = true;
@@ -264,9 +263,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getFragmentManager().popBackStack();
-                commitMoonlight();
-//                mActivity.onBackPressed();
+                mActivity.onBackPressed();
             }
         });
 
@@ -437,7 +434,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-//        CircularRevealUtils.show(mContentFrameLayout);
         changeUIColor(R.color.white, mActivity.getTheme());
         mToolbar.setTitle(null);
         ((MoonlightActivity) mActivity).mToolbar.setTitle(null);
@@ -452,44 +448,33 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 //            mBottomBarContainer.setLayoutParams(lp);
 //        }
 
-        Log.d(TAG, "onActivityCreated: SnackBar");
-        //禁用软键盘
-        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        final Snackbar snackbar = SnackBarUtils.longSnackBar(mView, getString(R.string.trash_restore),
-                SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_restore_action,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+        if (!mEditable) {
+            //禁用软键盘
+            mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+            final Snackbar snackbar = SnackBarUtils.longSnackBar(mView, getString(R.string.trash_restore),
+                    SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_restore_action,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
 
-                        BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
-                        FDatabaseUtils.restoreToNote(mUserId, moonlight);
-                        getFragmentManager().popBackStack();
+                            BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
+                            FDatabaseUtils.restoreToNote(mUserId, moonlight);
+                            getFragmentManager().popBackStack();
+                        }
+                    });
+
+            mFragmentOnTouchListener = new MoonlightActivity.FragmentOnTouchListener() {
+                @Override
+                public boolean onTouch(MotionEvent ev) {
+                    if (!snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {
+                        snackbar.show();
                     }
-                });
 
-        mFragmentOnTouchListener = new MoonlightActivity.FragmentOnTouchListener() {
-            @Override
-            public boolean onTouch(MotionEvent ev) {
-                if (!mEditable && !snackbar.isShown() && ev.getAction() == MotionEvent.ACTION_DOWN) {
-                    snackbar.show();
+                    return false;
                 }
-
-                return false;
-            }
-        };
-        mFragmentOnKeyDownListener = new MoonlightActivity.FragmentOnKeyDownListener() {
-
-            @Override
-            public boolean onKeyDown(KeyEvent keyEvent) {
-                if (mEditable && keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                    commitMoonlight();
-                    Toast.makeText(mActivity, "kedo", Toast.LENGTH_SHORT).show();
-                }
-                return false;
-            }
-        };
-        ((MoonlightActivity) mActivity).registerFragmentOnTouchListener(mFragmentOnTouchListener);
-        ((MoonlightActivity) mActivity).registerFragmentOnTouchListener(mFragmentOnTouchListener);
+            };
+            ((MoonlightActivity) mActivity).registerFragmentOnTouchListener(mFragmentOnTouchListener);
+        }
     }
 
     @Override
@@ -530,14 +515,18 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         //移除FragmentOnTouchListener
         if (mFragmentOnTouchListener != null) {
             ((MoonlightActivity) mActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
-        }     //移除FragmentOnTouchListener
-        if (mFragmentOnKeyDownListener != null) {
-            ((MoonlightActivity) mActivity).unregisterFragmentOnKeyDownListener(mFragmentOnKeyDownListener);
         }
 
         RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
         refWatcher.watch(this);
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        commitMoonlight();
+        mActivity.getFragmentManager().popBackStack();
+        return false;
     }
 
     private void commitMoonlight() {
@@ -992,10 +981,10 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
     public void uploadFromUri(final Uri fileUri, String userId, int type) {
         if (mCircleProgressDialogFragment != null) {
-            mCircleProgressDialogFragment.show(getFragmentManager(), "progress");
+            mCircleProgressDialogFragment.show(mActivity.getFragmentManager(), "progress");
         } else {
             mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance();
-            mCircleProgressDialogFragment.show(getFragmentManager(), "progress");
+            mCircleProgressDialogFragment.show(mActivity.getFragmentManager(), "progress");
         }
 
         StorageTask<UploadTask.TaskSnapshot> uploadTask;
