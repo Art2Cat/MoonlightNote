@@ -278,13 +278,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
                                 moonlightD.setId(moonlightKey);
                                 if (isTrash()) {
                                     Log.d(TAG, "onClick: trash");
-                                    TrashDetailFragment trashDetailFragment = new TrashDetailFragment();
-                                    trashDetailFragment.setArgs(moonlightD, 12);
-//                                    getFragmentManager().beginTransaction()
-//                                            .replace(R.id.main_fragment_container, trashDetailFragment)
-//                                            .addToBackStack("trash")
-//                                            .addSharedElement(viewHolder.itemView, viewHolder.itemView.getTransitionName())
-//                                            .commit();
+                                    TrashDetailFragment trashDetailFragment = TrashDetailFragment.newInstance(moonlightD, 12);
                                     FragmentUtils.replaceFragment(getFragmentManager(),
                                             R.id.main_fragment_container,
                                             trashDetailFragment,
@@ -292,13 +286,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
                                     BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                                 } else {
                                     Log.d(TAG, "onClick: edit");
-                                    EditMoonlightFragment editMoonlightFragment = new EditMoonlightFragment();
-                                    editMoonlightFragment.setArgs(moonlightD, 0);
-//                                    getFragmentManager().beginTransaction()
-//                                            .replace(R.id.main_fragment_container, editMoonlightFragment)
-//                                            .addToBackStack("moonlight")
-//                                            .addSharedElement(viewHolder.itemView, viewHolder.itemView.getTransitionName())
-//                                            .commit();
+                                    EditMoonlightFragment editMoonlightFragment = EditMoonlightFragment.newInstance(moonlightD, 0);
                                     FragmentUtils.replaceFragment(getFragmentManager(),
                                             R.id.main_fragment_container,
                                             editMoonlightFragment,

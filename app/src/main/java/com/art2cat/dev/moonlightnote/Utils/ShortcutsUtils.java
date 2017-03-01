@@ -19,23 +19,26 @@ import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.N_MR1)
 public class ShortcutsUtils {
+    private static ShortcutsUtils shortcutsUtils;
     private Context context;
     private ShortcutManager shortcutManager;
 
-    public static ShortcutsUtils newInstance(Context context) {
-        ShortcutsUtils shortcutsUtils = new ShortcutsUtils();
-        //获取应用快捷键管理器
-        ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
-        shortcutsUtils.setShortcutManager(shortcutManager);
-        shortcutsUtils.setContext(context);
+    public static ShortcutsUtils getInstance(Context context) {
+
+        if (shortcutsUtils == null) {
+            shortcutsUtils = new ShortcutsUtils();
+            ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
+            shortcutsUtils.setShortcutManager(shortcutManager);
+            shortcutsUtils.setContext(context);
+        }
         return shortcutsUtils;
     }
 
-    public void setContext(Context context) {
+    private void setContext(Context context) {
         this.context = context;
     }
 
-    public void setShortcutManager(ShortcutManager shortcutManager) {
+    private void setShortcutManager(ShortcutManager shortcutManager) {
         this.shortcutManager = shortcutManager;
     }
 

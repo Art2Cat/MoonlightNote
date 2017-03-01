@@ -501,7 +501,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         .addConnectionCallbacks(this)
                         .addOnConnectionFailedListener(this)
                         .build();
-                mCircleProgressDialogFragment.show(getFragmentManager(), "tag");
                 mCircleProgressDialogFragment.show(getFragmentManager(), "progressbar");
             }
             // Connect the client. Once connected, the camera is launched.

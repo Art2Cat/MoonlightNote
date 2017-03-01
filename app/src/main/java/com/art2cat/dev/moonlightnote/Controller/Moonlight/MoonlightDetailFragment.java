@@ -123,7 +123,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private View mView;
     private Toolbar mToolbar;
     private AppBarLayout.LayoutParams mParams;
-    private ContentFrameLayout mContentFrameLayout;
+    private ContentFrameLayout mViewParent;
     private LinearLayoutCompat mBottomBarContainer;
     private LinearLayoutCompat mAudioContainer;
     private TextInputLayout mContentTextInputLayout;
@@ -243,10 +243,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         //视图初始化
         mView = inflater.inflate(R.layout.fragment_moonlight_detail, container, false);
 
-        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-
-//        mToolbar = ((MoonlightActivity) mActivity).mToolbar;
         mToolbar = ((MoonlightActivity) mActivity).mToolbar2;
         mToolbar.setVisibility(View.VISIBLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -254,10 +250,9 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         } else {
             mToolbar.setBackgroundColor(getResources().getColor(R.color.white));
         }
-
-        ((MoonlightActivity) mActivity).setSupportActionBar(mToolbar);
         mParams = (AppBarLayout.LayoutParams) ((MoonlightActivity) mActivity).mToolbar.getLayoutParams();
         mParams.setScrollFlags(0);
+        ((MoonlightActivity) mActivity).setSupportActionBar(mToolbar);
         ((MoonlightActivity) mActivity).mToolbar.setVisibility(View.GONE);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_grey_700_24dp);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -267,7 +262,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             }
         });
 
-        mContentFrameLayout = (ContentFrameLayout) mView.findViewById(R.id.view_parent);
+        mViewParent = (ContentFrameLayout) mView.findViewById(R.id.view_parent);
         mTitle = (TextInputEditText) mView.findViewById(R.id.title_TIET);
         mContent = (TextInputEditText) mView.findViewById(R.id.content_TIET);
         mContentTextInputLayout = (TextInputLayout) mView.findViewById(R.id.content_TIL);
@@ -286,7 +281,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mBottomBarRight = (AppCompatButton) mView.findViewById(R.id.bottom_bar_right);
         mTitle.setOnFocusChangeListener(this);
         mContent.setOnFocusChangeListener(this);
-        mAudioPlayer = new AudioPlayer(audioPlayerPB, mShowDuration);
+        mAudioPlayer = AudioPlayer.getInstance(audioPlayerPB, mShowDuration);
 
         mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance(getString(R.string.prograssBar_uploading));
 
@@ -409,7 +404,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     }
 
     private void changeUIColor(@ColorInt int color) {
-        mContentFrameLayout.setBackgroundColor(color);
+        mViewParent.setBackgroundColor(color);
         mToolbar.setBackgroundColor(color);
         mAudioContainer.setBackgroundColor(moonlight.getColor());
         mBottomBarContainer.setBackgroundColor(color);
@@ -486,6 +481,9 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     @Override
     public void onResume() {
         super.onResume();
+//        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+//        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
         Log.d(TAG, "onResume: ");
     }
 
@@ -519,7 +517,29 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
         RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
         refWatcher.watch(this);
+        release();
         super.onDestroy();
+    }
+
+    private void release() {
+//        mView = null;
+        mToolbar = null;
+        mParams = null;
+        mViewParent = null;
+        mBottomBarContainer = null;
+        mAudioContainer = null;
+        mContentTextInputLayout = null;
+        mTitle = null;
+        mContent = null;
+        mShowDuration = null;
+        mBottomBarLeft = null;
+        mBottomBarRight = null;
+        mDeleteAudio = null;
+        mPlayingAudio = null;
+        mAudioCardView = null;
+        mImage = null;
+        mCoordinatorLayout = null;
+        moonlight = null;
     }
 
     @Override
@@ -748,11 +768,11 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 if (!isEmpty(moonlight)) {
                     FDatabaseUtils.addMoonlight(mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
 //                    BusEventUtils.post(moonlight, Constants.BUS_FLAG_MAKE_A_COPY);
-                    showShortSnackBar(mContentFrameLayout,
+                    showShortSnackBar(mViewParent,
                             "Note Copy complete.", SnackBarUtils.TYPE_INFO);
                     changeBottomSheetState();
                 } else {
-                    showShortSnackBar(mContentFrameLayout,
+                    showShortSnackBar(mViewParent,
                             getString(R.string.note_binned), SnackBarUtils.TYPE_INFO);
                     changeBottomSheetState();
                 }
@@ -1220,10 +1240,10 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                                     //大小超过100时，一般为显示虚拟键盘事件
                                     if (mEditable && !Utils.isXLargeTablet(mActivity)) {
                                         if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                                            mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                                            mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                                         }
                                         if (mRightBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                                            mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                                            mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                                         }
                                     } else {
                                         //大小小于100时，为不显示虚拟键盘或虚拟键盘隐藏

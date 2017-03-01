@@ -3,8 +3,6 @@ package com.art2cat.dev.moonlightnote.controller;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 
-import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
-
 import java.util.ArrayList;
 
 /**
@@ -12,11 +10,11 @@ import java.util.ArrayList;
  * on 2017/2/25 下午8:41.
  */
 
-public class BaseFragmentActivity extends AppCompatActivity {
+public abstract class BaseFragmentActivity extends AppCompatActivity {
     /**
      * 通过ArrayList集合使多个Fragment接入监听器
      */
-    private final ArrayList<MoonlightActivity.FragmentOnTouchListener> onTouchListeners =
+    private final ArrayList<FragmentOnTouchListener> onTouchListeners =
             new ArrayList<>(10);
 
     /**
@@ -24,7 +22,7 @@ public class BaseFragmentActivity extends AppCompatActivity {
      */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        for (MoonlightActivity.FragmentOnTouchListener listener : onTouchListeners) {
+        for (FragmentOnTouchListener listener : onTouchListeners) {
             if (listener != null) {
                 listener.onTouch(ev);
             }
@@ -37,7 +35,7 @@ public class BaseFragmentActivity extends AppCompatActivity {
      *
      * @param fragmentOnTouchListener Fragment触控事件监听器
      */
-    public void registerFragmentOnTouchListener(MoonlightActivity.FragmentOnTouchListener fragmentOnTouchListener) {
+    public void registerFragmentOnTouchListener(FragmentOnTouchListener fragmentOnTouchListener) {
         onTouchListeners.add(fragmentOnTouchListener);
     }
 
@@ -46,7 +44,11 @@ public class BaseFragmentActivity extends AppCompatActivity {
      *
      * @param fragmentOnTouchListener Fragment触控事件监听器
      */
-    public void unregisterFragmentOnTouchListener(MoonlightActivity.FragmentOnTouchListener fragmentOnTouchListener) {
+    public void unregisterFragmentOnTouchListener(FragmentOnTouchListener fragmentOnTouchListener) {
         onTouchListeners.remove(fragmentOnTouchListener);
+    }
+
+    public interface FragmentOnTouchListener {
+        boolean onTouch(MotionEvent ev);
     }
 }

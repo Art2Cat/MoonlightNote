@@ -9,16 +9,13 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.transition.Fade;
+import android.transition.Explode;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -91,7 +88,6 @@ public class MoonlightActivity extends BaseFragmentActivity
     private FDatabaseUtils mFDatabaseUtils;
     private FirebaseAuth mAuth;
     private FirebaseAnalytics mFirebaseAnalytics;
-    private FragmentManager mFragmentManager;
     private int mLock;
     private GoogleApiClient mClient;
 
@@ -105,7 +101,6 @@ public class MoonlightActivity extends BaseFragmentActivity
         if (mLock != 0) {
             isLock = true;
         }
-        mFragmentManager = getSupportFragmentManager();
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -142,18 +137,16 @@ public class MoonlightActivity extends BaseFragmentActivity
 
     private void setTransition() {
 
-        Fade fade = new Fade();
-        fade.setDuration(500);
-        fade.setMode(Fade.MODE_OUT);
+        Explode explode = new Explode();
+        explode.setDuration(500);
+        explode.setMode(Explode.MODE_IN);
 
-        Fade fade1 = new Fade();
-        fade1.setDuration(500);
-        fade1.setMode(Fade.MODE_IN);
+        Explode explode1 = new Explode();
+        explode1.setDuration(500);
+        explode1.setMode(Explode.MODE_OUT);
 
-        getWindow().setEnterTransition(fade);
-        getWindow().setReenterTransition(fade);
-        getWindow().setReturnTransition(fade1);
-        getWindow().setExitTransition(fade1);
+        getWindow().setEnterTransition(explode);
+        getWindow().setReturnTransition(explode1);
     }
 
     @Override
@@ -230,7 +223,7 @@ public class MoonlightActivity extends BaseFragmentActivity
                 if (mUserId != null) {
                     Log.d(TAG, "nav_notes: " + isHome);
                     if (!isHome) {
-                        FragmentUtils.replaceFragment(mFragmentManager,
+                        FragmentUtils.replaceFragment(getSupportFragmentManager(),
                                 container,
                                 new MoonlightFragment(),
                                 FragmentUtils.REPLACE_NORMAL);
@@ -243,7 +236,7 @@ public class MoonlightActivity extends BaseFragmentActivity
                 if (mUserId != null) {
                     Log.d(TAG, "nav_trash: " + isHome);
                     if (isHome) {
-                        FragmentUtils.replaceFragment(mFragmentManager,
+                        FragmentUtils.replaceFragment(getSupportFragmentManager(),
                                 container,
                                 new TrashFragment(),
                                 FragmentUtils.REPLACE_NORMAL);
@@ -309,7 +302,7 @@ public class MoonlightActivity extends BaseFragmentActivity
                 mAuth.signOut();
                 isLogin = false;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                    ShortcutsUtils.newInstance(MoonlightActivity.this).removeShortcuts();
+                    ShortcutsUtils.getInstance(MoonlightActivity.this).removeShortcuts();
                 }
                 BusEventUtils.post(Constants.BUS_FLAG_SIGN_OUT, null);
                 SPUtils.clear(MoonlightApplication.getContext(), "User");
@@ -376,11 +369,7 @@ public class MoonlightActivity extends BaseFragmentActivity
             @Override
             public void onClick(View view) {
                 if (isLogin) {
-//                    Intent intent = new Intent(MoonlightActivity.this, MoonlightDetailActivity.class);
-//                    intent.putExtra("Fragment", Constants.EXTRA_CREATE_FRAGMENT);
-//                    Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(MoonlightActivity.this).toBundle();
-//                    startActivity(intent, bundle);
-                    FragmentUtils.replaceFragment(mFragmentManager,
+                    FragmentUtils.replaceFragment(getSupportFragmentManager(),
                             R.id.main_fragment_container,
                             new CreateMoonlightFragment(),
                             FragmentUtils.REPLACE_BACK_STACK);
@@ -452,25 +441,17 @@ public class MoonlightActivity extends BaseFragmentActivity
         mNicknameTextView = (TextView) headerView.findViewById(R.id.nav_header_nickname);
         int type = getIntent().getIntExtra("type", 0);
         if (mUserId != null) {
-            FragmentUtils.addFragment(mFragmentManager,
+            FragmentUtils.addFragment(getSupportFragmentManager(),
                     R.id.main_fragment_container,
                     new MoonlightFragment());
             if (type == 101) {
-                FragmentUtils.replaceFragment(mFragmentManager,
+                FragmentUtils.replaceFragment(getSupportFragmentManager(),
                         R.id.main_fragment_container,
                         new CreateMoonlightFragment(),
                         FragmentUtils.REPLACE_BACK_STACK);
             }
 
         }
-    }
-
-    /**
-     * 用于监听用户是否正在操作
-     */
-    @Override
-    public void onUserInteraction() {
-        super.onUserInteraction();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -512,7 +493,6 @@ public class MoonlightActivity extends BaseFragmentActivity
     }
 
     private void displayUserInfo() {
-        // Name, email address, and profile imageUrl Url
         if (mFirebaseUser != null) {
 
             User user = UserUtils.getUserFromCache(MoonlightApplication.getContext());
@@ -569,13 +549,4 @@ public class MoonlightActivity extends BaseFragmentActivity
                 .setActionStatus(Action.STATUS_TYPE_COMPLETED)
                 .build();
     }
-
-    public interface FragmentOnTouchListener {
-        boolean onTouch(MotionEvent ev);
-    }
-
-    public interface FragmentOnKeyDownListener {
-        boolean onKeyDown(KeyEvent keyEvent);
-    }
-
 }

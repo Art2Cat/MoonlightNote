@@ -24,7 +24,7 @@ import java.util.ArrayList;
  * on 2017/1/8 14:32.
  */
 
-public class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment {
     protected Activity mActivity;
 
     /**

@@ -22,13 +22,14 @@ import java.io.IOException;
 public class AudioPlayer {
 
     private static final String TAG = "AudioPlayer";
+    private static AudioPlayer audioPlayer;
     public int mDuration;
     public boolean isPrepared = false;
     public MediaPlayer mPlayer;
     public ProgressBar mProgressBar;
     private AppCompatTextView mShowDuration;
     private Handler handler = new Handler();
-    private Runnable updateProgress = new Runnable() {
+    private final Runnable updateProgress = new Runnable() {
         public void run() {
             // 获得歌曲现在播放位置并设置成播放进度条的值
             if (mPlayer != null) {
@@ -41,17 +42,26 @@ public class AudioPlayer {
         }
     };
 
-    /**
-     * 音频播放器
-     *
-     * @param progressBar 播放器进度条
-     * @param duration    音频时间总长
-     */
-    public AudioPlayer(ProgressBar progressBar, AppCompatTextView duration) {
-        //新建音频播放器
-        mPlayer = new MediaPlayer();
-        mProgressBar = progressBar;
-        mShowDuration = duration;
+//    /**
+//     * 音频播放器
+//     *
+//     * @param progressBar 播放器进度条
+//     * @param duration    音频时间总长
+//     */
+//    public AudioPlayer(ProgressBar progressBar, AppCompatTextView duration) {
+//        //新建音频播放器
+//        mPlayer = new MediaPlayer();
+//        mProgressBar = progressBar;
+//        mShowDuration = duration;
+//    }
+
+    public static AudioPlayer getInstance(ProgressBar progressBar, AppCompatTextView duration) {
+        if (audioPlayer == null) {
+            audioPlayer = new AudioPlayer();
+            audioPlayer.mProgressBar = progressBar;
+            audioPlayer.mShowDuration = duration;
+        }
+        return audioPlayer;
     }
 
     /**
