@@ -122,7 +122,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private static final String TAG = "MoonlightDetailFragment";
     private View mView;
     private Toolbar mToolbar;
-    private AppBarLayout.LayoutParams mParams;
     private ContentFrameLayout mViewParent;
     private LinearLayoutCompat mBottomBarContainer;
     private LinearLayoutCompat mAudioContainer;
@@ -171,6 +170,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         LogUtils.getInstance(TAG).setMessage("onCreate").debug();
         //设置显示OptionsMenu
         setHasOptionsMenu(true);
@@ -250,8 +250,10 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         } else {
             mToolbar.setBackgroundColor(getResources().getColor(R.color.white));
         }
-        mParams = (AppBarLayout.LayoutParams) ((MoonlightActivity) mActivity).mToolbar.getLayoutParams();
-        mParams.setScrollFlags(0);
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) ((MoonlightActivity) mActivity).mToolbar.getLayoutParams();
+        params.setScrollFlags(0);
+        ((MoonlightActivity) mActivity).mToolbar.setLayoutParams(params);
+        mToolbar.setLayoutParams(params);
         ((MoonlightActivity) mActivity).setSupportActionBar(mToolbar);
         ((MoonlightActivity) mActivity).mToolbar.setVisibility(View.GONE);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_grey_700_24dp);
@@ -481,8 +483,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     @Override
     public void onResume() {
         super.onResume();
-//        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-//        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         Log.d(TAG, "onResume: ");
     }
@@ -524,7 +526,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private void release() {
 //        mView = null;
         mToolbar = null;
-        mParams = null;
         mViewParent = null;
         mBottomBarContainer = null;
         mAudioContainer = null;
@@ -545,7 +546,10 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     @Override
     public boolean onBackPressed() {
         commitMoonlight();
-        mActivity.getFragmentManager().popBackStack();
+        android.app.FragmentManager fragmentManager = mActivity.getFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+        }
         return false;
     }
 
@@ -574,8 +578,11 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         } else {
             mToolbar.setBackgroundColor(getResources().getColor(R.color.light_green));
         }
-        mParams.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams)
+                ((MoonlightActivity) mActivity).mToolbar.getLayoutParams();
+        params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
                 | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+        ((MoonlightActivity) mActivity).mToolbar.setLayoutParams(params);
         ((MoonlightActivity) mActivity).mToolbar.setVisibility(View.VISIBLE);
         ((MoonlightActivity) mActivity).mToolbar.setTitle(getString(R.string.app_name));
 

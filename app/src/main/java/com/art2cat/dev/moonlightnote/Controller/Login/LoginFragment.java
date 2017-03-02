@@ -211,7 +211,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 flag = 2;
             } else if (flag == 2) {
                 signInWithEmail(email, password);
-                //Intent intent = new Intent(getActivity(), MoonlightActivity.class);
+                //Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
                 //startActivity(intent);
             }
         }

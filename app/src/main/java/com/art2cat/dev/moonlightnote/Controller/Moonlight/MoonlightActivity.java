@@ -67,7 +67,7 @@ import static com.google.firebase.auth.FirebaseAuth.getInstance;
 public class MoonlightActivity extends BaseFragmentActivity
         implements NavigationView.OnNavigationItemSelectedListener, BaseFragment.DrawerLocker {
 
-    private static final String TAG = "MoonlightActivity";
+    private static final String TAG = "MoonlightDetailActivity";
     public static boolean isHome = true;
     public Toolbar mToolbar;
     public Toolbar mToolbar2;
@@ -549,4 +549,5 @@ public class MoonlightActivity extends BaseFragmentActivity
                 .setActionStatus(Action.STATUS_TYPE_COMPLETED)
                 .build();
     }
+
 }

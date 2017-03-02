@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatImageView;
 import android.view.View;
@@ -25,7 +26,9 @@ import java.util.ArrayList;
  */
 
 public abstract class BaseFragment extends Fragment {
+    private static final String KEY_INDEX = "index";
     protected Activity mActivity;
+    private int mCurrentIndex = 0;
 
     /**
      * 更改toolbar三个点颜色
@@ -72,6 +75,21 @@ public abstract class BaseFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         this.mActivity = (Activity) context;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_INDEX, mCurrentIndex);
     }
 
     public void showShortSnackBar(View view, String content, int type) {
