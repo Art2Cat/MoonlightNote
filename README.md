@@ -25,7 +25,7 @@ I'm a members from the 2016 Google Developer StudyJams Chinese activities, thank
 
 ## Privacy Policy
 
-https://art2cat.com/2017/01/15/privacy_policy.html
+https://i.art2cat.com/privacy_policy.html
 
 
 ## License

@@ -1,6 +1,5 @@
 package com.art2cat.dev.moonlightnote.controller.moonlight;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -320,13 +319,16 @@ public class MoonlightActivity extends BaseFragmentActivity
     }
 
 
-    @TargetApi(Build.VERSION_CODES.N)
     public void hideFAB() {
         if (mFAB == null) {
             return;
         }
-        if (isInMultiWindowMode()) {
-            mFAB.hide();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            if (isInMultiWindowMode()) {
+                mFAB.hide();
+            } else {
+                mFAB.hide();
+            }
         } else {
             mFAB.hide();
         }

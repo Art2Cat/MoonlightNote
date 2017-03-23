@@ -81,6 +81,8 @@ public abstract class MoonlightListFragment extends BaseFragment {
         //获取Bus单例，并注册
         EventBus.getDefault().register(this);
         LogUtils.getInstance(TAG).setMessage("onCreate").debug();
+        //在配置变化的时候将这个fragment保存下来
+        setRetainInstance(true);
     }
 
     @Override
