@@ -7,7 +7,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
 
 public class UserActivity extends AppCompatActivity {
     public Toolbar mToolbar;

@@ -5,8 +5,6 @@ import android.support.annotation.AnyThread;
 import android.util.Log;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.model.Moonlight;
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
 
 import java.util.concurrent.ExecutionException;
 

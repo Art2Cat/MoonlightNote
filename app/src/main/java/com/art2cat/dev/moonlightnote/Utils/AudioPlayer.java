@@ -10,8 +10,7 @@ import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
 import android.widget.ProgressBar;
 
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
-
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -73,7 +72,8 @@ public class AudioPlayer {
     public void prepare(String filename) {
         try {
             //获取数据源文件目录地址
-            String dirPath = MoonlightApplication.getContext().getCacheDir().getAbsolutePath() + "/audio/";
+            String dirPath = MoonlightApplication.getContext()
+                    .getCacheDir().getAbsolutePath() + "/audio/";
 
             //检查文件名是否有".amr",如果没有就添加
             if (!filename.contains(".amr")) {
@@ -81,6 +81,13 @@ public class AudioPlayer {
             }
             //合成数据源地址
             String filePath = dirPath + filename;
+            File file = new File(filePath);
+
+            if (!file.exists()) {
+                ToastUtils.with(MoonlightApplication.getContext())
+                        .setMessage("Audio file is not exist!").showShortToast();
+                return;
+            }
             //设置数据源
             mPlayer.setDataSource(filePath);
             //采用异步的方式同步
