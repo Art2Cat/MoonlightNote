@@ -45,7 +45,6 @@ class LogUtils private constructor(var tag: String = "") {
         fun getInstance(tag: String): LogUtils {
             Instance.ourInstance.tag = tag
             return Instance.ourInstance
-
         }
     }
 

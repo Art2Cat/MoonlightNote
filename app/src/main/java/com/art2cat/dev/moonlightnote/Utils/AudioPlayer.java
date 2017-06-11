@@ -28,18 +28,18 @@ public class AudioPlayer {
     public ProgressBar mProgressBar;
     private AppCompatTextView mShowDuration;
     private Handler handler = new Handler();
-    private final Runnable updateProgress = new Runnable() {
-        public void run() {
-            // 获得歌曲现在播放位置并设置成播放进度条的值
-            if (mPlayer != null) {
-                if (mPlayer.isPlaying()) {
-                    mProgressBar.setProgress(mPlayer.getCurrentPosition());
-                    // 每次延迟100毫秒再启动线程
-                    handler.postDelayed(updateProgress, 100);
-                }
-            }
-        }
-    };
+//    private final Runnable updateProgress = new Runnable() {
+//        public void run() {
+//            // 获得歌曲现在播放位置并设置成播放进度条的值
+//            if (mPlayer != null) {
+//                if (mPlayer.isPlaying()) {
+//                    mProgressBar.setProgress(mPlayer.getCurrentPosition());
+//                    // 每次延迟100毫秒再启动线程
+//                    handler.postDelayed(updateProgress, 100);
+//                }
+//            }
+//        }
+//    };
 
 //    /**
 //     * 音频播放器
@@ -115,7 +115,17 @@ public class AudioPlayer {
      */
     public void startPlaying() {
         mPlayer.start();
-        handler.post(updateProgress);
+        handler.post(() -> {
+            // 获得歌曲现在播放位置并设置成播放进度条的值
+            if (mPlayer != null) {
+                if (mPlayer.isPlaying()) {
+                    mProgressBar.setProgress(mPlayer.getCurrentPosition());
+                    // 每次延迟100毫秒再启动线程
+                    handler.postDelayed(updateProgress, 100);
+                }
+            }
+        });
+
     }
 
     /**
