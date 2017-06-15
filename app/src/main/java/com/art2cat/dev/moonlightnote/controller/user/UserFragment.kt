@@ -2,75 +2,66 @@ package com.art2cat.dev.moonlightnote.controller.user
 
 
 import android.Manifest
-import android.support.v4.app.Fragment
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.support.v4.app.Fragment
 import android.support.v4.content.FileProvider
 import android.support.v7.widget.AppCompatTextView
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-
+import android.view.*
 import com.art2cat.dev.moonlightnote.BuildConfig
 import com.art2cat.dev.moonlightnote.R
-import com.art2cat.dev.moonlightnote.utils.PermissionUtils
-import com.art2cat.dev.moonlightnote.utils.SPUtils
-import com.art2cat.dev.moonlightnote.utils.SnackBarUtils
-import com.art2cat.dev.moonlightnote.utils.image_loader.BitmapUtils
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdView
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthCredential
-import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.UserProfileChangeRequest
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.StorageTask
-import com.google.firebase.storage.UploadTask
-
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
-
-import java.io.File
-import java.io.IOException
-import java.util.UUID
-
-import de.hdodenhof.circleimageview.CircleImageView
-import pub.devrel.easypermissions.AfterPermissionGranted
-import pub.devrel.easypermissions.EasyPermissions
-
-import android.app.Activity.RESULT_OK
+import com.art2cat.dev.moonlightnote.controller.BaseFragment
+import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment
+import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ConfirmationDialogFragment
+import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.InputDialogFragment
+import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.PickPicDialogFragment
+import com.art2cat.dev.moonlightnote.controller.login.LoginActivity
+import com.art2cat.dev.moonlightnote.model.BusEvent
+import com.art2cat.dev.moonlightnote.model.Constants
 import com.art2cat.dev.moonlightnote.model.Constants.Companion.ALBUM_CHOOSE
 import com.art2cat.dev.moonlightnote.model.Constants.Companion.BUS_FLAG_ALBUM
 import com.art2cat.dev.moonlightnote.model.Constants.Companion.BUS_FLAG_CAMERA
 import com.art2cat.dev.moonlightnote.model.Constants.Companion.BUS_FLAG_DELETE_ACCOUNT
 import com.art2cat.dev.moonlightnote.model.Constants.Companion.BUS_FLAG_EMAIL
 import com.art2cat.dev.moonlightnote.model.Constants.Companion.BUS_FLAG_USERNAME
-import com.art2cat.dev.moonlightnote.model.Constants.Companion.CAMERA_PERMS
 import com.art2cat.dev.moonlightnote.model.Constants.Companion.FB_STORAGE_REFERENCE
 import com.art2cat.dev.moonlightnote.model.Constants.Companion.FILE_PROVIDER
-import com.art2cat.dev.moonlightnote.model.Constants.Companion.STORAGE_PERMS
 import com.art2cat.dev.moonlightnote.model.Constants.Companion.TAKE_PICTURE
+import com.art2cat.dev.moonlightnote.model.User
+import com.art2cat.dev.moonlightnote.utils.*
+import com.art2cat.dev.moonlightnote.utils.firebase.AuthUtils
+import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils
+import com.art2cat.dev.moonlightnote.utils.material_animation.CircularRevealUtils
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.squareup.picasso.Picasso
+import de.hdodenhof.circleimageview.CircleImageView
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import pub.devrel.easypermissions.AfterPermissionGranted
+import pub.devrel.easypermissions.EasyPermissions
+import java.io.File
+import java.io.IOException
+import java.util.*
 
 
 /**
  * A simple [Fragment] subclass.
  */
-class UserFragment : Fragment(), View.OnClickListener {
+class UserFragment : BaseFragment(), View.OnClickListener {
     private var mView: View? = null
     private var mCircleImageView: CircleImageView? = null
     private var mNickname: AppCompatTextView? = null
@@ -79,7 +70,6 @@ class UserFragment : Fragment(), View.OnClickListener {
     private var mCircleProgressDialogFragment: CircleProgressDialogFragment? = null
     private var user: FirebaseUser? = null
     private var mUser: User? = null
-    private var mBitmapUtils: BitmapUtils? = null
     private var mFileUri: Uri? = null
     private var mStorageReference: StorageReference? = null
     private var mFileName: String? = null
@@ -94,9 +84,6 @@ class UserFragment : Fragment(), View.OnClickListener {
         //获取firebaseStorage实例
         mStorageReference = FirebaseStorage.getInstance()
                 .getReferenceFromUrl(FB_STORAGE_REFERENCE)
-
-
-        mBitmapUtils = BitmapUtils(activity)
 
         mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance(getString(R.string.prograssBar_uploading))
     }
@@ -114,7 +101,7 @@ class UserFragment : Fragment(), View.OnClickListener {
 
 
         mUser = UserUtils.getUserFromCache(activity.applicationContext)
-        LogUtils.getInstance(TAG).setMessage("displayUserInfo: " + mUser!!.getUid()).debug()
+        LogUtils.getInstance(TAG).setMessage("displayUserInfo: " + mUser!!.uid).debug()
 
         val adRequest = AdRequest.Builder()
                 //                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
@@ -142,7 +129,7 @@ class UserFragment : Fragment(), View.OnClickListener {
         mAdView!!.adListener = object : AdListener() {
             override fun onAdLoaded() {
                 super.onAdLoaded()
-                CircularRevealUtils.show(mAdView)
+                CircularRevealUtils.get().show(mAdView as AdView)
             }
         }
     }
@@ -186,34 +173,38 @@ class UserFragment : Fragment(), View.OnClickListener {
     }
 
     private fun initView() {
-        val nickname = mUser!!.getNickname()
+        val nickname = mUser!!.nickname
         LogUtils.getInstance(TAG).setMessage("initView: " + nickname!!).debug()
         if (nickname != null) {
             mNickname!!.setText(nickname)
-            mUser!!.setNickname(nickname)
+            mUser!!.nickname = nickname
         } else {
             mNickname!!.setText(R.string.user_setNickname)
         }
-        val email = mUser!!.getEmail()
+        val email = mUser!!.email
         LogUtils.getInstance(TAG).setMessage("initView: " + email!!).debug()
         if (email != null) {
-            mUser!!.setEmail(email)
+            mUser!!.email = email
             mEmail!!.setText(email)
         }
 
-        val url = mUser!!.getPhotoUrl()
+        val url = mUser!!.photoUrl
         LogUtils.getInstance(TAG).setMessage("initView: " + url!!)
         if (url != null) {
 
-            mBitmapUtils!!.display(mCircleImageView, url)
+            Picasso.with(activity)
+                    .load(url)
+                    .into(mCircleImageView)
         }
     }
 
     private fun updateUI(mDownloadUrl: Uri?) {
         if (mDownloadUrl != null) {
-            val bitmapUtils = BitmapUtils(activity)
-            bitmapUtils.display(mCircleImageView, mDownloadUrl.toString())
-            mUser!!.setPhotoUrl(mDownloadUrl.toString())
+
+            Picasso.with(activity)
+                    .load(mDownloadUrl)
+                    .into(mCircleImageView)
+            mUser!!.photoUrl = mDownloadUrl.toString()
         } else {
             mFileName = null
         }
@@ -243,28 +234,28 @@ class UserFragment : Fragment(), View.OnClickListener {
     fun busAction(busEvent: BusEvent?) {
         //这里更新视图或者后台操作,从busAction获取传递参数.
         if (busEvent != null) {
-            when (busEvent!!.getFlag()) {
+            when (busEvent.flag) {
                 BUS_FLAG_CAMERA -> {
-                    Log.d(TAG, "busEvent: " + busEvent!!.getFlag())
+                    Log.d(TAG, "busEvent: " + busEvent!!.flag)
                     onCameraClick()
                 }
                 BUS_FLAG_ALBUM -> {
-                    Log.d(TAG, "busEvent: " + busEvent!!.getFlag())
+                    Log.d(TAG, "busEvent: " + busEvent!!.flag)
                     onAlbumClick()
                 }
-                BUS_FLAG_USERNAME -> if (busEvent!!.getMessage() != null) {
-                    mNickname!!.setText(busEvent!!.getMessage())
-                    mUser!!.setNickname(busEvent!!.getMessage())
+                BUS_FLAG_USERNAME -> if (busEvent.message != null) {
+                    mNickname!!.setText(busEvent.message)
+                    mUser!!.nickname = busEvent.message
                     UserUtils.saveUserToCache(activity.applicationContext, mUser)
-                    updateProfile(busEvent!!.getMessage(), null)
+                    updateProfile(busEvent!!.message, null)
                 }
-                BUS_FLAG_EMAIL -> if (busEvent!!.getMessage().contains("@")) {
-                    AuthUtils.sendRPEmail(activity, mView, busEvent!!.getMessage())
+                BUS_FLAG_EMAIL -> if (busEvent!!.message.contains("@")) {
+                    AuthUtils.sendRPEmail(activity, mView as View, busEvent.message)
                 }
-                BUS_FLAG_DELETE_ACCOUNT -> if (busEvent!!.getMessage() != null) {
+                BUS_FLAG_DELETE_ACCOUNT -> if (busEvent.message != null) {
                     val user = FirebaseAuth.getInstance().currentUser
                     val credential = EmailAuthProvider
-                            .getCredential(user!!.email!!, busEvent!!.getMessage())
+                            .getCredential(user!!.email!!, busEvent.message)
                     FDatabaseUtils.emptyNote(user.uid)
                     FDatabaseUtils.emptyTrash(user.uid)
 
@@ -303,7 +294,7 @@ class UserFragment : Fragment(), View.OnClickListener {
                             LogUtils.getInstance(TAG).setMessage("User profile updated.").debug()
                             if (mUser != null) {
                                 BusEventUtils.post(Constants.BUS_FLAG_UPDATE_USER, null)
-                                UserUtils.updateUser(user!!.uid, mUser)
+                                UserUtils.updateUser(user!!.uid, mUser as User)
                             }
                         }
                     }
@@ -324,7 +315,7 @@ class UserFragment : Fragment(), View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    @AfterPermissionGranted(CAMERA_PERMS)
+    @AfterPermissionGranted(105)
     private fun onCameraClick() {
         // Check that we have permission to read images from external storage.
         val perm = Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -373,11 +364,11 @@ class UserFragment : Fragment(), View.OnClickListener {
         if (takePicIntent.resolveActivity(activity.packageManager) != null) {
             startActivityForResult(takePicIntent, TAKE_PICTURE)
         } else {
-            SnackBarUtils.longSnackBar(mView, "No Camera!", SnackBarUtils.TYPE_WARNING).show()
+            SnackBarUtils.longSnackBar(mView as View, "No Camera!", SnackBarUtils.TYPE_WARNING).show()
         }
     }
 
-    @AfterPermissionGranted(STORAGE_PERMS)
+    @AfterPermissionGranted(101)
     private fun onAlbumClick() {
         // Check that we have permission to read images from external storage.
         val perm = Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -413,7 +404,7 @@ class UserFragment : Fragment(), View.OnClickListener {
         if (albumIntent.resolveActivity(activity.packageManager) != null) {
             startActivityForResult(albumIntent, ALBUM_CHOOSE)
         } else {
-            SnackBarUtils.longSnackBar(mView, "No Album!", SnackBarUtils.TYPE_WARNING).show()
+            SnackBarUtils.longSnackBar(mView as View, "No Album!", SnackBarUtils.TYPE_WARNING).show()
         }
     }
 
@@ -428,7 +419,7 @@ class UserFragment : Fragment(), View.OnClickListener {
         val uploadTask = photoRef.putFile(fileUri)
 
         uploadTask.addOnSuccessListener { taskSnapshot ->
-            mUser!!.setPhotoUrl(taskSnapshot.downloadUrl!!.toString())
+            mUser!!.photoUrl = taskSnapshot.downloadUrl!!.toString()
             updateUI(taskSnapshot.downloadUrl)
             UserUtils.saveUserToCache(activity.applicationContext, mUser)
             updateProfile(null, taskSnapshot.downloadUrl)

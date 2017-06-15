@@ -8,8 +8,7 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.support.annotation.DrawableRes
 import android.support.annotation.RequiresApi
-
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by Rorschach
@@ -178,7 +177,7 @@ class ShortcutsUtils {
      */
     val shortcutIds: List<String>?
         get() {
-            val shortcutIdList = ArrayList()
+            val shortcutIdList = ArrayList<String>()
             val shortcutInfoList = shortcutManager!!.getDynamicShortcuts()
             if (shortcutInfoList.isEmpty()) {
                 return null

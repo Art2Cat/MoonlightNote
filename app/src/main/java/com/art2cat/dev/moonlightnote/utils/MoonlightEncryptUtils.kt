@@ -5,6 +5,10 @@ import android.support.annotation.AnyThread
 import android.util.Log
 
 import com.art2cat.dev.moonlightnote.BuildConfig
+import com.art2cat.dev.moonlightnote.MoonlightApplication
+import com.art2cat.dev.moonlightnote.model.Moonlight
+import com.art2cat.dev.moonlightnote.utils.MoonlightEncryptUtils.MoonlightEncryptTask.Companion.DECRYPT
+import com.art2cat.dev.moonlightnote.utils.MoonlightEncryptUtils.MoonlightEncryptTask.Companion.ENCRYPT
 
 import java.util.concurrent.ExecutionException
 
@@ -58,12 +62,12 @@ class MoonlightEncryptUtils private constructor() {
                 Log.d("MoonlightEncryptTask", "moonlight:" + moonlight1!!.getContent())
         }
 
-        return moonlight1
+        return moonlight1 as Moonlight
     }
 
     private inner class MoonlightEncryptTask : AsyncTask<Moonlight, Void, Moonlight> {
         internal var flag: Int = 0
-        internal var key: String
+        internal var key: String = ""
 
         internal constructor() {}
 
@@ -73,7 +77,7 @@ class MoonlightEncryptUtils private constructor() {
         }
 
         @Override
-        protected fun doInBackground(vararg moonlights: Moonlight): Moonlight? {
+        override fun doInBackground(vararg moonlights: Moonlight): Moonlight? {
             if (BuildConfig.DEBUG) Log.d("MoonlightEncryptTask", Thread.currentThread().getName())
             if (flag == ENCRYPT) {
                 return encrypt(key, moonlights[0])
@@ -83,7 +87,7 @@ class MoonlightEncryptUtils private constructor() {
             return null
         }
 
-        companion object {
+        private companion object {
             internal val ENCRYPT = 101
             internal val DECRYPT = 102
         }

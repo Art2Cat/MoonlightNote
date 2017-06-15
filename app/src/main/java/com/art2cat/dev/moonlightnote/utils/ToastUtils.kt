@@ -27,24 +27,20 @@ open class ToastUtils {
         Toast.makeText(context, content, Toast.LENGTH_LONG).show()
     }
 
-    private fun setContext(context: Context) {
-        this.context = context
-    }
-
     private fun setContent(message: String) {
         this.content = message
     }
 
     companion object {
 
-        private fun newInstance(): ToastUtils {
-            return ToastUtils()
-        }
 
         fun with(context: Context): ToastUtils {
-            val toastUtils = ToastUtils.newInstance()
-            toastUtils.setContext(context)
-            return toastUtils
+            Instance.toastUtils.context = context
+            return Instance.toastUtils
         }
+    }
+
+    object Instance {
+        val toastUtils = ToastUtils()
     }
 }

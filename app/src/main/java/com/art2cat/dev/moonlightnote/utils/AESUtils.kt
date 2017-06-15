@@ -6,15 +6,13 @@ package com.art2cat.dev.moonlightnote.utils
 
 import android.text.TextUtils
 import android.util.Base64
-
 import java.security.SecureRandom
-import java.security.spec.KeySpec
-
 import javax.crypto.Cipher
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
+import kotlin.experimental.and
 
 /**
  * Created by art2cat
@@ -22,18 +20,20 @@ import javax.crypto.spec.SecretKeySpec
  */
 open class AESUtils {
 
-    private val TAG = "AESUtils"
-    private val HEX = "0123456789ABCDEF"
-    private val CBC_PKCS5_PADDING = "AES/CBC/PKCS5Padding"
-    private val AES = "AES"
-    private val PBKDF2WITHHMACSHA1 = "PBKDF2WithHmacSHA1"
-    private val ASCII = "ASCII"
-    private val HEX_ARRAY = HEX.toCharArray()
-    private val SALT_LENGTH = 32
-    private val KEY_LENGTH = 256
-    private val ITERATION_COUNT = 32 //迭代次数越大，计算耗时越长，会造成UI卡顿（高于100）
 
     companion object {
+
+        private val TAG = "AESUtils"
+        private val HEX = "0123456789ABCDEF"
+        private val CBC_PKCS5_PADDING = "AES/CBC/PKCS5Padding"
+        private val AES = "AES"
+        private val PBKDF2WITHHMACSHA1 = "PBKDF2WithHmacSHA1"
+        private val ASCII = "ASCII"
+        private val HEX_ARRAY = HEX.toCharArray()
+        private val SALT_LENGTH = 32
+        private val KEY_LENGTH = 256
+        private val ITERATION_COUNT = 32 //迭代次数越大，计算耗时越长，会造成UI卡顿（高于100）
+
         /**
          * 生成AES密钥
 
@@ -80,7 +80,7 @@ open class AESUtils {
                 return unencrypted
             }
             try {
-                val result = encrypt(key, unencrypted.getBytes())
+                val result = encrypt(key, unencrypted.toByteArray())
                 return Base64.encodeToString(result, Base64.CRLF)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -155,19 +155,19 @@ open class AESUtils {
         private fun byteArrayToHexString(bytes: ByteArray): String {
             val hexChars = CharArray(bytes.size * 2)
             for (j in bytes.indices) {
-                val v = bytes[j] and 0xFF
-                hexChars[j * 2] = HEX_ARRAY[v.ushr(4)]
-                hexChars[j * 2 + 1] = HEX_ARRAY[v and 0x0F]
+                val v = bytes[j] and 0xFF.toByte()
+                hexChars[j * 2] = HEX_ARRAY[v.plus(4)]
+                hexChars[j * 2 + 1] = HEX_ARRAY[(v and 0x0F).toInt()]
             }
             return String(hexChars)
         }
 
         private fun hexStringToByteArray(s: String): ByteArray {
-            val len = s.length()
+            val len = s.length
             val data = ByteArray(len / 2)
             var i = 0
             while (i < len) {
-                data[i / 2] = ((Character.digit(s.charAt(i), 16) shl 4) + Character.digit(s.charAt(i + 1), 16)) as Byte
+                data[i / 2] = ((Character.digit(s.toInt(i), 16) shl 4) + Character.digit(s.toInt(i + 1), 16)) as Byte
                 i += 2
             }
             return data

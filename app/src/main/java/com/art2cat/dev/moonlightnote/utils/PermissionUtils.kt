@@ -1,12 +1,10 @@
 package com.art2cat.dev.moonlightnote.utils
 
 import android.content.Context
-
+import com.art2cat.dev.moonlightnote.model.Constants.Companion.CAMERA_PERMS
+import com.art2cat.dev.moonlightnote.model.Constants.Companion.RECORD_AUDIO
+import com.art2cat.dev.moonlightnote.model.Constants.Companion.STORAGE_PERMS
 import pub.devrel.easypermissions.EasyPermissions
-
-import com.art2cat.dev.moonlightnote.model.Constants.CAMERA_PERMS
-import com.art2cat.dev.moonlightnote.model.Constants.RECORD_AUDIO
-import com.art2cat.dev.moonlightnote.model.Constants.STORAGE_PERMS
 
 /**
  * Created by Art
