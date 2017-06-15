@@ -18,7 +18,8 @@ buildscript {
 allprojects {
     repositories {
         maven {
-            url "https://github.com/omadahealth/omada-nexus/raw/master/release"
+//            url 'https://github.com/omadahealth/omada-nexus/raw/master/release',
+            url 'https://maven.google.com'
         }
         flatDir {
             dirs 'libs'
