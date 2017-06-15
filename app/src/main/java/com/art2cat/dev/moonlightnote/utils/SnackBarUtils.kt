@@ -16,17 +16,16 @@ import android.widget.LinearLayout
  */
 open class SnackBarUtils {
 
-    val TYPE_INFO = 101
-    val TYPE_CONFIRM = 102
-    val TYPE_WARNING = 103
-    val TYPE_ALERT = 104
-
-    var MATERIAL_RED = 0xfff44336.toInt()
-    var MATERIAL_GREEN = 0xff4caf50.toInt()
-    var MATERIAL_BLUE = 0xff2195f3.toInt()
-    var MATERIAL_ORANGE = 0xffff9800.toInt()
-
     companion object {
+        val TYPE_INFO = 101
+        val TYPE_CONFIRM = 102
+        val TYPE_WARNING = 103
+        val TYPE_ALERT = 104
+
+        var MATERIAL_RED = 0xfff44336.toInt()
+        var MATERIAL_GREEN = 0xff4caf50.toInt()
+        var MATERIAL_BLUE = 0xff2195f3.toInt()
+        var MATERIAL_ORANGE = 0xffff9800.toInt()
         /**
          * 短显示SnackBar，自定义颜色
 

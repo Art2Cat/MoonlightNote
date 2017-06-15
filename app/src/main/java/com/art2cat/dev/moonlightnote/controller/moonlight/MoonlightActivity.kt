@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
-import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
@@ -30,7 +29,6 @@ import com.art2cat.dev.moonlightnote.model.BusEvent
 import com.art2cat.dev.moonlightnote.model.Constants
 import com.art2cat.dev.moonlightnote.utils.*
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils
-import com.art2cat.dev.moonlightnote.utils.image_loader.BitmapUtils
 import com.google.android.gms.appindexing.Action
 import com.google.android.gms.appindexing.AppIndex
 import com.google.android.gms.appindexing.Thing
@@ -39,6 +37,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.kobakei.ratethisapp.RateThisApp
+import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -72,16 +71,14 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
     private var mFirebaseAnalytics: FirebaseAnalytics? = null
     private var mLock: Int = 0
     private var mClient: GoogleApiClient? = null
-    private val userUtils: UserUtils = UserUtils()
-    private val fragmentUtils: FragmentUtils = FragmentUtils()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTransition()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_moonlight)
 
-        mLock = SPUtils.getInt(MoonlightApplication.context, Constants::USER_CONFIG.get(Constants()),
-                Constants::USER_CONFIG_SECURITY_ENABLE.get(Constants()), 0)
+        mLock = SPUtils.getInt(MoonlightApplication.context!!, Constants.USER_CONFIG,
+                Constants.USER_CONFIG_SECURITY_ENABLE, 0)
         if (mLock != 0) {
             isLock = true
         }
@@ -92,8 +89,8 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
         mAuth = FirebaseAuth.getInstance()
 
         mUserId = mAuth!!.currentUser!!.uid
-        mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.context, mUserId)
-        mFDatabaseUtils!!.getDataFromDatabase(null, Constants::EXTRA_TYPE_USER.get(Constants()))
+        mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.context!!, mUserId)
+        mFDatabaseUtils!!.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER)
         //获取Bus单例，并注册
         EventBus.getDefault().register(this)
         initView()
@@ -135,7 +132,7 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START)
         } else {
-            if (!BackHandlerHelper.handleBackPress(this)) {
+            if (!BackHandlerHelper().handleBackPress(this)) {
                 super.onBackPressed()
             }
         }
@@ -168,7 +165,7 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
         super.onResume()
         Log.d(TAG, "onResume: ")
         if (isLock) {
-            Utils.lockApp(MoonlightApplication.context, mLock)
+            Utils.lockApp(MoonlightApplication.context!!, mLock)
         }
     }
 
@@ -194,10 +191,10 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
             R.id.nav_notes -> if (mUserId.isNotEmpty()) {
                 Log.d(TAG, "nav_notes: " + isHome)
                 if (!isHome) {
-                    fragmentUtils.replaceFragment(supportFragmentManager,
+                    FragmentUtils.replaceFragment(supportFragmentManager,
                             container,
                             MoonlightFragment(),
-                            fragmentUtils.REPLACE_NORMAL)
+                            FragmentUtils.REPLACE_NORMAL)
                     mFAB!!.visibility = View.VISIBLE
                     isHome = true
                 }
@@ -205,10 +202,10 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
             R.id.nav_trash -> if (mUserId != null) {
                 Log.d(TAG, "nav_trash: " + isHome)
                 if (isHome) {
-                    FragmentUtils::replaceFragment(supportFragmentManager,
+                    FragmentUtils.replaceFragment(supportFragmentManager,
                             container,
                             TrashFragment(),
-                            FragmentUtils::REPLACE_NORMAL)
+                            FragmentUtils.REPLACE_NORMAL)
                     mFAB!!.visibility = View.GONE
                     isHome = false
                 }
@@ -268,10 +265,10 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
                     ShortcutsUtils.getInstance(this@MoonlightActivity).removeShortcuts()
                 }
-                BusEventUtils.post(Constants::BUS_FLAG_SIGN_OUT.get(Constants()), null)
-                SPUtils.clear(MoonlightApplication.context, "User")
-                SPUtils.clear(MoonlightApplication.context, Constants::USER_CONFIG.get(Constants()))
-                SnackBarUtils.shortSnackBar(mCoordinatorLayout, "Your account have been remove!",
+                BusEventUtils.post(Constants.BUS_FLAG_SIGN_OUT, null)
+                SPUtils.clear(MoonlightApplication.context!!, "User")
+                SPUtils.clear(MoonlightApplication.context!!, Constants.USER_CONFIG)
+                SnackBarUtils.shortSnackBar(mCoordinatorLayout!!, "Your account have been remove!",
                         SnackBarUtils.TYPE_ALERT).show()
             }
             else -> {
@@ -339,13 +336,13 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
         //设置FloatingActionButton点击事件
         mFAB!!.setOnClickListener {
             if (isLogin) {
-                FragmentUtils::replaceFragment(supportFragmentManager,
+                FragmentUtils.replaceFragment(supportFragmentManager,
                         R.id.main_fragment_container,
                         CreateMoonlightFragment(),
-                        FragmentUtils::REPLACE_BACK_STACK)
+                        FragmentUtils.REPLACE_BACK_STACK)
                 checkLockStatus()
             } else {
-                SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
+                SnackBarUtils.shortSnackBar(mCoordinatorLayout!!, getString(R.string.login_request),
                         SnackBarUtils.TYPE_INFO).show()
             }
         }
@@ -380,7 +377,7 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
                     isClicked = !isClicked
                 }
             } else {
-                SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
+                SnackBarUtils.shortSnackBar(mCoordinatorLayout!!, getString(R.string.login_request),
                         SnackBarUtils.TYPE_INFO).show()
             }
         }
@@ -394,7 +391,7 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
                 startActivity(intent)
                 checkLockStatus()
             } else {
-                SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
+                SnackBarUtils.shortSnackBar(mCoordinatorLayout!!, getString(R.string.login_request),
                         SnackBarUtils.TYPE_INFO).show()
             }
         }
@@ -404,14 +401,14 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
         mNicknameTextView = headerView.findViewById(R.id.nav_header_nickname) as TextView
         val type = intent.getIntExtra("type", 0)
         if (mUserId.isNotEmpty()) {
-            FragmentUtils::addFragment(supportFragmentManager,
+            FragmentUtils.addFragment(supportFragmentManager,
                     R.id.main_fragment_container,
                     MoonlightFragment())
             if (type == 101) {
-                FragmentUtils::replaceFragment(supportFragmentManager,
+                FragmentUtils.replaceFragment(supportFragmentManager,
                         R.id.main_fragment_container,
                         CreateMoonlightFragment(),
-                        FragmentUtils::REPLACE_BACK_STACK)
+                        FragmentUtils.REPLACE_BACK_STACK)
             }
 
         }
@@ -421,18 +418,18 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
     fun busAction(busEvent: BusEvent?) {
         if (busEvent != null) {
             when (busEvent.flag) {
-                Constants::BUS_FLAG_UPDATE_USER.get(Constants()) -> displayUserInfo()
-                Constants::EXTRA_TYPE_MOONLIGHT.get(Constants()) -> SnackBarUtils.shortSnackBar(mCoordinatorLayout,
+                Constants.BUS_FLAG_UPDATE_USER -> displayUserInfo()
+                Constants.EXTRA_TYPE_MOONLIGHT -> SnackBarUtils.shortSnackBar(mCoordinatorLayout!!,
                         getString(R.string.delete_moonlight), SnackBarUtils.TYPE_INFO)
                         .setAction(getString(R.string.restore_moonlight)) { }.show()
-                Constants::EXTRA_TYPE_TRASH.get(Constants()) -> SnackBarUtils.shortSnackBar(mCoordinatorLayout,
+                Constants.EXTRA_TYPE_TRASH -> SnackBarUtils.shortSnackBar(mCoordinatorLayout!!,
                         getString(R.string.delete_moonlight), SnackBarUtils.TYPE_INFO).show()
-                Constants::EXTRA_TYPE_TRASH_TO_MOONLIGHT.get(Constants()) -> SnackBarUtils.shortSnackBar(mCoordinatorLayout,
+                Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT -> SnackBarUtils.shortSnackBar(mCoordinatorLayout!!,
                         getString(R.string.restore_moonlight), SnackBarUtils.TYPE_INFO).show()
-                Constants::BUS_FLAG_NULL.get(Constants()) -> SnackBarUtils.shortSnackBar(mCoordinatorLayout,
+                Constants.BUS_FLAG_NULL -> SnackBarUtils.shortSnackBar(mCoordinatorLayout!!,
                         getString(R.string.note_binned), SnackBarUtils.TYPE_INFO).show()
-                Constants::BUS_FLAG_NONE_SECURITY.get(Constants()) -> checkLockStatus()
-                Constants::BUS_FLAG_EXPORT_DATA_DONE.get(Constants()) -> {
+                Constants.BUS_FLAG_NONE_SECURITY -> checkLockStatus()
+                Constants.BUS_FLAG_EXPORT_DATA_DONE -> {
                 }
             }
         }
@@ -441,7 +438,7 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
     private fun displayUserInfo() {
         if (mFirebaseUser != null) {
 
-            val user = userUtils.getUserFromCache(MoonlightApplication.context!!)
+            val user = UserUtils.getUserFromCache(MoonlightApplication.context!!)
 
             Log.d(TAG, "displayUserInfo: " + user.uid)
             val username = user.nickname
@@ -454,9 +451,10 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
             }
             val photoUrl = user.photoUrl
             if (photoUrl.isNotEmpty()) {
-                val bitmapUtils = BitmapUtils(MoonlightApplication.context)
-                Log.d(TAG, "displayUserInfo: " + photoUrl!!)
-                bitmapUtils.display(mCircleImageView, photoUrl)
+                Picasso.with(applicationContext)
+                        .load(photoUrl)
+                        .placeholder(R.drawable.ic_cloud_download_black_24dp)
+                        .into(mCircleImageView)
             }
 
         }

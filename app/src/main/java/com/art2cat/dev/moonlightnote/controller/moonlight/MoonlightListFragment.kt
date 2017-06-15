@@ -184,7 +184,7 @@ abstract class MoonlightListFragment : BaseFragment() {
 
     private fun setAdapter() {
 
-        val moonlightsQuery = getQuery(mDatabase)
+        val moonlightsQuery = getQuery(mDatabase!!)
         if (moonlightsQuery != null) {
             mFirebaseRecyclerAdapter = object : FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder>(Moonlight::class.java, R.layout.moonlight_item, MoonlightViewHolder::class.java,
                     moonlightsQuery) {
@@ -195,8 +195,8 @@ abstract class MoonlightListFragment : BaseFragment() {
 
                     val moonlightD = MoonlightEncryptUtils.newInstance().decryptMoonlight(model) ?: return
 
-                    if (moonlightD.getTitle() != null) {
-                        viewHolder.displayTitle(moonlightD.getTitle())
+                    if (moonlightD.title != null) {
+                        viewHolder.displayTitle(moonlightD.title())
                     } else {
                         viewHolder.mTitle.visibility = View.GONE
                     }
@@ -482,8 +482,8 @@ abstract class MoonlightListFragment : BaseFragment() {
                             //启动Intent分享
                             var `in` = Intent(Intent.ACTION_SEND)
                             `in`.type = "text/plain"
-                            if (moonlight!!.getTitle() != null) {
-                                `in`.putExtra(Intent.EXTRA_TITLE, moonlight!!.getTitle())
+                            if (moonlight!!.title != null) {
+                                `in`.putExtra(Intent.EXTRA_TITLE, moonlight!!.title())
                             }
 
                             if (moonlight!!.getContent() != null) {

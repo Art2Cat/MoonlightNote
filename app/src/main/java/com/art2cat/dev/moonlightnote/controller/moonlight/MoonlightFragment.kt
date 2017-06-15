@@ -7,13 +7,12 @@ import com.google.firebase.database.Query
  * Created by Rorschach
  * on 24/05/2017 8:01 PM.
  */
-class MoonlightFragment : MoonlightListFragment() {
+class MoonlightFragment() : MoonlightListFragment() {
+    override val isTrash: Boolean
+        get() = false
+
     override fun getQuery(databaseReference: DatabaseReference): Query {
         return databaseReference.child("users-moonlight")
                 .child(uid).child("note")
-    }
-
-    override fun isTrash(): Boolean {
-        return false
     }
 }

@@ -80,7 +80,7 @@ class LoginActivity : AppCompatActivity() {
             if (user != null) {
                 Log.d(TAG, "onAuthStateChanged:signed_in:" + user.uid)
                 Log.d(TAG, "onAuthStateChanged: " + user.displayName!!)
-                mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.context, user.uid)
+                mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.context!!, user.uid)
                 mFDatabaseUtils!!.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER)
 
                 initShortcuts()

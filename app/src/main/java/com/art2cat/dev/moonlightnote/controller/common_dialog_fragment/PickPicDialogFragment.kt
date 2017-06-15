@@ -29,12 +29,12 @@ class PickPicDialogFragment : DialogFragment() {
 
 
         camera.setOnClickListener {
-            BusEventUtils.post(Constants::BUS_FLAG_CAMERA.get(Constants()), null)
+            BusEventUtils.post(Constants.BUS_FLAG_CAMERA, null)
             dismiss()
         }
 
         album.setOnClickListener {
-            BusEventUtils.post(Constants::BUS_FLAG_ALBUM.get(Constants()), null)
+            BusEventUtils.post(Constants.BUS_FLAG_ALBUM, null)
             dismiss()
         }
 

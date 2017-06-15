@@ -28,6 +28,33 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <activity
+            android:name=".controller.moonlight.MoonlightActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize|adjustPan">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="art2cat.com"
+                    android:pathPrefix="/schedule"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".controller.login.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBarForLoginFragment">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_launcher" />
@@ -44,7 +71,31 @@
                 android:value=".controller.moonlight.MoonlightActivity" />
         </activity>
 
+        <service android:name=".service.NotificationService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".service.NotificationInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
         <activity android:name=".controller.settings.MoonlightPinActivity" />
+        <activity
+            android:name=".controller.settings.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".controller.moonlight.MoonlightActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity" />
+        </activity>
+        <activity android:name=".controller.settings.SettingsSecondActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.art2cat.dev.moonlightnote.controller.settings.SettingsActivity" />
+        </activity>
 
         <meta-data
             android:name="com.google.android.gms.version"

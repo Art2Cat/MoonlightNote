@@ -57,7 +57,7 @@ class ConfirmationDialogFragment : DialogFragment() {
         ) { dialogInterface, i ->
             // positive button logic
             when (mType) {
-                Constants.EXTRA_TYPE_CDF_EMPTY_TRASH -> FDatabaseUtils.emptyTrash(mUserId)
+                Constants.EXTRA_TYPE_CDF_EMPTY_TRASH -> FDatabaseUtils.emptyTrash(mUserId!!)
                 Constants.EXTRA_TYPE_CDF_DELETE_ACCOUNT -> {
                     val inputDialogFragment = InputDialogFragment.newInstance(getString(R.string.dialog_enter_your_password), 2)
                     inputDialogFragment.show(fragmentManager, "enter password")
@@ -77,7 +77,7 @@ class ConfirmationDialogFragment : DialogFragment() {
                 }
                 Constants.EXTRA_TYPE_CDF_EMPTY_NOTE -> {
                     Log.d(TAG, "onClick: ")
-                    FDatabaseUtils.emptyNote(mUserId)
+                    FDatabaseUtils.emptyNote(mUserId!!)
                 }
             }
         }

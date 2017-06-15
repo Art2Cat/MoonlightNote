@@ -51,9 +51,9 @@ class MoonlightViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), A
             Log.d(TAG, "displayImage: succeed")
             Picasso.with(context)
                     .load(Uri.parse(url))
-                    .memoryPolicy(NO_CACHE)
+//                    .memoryPolicy(NO_CACHE)
                     .placeholder(R.drawable.ic_cloud_download_black_24dp)
-                    .tag(tag)
+//                    .tag(tag)
                     .config(Bitmap.Config.RGB_565)
                     .into(mImage)
             mImage.visibility = View.VISIBLE

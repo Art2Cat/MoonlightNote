@@ -284,18 +284,18 @@ abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, V
             mTitle!!.setText(moonlight!!.title)
         } else {
             mTitle!!.isEnabled = false
-            if (moonlight!!.getTitle() != null) {
+            if (moonlight!!.title != null) {
                 mTitle!!.setText(moonlight!!.getTitle())
             }
         }
-        if (moonlight!!.getContent() != null) {
+        if (moonlight!!.content != null) {
             mContent!!.setText(moonlight!!.getContent())
             if (!editable) {
                 mContent!!.isEnabled = false
             }
         }
-        if (moonlight!!.getImageUrl() != null) {
-            val url = moonlight!!.getImageUrl()
+        if (moonlight!!.imageUrl != null) {
+            val url = moonlight!!.imageUrl
             Picasso.with(mActivity)
                     .load(Uri.parse(url))
                     .memoryPolicy(NO_CACHE, NO_STORE)
@@ -551,8 +551,8 @@ abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, V
     }
 
     private fun isEmpty(moonlight: Moonlight): Boolean {
-        return !(moonlight.getImageUrl() != null || moonlight.getAudioUrl() != null || moonlight.getContent() != null
-                || moonlight.getTitle() != null)
+        return !(moonlight.imageUrl != null || moonlight.getAudioUrl() != null || moonlightcontent != null
+                || moonlight.title != null)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -665,15 +665,15 @@ abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, V
                 //启动Intent分享
                 var `in` = Intent(Intent.ACTION_SEND)
                 `in`.type = "text/plain"
-                if (moonlight!!.getTitle() != null) {
+                if (moonlight!!.title != null) {
                     `in`.putExtra(Intent.EXTRA_TITLE, moonlight!!.getTitle())
                 }
 
-                if (moonlight!!.getContent() != null) {
+                if (moonlight!! content != null) {
                     `in`.putExtra(Intent.EXTRA_TEXT, moonlight!!.getContent())
                 }
 
-                if (moonlight!!.getImageUrl() != null) {
+                if (moonlight!!.imageUrl != null) {
                     `in`.putExtra(Intent.EXTRA_TEXT, moonlight!!.getImageUrl())
                 }
                 //设置分享选择器

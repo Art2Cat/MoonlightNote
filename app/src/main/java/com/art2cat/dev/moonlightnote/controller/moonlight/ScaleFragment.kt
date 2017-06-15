@@ -37,7 +37,7 @@ class ScaleFragment : BaseFragment() {
         Picasso.with(mActivity)
                 .load(Uri.parse(mUrl))
                 .placeholder(R.drawable.ic_cloud_download_black_24dp)
-                .memoryPolicy(NO_CACHE, NO_STORE)
+//                .memoryPolicy(NO_CACHE, NO_STORE)
                 .config(Bitmap.Config.RGB_565)
                 .into(imageView)
         return view

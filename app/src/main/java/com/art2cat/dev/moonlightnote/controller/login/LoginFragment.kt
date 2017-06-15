@@ -15,7 +15,6 @@ import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,8 +33,6 @@ import com.art2cat.dev.moonlightnote.model.User
 import com.art2cat.dev.moonlightnote.utils.SPUtils
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils
 import com.art2cat.dev.moonlightnote.utils.UserUtils
-import com.art2cat.dev.moonlightnote.utils.UserUtils.Companion.saveUserToCache
-import com.art2cat.dev.moonlightnote.utils.UserUtils.Companion.updateUser
 import com.art2cat.dev.moonlightnote.utils.firebase.AuthUtils
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils
 import com.google.android.gms.auth.api.Auth
@@ -43,10 +40,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.iid.FirebaseInstanceId
@@ -298,7 +291,7 @@ class LoginFragment : BaseFragment(), View.OnClickListener, GoogleApiClient.OnCo
     }
 
     override fun onConnectionFailed(connectionResult: ConnectionResult) {
-        showShortSnackBar(mView!!, connectionResult.errorMessage!! SnackBarUtils . TYPE_ALERT)
+        showShortSnackBar(mView!!, connectionResult.errorMessage!!, SnackBarUtils.TYPE_ALERT)
     }
 
     fun signIn() {
@@ -306,7 +299,7 @@ class LoginFragment : BaseFragment(), View.OnClickListener, GoogleApiClient.OnCo
             val user = firebaseAuth.currentUser
             if (user != null) {
                 Log.d(TAG, "onAuthStateChanged:signed_in:" + user.uid)
-                SPUtils.putString(MoonlightApplication.context, "User", "Id", user.uid)
+                SPUtils.putString(MoonlightApplication.context!!, "User", "Id", user.uid)
                 val photoUrl = user.photoUrl
                 val nickname = user.displayName
                 val email = user.email
@@ -365,7 +358,7 @@ class LoginFragment : BaseFragment(), View.OnClickListener, GoogleApiClient.OnCo
                         activity.startActivity(intent, bundle)
                         showShortSnackBar(mView!!, "Google Sign In succeed", SnackBarUtils.TYPE_INFO)
                         isNewUser = true
-                        SPUtils.putBoolean(MoonlightApplication.context, "User", "google", true)
+                        SPUtils.putBoolean(MoonlightApplication.context!!, "User", "google", true)
                         activity.finishAfterTransition()
                     }
                 }
