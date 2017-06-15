@@ -49,7 +49,8 @@ import org.greenrobot.eventbus.ThreadMode
  */
 
 
-class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationItemSelectedListener, BaseFragment.DrawerLocker {
+class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationItemSelectedListener,
+        BaseFragment.DrawerLocker {
     var mToolbar: Toolbar? = null
     var mToolbar2: Toolbar? = null
     var mFAB: FloatingActionButton? = null

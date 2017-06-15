@@ -196,7 +196,7 @@ abstract class MoonlightListFragment : BaseFragment() {
                     val moonlightD = MoonlightEncryptUtils.newInstance().decryptMoonlight(model) ?: return
 
                     if (moonlightD.title != null) {
-                        viewHolder.displayTitle(moonlightD.title())
+                        viewHolder.displayTitle(moonlightD.title)
                     } else {
                         viewHolder.mTitle.visibility = View.GONE
                     }
@@ -238,6 +238,8 @@ abstract class MoonlightListFragment : BaseFragment() {
                         viewHolder.mAudio.visibility = View.GONE
                     }
 
+
+
                     viewHolder.itemView.setOnClickListener {
                         if (isLogin) {
                             moonlightD.setId(moonlightKey)
@@ -274,7 +276,7 @@ abstract class MoonlightListFragment : BaseFragment() {
                                 setParams(1)
                             }
                         }
-                        return false
+                        false
                     }
                 }
             }
@@ -519,7 +521,7 @@ abstract class MoonlightListFragment : BaseFragment() {
                     changeToolbar(null, 1)
                     changeOptionsMenu(3)
                     isInflate = true
-                    return false
+                    false
                 }
             }
             1 -> {

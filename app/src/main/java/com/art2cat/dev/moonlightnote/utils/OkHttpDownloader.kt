@@ -7,15 +7,13 @@ package com.art2cat.dev.moonlightnote.utils
 
 import android.net.Uri
 import android.util.Log
-
 import com.squareup.picasso.Downloader
 import com.squareup.picasso.NetworkPolicy
-
-import java.io.IOException
-
 import okhttp3.CacheControl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.io.IOException
+
 
 /**
  * 用于picasso的DownLoader，基于OKHTTP3.0，picasso源码中的网络层只能配合OKHTTP2.x的版本
@@ -28,9 +26,8 @@ class OkHttpDownloader(client: OkHttpClient) : Downloader {
         mClient = client
     }
 
-    @Override
     @Throws(IOException::class)
-    fun load(uri: Uri, networkPolicy: Int): Response {
+    override fun load(uri: Uri, networkPolicy: Int): Downloader.Response? {
         val builder = CacheControl.Builder()
         if (networkPolicy != 0) {
             if (NetworkPolicy.isOfflineOnly(networkPolicy)) {
@@ -49,11 +46,11 @@ class OkHttpDownloader(client: OkHttpClient) : Downloader {
                 .url(uri.toString())
                 .build()
         val response = mClient!!.newCall(request).execute()
-        return Response(response.body().byteStream(), response.cacheResponse() != null, response.body().contentLength())
+        return Downloader.Response(response.body().byteStream(), response.cacheResponse() != null, response.body().contentLength())
     }
 
     @Override
-    fun shutdown() {
+    override fun shutdown() {
         Log.e("tag", "picasso downloader shutdown")
     }
 }

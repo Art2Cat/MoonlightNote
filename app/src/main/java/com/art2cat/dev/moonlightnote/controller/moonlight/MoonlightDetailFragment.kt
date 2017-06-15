@@ -33,13 +33,13 @@ import com.art2cat.dev.moonlightnote.BuildConfig
 import com.art2cat.dev.moonlightnote.MoonlightApplication
 import com.art2cat.dev.moonlightnote.R
 import com.art2cat.dev.moonlightnote.controller.BaseFragment
+import com.art2cat.dev.moonlightnote.controller.BaseFragmentActivity
+import com.art2cat.dev.moonlightnote.controller.BaseFragmentActivity.FragmentOnTouchListener
 import com.art2cat.dev.moonlightnote.utils.FragmentBackHandler
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment
 import com.art2cat.dev.moonlightnote.model.BusEvent
 import com.art2cat.dev.moonlightnote.model.Constants
 import com.art2cat.dev.moonlightnote.model.Constants.Companion.ALBUM_CHOOSE
-import com.art2cat.dev.moonlightnote.model.Constants.Companion.CAMERA_PERMS
-import com.art2cat.dev.moonlightnote.model.Constants.Companion.STORAGE_PERMS
 import com.art2cat.dev.moonlightnote.model.Constants.Companion.TAKE_PICTURE
 import com.art2cat.dev.moonlightnote.model.Moonlight
 import com.art2cat.dev.moonlightnote.utils.*
@@ -69,7 +69,9 @@ import java.util.*
 /**
  * A simple [Fragment] subclass.
  */
-abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, View.OnFocusChangeListener, PopupMenu.OnMenuItemClickListener, FragmentBackHandler {
+abstract class MoonlightDetailFragment : BaseFragment(),
+        View.OnClickListener, View.OnFocusChangeListener,
+        PopupMenu.OnMenuItemClickListener, FragmentBackHandler {
     private var mView: View? = null
     private var mToolbar: Toolbar? = null
     private var mViewParent: ContentFrameLayout? = null
@@ -91,7 +93,7 @@ abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, V
     private var mLeftBottomSheetBehavior: BottomSheetBehavior<*>? = null
     private var mInputMethodManager: InputMethodManager? = null
     private var moonlight: Moonlight? = null
-    private var mFragmentOnTouchListener: MoonlightActivity.FragmentOnTouchListener? = null
+    private var mFragmentOnTouchListener: FragmentOnTouchListener? = null
     private var mCreateFlag = true
     private var mEditFlag = false
     private var mEditable = true
@@ -222,7 +224,7 @@ abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, V
         mBottomBarRight = mView!!.findViewById(R.id.bottom_bar_right) as AppCompatButton
         mTitle!!.onFocusChangeListener = this
         mContent!!.onFocusChangeListener = this
-        mAudioPlayer = AudioPlayer.getInstance(audioPlayerPB, mShowDuration)
+        mAudioPlayer = AudioPlayer.getInstance(audioPlayerPB, mShowDuration as AppCompatTextView)
 
         mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance(getString(R.string.prograssBar_uploading))
 
@@ -298,10 +300,10 @@ abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, V
             val url = moonlight!!.imageUrl
             Picasso.with(mActivity)
                     .load(Uri.parse(url))
-                    .memoryPolicy(NO_CACHE, NO_STORE)
+//                    .memoryPolicy(NO_CACHE, NO_STORE)
                     .placeholder(R.drawable.ic_cloud_download_black_24dp)
                     .into(mImage)
-            mImage!!.post { CircularRevealUtils.show(mImage) }
+            mImage!!.post { CircularRevealUtils.get().show(mImage as AppCompatImageView) }
 
             mContentTextInputLayout!!.setPadding(0, 0, 0, mPaddingBottom)
         }
@@ -339,7 +341,7 @@ abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, V
     private fun changeStatusBarColor(color: Int) {
         for (integer in mColorMaps!!.keys) {
             if (integer === color) {
-                mActivity.getWindow().setStatusBarColor(mColorMaps!![color])
+                mActivity.getWindow().setStatusBarColor(mColorMaps!![color] as Int)
                 break
             }
         }
@@ -369,24 +371,25 @@ abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, V
         if (!mEditable) {
             //禁用软键盘
             mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-            val snackbar = SnackBarUtils.longSnackBar(mView, getString(R.string.trash_restore),
+            val snackbar = SnackBarUtils.longSnackBar(mView as View, getString(R.string.trash_restore),
                     SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_restore_action
             ) {
                 BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null)
-                FDatabaseUtils.restoreToNote(mUserId, moonlight)
+                FDatabaseUtils.restoreToNote(mUserId as String, moonlight as Moonlight)
                 getFragmentManager().popBackStack()
             }
 
-            mFragmentOnTouchListener = object : MoonlightActivity.FragmentOnTouchListener {
-                override fun onTouch(ev: MotionEvent): Boolean {
-                    if (!snackbar.isShown && ev.action == MotionEvent.ACTION_DOWN) {
-                        snackbar.show()
-                    }
+            mFragmentOnTouchListener =
+                    object : BaseFragmentActivity.FragmentOnTouchListener {
+                        override fun onTouch(ev: MotionEvent): Boolean {
+                            if (!snackbar.isShown && ev.action == MotionEvent.ACTION_DOWN) {
+                                snackbar.show()
+                            }
 
-                    return false
-                }
+                            return false
+                        }
             }
-            (mActivity as MoonlightActivity).registerFragmentOnTouchListener(mFragmentOnTouchListener)
+            (mActivity as MoonlightActivity).registerFragmentOnTouchListener(mFragmentOnTouchListener as FragmentOnTouchListener)
         }
     }
 
@@ -425,7 +428,7 @@ abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, V
         mAudioPlayer!!.releasePlayer()
         //移除FragmentOnTouchListener
         if (mFragmentOnTouchListener != null) {
-            (mActivity as MoonlightActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener)
+            (mActivity as MoonlightActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener as FragmentOnTouchListener)
         }
 
         val refWatcher = MoonlightApplication.getRefWatcher(mActivity)
@@ -669,7 +672,7 @@ abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, V
                     `in`.putExtra(Intent.EXTRA_TITLE, moonlight!!.getTitle())
                 }
 
-                if (moonlight!! content != null) {
+                if (moonlight!!.content != null) {
                     `in`.putExtra(Intent.EXTRA_TEXT, moonlight!!.getContent())
                 }
 
@@ -684,7 +687,7 @@ abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, V
         //                }
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         when (requestCode) {
             TAKE_PICTURE -> {
                 if (resultCode == RESULT_OK) {
@@ -765,7 +768,7 @@ abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, V
     }
 
     @SuppressLint("LogConditional")
-    @AfterPermissionGranted(CAMERA_PERMS)
+    @AfterPermissionGranted(105)
     private fun onCameraClick() {
         // Check that we have permission to read images from external storage.
         val perm = Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -816,7 +819,7 @@ abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, V
     }
 
     @SuppressLint("LogConditional")
-    @AfterPermissionGranted(STORAGE_PERMS)
+    @AfterPermissionGranted(101)
     private fun onAlbumClick() {
         // Check that we have permission to read images from external storage.
         val perm = Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -852,7 +855,7 @@ abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, V
         }
     }
 
-    @AfterPermissionGranted(RECORD_AUDIO)
+    @AfterPermissionGranted(104)
     private fun onAudioClick() {
         // Check that we have permission to read images from external storage.
         val perm = Manifest.permission.RECORD_AUDIO
@@ -1119,11 +1122,11 @@ abstract class MoonlightDetailFragment : BaseFragment(), View.OnClickListener, V
         if (mFileUri != null) {
             Picasso.with(mActivity)
                     .load(mFileUri)
-                    .memoryPolicy(NO_CACHE, NO_STORE)
+//                    .memoryPolicy(NO_CACHE, NO_STORE)
                     .placeholder(R.drawable.ic_cloud_download_black_24dp)
                     .config(Bitmap.Config.RGB_565)
                     .into(mImage)
-            mImage!!.post { CircularRevealUtils.show(mImage) }
+            mImage!!.post { CircularRevealUtils.get().show(mImage as AppCompatImageView) }
 
             mContentTextInputLayout!!.setPadding(0, 0, 0, mPaddingBottom)
         } else {

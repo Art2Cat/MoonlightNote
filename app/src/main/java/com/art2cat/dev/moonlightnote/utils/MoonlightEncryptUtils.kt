@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote.utils
 
+import android.content.Context
 import android.os.AsyncTask
 import android.support.annotation.AnyThread
 import android.util.Log
@@ -7,8 +8,6 @@ import android.util.Log
 import com.art2cat.dev.moonlightnote.BuildConfig
 import com.art2cat.dev.moonlightnote.MoonlightApplication
 import com.art2cat.dev.moonlightnote.model.Moonlight
-import com.art2cat.dev.moonlightnote.utils.MoonlightEncryptUtils.MoonlightEncryptTask.Companion.DECRYPT
-import com.art2cat.dev.moonlightnote.utils.MoonlightEncryptUtils.MoonlightEncryptTask.Companion.ENCRYPT
 
 import java.util.concurrent.ExecutionException
 
@@ -22,11 +21,11 @@ class MoonlightEncryptUtils private constructor() {
     private val key: String
 
     init {
-        key = SPUtils.getString(MoonlightApplication.getContext(), "User", "EncryptKey", null)
+        key = SPUtils.getString(MoonlightApplication.context as Context, "User", "EncryptKey", "")
     }
 
     fun decryptMoonlight(moonlight: Moonlight): Moonlight {
-        val task = MoonlightEncryptTask(MoonlightEncryptTask.DECRYPT, key)
+        val task = MoonlightEncryptTask(MoonlightEncryptTask().DECRYPT, key)
         task.execute(moonlight)
         var moonlight1: Moonlight? = null
         try {
@@ -39,14 +38,14 @@ class MoonlightEncryptUtils private constructor() {
 
         if (moonlight1 != null) {
             if (BuildConfig.DEBUG)
-                Log.d("MoonlightEncryptTask", "moonlight:" + moonlight1!!.getContent())
+                Log.d("MoonlightEncryptTask", "moonlight:" + moonlight1!!.content)
         }
 
-        return moonlight1
+        return moonlight1 as Moonlight
     }
 
     fun encryptMoonlight(moonlight: Moonlight): Moonlight {
-        val task = MoonlightEncryptTask(MoonlightEncryptTask.ENCRYPT, key)
+        val task = MoonlightEncryptTask(MoonlightEncryptTask().ENCRYPT, key)
         task.execute(moonlight)
         var moonlight1: Moonlight? = null
         try {
@@ -59,7 +58,7 @@ class MoonlightEncryptUtils private constructor() {
 
         if (moonlight1 != null) {
             if (BuildConfig.DEBUG)
-                Log.d("MoonlightEncryptTask", "moonlight:" + moonlight1!!.getContent())
+                Log.d("MoonlightEncryptTask", "moonlight:" + moonlight1!!.content)
         }
 
         return moonlight1 as Moonlight
@@ -87,10 +86,10 @@ class MoonlightEncryptUtils private constructor() {
             return null
         }
 
-        private companion object {
-            internal val ENCRYPT = 101
-            internal val DECRYPT = 102
-        }
+
+        val ENCRYPT = 101
+        val DECRYPT = 102
+
     }
 
     companion object {
@@ -106,27 +105,27 @@ class MoonlightEncryptUtils private constructor() {
                 try {
 
                     if (metadata[0] != null) {
-                        moonlight.setTitle(AESUtils.encrypt(key, metadata[0]))
+                        moonlight.title = AESUtils.encrypt(key, metadata[0]) as String
                     }
 
                     if (metadata[1] != null) {
-                        moonlight.setContent(AESUtils.encrypt(key, metadata[1]))
+                        moonlight.content = AESUtils.encrypt(key, metadata[1]) as String
                     }
 
                     if (metadata[2] != null) {
-                        moonlight.setImageUrl(AESUtils.encrypt(key, metadata[2]))
+                        moonlight.imageUrl = AESUtils.encrypt(key, metadata[2]) as String
                     }
 
                     if (metadata[3] != null) {
-                        moonlight.setAudioUrl(AESUtils.encrypt(key, metadata[3]))
+                        moonlight.audioUrl = AESUtils.encrypt(key, metadata[3]) as String
                     }
 
                     if (metadata[4] != null) {
-                        moonlight.setImageName(AESUtils.encrypt(key, metadata[4]))
+                        moonlight.imageName = AESUtils.encrypt(key, metadata[4]) as String
                     }
 
                     if (metadata[5] != null) {
-                        moonlight.setAudioName(AESUtils.encrypt(key, metadata[5]))
+                        moonlight.audioName = AESUtils.encrypt(key, metadata[5]) as String
                     }
 
                     return moonlight
@@ -146,27 +145,26 @@ class MoonlightEncryptUtils private constructor() {
                 try {
 
                     if (metadata[0] != null) {
-                        moonlight.setTitle(AESUtils.decrypt(key, metadata[0]))
+                        moonlight.title = AESUtils.decrypt(key, metadata[0]) as String
                     }
-
                     if (metadata[1] != null) {
-                        moonlight.setContent(AESUtils.decrypt(key, metadata[1]))
+                        moonlight.content = AESUtils.encrypt(key, metadata[1]) as String
                     }
 
                     if (metadata[2] != null) {
-                        moonlight.setImageUrl(AESUtils.decrypt(key, metadata[2]))
+                        moonlight.imageUrl = AESUtils.encrypt(key, metadata[2]) as String
                     }
 
                     if (metadata[3] != null) {
-                        moonlight.setAudioUrl(AESUtils.decrypt(key, metadata[3]))
+                        moonlight.audioUrl = AESUtils.encrypt(key, metadata[3]) as String
                     }
 
                     if (metadata[4] != null) {
-                        moonlight.setImageName(AESUtils.decrypt(key, metadata[4]))
+                        moonlight.imageName = AESUtils.encrypt(key, metadata[4]) as String
                     }
 
                     if (metadata[5] != null) {
-                        moonlight.setAudioName(AESUtils.decrypt(key, metadata[5]))
+                        moonlight.audioName = AESUtils.encrypt(key, metadata[5]) as String
                     }
 
                     return moonlight
@@ -179,12 +177,12 @@ class MoonlightEncryptUtils private constructor() {
         }
 
         private fun getMetadata(moonlight: Moonlight): Array<String> {
-            val title = moonlight.getTitle()
-            val content = moonlight.getContent()
-            val imageUrl = moonlight.getImageUrl()
-            val audioUrl = moonlight.getAudioUrl()
-            val imageName = moonlight.getImageName()
-            val audioName = moonlight.getAudioName()
+            val title = moonlight.title
+            val content = moonlight.content
+            val imageUrl = moonlight.imageUrl
+            val audioUrl = moonlight.audioUrl
+            val imageName = moonlight.imageName
+            val audioName = moonlight.audioName
 
             return arrayOf(title, content, imageUrl, audioUrl, imageName, audioName)
         }
