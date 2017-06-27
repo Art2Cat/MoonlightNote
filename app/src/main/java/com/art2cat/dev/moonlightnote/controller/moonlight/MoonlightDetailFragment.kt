@@ -29,6 +29,7 @@ import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.ProgressBar
+import android.widget.TextView
 import com.art2cat.dev.moonlightnote.BuildConfig
 import com.art2cat.dev.moonlightnote.MoonlightApplication
 import com.art2cat.dev.moonlightnote.R
@@ -113,6 +114,8 @@ abstract class MoonlightDetailFragment : BaseFragment(),
     private val mHandler = Handler()
     private var mAudioPlayer: AudioPlayer? = null
     private var mColorMaps: MutableMap<Int, Int>? = null
+    private var audioPlayerPB: ProgressBar? = null
+    private var displayTime: TextView? = null
 
     @TargetApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -205,26 +208,26 @@ abstract class MoonlightDetailFragment : BaseFragment(),
         mToolbar!!.setNavigationIcon(R.drawable.ic_arrow_back_grey_700_24dp)
         mToolbar!!.setNavigationOnClickListener { mActivity.onBackPressed() }
 
-        mViewParent = mView!!.findViewById(R.id.view_parent) as ContentFrameLayout
-        mTitle = mView!!.findViewById(R.id.title_TIET) as TextInputEditText
-        mContent = mView!!.findViewById(R.id.content_TIET) as TextInputEditText
-        mContentTextInputLayout = mView!!.findViewById(R.id.content_TIL) as TextInputLayout
-        mImage = mView!!.findViewById(R.id.moonlight_image) as AppCompatImageView
-        mAudioCardView = mView!!.findViewById(R.id.audio_container) as CardView
-        mAudioContainer = mView!!.findViewById(R.id.audio_container_inner) as LinearLayoutCompat
+        mViewParent = mView!!.findViewById(R.id.view_parent)
+        mTitle = mView!!.findViewById(R.id.title_TIET)
+        mContent = mView!!.findViewById(R.id.content_TIET)
+        mContentTextInputLayout = mView!!.findViewById(R.id.content_TIL)
+        mImage = mView!!.findViewById(R.id.moonlight_image)
+        mAudioCardView = mView!!.findViewById(R.id.audio_container)
+        mAudioContainer = mView!!.findViewById(R.id.audio_container_inner)
 
-        mDeleteAudio = mView!!.findViewById(R.id.delete_audio) as AppCompatButton
-        mPlayingAudio = mView!!.findViewById(R.id.playing_audio_button) as AppCompatButton
-        mShowDuration = mView!!.findViewById(R.id.moonlight_audio_duration) as AppCompatTextView
-        val audioPlayerPB = mView!!.findViewById(R.id.moonlight_audio_progressBar) as ProgressBar
-        val displayTime = mView!!.findViewById(R.id.bottom_bar_display_time) as AppCompatTextView
-        mCoordinatorLayout = mView!!.findViewById(R.id.bottom_sheet_container) as CoordinatorLayout
-        mBottomBarContainer = mView!!.findViewById(R.id.bottom_bar_container) as LinearLayoutCompat
-        mBottomBarLeft = mView!!.findViewById(R.id.bottom_bar_left) as AppCompatButton
-        mBottomBarRight = mView!!.findViewById(R.id.bottom_bar_right) as AppCompatButton
+        mDeleteAudio = mView!!.findViewById(R.id.delete_audio)
+        mPlayingAudio = mView!!.findViewById(R.id.playing_audio_button)
+        mShowDuration = mView!!.findViewById(R.id.moonlight_audio_duration)
+        audioPlayerPB = mView!!.findViewById(R.id.moonlight_audio_progressBar)!!
+        displayTime = mView!!.findViewById(R.id.bottom_bar_display_time)
+        mCoordinatorLayout = mView!!.findViewById(R.id.bottom_sheet_container)
+        mBottomBarContainer = mView!!.findViewById(R.id.bottom_bar_container)
+        mBottomBarLeft = mView!!.findViewById(R.id.bottom_bar_left)
+        mBottomBarRight = mView!!.findViewById(R.id.bottom_bar_right)
         mTitle!!.onFocusChangeListener = this
         mContent!!.onFocusChangeListener = this
-        mAudioPlayer = AudioPlayer.getInstance(audioPlayerPB, mShowDuration as AppCompatTextView)
+        mAudioPlayer = AudioPlayer.getInstance(audioPlayerPB!!, mShowDuration as AppCompatTextView)
 
         mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance(getString(R.string.prograssBar_uploading))
 
@@ -235,7 +238,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
             val time = Utils.timeFormat(mActivity.getApplicationContext(), Date(date))
             if (time != null) {
                 val timeFormat = "Edited: " + time
-                displayTime.text = timeFormat
+                displayTime!!.text = timeFormat
             }
             onCheckSoftKeyboardState(mView!!)
             mImage!!.setOnClickListener(this)
@@ -566,9 +569,9 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "handleMessage: " + busEvent!!.message)
                 }
-                var file = File(File(Environment.getExternalStorageDirectory().toString() + "/MoonlightNote/.audio"), busEvent!!.message)
-            mAudioUri = FileProvider.getUriForFile(MoonlightApplication.context, Constants.FILE_PROVIDER, file)
-                    uploadFromUri (mAudioUri, mUserId, 3)
+//                var file = File(File(Environment.getExternalStorageDirectory().toString() + "/MoonlightNote/.audio"), busEvent!!.message)
+//            mAudioUri = FileProvider.getUriForFile(MoonlightApplication.context, Constants.FILE_PROVIDER, file)
+//                    uploadFromUri (mAudioUri, mUserId, 3)
 
         }
 
@@ -1010,13 +1013,13 @@ abstract class MoonlightDetailFragment : BaseFragment(),
     }
 
     private fun initBottomSheetItem() {
-        val takePhoto = mView!!.findViewById(R.id.bottom_sheet_item_take_photo) as LinearLayoutCompat
-        val chooseImage = mView!!.findViewById(R.id.bottom_sheet_item_choose_image) as LinearLayoutCompat
-        val recording = mView!!.findViewById(R.id.bottom_sheet_item_recording) as LinearLayoutCompat
-        val moveToTrash = mView!!.findViewById(R.id.bottom_sheet_item_move_to_trash) as LinearLayoutCompat
-        val permanentDelete = mView!!.findViewById(R.id.bottom_sheet_item_permanent_delete) as LinearLayoutCompat
-        val makeACopy = mView!!.findViewById(R.id.bottom_sheet_item_make_a_copy) as LinearLayoutCompat
-        val send = mView!!.findViewById(R.id.bottom_sheet_item_send) as LinearLayoutCompat
+        val takePhoto = mView!!.findViewById(R.id.bottom_sheet_item_take_photo)
+        val chooseImage = mView!!.findViewById(R.id.bottom_sheet_item_choose_image)!!
+        val recording = mView!!.findViewById(R.id.bottom_sheet_item_recording)!!
+        val moveToTrash = mView!!.findViewById(R.id.bottom_sheet_item_move_to_trash)
+        val permanentDelete = mView!!.findViewById(R.id.bottom_sheet_item_permanent_delete)
+        val makeACopy = mView!!.findViewById(R.id.bottom_sheet_item_make_a_copy)
+        val send = mView!!.findViewById(R.id.bottom_sheet_item_send)
         takePhoto.setOnClickListener(this)
         chooseImage.setOnClickListener(this)
         recording.setOnClickListener(this)

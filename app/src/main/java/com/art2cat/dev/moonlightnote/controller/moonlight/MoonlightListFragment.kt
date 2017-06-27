@@ -107,7 +107,7 @@ abstract class MoonlightListFragment : BaseFragment() {
         mDatabase = FirebaseDatabase.getInstance().reference
 
         // [END create_database_reference]
-        mRecyclerView = rootView.findViewById(R.id.recyclerView) as RecyclerView
+        mRecyclerView = rootView.findViewById(R.id.recyclerView)!!
         mRecyclerView!!.setHasFixedSize(true)
 
         return rootView

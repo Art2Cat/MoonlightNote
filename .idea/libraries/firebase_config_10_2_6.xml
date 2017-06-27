@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="firebase-config-10.2.6">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/firebase-config-10.2.6.aar/b5e90196038fab642b618c1ce2874903/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/firebase-config-10.2.6.aar/b5e90196038fab642b618c1ce2874903/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/firebase-config-10.2.6.aar/a5fd8dbbe5c2ef64dbb65ec4d05d1d7c/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/firebase-config-10.2.6.aar/a5fd8dbbe5c2ef64dbb65ec4d05d1d7c/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
