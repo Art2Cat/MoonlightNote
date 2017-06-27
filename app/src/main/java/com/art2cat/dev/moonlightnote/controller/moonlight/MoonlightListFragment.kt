@@ -201,23 +201,23 @@ abstract class MoonlightListFragment : BaseFragment() {
                         viewHolder.mTitle.visibility = View.GONE
                     }
 
-                    if (moonlightD.getContent() != null) {
-                        viewHolder.displayContent(moonlightD.getContent())
+                    if (moonlightD.content != null) {
+                        viewHolder.displayContent(moonlightD.content)
                     } else {
                         viewHolder.mContent.visibility = View.GONE
                     }
 
-                    if (moonlightD.getImageName() != null) {
-                        Log.i(TAG, "populateViewHolder: " + moonlightD.getImageName())
+                    if (moonlightD.imageName != null) {
+                        Log.i(TAG, "populateViewHolder: " + moonlightD.imageName)
                         viewHolder.mImage.setImageResource(R.drawable.ic_cloud_download_black_24dp)
-                        //                        viewHolder.mImage.setTag(moonlightD.getImageName());
-                        viewHolder.displayImage(mActivity, moonlightD.getImageUrl())
+                        //                        viewHolder.mImage.setTag(moonlightD.imageName);
+                        viewHolder.displayImage(mActivity, moonlightD.imageUrl)
                     } else {
                         viewHolder.mImage.visibility = View.GONE
                     }
 
-                    if (moonlightD.getColor() !== 0) {
-                        viewHolder.setColor(moonlightD.getColor())
+                    if (moonlightD.color !== 0) {
+                        viewHolder.setColor(moonlightD.color)
                     } else {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             viewHolder.setColor(mActivity.getResources().getColor(R.color.white, null))
@@ -226,12 +226,12 @@ abstract class MoonlightListFragment : BaseFragment() {
                         }
                     }
 
-                    if (moonlightD.getAudioName() != null) {
-                        val audioName = moonlightD.getAudioName()
+                    if (moonlightD.audioName != null) {
+                        val audioName = moonlightD.audioName
                         if (!isAudioFileExists(audioName)) {
                             StorageUtils.downloadAudio(
                                     FirebaseStorage.getInstance().reference,
-                                    uid, moonlightD.getAudioName())
+                                    uid, moonlightD.audioName)
                         }
                         viewHolder.mAudio.visibility = View.VISIBLE
                     } else {
@@ -242,7 +242,7 @@ abstract class MoonlightListFragment : BaseFragment() {
 
                     viewHolder.itemView.setOnClickListener {
                         if (isLogin) {
-                            moonlightD.setId(moonlightKey)
+                            moonlightD.id =(moonlightKey)
                             if (isTrash) {
                                 Log.d(TAG, "onClick: trash")
                                 val trashDetailFragment = TrashDetailFragment.newInstance(moonlightD, 12)
@@ -266,8 +266,8 @@ abstract class MoonlightListFragment : BaseFragment() {
                     }
 
                     viewHolder.itemView.setOnLongClickListener {
-                        moonlightD.setId(moonlightKey)
-                        if (moonlightKey == moonlightD.getId()) {
+                        moonlightD.id =moonlightKey
+                        if (moonlightKey == moonlightD.id) {
                             if (!isTrash) {
                                 setParams(1)
                                 changeToolbar(moonlightD, 0)
@@ -388,14 +388,14 @@ abstract class MoonlightListFragment : BaseFragment() {
                 mActivity.setTitle(R.string.fragment_trash)
             }
             R.id.action_restore -> {
-                FDatabaseUtils.restoreToNote(uid, mMoonlight)
+                FDatabaseUtils.restoreToNote(uid, mMoonlight as Moonlight)
                 mActivity.setTitle(R.string.fragment_trash)
                 changeOptionsMenu(3)
             }
             R.id.action_trash_delete_forever -> {
-                StorageUtils.removePhoto(null, uid, mMoonlight!!.getImageName())
-                StorageUtils.removeAudio(null, uid, mMoonlight!!.getAudioName())
-                FDatabaseUtils.removeMoonlight(uid, mMoonlight!!.getId(), Constants.EXTRA_TYPE_DELETE_TRASH)
+                StorageUtils.removePhoto(null, uid, mMoonlight!!.imageName)
+                StorageUtils.removeAudio(null, uid, mMoonlight!!.audioName)
+                FDatabaseUtils.removeMoonlight(uid, mMoonlight!!.id, Constants.EXTRA_TYPE_DELETE_TRASH)
                 mMoonlight = null
                 mActivity.setTitle(R.string.fragment_trash)
                 changeOptionsMenu(3)
@@ -419,11 +419,11 @@ abstract class MoonlightListFragment : BaseFragment() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun busAction(busEvent: BusEvent?) {
         //这里更新视图或者后台操作,从busAction获取传递参数.
-        if (busEvent != null) {
-            when (busEvent!!.getFlag()) {
+
+            when (busEvent!!.flag) {
                 Constants.BUS_FLAG_SIGN_OUT -> isLogin = false
             }
-        }
+
     }
 
     private fun setParams(type: Int) {
@@ -460,24 +460,24 @@ abstract class MoonlightListFragment : BaseFragment() {
                 mToolbar2!!.setOnMenuItemClickListener { item ->
                     when (item.itemId) {
                         R.id.action_delete -> {
-                            FDatabaseUtils.moveToTrash(uid, moonlight)
+                            FDatabaseUtils.moveToTrash(uid, moonlight as Moonlight)
                             mActivity.setTitle(R.string.app_name)
                         }
                         R.id.action_delete_forever -> {
-                            if (moonlight!!.getImageUrl() != null) {
-                                StorageUtils.removePhoto(null, uid, moonlight!!.getImageName())
+                            if (moonlight!!.imageUrl != null) {
+                                StorageUtils.removePhoto(null, uid, moonlight!!.imageName)
                             }
-                            if (moonlight!!.getAudioUrl() != null) {
-                                StorageUtils.removeAudio(null, uid, moonlight!!.getAudioName())
+                            if (moonlight!!.audioName != null) {
+                                StorageUtils.removeAudio(null, uid, moonlight!!.audioName)
                             }
                             FDatabaseUtils.removeMoonlight(uid,
-                                    moonlight!!.getId(),
+                                    moonlight!!.id,
                                     Constants.EXTRA_TYPE_MOONLIGHT)
                             mActivity.setTitle(R.string.app_name)
                         }
                         R.id.action_make_a_copy -> {
                             FDatabaseUtils.addMoonlight(uid,
-                                    moonlight, Constants.EXTRA_TYPE_MOONLIGHT)
+                                    moonlight as Moonlight, Constants.EXTRA_TYPE_MOONLIGHT)
                             mActivity.setTitle(R.string.app_name)
                         }
                         R.id.action_send -> {
@@ -485,15 +485,15 @@ abstract class MoonlightListFragment : BaseFragment() {
                             var `in` = Intent(Intent.ACTION_SEND)
                             `in`.type = "text/plain"
                             if (moonlight!!.title != null) {
-                                `in`.putExtra(Intent.EXTRA_TITLE, moonlight!!.title())
+                                `in`.putExtra(Intent.EXTRA_TITLE, moonlight!!.title)
                             }
 
-                            if (moonlight!!.getContent() != null) {
-                                `in`.putExtra(Intent.EXTRA_TEXT, moonlight!!.getContent())
+                            if (moonlight!!.content != null) {
+                                `in`.putExtra(Intent.EXTRA_TEXT, moonlight!!.content)
                             }
 
-                            if (moonlight!!.getImageUrl() != null) {
-                                `in`.putExtra(Intent.EXTRA_TEXT, moonlight!!.getImageUrl())
+                            if (moonlight!!.imageUrl != null) {
+                                `in`.putExtra(Intent.EXTRA_TEXT, moonlight!!.imageUrl)
                             }
                             //设置分享选择器
                             `in` = Intent.createChooser(`in`, "Send to")
@@ -501,18 +501,18 @@ abstract class MoonlightListFragment : BaseFragment() {
                             mActivity.setTitle(R.string.app_name)
                         }
                         R.id.action_restore -> {
-                            FDatabaseUtils.restoreToNote(uid, moonlight)
+                            FDatabaseUtils.restoreToNote(uid, moonlight as Moonlight)
                             mActivity.setTitle(R.string.fragment_trash)
                         }
                         R.id.action_trash_delete_forever -> {
-                            if (moonlight!!.getImageUrl() != null) {
-                                StorageUtils.removePhoto(null, uid, moonlight!!.getImageName())
+                            if (moonlight!!.imageUrl != null) {
+                                StorageUtils.removePhoto(null, uid, moonlight!!.imageName)
                             }
-                            if (moonlight!!.getAudioUrl() != null) {
-                                StorageUtils.removeAudio(null, uid, moonlight!!.getAudioName())
+                            if (moonlight!!.audioUrl != null) {
+                                StorageUtils.removeAudio(null, uid, moonlight!!.audioName)
                             }
                             FDatabaseUtils.removeMoonlight(uid,
-                                    moonlight!!.getId(),
+                                    moonlight!!.id,
                                     Constants.EXTRA_TYPE_DELETE_TRASH)
                             mActivity.setTitle(R.string.fragment_trash)
                         }

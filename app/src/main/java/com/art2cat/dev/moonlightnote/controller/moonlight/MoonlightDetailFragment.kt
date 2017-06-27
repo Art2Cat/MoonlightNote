@@ -287,11 +287,11 @@ abstract class MoonlightDetailFragment : BaseFragment(),
         } else {
             mTitle!!.isEnabled = false
             if (moonlight!!.title != null) {
-                mTitle!!.setText(moonlight!!.getTitle())
+                mTitle!!.setText(moonlight!!.title)
             }
         }
         if (moonlight!!.content != null) {
-            mContent!!.setText(moonlight!!.getContent())
+            mContent!!.setText(moonlight!!.content)
             if (!editable) {
                 mContent!!.isEnabled = false
             }
@@ -315,8 +315,8 @@ abstract class MoonlightDetailFragment : BaseFragment(),
             mBottomBarLeft!!.isClickable = false
             mBottomBarRight!!.isClickable = false
         }
-        if (moonlight!!.getColor() !== 0) {
-            changeUIColor(moonlight!!.getColor())
+        if (moonlight!!.color !== 0) {
+            changeUIColor(moonlight!!.color)
         }
     }
 
@@ -333,7 +333,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
     private fun changeUIColor(@ColorInt color: Int) {
         mViewParent!!.setBackgroundColor(color)
         mToolbar!!.setBackgroundColor(color)
-        mAudioContainer!!.setBackgroundColor(moonlight!!.getColor())
+        mAudioContainer!!.setBackgroundColor(moonlight!!.color)
         mBottomBarContainer!!.setBackgroundColor(color)
         changeStatusBarColor(color)
     }
@@ -388,7 +388,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
 
                             return false
                         }
-            }
+                    }
             (mActivity as MoonlightActivity).registerFragmentOnTouchListener(mFragmentOnTouchListener as FragmentOnTouchListener)
         }
     }
@@ -469,13 +469,13 @@ abstract class MoonlightDetailFragment : BaseFragment(),
     private fun commitMoonlight() {
         //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
         if (mCreateFlag && mEditable) {
-            if (!isEmpty(moonlight)) {
-                FDatabaseUtils.addMoonlight(mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT)
+            if (!isEmpty(moonlight as Moonlight)) {
+                FDatabaseUtils.addMoonlight(mUserId as String, moonlight as Moonlight, Constants.EXTRA_TYPE_MOONLIGHT)
             }
         }
         //当editFlag为true且moonlight不为空时更新moonlight信息到服务器
-        if (mEditable && mEditFlag && moonlight != null && !moonlight!!.isTrash()) {
-            FDatabaseUtils.updateMoonlight(mUserId, mKeyId, moonlight,
+        if (mEditable && mEditFlag && moonlight != null && !moonlight!!.isTrash) {
+            FDatabaseUtils.updateMoonlight(mUserId as String, mKeyId, moonlight as Moonlight,
                     Constants.EXTRA_TYPE_MOONLIGHT)
         }
     }
@@ -534,7 +534,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                 val dialog = MyColorPickerDialog(mActivity)
                 dialog.setTitle("Color Picker")
                 dialog.setColorListener { v, color ->
-                    moonlight!!.setColor(color)
+                    moonlight!!.color = color
                     changeUIColor(color)
                     mEditable = true
                     mEditable = true
@@ -544,32 +544,34 @@ abstract class MoonlightDetailFragment : BaseFragment(),
             }
             R.id.action_remove_image -> {
                 if (BuildConfig.DEBUG) showShortToast("delete image")
-                StorageUtils.removePhoto(mView, mUserId, moonlight!!.getImageName())
-                CircularRevealUtils.hide(mImage)
-                moonlight!!.setImageName(null)
-                moonlight!!.setImageUrl(null)
+                StorageUtils.removePhoto(mView, mUserId!!, moonlight!!.imageName)
+                CircularRevealUtils.get().hide(mImage!!)
+                moonlight!!.imageName = ""
+                moonlight!!.imageUrl = ""
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
     private fun isEmpty(moonlight: Moonlight): Boolean {
-        return !(moonlight.imageUrl != null || moonlight.getAudioUrl() != null || moonlightcontent != null
+        return !(moonlight.imageUrl != null || moonlight.audioUrl != null || moonlight.content != null
                 || moonlight.title != null)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun handleMessage(busEvent: BusEvent?) {
-        if (busEvent != null) {
-            when (busEvent!!.getFlag()) {
-                Constants.BUS_FLAG_AUDIO_URL -> if (busEvent!!.getMessage() != null) {
-                    Log.d(TAG, "handleMessage: " + busEvent!!.getMessage())
-                    val file = File(File(Environment.getExternalStorageDirectory().toString() + "/MoonlightNote/.audio"), busEvent!!.getMessage())
-                    val mAudioUri = FileProvider.getUriForFile(MoonlightApplication.getContext(), Constants.FILE_PROVIDER, file)
-                    uploadFromUri(mAudioUri, mUserId, 3)
+
+        when (busEvent!!.flag) {
+            Constants.BUS_FLAG_AUDIO_URL ->
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "handleMessage: " + busEvent!!.message)
                 }
-            }
+                var file = File(File(Environment.getExternalStorageDirectory().toString() + "/MoonlightNote/.audio"), busEvent!!.message)
+            mAudioUri = FileProvider.getUriForFile(MoonlightApplication.context, Constants.FILE_PROVIDER, file)
+                    uploadFromUri (mAudioUri, mUserId, 3)
+
         }
+
     }
 
     override fun onClick(v: View) {
@@ -590,7 +592,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
             }
             R.id.moonlight_image -> {
                 //网页浏览图片。。。
-                val scaleFragment = ScaleFragment.newInstance(moonlight!!.getImageUrl())
+                val scaleFragment = ScaleFragment.newInstance(moonlight!!.imageUrl)
                 getFragmentManager()
                         .beginTransaction()
                         .replace(R.id.main_fragment_container, scaleFragment)
@@ -598,14 +600,14 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                         .addToBackStack("scale")
                         .commit()
             }
-            R.id.playing_audio_button -> if (moonlight!!.getAudioName() != null && mStartPlaying) {
+            R.id.playing_audio_button -> if (moonlight!!.audioName != null && mStartPlaying) {
                 mStartPlaying = false
                 if (!mAudioPlayer!!.isPrepared) {
-                    mAudioPlayer!!.prepare(moonlight!!.getAudioName())
+                    mAudioPlayer!!.prepare(moonlight!!.audioName)
                 }
                 mAudioPlayer!!.startPlaying()
                 mPlayingAudio!!.setBackgroundResource(R.drawable.ic_pause_circle_outline_lime_a700_24dp)
-                mAudioPlayer!!.mPlayer.setOnCompletionListener { mediaPlayer ->
+                mAudioPlayer!!.mPlayer!!.setOnCompletionListener { mediaPlayer ->
                     mediaPlayer.reset()
                     mAudioPlayer!!.mProgressBar.progress = 0
                     mPlayingAudio!!.setBackgroundResource(R.drawable.ic_play_circle_outline_cyan_400_48dp)
@@ -616,22 +618,22 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                 mAudioPlayer!!.stopPlaying()
                 mPlayingAudio!!.setBackgroundResource(R.drawable.ic_play_circle_outline_cyan_400_48dp)
                 mStartPlaying = true
-                mAudioPlayer!!.mPlayer.reset()
+                mAudioPlayer!!.mPlayer!!.reset()
                 mAudioPlayer!!.isPrepared = false
             }
             R.id.delete_audio -> {
                 //删除录音
-                StorageUtils.removeAudio(mView, mUserId, moonlight!!.getAudioName())
+                StorageUtils.removeAudio(mView, mUserId as String, moonlight!!.audioName)
                 mAudioCardView!!.visibility = View.GONE
-                moonlight!!.setAudioName(null)
-                moonlight!!.setAudioUrl(null)
+                moonlight!!.audioName = ""
+                moonlight!!.audioUrl = ""
             }
             R.id.bottom_sheet_item_take_photo -> onCameraClick()
             R.id.bottom_sheet_item_choose_image -> onAlbumClick()
             R.id.bottom_sheet_item_recording -> onAudioClick()
             R.id.bottom_sheet_item_move_to_trash -> {
-                if (!isEmpty(moonlight)) {
-                    FDatabaseUtils.moveToTrash(mUserId, moonlight)
+                if (!isEmpty(moonlight as Moonlight)) {
+                    FDatabaseUtils.moveToTrash(mUserId as String, moonlight as Moonlight)
                     //                    BusEventUtils.post(moonlight, Constants.BUS_FLAG_DELETE);
                 } else {
                     BusEventUtils.post(Constants.BUS_FLAG_NULL, null)
@@ -640,11 +642,11 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                 mEditable = false
             }
             R.id.bottom_sheet_item_permanent_delete -> {
-                if (!isEmpty(moonlight)) {
-                    StorageUtils.removePhoto(mView, mUserId, moonlight!!.getImageName())
-                    StorageUtils.removeAudio(mView, mUserId, moonlight!!.getAudioName())
+                if (!isEmpty(moonlight as Moonlight)) {
+                    StorageUtils.removePhoto(mView, mUserId as String, moonlight!!.imageName)
+                    StorageUtils.removeAudio(mView, mUserId as String, moonlight!!.audioName)
                     if (mKeyId != null) {
-                        FDatabaseUtils.removeMoonlight(mUserId, mKeyId, Constants.EXTRA_TYPE_MOONLIGHT)
+                        FDatabaseUtils.removeMoonlight(mUserId as String, mKeyId as String, Constants.EXTRA_TYPE_MOONLIGHT)
                     }
                     //                    BusEventUtils.post(moonlight, Constants.BUS_FLAG_PERMENAT_DELETE);
                     moonlight = null
@@ -653,14 +655,14 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                 }
                 mActivity.onBackPressed()
             }
-            R.id.bottom_sheet_item_make_a_copy -> if (!isEmpty(moonlight)) {
-                FDatabaseUtils.addMoonlight(mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT)
+            R.id.bottom_sheet_item_make_a_copy -> if (!isEmpty(moonlight!!)) {
+                FDatabaseUtils.addMoonlight(mUserId as String, moonlight as Moonlight, Constants.EXTRA_TYPE_MOONLIGHT)
                 //                    BusEventUtils.post(moonlight, Constants.BUS_FLAG_MAKE_A_COPY);
-                showShortSnackBar(mViewParent,
+                showShortSnackBar(mViewParent!!,
                         "Note Copy complete.", SnackBarUtils.TYPE_INFO)
                 changeBottomSheetState()
             } else {
-                showShortSnackBar(mViewParent,
+                showShortSnackBar(mViewParent!!,
                         getString(R.string.note_binned), SnackBarUtils.TYPE_INFO)
                 changeBottomSheetState()
             }
@@ -669,15 +671,15 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                 var `in` = Intent(Intent.ACTION_SEND)
                 `in`.type = "text/plain"
                 if (moonlight!!.title != null) {
-                    `in`.putExtra(Intent.EXTRA_TITLE, moonlight!!.getTitle())
+                    `in`.putExtra(Intent.EXTRA_TITLE, moonlight!!.title)
                 }
 
                 if (moonlight!!.content != null) {
-                    `in`.putExtra(Intent.EXTRA_TEXT, moonlight!!.getContent())
+                    `in`.putExtra(Intent.EXTRA_TEXT, moonlight!!.content)
                 }
 
                 if (moonlight!!.imageUrl != null) {
-                    `in`.putExtra(Intent.EXTRA_TEXT, moonlight!!.getImageUrl())
+                    `in`.putExtra(Intent.EXTRA_TEXT, moonlight!!.imageUrl)
                 }
                 //设置分享选择器
                 `in` = Intent.createChooser(`in`, "Send to")
@@ -692,7 +694,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
             TAKE_PICTURE -> {
                 if (resultCode == RESULT_OK) {
                     Log.d(TAG, "take Picture" + mFileUri!!.toString())
-                    uploadFromUri(mFileUri, mUserId, 0)
+                    uploadFromUri(mFileUri!!, mUserId!!, 0)
                 }
                 mEditable = true
             }
@@ -700,7 +702,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                 Log.d(TAG, "album choose")
                 if (resultCode == RESULT_OK && data.data != null) {
                     val fileUri = data.data
-                    uploadFromUri(fileUri, mUserId, 0)
+                    uploadFromUri(fileUri, mUserId!!, 0)
                 }
                 mEditable = true
             }
@@ -716,7 +718,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                     val audioUri = data.data
                     Log.d(TAG, "onActivityResult: " + audioUri.toString())
                     if (copyAudioFile(audioUri) != null) {
-                        uploadFromUri(copyAudioFile(audioUri), mUserId, 3)
+                        uploadFromUri(copyAudioFile(audioUri)!!, mUserId!!, 3)
                     }
                 }
                 mEditable = true
@@ -737,6 +739,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
             Log.d(TAG, "dir.mkdirs():" + isDirCreate)
         }
         val file = File(dir, UUID.randomUUID().toString() + ".amr")
+        file.copyTo()
         val fos: FileOutputStream
         val inputStream: InputStream?
         try {
@@ -814,7 +817,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
             mEditable = false
             Log.d(TAG, "onCameraClick: ")
         } else {
-            showLongSnackBar(mView, "No Camera!", SnackBarUtils.TYPE_WARNING)
+            showLongSnackBar(mView!!, "No Camera!", SnackBarUtils.TYPE_WARNING)
         }
     }
 
@@ -851,7 +854,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
             startActivityForResult(albumIntent, ALBUM_CHOOSE)
             mEditable = false
         } else {
-            showLongSnackBar(mView, "No Album!", SnackBarUtils.TYPE_WARNING)
+            showLongSnackBar(mView!!, "No Album!", SnackBarUtils.TYPE_WARNING)
         }
     }
 
@@ -906,8 +909,8 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                 mImageFileName = taskSnapshot.metadata!!.name
 
                 Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadIUrl!!.toString())
-                moonlight!!.setImageName(mImageFileName)
-                moonlight!!.setImageUrl(mDownloadIUrl!!.toString())
+                moonlight!!.imageName = mImageFileName!!
+                moonlight!!.imageUrl = mDownloadIUrl!!.toString()
                 mCircleProgressDialogFragment!!.dismiss()
                 showImage(mDownloadIUrl)
             }.addOnFailureListener { e ->
@@ -919,7 +922,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
             }.addOnPausedListener {
                 Log.d(TAG, "onPaused: ")
                 mCircleProgressDialogFragment!!.dismiss()
-                showShortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO)
+                showShortSnackBar(mView as ContentFrameLayout, "upload paused", SnackBarUtils.TYPE_INFO)
             }
         } else if (type == 3) {
             val storageReference = mStorageReference!!.child(userId).child("audios")
@@ -930,9 +933,9 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                 mAudioFileName = taskSnapshot.metadata!!.name
 
                 Log.d(TAG, "onSuccess: downloadUrl:  " + mAudioFileName!!)
-                moonlight!!.setAudioName(mAudioFileName)
-                moonlight!!.setAudioUrl(mDownloadAUrl!!.toString())
-                showAudio(mAudioFileName)
+                moonlight!!.audioName = (mAudioFileName as String)
+                moonlight!!.audioUrl = (mDownloadAUrl!!.toString())
+                showAudio(mAudioFileName!!)
                 mCircleProgressDialogFragment!!.dismiss()
             }.addOnFailureListener { e ->
                 Log.e(TAG, "onFailure: " + e.toString())
@@ -943,7 +946,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
             }.addOnPausedListener {
                 Log.d(TAG, "onPaused: ")
                 mCircleProgressDialogFragment!!.dismiss()
-                showShortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO)
+                showShortSnackBar(mView as ContentFrameLayout, "upload paused", SnackBarUtils.TYPE_INFO)
             }
         }
     }
@@ -1136,14 +1139,14 @@ abstract class MoonlightDetailFragment : BaseFragment(),
     }
 
     private fun showAudio(audioFileName: String) {
-        if (moonlight!!.getAudioDuration() === 0) {
+        if (moonlight!!.audioDuration == 0L) {
             mAudioPlayer!!.prepare(audioFileName)
-            moonlight!!.setAudioDuration(mAudioPlayer!!.mDuration.toLong())
+            moonlight!!.audioDuration = mAudioPlayer!!.mDuration.toLong()
             mAudioCardView!!.visibility = View.VISIBLE
-            mAudioContainer!!.setBackgroundColor(moonlight!!.getColor())
+            mAudioContainer!!.setBackgroundColor(moonlight!!.color)
             mContentTextInputLayout!!.setPadding(0, 0, 0, 0)
         } else {
-            mShowDuration!!.text = Utils.convert(moonlight!!.getAudioDuration())
+            mShowDuration!!.text = Utils.convert(moonlight!!.audioDuration)
         }
     }
 

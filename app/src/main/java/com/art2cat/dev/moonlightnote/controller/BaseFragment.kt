@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.AppCompatImageView
+import android.support.v7.widget.ContentFrameLayout
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -48,7 +49,7 @@ abstract class BaseFragment : Fragment() {
         outState!!.putInt(KEY_INDEX, mCurrentIndex)
     }
 
-    fun showShortSnackBar(view: View, content: String, type: Int) {
+    fun showShortSnackBar(view: ContentFrameLayout, content: String, type: Int) {
         SnackBarUtils.shortSnackBar(view, content, type).show()
     }
 
