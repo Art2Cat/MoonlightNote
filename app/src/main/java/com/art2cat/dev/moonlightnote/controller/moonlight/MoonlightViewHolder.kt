@@ -26,12 +26,12 @@ class MoonlightViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), A
     var mAudio: LinearLayoutCompat
 
     init {
-        mCardView = itemView.findViewById(R.id.item_main) as CardView
-        mTransitionItem = itemView.findViewById(R.id.transition_item) as LinearLayoutCompat
-        mTitle = itemView.findViewById(R.id.moonlight_title) as AppCompatTextView
-        mContent = itemView.findViewById(R.id.moonlight_content) as AppCompatTextView
-        mImage = itemView.findViewById(R.id.moonlight_image) as AppCompatImageView
-        mAudio = itemView.findViewById(R.id.moonlight_audio) as LinearLayoutCompat
+        mCardView = itemView.findViewById(R.id.item_main)
+        mTransitionItem = itemView.findViewById(R.id.transition_item)
+        mTitle = itemView.findViewById(R.id.moonlight_title)
+        mContent = itemView.findViewById(R.id.moonlight_content)
+        mImage = itemView.findViewById(R.id.moonlight_image)
+        mAudio = itemView.findViewById(R.id.moonlight_audio)
     }
 
 

@@ -11,7 +11,7 @@ import android.widget.Spinner;
  * Created by art2cat
  * on 9/7/16.
  */
-public class CustomSpinner extends Spinner {
+public class CustomSpinner extends android.support.v7.widget.AppCompatSpinner {
     OnItemSelectedListener listener;
     private AdapterView<?> lastParent;
     private View lastView;

@@ -63,7 +63,7 @@ open class StorageUtils {
 
             val audioRef = storageReference.child(userId).child("audios").child(audioName)
             var localFile: File? = null
-            val path = MoonlightApplication.getContext().getCacheDir().toString()
+            val path = MoonlightApplication.context!!.cacheDir.toString()
             if (path != null) {
                 val dir = File(path, "/audio")
                 if (!dir.exists()) {

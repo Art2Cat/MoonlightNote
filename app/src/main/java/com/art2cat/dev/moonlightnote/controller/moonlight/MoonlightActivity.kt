@@ -129,7 +129,7 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
     }
 
     override fun onBackPressed() {
-        val drawer = findViewById(R.id.drawer_layout) as DrawerLayout
+        val drawer: DrawerLayout = findViewById(R.id.drawer_layout)
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START)
         } else {
@@ -276,7 +276,7 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
             }
         }
 
-        val drawer = findViewById(R.id.drawer_layout) as DrawerLayout
+        val drawer: DrawerLayout = findViewById(R.id.drawer_layout)
         drawer.closeDrawer(GravityCompat.START)
         return true
     }
@@ -327,13 +327,13 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
      */
     private fun initView() {
         //Toolbar实例化
-        mToolbar = findViewById(R.id.toolbar) as Toolbar
-        mToolbar2 = findViewById(R.id.toolbar2) as Toolbar
+        mToolbar = findViewById(R.id.toolbar)
+        mToolbar2 = findViewById(R.id.toolbar2)
         setSupportActionBar(mToolbar)
 
-        mCoordinatorLayout = findViewById(R.id.snackbar_container) as CoordinatorLayout
+        mCoordinatorLayout = findViewById(R.id.snackbar_container)
         //FloatingActionButton实例化
-        mFAB = findViewById(R.id.fab) as FloatingActionButton
+        mFAB = findViewById(R.id.fab)
         //设置FloatingActionButton点击事件
         mFAB!!.setOnClickListener {
             if (isLogin) {
@@ -349,21 +349,21 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
         }
 
         //DrawerLayout实例化
-        mDrawerLayout = findViewById(R.id.drawer_layout) as DrawerLayout
+        mDrawerLayout = findViewById(R.id.drawer_layout)
         mActionBarDrawerToggle = ActionBarDrawerToggle(
                 this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         mDrawerLayout!!.addDrawerListener(mActionBarDrawerToggle!!)
         mActionBarDrawerToggle!!.syncState()
 
         //NavigationView实例化
-        mNavigationView = findViewById(R.id.nav_view) as NavigationView
+        mNavigationView = findViewById(R.id.nav_view)
         mNavigationView!!.inflateMenu(R.menu.activity_main_drawer)
         mNavigationView!!.setNavigationItemSelectedListener(this)
 
         //获取headerView
         val headerView = mNavigationView!!.getHeaderView(0)
 
-        mSortButton = headerView.findViewById(R.id.sort_up_or_down_btn) as Button
+        mSortButton = headerView.findViewById(R.id.sort_up_or_down_btn)
         mSortButton!!.setOnClickListener {
             if (isLogin) {
                 if (!isClicked) {
@@ -384,7 +384,7 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
         }
 
         //头像实例化
-        mCircleImageView = headerView.findViewById(R.id.imageView) as CircleImageView
+        mCircleImageView = headerView.findViewById(R.id.imageView)
         //设置点击头像事件启动LoginActivity
         mCircleImageView!!.setOnClickListener {
             if (isLogin) {
@@ -398,8 +398,8 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
         }
 
         //TextView实例化
-        mEmailTextView = headerView.findViewById(R.id.nav_header_email) as TextView
-        mNicknameTextView = headerView.findViewById(R.id.nav_header_nickname) as TextView
+        mEmailTextView = headerView.findViewById(R.id.nav_header_email)
+        mNicknameTextView = headerView.findViewById(R.id.nav_header_nickname)
         val type = intent.getIntExtra("type", 0)
         if (mUserId.isNotEmpty()) {
             FragmentUtils.addFragment(supportFragmentManager,

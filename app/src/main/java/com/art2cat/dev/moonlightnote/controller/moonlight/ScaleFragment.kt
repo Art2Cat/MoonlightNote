@@ -33,7 +33,7 @@ class ScaleFragment : BaseFragment() {
                               savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_scale, container, false)
-        val imageView = view.findViewById(R.id.imageView) as ZoomImageView
+        val imageView: ZoomImageView = view.findViewById(R.id.imageView)
         Picasso.with(mActivity)
                 .load(Uri.parse(mUrl))
                 .placeholder(R.drawable.ic_cloud_download_black_24dp)
