@@ -41,8 +41,8 @@ class InputDialogFragment : DialogFragment() {
         val inflater = LayoutInflater.from(activity)
         @SuppressLint("InflateParams")
         val view = inflater.inflate(R.layout.dialog_input, null)
-        val textInputLayout = view.findViewById(R.id.inputLayout) as TextInputLayout
-        mTextInputEditText = view.findViewById(R.id.dialog_editText) as TextInputEditText
+        val textInputLayout: TextInputLayout = view.findViewById(R.id.inputLayout)
+        mTextInputEditText = view.findViewById(R.id.dialog_editText)
         if (mType == 0) {
             textInputLayout.hint = getString(R.string.dialog_enter_your_register_email)
             mTextInputEditText!!.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS

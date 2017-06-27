@@ -15,8 +15,8 @@ class UserActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_common)
         initView()
-        mToolbar = findViewById(R.id.toolbar) as Toolbar
-        mCommonFragmentContainer = findViewById(R.id.common_fragment_container) as ContentFrameLayout
+        mToolbar = findViewById(R.id.toolbar)
+        mCommonFragmentContainer = findViewById(R.id.common_fragment_container)
         setSupportActionBar(mToolbar)
 
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
@@ -31,7 +31,7 @@ class UserActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        mCommonFragmentContainer = findViewById(R.id.common_fragment_container) as ContentFrameLayout
+        mCommonFragmentContainer = findViewById(R.id.common_fragment_container)
     }
 
 }

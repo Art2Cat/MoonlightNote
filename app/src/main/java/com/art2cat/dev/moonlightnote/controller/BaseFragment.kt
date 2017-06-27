@@ -49,7 +49,7 @@ abstract class BaseFragment : Fragment() {
         outState!!.putInt(KEY_INDEX, mCurrentIndex)
     }
 
-    fun showShortSnackBar(view: ContentFrameLayout, content: String, type: Int) {
+    fun showShortSnackBar(view: View, content: String, type: Int) {
         SnackBarUtils.shortSnackBar(view, content, type).show()
     }
 

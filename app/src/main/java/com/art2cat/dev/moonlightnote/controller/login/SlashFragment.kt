@@ -26,7 +26,7 @@ class SlashFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater!!.inflate(R.layout.fragment_slash, container, false)
         MobileAds.initialize(activity, APP_ID)
-        val adView = view.findViewById(R.id.adView) as NativeExpressAdView
+        val adView: NativeExpressAdView = view.findViewById(R.id.adView)
         val request = AdRequest.Builder()
                 //                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 //                .addTestDevice("0ACA1878D607E6C4360F91E0A0379C2F")

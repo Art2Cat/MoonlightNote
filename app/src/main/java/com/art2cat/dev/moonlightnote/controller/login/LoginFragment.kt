@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.AppCompatButton
 import android.support.v7.widget.AppCompatEditText
+import android.support.v7.widget.ContentFrameLayout
 import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.util.Log
@@ -78,13 +79,13 @@ class LoginFragment : BaseFragment(), View.OnClickListener, GoogleApiClient.OnCo
 
         mView = inflater!!.inflate(R.layout.fragment_login, container, false)
 
-        mEmailView = mView?.findViewById(R.id.email) as AppCompatEditText
+        mEmailView = mView?.findViewById(R.id.email)
 
-        val toolbar = mView?.findViewById(R.id.toolbar) as Toolbar
+        val toolbar: Toolbar? = mView?.findViewById(R.id.toolbar)
         (activity as LoginActivity).setSupportActionBar(toolbar)
-        toolbar.setTitle(R.string.fragment_login)
+        toolbar!!.setTitle(R.string.fragment_login)
 
-        mPasswordView = mView?.findViewById(R.id.password) as AppCompatEditText
+        mPasswordView = mView?.findViewById(R.id.password)
         mPasswordView!!.setOnEditorActionListener(TextView.OnEditorActionListener { textView, id, keyEvent ->
             if (id == R.id.login || id == EditorInfo.IME_NULL) {
                 attemptLogin()
@@ -93,11 +94,11 @@ class LoginFragment : BaseFragment(), View.OnClickListener, GoogleApiClient.OnCo
             false
         })
 
-        val reset = mView?.findViewById(R.id.reset_password) as AppCompatButton
-        val mRegister = mView?.findViewById(R.id.email_sign_in_button) as AppCompatButton
-        val mLogin = mView?.findViewById(R.id.email_sign_up_button) as AppCompatButton
-        val mLogin_Google = mView?.findViewById(R.id.login_google_btn) as AppCompatButton
-        val test = mView?.findViewById(R.id.test_btn) as AppCompatButton
+        val reset: AppCompatButton = mView?.findViewById(R.id.reset_password)!!
+        val mRegister: AppCompatButton = mView?.findViewById(R.id.email_sign_in_button)!!
+        val mLogin: AppCompatButton = mView?.findViewById(R.id.email_sign_up_button)!!
+        val mLogin_Google: AppCompatButton = mView?.findViewById(R.id.login_google_btn)!!
+        val test: AppCompatButton = mView?.findViewById(R.id.test_btn)!!
 
         reset.setOnClickListener(this)
         mRegister.setOnClickListener(this)
@@ -243,7 +244,7 @@ class LoginFragment : BaseFragment(), View.OnClickListener, GoogleApiClient.OnCo
                 isNewUser = true
             } else {
                 showProgress(false)
-                showShortSnackBar(mView!!, "Google Sign In failed", SnackBarUtils.TYPE_INFO)
+                showShortSnackBar((mView as ContentFrameLayout?)!!, "Google Sign In failed", SnackBarUtils.TYPE_INFO)
                 Log.d(TAG, "Google Sign In failed")
             }
         }
@@ -291,7 +292,7 @@ class LoginFragment : BaseFragment(), View.OnClickListener, GoogleApiClient.OnCo
     }
 
     override fun onConnectionFailed(connectionResult: ConnectionResult) {
-        showShortSnackBar(mView!!, connectionResult.errorMessage!!, SnackBarUtils.TYPE_ALERT)
+        showShortSnackBar((mView as ContentFrameLayout?)!!, connectionResult.errorMessage!!, SnackBarUtils.TYPE_ALERT)
     }
 
     fun signIn() {
@@ -348,7 +349,7 @@ class LoginFragment : BaseFragment(), View.OnClickListener, GoogleApiClient.OnCo
                         Log.w(TAG, "signInWithCredential", task.exception)
                         //noinspection ThrowableResultOfMethodCallIgnored,ConstantConditions
                         val exception = task.exception!!.message
-                        showShortSnackBar(mView!!, "Authentication failed: " + exception,
+                        showShortSnackBar((mView as ContentFrameLayout?)!!, "Authentication failed: " + exception,
                                 SnackBarUtils.TYPE_WARNING)
                     } else {
                         showProgress(false)

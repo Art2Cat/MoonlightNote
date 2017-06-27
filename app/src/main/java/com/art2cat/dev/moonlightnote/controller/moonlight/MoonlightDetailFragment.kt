@@ -973,8 +973,8 @@ abstract class MoonlightDetailFragment : BaseFragment(),
         initBottomSheetItem()
         // The View with the BottomSheetBehavior
 
-        val bottomSheetLeft = mCoordinatorLayout!!.findViewById(R.id.bottom_sheet_left)
-        val bottomSheetRight = mCoordinatorLayout!!.findViewById(R.id.bottom_sheet_right)
+        val bottomSheetLeft: View = mCoordinatorLayout!!.findViewById(R.id.bottom_sheet_left)
+        val bottomSheetRight: View = mCoordinatorLayout!!.findViewById(R.id.bottom_sheet_right)
         mLeftBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetLeft)
         mRightBottomSheetBehavior = BottomSheetBehavior.from(bottomSheetRight)
         mLeftBottomSheetBehavior!!.state = BottomSheetBehavior.STATE_HIDDEN
@@ -1013,13 +1013,13 @@ abstract class MoonlightDetailFragment : BaseFragment(),
     }
 
     private fun initBottomSheetItem() {
-        val takePhoto = mView!!.findViewById(R.id.bottom_sheet_item_take_photo)
-        val chooseImage = mView!!.findViewById(R.id.bottom_sheet_item_choose_image)!!
-        val recording = mView!!.findViewById(R.id.bottom_sheet_item_recording)!!
-        val moveToTrash = mView!!.findViewById(R.id.bottom_sheet_item_move_to_trash)
-        val permanentDelete = mView!!.findViewById(R.id.bottom_sheet_item_permanent_delete)
-        val makeACopy = mView!!.findViewById(R.id.bottom_sheet_item_make_a_copy)
-        val send = mView!!.findViewById(R.id.bottom_sheet_item_send)
+        val takePhoto: LinearLayoutCompat = mView!!.findViewById(R.id.bottom_sheet_item_take_photo)
+        val chooseImage: LinearLayoutCompat = mView!!.findViewById(R.id.bottom_sheet_item_choose_image)!!
+        val recording: LinearLayoutCompat = mView!!.findViewById(R.id.bottom_sheet_item_recording)!!
+        val moveToTrash: LinearLayoutCompat = mView!!.findViewById(R.id.bottom_sheet_item_move_to_trash)
+        val permanentDelete: LinearLayoutCompat = mView!!.findViewById(R.id.bottom_sheet_item_permanent_delete)
+        val makeACopy: LinearLayoutCompat = mView!!.findViewById(R.id.bottom_sheet_item_make_a_copy)
+        val send: LinearLayoutCompat = mView!!.findViewById(R.id.bottom_sheet_item_send)
         takePhoto.setOnClickListener(this)
         chooseImage.setOnClickListener(this)
         recording.setOnClickListener(this)

@@ -34,9 +34,9 @@ class ChangePasswordFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater!!.inflate(R.layout.fragment_change_password, container, false)
-        val oldET = view.findViewById(R.id.old_password_editText) as TextInputEditText
-        val newET = view.findViewById(R.id.new_password_editText) as TextInputEditText
-        val button = view.findViewById(R.id.change_password) as AppCompatButton
+        val oldET: TextInputEditText = view.findViewById(R.id.old_password_editText)
+        val newET: TextInputEditText = view.findViewById(R.id.new_password_editText)
+        val button: AppCompatButton = view.findViewById(R.id.change_password)
 
 
         setHasOptionsMenu(true)

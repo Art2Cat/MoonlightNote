@@ -24,8 +24,8 @@ class PickPicDialogFragment : DialogFragment() {
         @SuppressLint("InflateParams")
         val view = LayoutInflater.from(activity).inflate(R.layout.dialog_pick_pic, null)
 
-        val camera = view.findViewById(R.id.camera) as TextView
-        val album = view.findViewById(R.id.album) as TextView
+        val camera: TextView = view.findViewById(R.id.camera)
+        val album: TextView = view.findViewById(R.id.album)
 
 
         camera.setOnClickListener {

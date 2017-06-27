@@ -92,10 +92,10 @@ class UserFragment : BaseFragment(), View.OnClickListener {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         mView = inflater!!.inflate(R.layout.fragment_user, container, false)
-        mCircleImageView = mView!!.findViewById(R.id.user_head_picture) as CircleImageView
-        mNickname = mView!!.findViewById(R.id.user_nickname) as AppCompatTextView
-        mEmail = mView!!.findViewById(R.id.user_email) as AppCompatTextView
-        mAdView = mView!!.findViewById(R.id.banner_adView) as AdView
+        mCircleImageView = mView!!.findViewById(R.id.user_head_picture)
+        mNickname = mView!!.findViewById(R.id.user_nickname)
+        mEmail = mView!!.findViewById(R.id.user_email)
+        mAdView = mView!!.findViewById(R.id.banner_adView)
 
         activity.setTitle(R.string.title_activity_user)
 
