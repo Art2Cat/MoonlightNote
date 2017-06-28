@@ -6,7 +6,7 @@ package com.art2cat.dev.moonlightnote.model
  */
 
 
-data class BusEvent(var message: String = "", var moonlight: Moonlight = null!!,
+data class BusEvent(var message: String = "", var moonlight: Moonlight? = null,
                     var flag: Int = 0) {
 
 //    constructor() {}

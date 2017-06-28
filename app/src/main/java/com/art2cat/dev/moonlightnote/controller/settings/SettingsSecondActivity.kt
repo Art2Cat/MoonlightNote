@@ -27,13 +27,13 @@ class SettingsSecondActivity : AppCompatActivity() {
         val fragmentManager = supportFragmentManager
         val id = R.id.activity_security
         when (type) {
-            Constants.FRAGMENT_POLICY -> FragmentUtils.addFragment(fragmentManager,
+            Constants.FRAGMENT_POLICY -> FragmentUtils.getInstance().addFragment(fragmentManager,
                     id,
                     PrivacyPolicyFragment().newInstance())
-            Constants.FRAGMENT_LICENSE -> FragmentUtils.addFragment(fragmentManager,
+            Constants.FRAGMENT_LICENSE -> FragmentUtils.getInstance().addFragment(fragmentManager,
                     id,
                     LicenseFragment().newInstance())
-            Constants.FRAGMENT_ABOUT -> FragmentUtils.addFragment(fragmentManager,
+            Constants.FRAGMENT_ABOUT -> FragmentUtils.getInstance().addFragment(fragmentManager,
                     id,
                     AboutAppFragment().newInstance())
         }

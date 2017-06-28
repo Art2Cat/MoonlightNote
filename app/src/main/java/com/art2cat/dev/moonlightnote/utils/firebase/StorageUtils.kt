@@ -46,7 +46,7 @@ open class StorageUtils {
                 localFile = File(dir, imageName!! + ".jpg")
             }
 
-            if (localFile != null) {
+            if (localFile != null && localFile.exists()) {
                 imageRef.getFile(localFile).addOnSuccessListener { }.addOnFailureListener {
                     // Handle any errors
                 }
@@ -64,7 +64,7 @@ open class StorageUtils {
             val audioRef = storageReference.child(userId).child("audios").child(audioName)
             var localFile: File? = null
             val path = MoonlightApplication.context!!.cacheDir.toString()
-            if (path != null) {
+            if (path != null && path.isNotEmpty()) {
                 val dir = File(path, "/audio")
                 if (!dir.exists()) {
                     dir.mkdirs()

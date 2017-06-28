@@ -298,7 +298,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             return false
         }
 
-        @AfterPermissionGranted(STORAGE_PERMS)
+        @AfterPermissionGranted(101)
         private fun requestPermission(type: Int) {
             val perm = Manifest.permission.WRITE_EXTERNAL_STORAGE
             if (!EasyPermissions.hasPermissions(activity, perm)) {
@@ -387,10 +387,10 @@ class SettingsActivity : AppCompatPreferenceActivity() {
                 val reader = BufferedReader(
                         InputStreamReader(driveContents.inputStream))
                 val builder = StringBuilder()
-                var line: String
+
                 try {
-                    while ((line = reader.readLine()) != null) {
-                        builder.append(line)
+                    while (reader.readLine()!= null) {
+                        builder.append(reader.readLine())
                     }
                     val contentsAsString = builder.toString()
                     LogUtils.getInstance(TAG).setMessage(contentsAsString).debug()

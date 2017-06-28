@@ -157,7 +157,7 @@ class UserFragment : BaseFragment(), View.OnClickListener {
         when (item!!.itemId) {
             R.id.action_change_password -> {
                 val fragment = ChangePasswordFragment()
-                FragmentUtils.replaceFragment(fragmentManager,
+                FragmentUtils.getInstance().replaceFragment(fragmentManager,
                         R.id.common_fragment_container,
                         fragment,
                         FragmentUtils.REPLACE_BACK_STACK)
@@ -174,23 +174,23 @@ class UserFragment : BaseFragment(), View.OnClickListener {
 
     private fun initView() {
         val nickname = mUser!!.nickname
-        LogUtils.getInstance(TAG).setMessage("initView: " + nickname!!).debug()
-        if (nickname != null) {
-            mNickname!!.setText(nickname)
+        LogUtils.getInstance(TAG).setMessage("initView: " + nickname).debug()
+        if (nickname != null && nickname.isNotEmpty()) {
+            mNickname!!.text = nickname
             mUser!!.nickname = nickname
         } else {
             mNickname!!.setText(R.string.user_setNickname)
         }
         val email = mUser!!.email
-        LogUtils.getInstance(TAG).setMessage("initView: " + email!!).debug()
-        if (email != null) {
+        LogUtils.getInstance(TAG).setMessage("initView: " + email).debug()
+        if (email != null && email.isNotEmpty()) {
             mUser!!.email = email
-            mEmail!!.setText(email)
+            mEmail!!.text = email
         }
 
         val url = mUser!!.photoUrl
-        LogUtils.getInstance(TAG).setMessage("initView: " + url!!)
-        if (url != null) {
+        LogUtils.getInstance(TAG).setMessage("initView: " + url)
+        if (url != null && url.isNotEmpty()) {
 
             Picasso.with(activity)
                     .load(url)
@@ -236,23 +236,23 @@ class UserFragment : BaseFragment(), View.OnClickListener {
         if (busEvent != null) {
             when (busEvent.flag) {
                 BUS_FLAG_CAMERA -> {
-                    Log.d(TAG, "busEvent: " + busEvent!!.flag)
+                    Log.d(TAG, "busEvent: " + busEvent.flag)
                     onCameraClick()
                 }
                 BUS_FLAG_ALBUM -> {
-                    Log.d(TAG, "busEvent: " + busEvent!!.flag)
+                    Log.d(TAG, "busEvent: " + busEvent.flag)
                     onAlbumClick()
                 }
-                BUS_FLAG_USERNAME -> if (busEvent.message != null) {
+                BUS_FLAG_USERNAME -> if (busEvent.message != null && busEvent.message.isNotEmpty()) {
                     mNickname!!.setText(busEvent.message)
                     mUser!!.nickname = busEvent.message
                     UserUtils.saveUserToCache(activity.applicationContext, mUser)
-                    updateProfile(busEvent!!.message, null)
+                    updateProfile(busEvent.message, null)
                 }
-                BUS_FLAG_EMAIL -> if (busEvent!!.message.contains("@")) {
+                BUS_FLAG_EMAIL -> if (busEvent.message.contains("@")) {
                     AuthUtils.sendRPEmail(activity, mView as View, busEvent.message)
                 }
-                BUS_FLAG_DELETE_ACCOUNT -> if (busEvent.message != null) {
+                BUS_FLAG_DELETE_ACCOUNT -> if (busEvent.message != null && busEvent.message.isNotEmpty()) {
                     val user = FirebaseAuth.getInstance().currentUser
                     val credential = EmailAuthProvider
                             .getCredential(user!!.email!!, busEvent.message)
@@ -419,7 +419,7 @@ class UserFragment : BaseFragment(), View.OnClickListener {
         val uploadTask = photoRef.putFile(fileUri)
 
         uploadTask.addOnSuccessListener { taskSnapshot ->
-            mUser!!.photoUrl = taskSnapshot.downloadUrl!!.toString()
+            mUser!!.photoUrl = taskSnapshot.downloadUrl.toString()
             updateUI(taskSnapshot.downloadUrl)
             UserUtils.saveUserToCache(activity.applicationContext, mUser)
             updateProfile(null, taskSnapshot.downloadUrl)

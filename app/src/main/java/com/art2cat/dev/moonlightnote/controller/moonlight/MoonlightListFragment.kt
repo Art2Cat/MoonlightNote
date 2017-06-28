@@ -71,7 +71,7 @@ abstract class MoonlightListFragment : BaseFragment() {
                               savedInstanceState: Bundle?): View {
         super.onCreateView(inflater, container, savedInstanceState)
         LogUtils.getInstance(TAG).setMessage("onCreateView").debug()
-        val rootView = inflater.inflate(R.layout.fragment_moonlight, container, false)
+        val rootView: View = inflater.inflate(R.layout.fragment_moonlight, container, false)
 
         val moonlightActivity = mActivity as MoonlightActivity
         mToolbar = moonlightActivity.mToolbar
@@ -82,7 +82,7 @@ abstract class MoonlightListFragment : BaseFragment() {
             mToolbar!!.setTitle(R.string.fragment_trash)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mToolbar!!.setBackgroundColor(getResources().getColor(R.color.grey,
-                        mActivity.getTheme()))
+                        mActivity!!.getTheme()))
                 //                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.grey_dark,
                 //                        mActivity.getTheme()));
             } else {
@@ -92,14 +92,14 @@ abstract class MoonlightListFragment : BaseFragment() {
         } else {
             mToolbar!!.setTitle(R.string.app_name)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mToolbar!!.setBackgroundColor(getResources().getColor(R.color.colorPrimary, mActivity.getTheme()))
-                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark,
-                        mActivity.getTheme()))
+                mToolbar!!.setBackgroundColor(getResources().getColor(R.color.colorPrimary, mActivity!!.getTheme()))
+                mActivity!!.getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark,
+                        mActivity!!.getTheme()))
             } else {
                 mToolbar!!.setBackgroundColor(getResources().getColor(R.color.colorPrimary))
-                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark))
+                mActivity!!.getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark))
             }
-            mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT)
+            mActivity!!.getWindow().setStatusBarColor(Color.TRANSPARENT)
         }
         setHasOptionsMenu(true)
 
@@ -160,7 +160,7 @@ abstract class MoonlightListFragment : BaseFragment() {
 
         mRecyclerView!!.setOnDragListener { view, dragEvent -> false }
 
-        setOverflowButtonColor(mActivity, 0xFFFFFFFF.toInt())
+        setOverflowButtonColor(mActivity!!, 0xFFFFFFFF.toInt())
 
     }
 
@@ -186,98 +186,104 @@ abstract class MoonlightListFragment : BaseFragment() {
 
         val moonlightsQuery = getQuery(mDatabase!!)
         if (moonlightsQuery != null) {
-            mFirebaseRecyclerAdapter = object : FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder>(Moonlight::class.java, R.layout.moonlight_item, MoonlightViewHolder::class.java,
+            mFirebaseRecyclerAdapter = object : FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder>
+            (Moonlight::class.java, R.layout.moonlight_item, MoonlightViewHolder::class.java,
                     moonlightsQuery) {
 
                 override fun populateViewHolder(viewHolder: MoonlightViewHolder, model: Moonlight, position: Int) {
                     val moonlightRef = getRef(position)
                     val moonlightKey = moonlightRef.key
 
-                    val moonlightD = MoonlightEncryptUtils.newInstance().decryptMoonlight(model) ?: return
-
-                    if (moonlightD.title != null) {
-                        viewHolder.displayTitle(moonlightD.title)
-                    } else {
-                        viewHolder.mTitle.visibility = View.GONE
-                    }
-
-                    if (moonlightD.content != null) {
-                        viewHolder.displayContent(moonlightD.content)
-                    } else {
-                        viewHolder.mContent.visibility = View.GONE
-                    }
-
-                    if (moonlightD.imageName != null) {
-                        Log.i(TAG, "populateViewHolder: " + moonlightD.imageName)
-                        viewHolder.mImage.setImageResource(R.drawable.ic_cloud_download_black_24dp)
-                        //                        viewHolder.mImage.setTag(moonlightD.imageName);
-                        viewHolder.displayImage(mActivity, moonlightD.imageUrl)
-                    } else {
-                        viewHolder.mImage.visibility = View.GONE
-                    }
-
-                    if (moonlightD.color !== 0) {
-                        viewHolder.setColor(moonlightD.color)
-                    } else {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            viewHolder.setColor(mActivity.getResources().getColor(R.color.white, null))
+                    if (!isEmpty(model)) {
+                        val moonlightD = MoonlightEncryptUtils.newInstance().decryptMoonlight(model)
+                        if (moonlightD.title.isNotEmpty()) {
+                            viewHolder.displayTitle(moonlightD.title)
                         } else {
-                            viewHolder.setColor(mActivity.getResources().getColor(R.color.white))
+                            viewHolder.mTitle.visibility = View.GONE
                         }
-                    }
 
-                    if (moonlightD.audioName != null) {
-                        val audioName = moonlightD.audioName
-                        if (!isAudioFileExists(audioName)) {
-                            StorageUtils.downloadAudio(
-                                    FirebaseStorage.getInstance().reference,
-                                    uid, moonlightD.audioName)
+                        if (moonlightD.content.isNotEmpty()) {
+                            viewHolder.displayContent(moonlightD.content)
+                        } else {
+                            viewHolder.mContent.visibility = View.GONE
                         }
-                        viewHolder.mAudio.visibility = View.VISIBLE
-                    } else {
-                        viewHolder.mAudio.visibility = View.GONE
-                    }
 
+                        if (moonlightD.imageName.isNotEmpty()) {
+                            Log.i(TAG, "populateViewHolder: " + moonlightD.imageName)
+                            viewHolder.mImage.setImageResource(R.drawable.ic_cloud_download_black_24dp)
+                            //                        viewHolder.mImage.setTag(moonlightD.imageName);
+                            viewHolder.displayImage(mActivity!!, moonlightD.imageUrl)
+                        } else {
+                            viewHolder.mImage.visibility = View.GONE
+                        }
 
-
-                    viewHolder.itemView.setOnClickListener {
-                        if (isLogin) {
-                            moonlightD.id =(moonlightKey)
-                            if (isTrash) {
-                                Log.d(TAG, "onClick: trash")
-                                val trashDetailFragment = TrashDetailFragment.newInstance(moonlightD, 12)
-                                FragmentUtils.replaceFragment(getFragmentManager(),
-                                        R.id.main_fragment_container,
-                                        trashDetailFragment,
-                                        FragmentUtils.REPLACE_BACK_STACK)
-                                BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null)
+                        if (moonlightD.color != 0) {
+                            viewHolder.setColor(moonlightD.color)
+                        } else {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                viewHolder.setColor(mActivity!!.getResources().getColor(R.color.white, null))
                             } else {
-                                Log.d(TAG, "onClick: edit")
-                                val editMoonlightFragment = EditMoonlightFragment.newInstance(moonlightD, 0)
-                                FragmentUtils.replaceFragment(getFragmentManager(),
-                                        R.id.main_fragment_container,
-                                        editMoonlightFragment,
-                                        FragmentUtils.REPLACE_BACK_STACK)
-                                BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null)
-                            }
-                            changeToolbar(null, 1)
-                            setParams(0)
-                        }
-                    }
-
-                    viewHolder.itemView.setOnLongClickListener {
-                        moonlightD.id =moonlightKey
-                        if (moonlightKey == moonlightD.id) {
-                            if (!isTrash) {
-                                setParams(1)
-                                changeToolbar(moonlightD, 0)
-                            } else {
-                                changeToolbar(moonlightD, 0)
-                                setParams(1)
+                                viewHolder.setColor(mActivity!!.getResources().getColor(R.color.white))
                             }
                         }
-                        false
+
+                        if (moonlightD.audioName.isNotEmpty()) {
+                            val audioName = moonlightD.audioName
+                            if (!isAudioFileExists(audioName)) {
+                                StorageUtils.downloadAudio(
+                                        FirebaseStorage.getInstance().reference,
+                                        uid, moonlightD.audioName)
+                            }
+                            viewHolder.mAudio.visibility = View.VISIBLE
+                        } else {
+                            viewHolder.mAudio.visibility = View.GONE
+                        }
+
+
+
+                        viewHolder.itemView.setOnClickListener {
+                            if (isLogin) {
+                                moonlightD.id = (moonlightKey)
+                                if (isTrash) {
+                                    Log.d(TAG, "onClick: trash")
+                                    val trashDetailFragment = TrashDetailFragment.newInstance(moonlightD, 12)
+                                    FragmentUtils.getInstance().replaceFragment(getFragmentManager(),
+                                            R.id.main_fragment_container,
+                                            trashDetailFragment,
+                                            FragmentUtils.REPLACE_BACK_STACK)
+                                    BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null)
+                                } else {
+                                    Log.d(TAG, "onClick: edit")
+                                    val editMoonlightFragment = EditMoonlightFragment.newInstance(moonlightD, 0)
+                                    FragmentUtils.getInstance().replaceFragment(getFragmentManager(),
+                                            R.id.main_fragment_container,
+                                            editMoonlightFragment,
+                                            FragmentUtils.REPLACE_BACK_STACK)
+                                    BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null)
+                                }
+                                changeToolbar(null, 1)
+                                setParams(0)
+                            }
+                        }
+
+                        viewHolder.itemView.setOnLongClickListener {
+                            moonlightD.id = moonlightKey
+                            if (moonlightKey == moonlightD.id) {
+                                if (!isTrash) {
+                                    setParams(1)
+                                    changeToolbar(moonlightD, 0)
+                                } else {
+                                    changeToolbar(moonlightD, 0)
+                                    setParams(1)
+                                }
+                            }
+                            false
+                        }
                     }
+
+//                    val moonlightD = MoonlightEncryptUtils.newInstance().decryptMoonlight(model)
+
+
                 }
             }
 
@@ -313,8 +319,13 @@ abstract class MoonlightListFragment : BaseFragment() {
         }
     }
 
+    private fun isEmpty(moonlight: Moonlight): Boolean {
+        return !(moonlight.imageUrl.isNotEmpty() || moonlight.audioUrl.isNotEmpty()
+                || moonlight.content.isNotEmpty() || moonlight.title.isNotEmpty())
+    }
+
     private fun isAudioFileExists(audioName: String): Boolean {
-        val dir = File(mActivity.getCacheDir(), "/audio")
+        val dir = File(mActivity!!.getCacheDir(), "/audio")
         if (audioName.contains(".amr")) {
             val file = File(dir, audioName)
             return file.exists()
@@ -339,7 +350,7 @@ abstract class MoonlightListFragment : BaseFragment() {
 
         LogUtils.getInstance(TAG).setMessage("onDestroy").debug()
 
-        val refWatcher = MoonlightApplication.getRefWatcher(mActivity)
+        val refWatcher = MoonlightApplication.getRefWatcher(mActivity!!)
         refWatcher.watch(this)
     }
 
@@ -377,19 +388,19 @@ abstract class MoonlightListFragment : BaseFragment() {
                         .newInstance(uid, getString(R.string.dialog_empty_note_title),
                                 getString(R.string.dialog_empty_note_content),
                                 Constants.EXTRA_TYPE_CDF_EMPTY_NOTE)
-                emptyNote.show(mActivity.getFragmentManager(), "Empty Note")
+                emptyNote.show(mActivity!!.getFragmentManager(), "Empty Note")
             }
             R.id.menu_empty_trash -> {
                 val emptyTrash = ConfirmationDialogFragment
                         .newInstance(uid, getString(R.string.dialog_empty_trash_title),
                                 getString(R.string.dialog_empty_trash_content),
                                 Constants.EXTRA_TYPE_CDF_EMPTY_TRASH)
-                emptyTrash.show(mActivity.getFragmentManager(), "Empty Trash")
-                mActivity.setTitle(R.string.fragment_trash)
+                emptyTrash.show(mActivity!!.getFragmentManager(), "Empty Trash")
+                mActivity!!.setTitle(R.string.fragment_trash)
             }
             R.id.action_restore -> {
                 FDatabaseUtils.restoreToNote(uid, mMoonlight as Moonlight)
-                mActivity.setTitle(R.string.fragment_trash)
+                mActivity!!.setTitle(R.string.fragment_trash)
                 changeOptionsMenu(3)
             }
             R.id.action_trash_delete_forever -> {
@@ -397,7 +408,7 @@ abstract class MoonlightListFragment : BaseFragment() {
                 StorageUtils.removeAudio(null, uid, mMoonlight!!.audioName)
                 FDatabaseUtils.removeMoonlight(uid, mMoonlight!!.id, Constants.EXTRA_TYPE_DELETE_TRASH)
                 mMoonlight = null
-                mActivity.setTitle(R.string.fragment_trash)
+                mActivity!!.setTitle(R.string.fragment_trash)
                 changeOptionsMenu(3)
             }
         }
@@ -420,9 +431,9 @@ abstract class MoonlightListFragment : BaseFragment() {
     fun busAction(busEvent: BusEvent?) {
         //这里更新视图或者后台操作,从busAction获取传递参数.
 
-            when (busEvent!!.flag) {
-                Constants.BUS_FLAG_SIGN_OUT -> isLogin = false
-            }
+        when (busEvent!!.flag) {
+            Constants.BUS_FLAG_SIGN_OUT -> isLogin = false
+        }
 
     }
 
@@ -460,61 +471,61 @@ abstract class MoonlightListFragment : BaseFragment() {
                 mToolbar2!!.setOnMenuItemClickListener { item ->
                     when (item.itemId) {
                         R.id.action_delete -> {
-                            FDatabaseUtils.moveToTrash(uid, moonlight as Moonlight)
-                            mActivity.setTitle(R.string.app_name)
+                            FDatabaseUtils.moveToTrash(uid, moonlight!!)
+                            mActivity!!.setTitle(R.string.app_name)
                         }
                         R.id.action_delete_forever -> {
-                            if (moonlight!!.imageUrl != null) {
-                                StorageUtils.removePhoto(null, uid, moonlight!!.imageName)
+                            if (moonlight!!.imageUrl.isNotEmpty()) {
+                                StorageUtils.removePhoto(null, uid, moonlight.imageName)
                             }
-                            if (moonlight!!.audioName != null) {
-                                StorageUtils.removeAudio(null, uid, moonlight!!.audioName)
+                            if (moonlight.audioName.isNotEmpty()) {
+                                StorageUtils.removeAudio(null, uid, moonlight.audioName)
                             }
                             FDatabaseUtils.removeMoonlight(uid,
-                                    moonlight!!.id,
+                                    moonlight.id,
                                     Constants.EXTRA_TYPE_MOONLIGHT)
-                            mActivity.setTitle(R.string.app_name)
+                            mActivity!!.setTitle(R.string.app_name)
                         }
                         R.id.action_make_a_copy -> {
                             FDatabaseUtils.addMoonlight(uid,
                                     moonlight as Moonlight, Constants.EXTRA_TYPE_MOONLIGHT)
-                            mActivity.setTitle(R.string.app_name)
+                            mActivity!!.setTitle(R.string.app_name)
                         }
                         R.id.action_send -> {
                             //启动Intent分享
                             var `in` = Intent(Intent.ACTION_SEND)
                             `in`.type = "text/plain"
-                            if (moonlight!!.title != null) {
+                            if (moonlight!!.title.isNotEmpty()) {
                                 `in`.putExtra(Intent.EXTRA_TITLE, moonlight!!.title)
                             }
 
-                            if (moonlight!!.content != null) {
+                            if (moonlight!!.content.isNotEmpty()) {
                                 `in`.putExtra(Intent.EXTRA_TEXT, moonlight!!.content)
                             }
 
-                            if (moonlight!!.imageUrl != null) {
+                            if (moonlight!!.imageUrl.isNotEmpty()) {
                                 `in`.putExtra(Intent.EXTRA_TEXT, moonlight!!.imageUrl)
                             }
                             //设置分享选择器
                             `in` = Intent.createChooser(`in`, "Send to")
                             startActivity(`in`)
-                            mActivity.setTitle(R.string.app_name)
+                            mActivity!!.setTitle(R.string.app_name)
                         }
                         R.id.action_restore -> {
                             FDatabaseUtils.restoreToNote(uid, moonlight as Moonlight)
-                            mActivity.setTitle(R.string.fragment_trash)
+                            mActivity!!.setTitle(R.string.fragment_trash)
                         }
                         R.id.action_trash_delete_forever -> {
-                            if (moonlight!!.imageUrl != null) {
+                            if (moonlight!!.imageUrl.isNotEmpty()) {
                                 StorageUtils.removePhoto(null, uid, moonlight!!.imageName)
                             }
-                            if (moonlight!!.audioUrl != null) {
+                            if (moonlight!!.audioUrl.isNotEmpty()) {
                                 StorageUtils.removeAudio(null, uid, moonlight!!.audioName)
                             }
                             FDatabaseUtils.removeMoonlight(uid,
                                     moonlight!!.id,
                                     Constants.EXTRA_TYPE_DELETE_TRASH)
-                            mActivity.setTitle(R.string.fragment_trash)
+                            mActivity!!.setTitle(R.string.fragment_trash)
                         }
                     }
                     setParams(0)

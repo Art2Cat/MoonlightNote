@@ -11,62 +11,73 @@ import com.art2cat.dev.moonlightnote.R
  */
 
 open class FragmentUtils {
+
     companion object {
-        val REPLACE_BACK_STACK = 101
-        val REPLACE_NORMAL = 102
+         val REPLACE_BACK_STACK = 101
+         val REPLACE_NORMAL = 102
 
-        /**
-         * fragment的提交
-
-         * @param fm       FragmentManager
-         * *
-         * @param fragment 需要切换的fragment
-         */
-        fun addFragment(fm: FragmentManager, @IdRes id: Int, fragment: Fragment) {
-            val frag = fm.findFragmentById(id)
-            if (frag == null) {
-                fm.beginTransaction()
-                        .add(id, fragment)
-                        .commit()
-            }
+        fun getInstance(): FragmentUtils {
+            return Instance.ourInstance
         }
+    }
 
-        /**
-         * fragment的切换
-
-         * @param fm       FragmentManager
-         * *
-         * @param fragment 需要切换的fragment
-         */
-        fun replaceFragment(fm: FragmentManager, @IdRes id: Int, fragment: Fragment, type: Int) {
-            if (type == REPLACE_BACK_STACK) {
-                replaceBackStackFragment(fm, id, fragment)
-            } else if (type == REPLACE_NORMAL) {
-                replaceFragment(fm, id, fragment)
-            }
-        }
+    object Instance {
+        val ourInstance = FragmentUtils()
+    }
 
 
-        private fun replaceBackStackFragment(fm: FragmentManager, @IdRes id: Int, fragment: Fragment) {
+    /**
+     * fragment的提交
+
+     * @param fm       FragmentManager
+     * *
+     * @param fragment 需要切换的fragment
+     */
+    fun addFragment(fm: FragmentManager, @IdRes id: Int, fragment: Fragment) {
+        val frag = fm.findFragmentById(id)
+        if (frag == null) {
             fm.beginTransaction()
-                    .setTransition(android.support.transition.R.id.transition_current_scene)
-                    .setCustomAnimations(R.anim.fragment_slide_left_enter,
-                            R.anim.fragment_slide_left_exit,
-                            R.anim.fragment_slide_right_enter,
-                            R.anim.fragment_slide_right_exit)
-                    .replace(id, fragment)
-                    .addToBackStack(null)
-                    .commit()
-        }
-
-        private fun replaceFragment(fm: FragmentManager, @IdRes id: Int, fragment: Fragment) {
-            fm.beginTransaction()
-                    .setCustomAnimations(R.anim.fragment_slide_left_enter,
-                            R.anim.fragment_slide_left_exit,
-                            R.anim.fragment_slide_right_enter,
-                            R.anim.fragment_slide_right_exit)
-                    .replace(id, fragment)
+                    .add(id, fragment)
                     .commit()
         }
     }
+
+    /**
+     * fragment的切换
+
+     * @param fm       FragmentManager
+     * *
+     * @param fragment 需要切换的fragment
+     */
+    fun replaceFragment(fm: FragmentManager, @IdRes id: Int, fragment: Fragment, type: Int) {
+        if (type == REPLACE_BACK_STACK) {
+            replaceBackStackFragment(fm, id, fragment)
+        } else if (type == REPLACE_NORMAL) {
+            replaceFragment(fm, id, fragment)
+        }
+    }
+
+
+    private fun replaceBackStackFragment(fm: FragmentManager, @IdRes id: Int, fragment: Fragment) {
+        fm.beginTransaction()
+                .setTransition(android.support.transition.R.id.transition_current_scene)
+                .setCustomAnimations(R.anim.fragment_slide_left_enter,
+                        R.anim.fragment_slide_left_exit,
+                        R.anim.fragment_slide_right_enter,
+                        R.anim.fragment_slide_right_exit)
+                .replace(id, fragment)
+                .addToBackStack(null)
+                .commit()
+    }
+
+    private fun replaceFragment(fm: FragmentManager, @IdRes id: Int, fragment: Fragment) {
+        fm.beginTransaction()
+                .setCustomAnimations(R.anim.fragment_slide_left_enter,
+                        R.anim.fragment_slide_left_exit,
+                        R.anim.fragment_slide_right_enter,
+                        R.anim.fragment_slide_right_exit)
+                .replace(id, fragment)
+                .commit()
+    }
+
 }

@@ -46,6 +46,7 @@ internal class MyColorPickerDialog(context: Context) : ColorChooserDialog(contex
     private var seventeen: ImageButton? = null
     private var eighteen: ImageButton? = null
     private var nineteen: ImageButton? = null
+    private var twenty: ImageButton? = null
     private var twentyOne: Button? = null
     private var colors: MutableList<Int>? = null
     private var buttons: MutableList<ImageButton>? = null
@@ -64,27 +65,27 @@ internal class MyColorPickerDialog(context: Context) : ColorChooserDialog(contex
         //        int padding = getContext().getResources().getDimensionPixelOffset(R.dimen.padding);
         //        view.setPadding(padding, padding, padding, 0);
 
-        one = findViewById(R.id.b1) as ImageButton
-        two = findViewById(R.id.b2) as ImageButton
-        three = findViewById(R.id.b3) as ImageButton
-        four = findViewById(R.id.b4) as ImageButton
-        five = findViewById(R.id.b5) as ImageButton
-        six = findViewById(R.id.b6) as ImageButton
-        seven = findViewById(R.id.b7) as ImageButton
-        eight = findViewById(R.id.b8) as ImageButton
-        nine = findViewById(R.id.b9) as ImageButton
-        ten = findViewById(R.id.b10) as ImageButton
-        eleven = findViewById(R.id.b11) as ImageButton
-        twelve = findViewById(R.id.b12) as ImageButton
-        thirteen = findViewById(R.id.b13) as ImageButton
-        fourteen = findViewById(R.id.b14) as ImageButton
-        fifteen = findViewById(R.id.b15) as ImageButton
-        sixteen = findViewById(R.id.b16) as ImageButton
-        seventeen = findViewById(R.id.b17) as ImageButton
-        eighteen = findViewById(R.id.b18) as ImageButton
-        nineteen = findViewById(R.id.b19) as ImageButton
-        val twenty = findViewById(R.id.b20) as ImageButton
-        twentyOne = findViewById(R.id.b21) as Button
+        one = findViewById(R.id.b1)
+        two = findViewById(R.id.b2)
+        three = findViewById(R.id.b3)
+        four = findViewById(R.id.b4)
+        five = findViewById(R.id.b5)
+        six = findViewById(R.id.b6)
+        seven = findViewById(R.id.b7)
+        eight = findViewById(R.id.b8)
+        nine = findViewById(R.id.b9)
+        ten = findViewById(R.id.b10)
+        eleven = findViewById(R.id.b11)
+        twelve = findViewById(R.id.b12)
+        thirteen = findViewById(R.id.b13)
+        fourteen = findViewById(R.id.b14)
+        fifteen = findViewById(R.id.b15)
+        sixteen = findViewById(R.id.b16)
+        seventeen = findViewById(R.id.b17)
+        eighteen = findViewById(R.id.b18)
+        nineteen = findViewById(R.id.b19)
+        twenty = findViewById(R.id.b20)
+        twentyOne = findViewById(R.id.b21)
 
 
         colors = ArrayList<Int>()
@@ -111,25 +112,25 @@ internal class MyColorPickerDialog(context: Context) : ColorChooserDialog(contex
         colors!!.add(White)
 
         buttons = ArrayList<ImageButton>()
-        buttons!!.add(one)
-        buttons!!.add(two)
-        buttons!!.add(three)
-        buttons!!.add(four)
-        buttons!!.add(five)
-        buttons!!.add(six)
-        buttons!!.add(seven)
-        buttons!!.add(eight)
-        buttons!!.add(nine)
-        buttons!!.add(ten)
-        buttons!!.add(eleven)
-        buttons!!.add(twelve)
-        buttons!!.add(thirteen)
-        buttons!!.add(fourteen)
-        buttons!!.add(fifteen)
-        buttons!!.add(sixteen)
-        buttons!!.add(seventeen)
-        buttons!!.add(eighteen)
-        buttons!!.add(nineteen)
+        buttons!!.add(one as ImageButton)
+        buttons!!.add(two as ImageButton)
+        buttons!!.add(three as ImageButton)
+        buttons!!.add(four as ImageButton)
+        buttons!!.add(five as ImageButton)
+        buttons!!.add(six as ImageButton)
+        buttons!!.add(seven as ImageButton)
+        buttons!!.add(eight as ImageButton)
+        buttons!!.add(nine as ImageButton)
+        buttons!!.add(ten as ImageButton)
+        buttons!!.add(eleven as ImageButton)
+        buttons!!.add(twelve as ImageButton)
+        buttons!!.add(thirteen as ImageButton)
+        buttons!!.add(fourteen as ImageButton)
+        buttons!!.add(fifteen as ImageButton)
+        buttons!!.add(sixteen as ImageButton)
+        buttons!!.add(seventeen as ImageButton)
+        buttons!!.add(eighteen as ImageButton)
+        buttons!!.add(nineteen as ImageButton)
         //        buttons.add(twenty);
 
 
@@ -139,7 +140,7 @@ internal class MyColorPickerDialog(context: Context) : ColorChooserDialog(contex
             ColorizeOld()
         }
 
-        twenty.visibility = View.GONE
+        twenty!!.visibility = View.GONE
         twentyOne!!.visibility = View.INVISIBLE
 
         setListeners()
@@ -189,43 +190,43 @@ internal class MyColorPickerDialog(context: Context) : ColorChooserDialog(contex
         Log.e("animate", "true")
         val r1 = Runnable {
             Log.e("animator 1", "r")
-            animator(one)
+            animator(one as ImageButton)
         }
 
         val r2 = Runnable {
-            animator(two)
-            animator(six)
+            animator(two as ImageButton)
+            animator(six as ImageButton)
         }
 
         val r3 = Runnable {
-            animator(three)
-            animator(seven)
-            animator(eleven)
+            animator(three as ImageButton)
+            animator(seven as ImageButton)
+            animator(eleven as ImageButton)
         }
 
         val r4 = Runnable {
-            animator(four)
-            animator(eight)
-            animator(twelve)
-            animator(sixteen)
+            animator(four as ImageButton)
+            animator(eight as ImageButton)
+            animator(twelve as ImageButton)
+            animator(sixteen as ImageButton)
         }
 
         val r5 = Runnable {
-            animator(five)
-            animator(nine)
-            animator(thirteen)
-            animator(seventeen)
+            animator(five as ImageButton)
+            animator(nine as ImageButton)
+            animator(thirteen as ImageButton)
+            animator(seventeen as ImageButton)
         }
 
         val r6 = Runnable {
-            animator(ten)
-            animator(fourteen)
-            animator(eighteen)
+            animator(ten as ImageButton)
+            animator(fourteen as ImageButton)
+            animator(eighteen as ImageButton)
         }
 
         val r7 = Runnable {
-            animator(fifteen)
-            animator(nineteen)
+            animator(fifteen as ImageButton)
+            animator(nineteen as ImageButton)
         }
 
         //        Runnable r8 = new Runnable() {

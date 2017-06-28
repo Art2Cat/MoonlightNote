@@ -19,17 +19,12 @@ import java.util.*
 
 /**
  * Created by Rorschach
- * on 20/05/2017 9:45 PM.
- */
-
-/**
- * Created by Rorschach
  * on 2017/1/8 14:32.
  */
 
 abstract class BaseFragment : Fragment() {
-    protected var mActivity: Activity = null!!
-    private var mCurrentIndex = 0
+    protected var mActivity: Activity? = null
+//    private var mCurrentIndex = 0
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -39,14 +34,13 @@ abstract class BaseFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-        mCurrentIndex = savedInstanceState?.getInt(KEY_INDEX, 0)!!
+//        mCurrentIndex = savedInstanceState!!.getInt(KEY_INDEX, 0)
 
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        outState!!.putInt(KEY_INDEX, mCurrentIndex)
+//        outState!!.putInt(KEY_INDEX, mCurrentIndex)
     }
 
     fun showShortSnackBar(view: View, content: String, type: Int) {

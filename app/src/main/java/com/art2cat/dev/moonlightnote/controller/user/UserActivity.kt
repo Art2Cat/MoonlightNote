@@ -8,8 +8,8 @@ import com.art2cat.dev.moonlightnote.R
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils
 
 class UserActivity : AppCompatActivity() {
-    var mToolbar: Toolbar = null!!
-    var mCommonFragmentContainer: ContentFrameLayout = null!!
+    var mToolbar: Toolbar? = null
+    var mCommonFragmentContainer: ContentFrameLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,10 +19,10 @@ class UserActivity : AppCompatActivity() {
         mCommonFragmentContainer = findViewById(R.id.common_fragment_container)
         setSupportActionBar(mToolbar)
 
-        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
-        mToolbar.setNavigationOnClickListener { onBackPressed() }
+        mToolbar!!.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
+        mToolbar!!.setNavigationOnClickListener { onBackPressed() }
 
-        FragmentUtils.addFragment(supportFragmentManager, R.id.common_fragment_container, UserFragment())
+        FragmentUtils.getInstance().addFragment(supportFragmentManager, R.id.common_fragment_container, UserFragment())
     }
 
     override fun onDestroy() {

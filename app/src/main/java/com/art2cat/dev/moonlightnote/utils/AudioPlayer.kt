@@ -24,10 +24,10 @@ class AudioPlayer {
     var mDuration: Int = 0
     var isPrepared = false
     var mPlayer: MediaPlayer? = null
-    var mProgressBar: ProgressBar = null!!
+    var mProgressBar: ProgressBar? = null
     private var mShowDuration: AppCompatTextView? = null
     private val handler = Handler()
-    private val context: Context = MoonlightApplication.context!!
+    private val context: Context = MoonlightApplication.context as Context
 
     /**
      * 准备音频播放数据源
@@ -35,8 +35,8 @@ class AudioPlayer {
      * @param filename 数据源文件名
      */
     @SuppressLint("LogConditional")
-    fun prepare(filename: String) {
-        var filename = filename
+    fun prepare(fileName: String) {
+        var filename = fileName
         try {
             //获取数据源文件目录地址
             val dirPath = context
@@ -64,7 +64,7 @@ class AudioPlayer {
             //获取音频时长，并设置进度条最大值
             mDuration = mPlayer!!.duration
             Log.d(TAG, "prepare: " + mDuration)
-            mProgressBar.max = mDuration
+            mProgressBar!!.max = mDuration
             mShowDuration!!.text = Utils.convert(mDuration.toLong())
             isPrepared = true
         } catch (e: IOException) {
@@ -82,7 +82,7 @@ class AudioPlayer {
             // 获得歌曲现在播放位置并设置成播放进度条的值
             if (mPlayer != null) {
                 if (mPlayer!!.isPlaying) {
-                    mProgressBar.progress = mPlayer!!.currentPosition
+                    mProgressBar!!.progress = mPlayer!!.currentPosition
                     // 每次延迟100毫秒再启动线程
                     handler.postDelayed({ }, 100)
 
@@ -98,7 +98,7 @@ class AudioPlayer {
     fun stopPlaying() {
         //释放播放器
         mPlayer!!.reset()
-        mProgressBar.progress = 0
+        mProgressBar!!.progress = 0
     }
 
     /**

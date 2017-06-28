@@ -20,7 +20,7 @@
             android:layout_height="60dp"
             android:gravity="center"
             android:theme="@style/FlatButtonStyleX"
-            android:src="@mipmap/ic_launcher" />
+             />
     </LinearLayout>
 
     <LinearLayout

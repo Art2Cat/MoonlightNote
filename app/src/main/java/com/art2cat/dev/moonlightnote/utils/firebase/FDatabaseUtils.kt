@@ -25,10 +25,10 @@ import java.util.HashMap
  */
 
 
-class FDatabaseUtils private constructor(private val mContext: Context, private val mUserId: String) {
+open class FDatabaseUtils (open val mContext: Context, private val mUserId: String) {
     private val mHandler = MyHandler()
-    var user: User?
-    var moonlight: Moonlight?
+    var user: User? = null
+    var moonlight: Moonlight? = null
     private var mJson: String? = null
     private var isComplete: Boolean = false
     private var mDatabaseReference: DatabaseReference? = null
@@ -94,10 +94,10 @@ class FDatabaseUtils private constructor(private val mContext: Context, private 
                         noteLab.setMoonlight(MoonlightEncryptUtils.newInstance().decryptMoonlight(moonlight))
                     }
 
-                    if (count == noteLab.moonlights.size()) {
+                    if (count == noteLab.moonlights.size) {
                         if (type == 0) {
                             Utils.saveNoteToLocal(noteLab)
-                            ToastUtils.with(MoonlightApplication.getContext())
+                            ToastUtils.with(MoonlightApplication.context as Context)
                                     .setMessage("Back up succeed! save in internal storage root name Note.json")
                                     .showShortToast()
                             BusEventUtils.post(Constants.BUS_FLAG_EXPORT_DATA_DONE, null)
@@ -120,7 +120,7 @@ class FDatabaseUtils private constructor(private val mContext: Context, private 
     }
 
     fun restoreAll() {
-        val noteLab = Utils.getNoteFromLocal()
+        val noteLab = Utils.noteFromLocal
         if (noteLab != null) {
             for (moonlight in noteLab.moonlights) {
                 updateMoonlight(mUserId, null, moonlight, Constants.EXTRA_TYPE_MOONLIGHT)
@@ -131,7 +131,7 @@ class FDatabaseUtils private constructor(private val mContext: Context, private 
 
     fun restoreAll(noteLab: NoteLab?) {
         if (noteLab != null) {
-            for (moonlight in noteLab!!.getMoonlights()) {
+            for (moonlight in noteLab.MoonlightNote) {
                 updateMoonlight(mUserId, null, moonlight, Constants.EXTRA_TYPE_MOONLIGHT)
             }
             mHandler.sendEmptyMessage(0)
@@ -147,19 +147,19 @@ class FDatabaseUtils private constructor(private val mContext: Context, private 
         }
     }
 
-    fun getUser(): User? {
-        if (isComplete) {
-            return user
-        }
-        return null
-    }
+//    fun getUser(): User? {
+//        if (isComplete) {
+//            return user
+//        }
+//        return null
+//    }
 
-    fun getMoonlight(): Moonlight? {
-        if (isComplete) {
-            return moonlight
-        }
-        return null
-    }
+//    fun getMoonlight(): Moonlight? {
+//        if (isComplete) {
+//            return moonlight
+//        }
+//        return null
+//    }
 
     val json: String?
         get() {
@@ -172,7 +172,7 @@ class FDatabaseUtils private constructor(private val mContext: Context, private 
     private class MyHandler : Handler() {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
-            Toast.makeText(MoonlightApplication.getContext(), "Restore succeed!", Toast.LENGTH_LONG).show()
+            Toast.makeText(MoonlightApplication.context, "Restore succeed!", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -182,7 +182,7 @@ class FDatabaseUtils private constructor(private val mContext: Context, private 
 
         fun newInstance(context: Context, userId: String): FDatabaseUtils {
             if (mHashMap[userId] != null) {
-                return mHashMap[userId]
+                return mHashMap[userId]!!
             }
             return FDatabaseUtils(context, userId)
         }
@@ -233,11 +233,11 @@ class FDatabaseUtils private constructor(private val mContext: Context, private 
             var moonlightE: Moonlight
             val mKey: String
             val oldKey: String?
-            oldKey = moonlight.getId()
+            oldKey = moonlight.id
             //当KeyId为null时，向实时数据库推送获取ID
             if (keyId == null) {
                 mKey = databaseReference.child("moonlight").push().key
-                moonlight.setId(mKey)
+                moonlight.id = mKey
                 if (BuildConfig.DEBUG) Log.d(TAG, "keyId: " + mKey)
             } else {
                 mKey = keyId
@@ -309,12 +309,12 @@ class FDatabaseUtils private constructor(private val mContext: Context, private 
         }
 
         fun moveToTrash(userId: String, moonlight: Moonlight) {
-            moonlight.setTrash(true)
+            moonlight.isTrash = true
             addMoonlight(userId, moonlight, Constants.EXTRA_TYPE_TRASH)
         }
 
         fun restoreToNote(userId: String, moonlight: Moonlight) {
-            moonlight.setTrash(false)
+            moonlight.isTrash = false
             addMoonlight(userId, moonlight, Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT)
         }
     }

@@ -244,7 +244,7 @@ class LoginFragment : BaseFragment(), View.OnClickListener, GoogleApiClient.OnCo
                 isNewUser = true
             } else {
                 showProgress(false)
-                showShortSnackBar((mView as ContentFrameLayout?)!!, "Google Sign In failed", SnackBarUtils.TYPE_INFO)
+                showShortSnackBar((mView!!), "Google Sign In failed", SnackBarUtils.TYPE_INFO)
                 Log.d(TAG, "Google Sign In failed")
             }
         }
@@ -258,7 +258,7 @@ class LoginFragment : BaseFragment(), View.OnClickListener, GoogleApiClient.OnCo
                 if (TextUtils.isEmpty(email)) {
                     val inputDialogFragment = InputDialogFragment
                             .newInstance(getString(R.string.dialog_reset_password), 0)
-                    inputDialogFragment.show(mActivity.fragmentManager, "resetPassword")
+                    inputDialogFragment.show(mActivity!!.fragmentManager, "resetPassword")
                 } else {
                     AuthUtils.sendRPEmail(MoonlightApplication.context!!, mView!!, email)
                 }

@@ -109,8 +109,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="16dp"
-                        android:src="@mipmap/ic_launcher" />
+                        android:layout_marginEnd="16dp"/>
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
@@ -240,8 +239,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="16dp"
-                        android:src="@mipmap/ic_launcher" />
+                        android:layout_marginEnd="16dp" />
 
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"

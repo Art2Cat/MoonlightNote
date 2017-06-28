@@ -192,7 +192,7 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
             R.id.nav_notes -> if (mUserId.isNotEmpty()) {
                 Log.d(TAG, "nav_notes: " + isHome)
                 if (!isHome) {
-                    FragmentUtils.replaceFragment(supportFragmentManager,
+                    FragmentUtils.getInstance().replaceFragment(supportFragmentManager,
                             container,
                             MoonlightFragment(),
                             FragmentUtils.REPLACE_NORMAL)
@@ -203,7 +203,7 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
             R.id.nav_trash -> if (mUserId != null) {
                 Log.d(TAG, "nav_trash: " + isHome)
                 if (isHome) {
-                    FragmentUtils.replaceFragment(supportFragmentManager,
+                    FragmentUtils.getInstance().replaceFragment(supportFragmentManager,
                             container,
                             TrashFragment(),
                             FragmentUtils.REPLACE_NORMAL)
@@ -337,7 +337,7 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
         //设置FloatingActionButton点击事件
         mFAB!!.setOnClickListener {
             if (isLogin) {
-                FragmentUtils.replaceFragment(supportFragmentManager,
+                FragmentUtils.getInstance().replaceFragment(supportFragmentManager,
                         R.id.main_fragment_container,
                         CreateMoonlightFragment(),
                         FragmentUtils.REPLACE_BACK_STACK)
@@ -402,11 +402,11 @@ class MoonlightActivity : BaseFragmentActivity(), NavigationView.OnNavigationIte
         mNicknameTextView = headerView.findViewById(R.id.nav_header_nickname)
         val type = intent.getIntExtra("type", 0)
         if (mUserId.isNotEmpty()) {
-            FragmentUtils.addFragment(supportFragmentManager,
+            FragmentUtils.getInstance().addFragment(supportFragmentManager,
                     R.id.main_fragment_container,
                     MoonlightFragment())
             if (type == 101) {
-                FragmentUtils.replaceFragment(supportFragmentManager,
+                FragmentUtils.getInstance().replaceFragment(supportFragmentManager,
                         R.id.main_fragment_container,
                         CreateMoonlightFragment(),
                         FragmentUtils.REPLACE_BACK_STACK)

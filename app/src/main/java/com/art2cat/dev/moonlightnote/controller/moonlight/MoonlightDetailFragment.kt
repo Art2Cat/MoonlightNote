@@ -133,7 +133,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
         val firebaseStorage = FirebaseStorage.getInstance()
         mStorageReference = firebaseStorage.getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE)
 
-        mInputMethodManager = mActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        mInputMethodManager = mActivity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         mPaddingBottom = getResources().getDimensionPixelOffset(R.dimen.padding_bottom)
 
@@ -206,7 +206,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
         (mActivity as MoonlightActivity).setSupportActionBar(mToolbar)
         (mActivity as MoonlightActivity).mToolbar!!.visibility = View.GONE
         mToolbar!!.setNavigationIcon(R.drawable.ic_arrow_back_grey_700_24dp)
-        mToolbar!!.setNavigationOnClickListener { mActivity.onBackPressed() }
+        mToolbar!!.setNavigationOnClickListener { mActivity!!.onBackPressed() }
 
         mViewParent = mView!!.findViewById(R.id.view_parent)
         mTitle = mView!!.findViewById(R.id.title_TIET)
@@ -235,7 +235,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
             //获取系统当前时间
             val date = System.currentTimeMillis()
             moonlight!!.date = date
-            val time = Utils.timeFormat(mActivity.getApplicationContext(), Date(date))
+            val time = Utils.timeFormat(mActivity!!.getApplicationContext(), Date(date))
             if (time != null) {
                 val timeFormat = "Edited: " + time
                 displayTime!!.text = timeFormat
@@ -289,17 +289,17 @@ abstract class MoonlightDetailFragment : BaseFragment(),
             mTitle!!.setText(moonlight!!.title)
         } else {
             mTitle!!.isEnabled = false
-            if (moonlight!!.title != null) {
+            if (moonlight!!.title.isNotEmpty()) {
                 mTitle!!.setText(moonlight!!.title)
             }
         }
-        if (moonlight!!.content != null) {
+        if (moonlight!!.content.isNotEmpty()) {
             mContent!!.setText(moonlight!!.content)
             if (!editable) {
                 mContent!!.isEnabled = false
             }
         }
-        if (moonlight!!.imageUrl != null) {
+        if (moonlight!!.imageUrl.isNotEmpty()) {
             val url = moonlight!!.imageUrl
             Picasso.with(mActivity)
                     .load(Uri.parse(url))
@@ -310,15 +310,17 @@ abstract class MoonlightDetailFragment : BaseFragment(),
 
             mContentTextInputLayout!!.setPadding(0, 0, 0, mPaddingBottom)
         }
-        showAudio(moonlight!!.audioName)
-        mAudioCardView!!.visibility = View.VISIBLE
-        mContentTextInputLayout!!.setPadding(0, 0, 0, 0)
-        if (!editable) {
-            mDeleteAudio!!.isClickable = false
-            mBottomBarLeft!!.isClickable = false
-            mBottomBarRight!!.isClickable = false
+        if (moonlight!!.audioUrl.isNotEmpty()) {
+            showAudio(moonlight!!.audioName)
+            mAudioCardView!!.visibility = View.VISIBLE
+            mContentTextInputLayout!!.setPadding(0, 0, 0, 0)
+            if (!editable) {
+                mDeleteAudio!!.isClickable = false
+                mBottomBarLeft!!.isClickable = false
+                mBottomBarRight!!.isClickable = false
+            }
         }
-        if (moonlight!!.color !== 0) {
+        if (moonlight!!.color != 0) {
             changeUIColor(moonlight!!.color)
         }
     }
@@ -343,8 +345,8 @@ abstract class MoonlightDetailFragment : BaseFragment(),
 
     private fun changeStatusBarColor(color: Int) {
         for (integer in mColorMaps!!.keys) {
-            if (integer === color) {
-                mActivity.getWindow().setStatusBarColor(mColorMaps!![color] as Int)
+            if (integer == color) {
+                mActivity!!.getWindow().setStatusBarColor(mColorMaps!![color] as Int)
                 break
             }
         }
@@ -357,12 +359,12 @@ abstract class MoonlightDetailFragment : BaseFragment(),
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        changeUIColor(R.color.white, mActivity.getTheme())
+        changeUIColor(R.color.white, mActivity!!.getTheme())
         mToolbar!!.title = null
         (mActivity as MoonlightActivity).mToolbar!!.title = null
         (mActivity as MoonlightActivity).hideFAB()
         initView(mEditable)
-        setOverflowButtonColor(mActivity, Constants.GREY_DARK)
+        setOverflowButtonColor(mActivity!!, Constants.GREY_DARK)
 
         //        if (Utils.isXLargeTablet(mActivity)) {
         //            LinearLayout.LayoutParams lp =
@@ -373,7 +375,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
 
         if (!mEditable) {
             //禁用软键盘
-            mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+            mActivity!!.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
             val snackbar = SnackBarUtils.longSnackBar(mView as View, getString(R.string.trash_restore),
                     SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_restore_action
             ) {
@@ -403,8 +405,8 @@ abstract class MoonlightDetailFragment : BaseFragment(),
 
     override fun onResume() {
         super.onResume()
-        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-        mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        mActivity!!.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+        mActivity!!.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         Log.d(TAG, "onResume: ")
     }
@@ -422,7 +424,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
     override fun onDestroy() {
         if (mInputMethodManager != null) {
             mInputMethodManager!!.hideSoftInputFromWindow(
-                    mActivity.getWindow().getDecorView().getWindowToken(), 0)
+                    mActivity!!.getWindow().getDecorView().getWindowToken(), 0)
 
         }
 
@@ -434,7 +436,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
             (mActivity as MoonlightActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener as FragmentOnTouchListener)
         }
 
-        val refWatcher = MoonlightApplication.getRefWatcher(mActivity)
+        val refWatcher = MoonlightApplication.getRefWatcher(mActivity!!)
         refWatcher.watch(this)
         release()
         super.onDestroy()
@@ -462,7 +464,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
 
     override fun onBackPressed(): Boolean {
         commitMoonlight()
-        val fragmentManager = mActivity.getFragmentManager()
+        val fragmentManager = mActivity!!.getFragmentManager()
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack()
         }
@@ -503,8 +505,8 @@ abstract class MoonlightDetailFragment : BaseFragment(),
         (mActivity as DrawerLocker).setDrawerEnabled(true)
 
         if (mEditable) {
-            mActivity.getWindow().setStatusBarColor(Constants.CYAN_DARK)
-            mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT)
+            mActivity!!.getWindow().setStatusBarColor(Constants.CYAN_DARK)
+            mActivity!!.getWindow().setStatusBarColor(Color.TRANSPARENT)
 
             if ((mActivity as MoonlightActivity).mFAB != null) {
                 (mActivity as MoonlightActivity).mFAB!!.show()
@@ -534,7 +536,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_color_picker -> if (mEditable) {
-                val dialog = MyColorPickerDialog(mActivity)
+                val dialog = MyColorPickerDialog(mActivity!!)
                 dialog.setTitle("Color Picker")
                 dialog.setColorListener { v, color ->
                     moonlight!!.color = color
@@ -557,8 +559,8 @@ abstract class MoonlightDetailFragment : BaseFragment(),
     }
 
     private fun isEmpty(moonlight: Moonlight): Boolean {
-        return !(moonlight.imageUrl != null || moonlight.audioUrl != null || moonlight.content != null
-                || moonlight.title != null)
+        return !(moonlight.imageUrl.isNotEmpty() || moonlight.audioUrl.isNotEmpty()
+                || moonlight.content.isNotEmpty() || moonlight.title.isNotEmpty())
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -603,7 +605,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                         .addToBackStack("scale")
                         .commit()
             }
-            R.id.playing_audio_button -> if (moonlight!!.audioName != null && mStartPlaying) {
+            R.id.playing_audio_button -> if (moonlight!!.audioName.isNotEmpty() && mStartPlaying) {
                 mStartPlaying = false
                 if (!mAudioPlayer!!.isPrepared) {
                     mAudioPlayer!!.prepare(moonlight!!.audioName)
@@ -612,7 +614,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                 mPlayingAudio!!.setBackgroundResource(R.drawable.ic_pause_circle_outline_lime_a700_24dp)
                 mAudioPlayer!!.mPlayer!!.setOnCompletionListener { mediaPlayer ->
                     mediaPlayer.reset()
-                    mAudioPlayer!!.mProgressBar.progress = 0
+                    mAudioPlayer!!.mProgressBar!!.progress = 0
                     mPlayingAudio!!.setBackgroundResource(R.drawable.ic_play_circle_outline_cyan_400_48dp)
                     mAudioPlayer!!.isPrepared = false
                     mStartPlaying = true
@@ -641,7 +643,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                 } else {
                     BusEventUtils.post(Constants.BUS_FLAG_NULL, null)
                 }
-                mActivity.onBackPressed()
+                mActivity!!.onBackPressed()
                 mEditable = false
             }
             R.id.bottom_sheet_item_permanent_delete -> {
@@ -656,7 +658,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                 } else {
                     BusEventUtils.post(Constants.BUS_FLAG_NULL, null)
                 }
-                mActivity.onBackPressed()
+                mActivity!!.onBackPressed()
             }
             R.id.bottom_sheet_item_make_a_copy -> if (!isEmpty(moonlight!!)) {
                 FDatabaseUtils.addMoonlight(mUserId as String, moonlight as Moonlight, Constants.EXTRA_TYPE_MOONLIGHT)
@@ -673,15 +675,15 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                 //启动Intent分享
                 var `in` = Intent(Intent.ACTION_SEND)
                 `in`.type = "text/plain"
-                if (moonlight!!.title != null) {
+                if (moonlight!!.title.isNotEmpty()) {
                     `in`.putExtra(Intent.EXTRA_TITLE, moonlight!!.title)
                 }
 
-                if (moonlight!!.content != null) {
+                if (moonlight!!.content.isNotEmpty()) {
                     `in`.putExtra(Intent.EXTRA_TEXT, moonlight!!.content)
                 }
 
-                if (moonlight!!.imageUrl != null) {
+                if (moonlight!!.imageUrl.isNotEmpty()) {
                     `in`.putExtra(Intent.EXTRA_TEXT, moonlight!!.imageUrl)
                 }
                 //设置分享选择器
@@ -709,7 +711,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                 }
                 mEditable = true
             }
-            RECORD_AUDIO -> if (resultCode == RESULT_OK) {
+            Constants.RECORD_AUDIO -> if (resultCode == RESULT_OK) {
                 val results = data.getStringArrayListExtra(
                         RecognizerIntent.EXTRA_RESULTS)
                 val spokenText = results[0]
@@ -734,43 +736,18 @@ abstract class MoonlightDetailFragment : BaseFragment(),
     }
 
     private fun copyAudioFile(uri: Uri): Uri? {
-        val contentResolver = mActivity.getContentResolver()
-        val pwd = mActivity.getCacheDir().getAbsolutePath()
+        //val contentResolver = mActivity.getContentResolver()
+        val pwd = mActivity!!.getCacheDir().getAbsolutePath()
         val dir = File(pwd + "/audio")
         if (!dir.exists()) {
             val isDirCreate = dir.mkdirs()
             Log.d(TAG, "dir.mkdirs():" + isDirCreate)
         }
+
+        val originFile: File = File(uri.toString())
         val file = File(dir, UUID.randomUUID().toString() + ".amr")
-        file.copyTo()
-        val fos: FileOutputStream
-        val inputStream: InputStream?
-        try {
-            inputStream = contentResolver.openInputStream(uri)
-            fos = FileOutputStream(file)
-            try {
-
-                val buffer = ByteArray(4 * 1024)
-                var length: Int
-                while ((length = if (inputStream != null) inputStream!!.read(buffer) else 0) != -1) {
-                    fos.write(buffer, 0, length)
-                }
-                fos.flush()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            } finally {
-
-                fos.close()
-                assert(inputStream != null)
-
-                inputStream!!.close()
-            }
-            return Uri.fromFile(file)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
-        return null
+        originFile.copyTo(file)
+        return Uri.fromFile(file)
     }
 
     @SuppressLint("LogConditional")
@@ -779,17 +756,17 @@ abstract class MoonlightDetailFragment : BaseFragment(),
         // Check that we have permission to read images from external storage.
         val perm = Manifest.permission.WRITE_EXTERNAL_STORAGE
         val perm1 = Manifest.permission.CAMERA
-        if (!EasyPermissions.hasPermissions(mActivity, perm) && !EasyPermissions.hasPermissions(mActivity, perm1)) {
-            PermissionUtils.requestStorage(mActivity, perm)
-            PermissionUtils.requestCamera(mActivity, perm1)
+        if (!EasyPermissions.hasPermissions(mActivity!!, perm) && !EasyPermissions.hasPermissions(mActivity!!, perm1)) {
+            PermissionUtils.requestStorage(mActivity!!, perm)
+            PermissionUtils.requestCamera(mActivity!!, perm1)
             return
         }
-        if (!EasyPermissions.hasPermissions(mActivity, perm)) {
-            PermissionUtils.requestStorage(mActivity, perm)
+        if (!EasyPermissions.hasPermissions(mActivity!!, perm)) {
+            PermissionUtils.requestStorage(mActivity!!, perm)
             return
         }
-        if (!EasyPermissions.hasPermissions(mActivity, perm1)) {
-            PermissionUtils.requestCamera(mActivity, perm1)
+        if (!EasyPermissions.hasPermissions(mActivity!!, perm1)) {
+            PermissionUtils.requestCamera(mActivity!!, perm1)
             return
         }
         // Choose file storage location, must be listed in res/xml/file_paths.xml
@@ -815,7 +792,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
         val takePicIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         takePicIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri)
 
-        if (takePicIntent.resolveActivity(mActivity.getPackageManager()) != null) {
+        if (takePicIntent.resolveActivity(mActivity!!.getPackageManager()) != null) {
             startActivityForResult(takePicIntent, TAKE_PICTURE)
             mEditable = false
             Log.d(TAG, "onCameraClick: ")
@@ -829,8 +806,8 @@ abstract class MoonlightDetailFragment : BaseFragment(),
     private fun onAlbumClick() {
         // Check that we have permission to read images from external storage.
         val perm = Manifest.permission.WRITE_EXTERNAL_STORAGE
-        if (!EasyPermissions.hasPermissions(mActivity, perm)) {
-            PermissionUtils.requestStorage(mActivity, perm)
+        if (!EasyPermissions.hasPermissions(mActivity!!, perm)) {
+            PermissionUtils.requestStorage(mActivity!!, perm)
             return
         }
 
@@ -853,7 +830,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
         albumIntent.type = "image/*"
         albumIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)
 
-        if (albumIntent.resolveActivity(mActivity.getPackageManager()) != null) {
+        if (albumIntent.resolveActivity(mActivity!!.getPackageManager()) != null) {
             startActivityForResult(albumIntent, ALBUM_CHOOSE)
             mEditable = false
         } else {
@@ -866,18 +843,18 @@ abstract class MoonlightDetailFragment : BaseFragment(),
         // Check that we have permission to read images from external storage.
         val perm = Manifest.permission.RECORD_AUDIO
         val perm1 = Manifest.permission.WRITE_EXTERNAL_STORAGE
-        if (!EasyPermissions.hasPermissions(mActivity, perm) && !EasyPermissions.hasPermissions(mActivity, perm1)) {
-            PermissionUtils.requestStorage(mActivity, perm1)
-            PermissionUtils.requestRecAudio(mActivity, perm)
+        if (!EasyPermissions.hasPermissions(mActivity!!, perm) && !EasyPermissions.hasPermissions(mActivity!!, perm1)) {
+            PermissionUtils.requestStorage(mActivity!!, perm1)
+            PermissionUtils.requestRecAudio(mActivity!!, perm)
             return
         }
-        if (!EasyPermissions.hasPermissions(mActivity, perm1)) {
-            PermissionUtils.requestStorage(mActivity, perm1)
+        if (!EasyPermissions.hasPermissions(mActivity!!, perm1)) {
+            PermissionUtils.requestStorage(mActivity!!, perm1)
             return
         }
 
-        if (!EasyPermissions.hasPermissions(mActivity, perm)) {
-            PermissionUtils.requestRecAudio(mActivity, perm)
+        if (!EasyPermissions.hasPermissions(mActivity!!, perm)) {
+            PermissionUtils.requestRecAudio(mActivity!!, perm)
             return
         }
         // Choose file storage location, must be listed in res/xml/file_paths.xml
@@ -892,10 +869,10 @@ abstract class MoonlightDetailFragment : BaseFragment(),
 
     fun uploadFromUri(fileUri: Uri, userId: String, type: Int) {
         if (mCircleProgressDialogFragment != null) {
-            mCircleProgressDialogFragment!!.show(mActivity.getFragmentManager(), "progress")
+            mCircleProgressDialogFragment!!.show(mActivity!!.getFragmentManager(), "progress")
         } else {
             mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance()
-            mCircleProgressDialogFragment!!.show(mActivity.getFragmentManager(), "progress")
+            mCircleProgressDialogFragment!!.show(mActivity!!.getFragmentManager(), "progress")
         }
 
         val uploadTask: StorageTask<UploadTask.TaskSnapshot>
@@ -965,7 +942,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
         intent.putExtra(Constants.GET_AUDIO_FORMAT, "audio/AMR")
         intent.putExtra(Constants.GET_AUDIO, true)
         // Start the activity, the intent will be populated with the speech text
-        startActivityForResult(intent, RECORD_AUDIO)
+        startActivityForResult(intent, Constants.RECORD_AUDIO)
         mEditable = false
     }
 
@@ -1032,7 +1009,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
     private fun hideSoftKeyboard() {
         if (mInputMethodManager != null) {
             if (mEditable) {
-                mInputMethodManager!!.hideSoftInputFromWindow(mActivity.getWindow().getDecorView().getWindowToken(), 0)
+                mInputMethodManager!!.hideSoftInputFromWindow(mActivity!!.getWindow().getDecorView().getWindowToken(), 0)
                 mHandler.postDelayed(BottomSheet(), 100)
             }
         }
@@ -1040,7 +1017,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
 
     private fun showSoftKeyboard() {
         if (mInputMethodManager != null) {
-            mInputMethodManager!!.showSoftInput(mActivity.getWindow().getDecorView(), 0)
+            mInputMethodManager!!.showSoftInput(mActivity!!.getWindow().getDecorView(), 0)
         }
     }
 
@@ -1102,7 +1079,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
                     val heightDiff = mView!!.rootView.height - view.height
                     if (heightDiff > 100) {
                         //大小超过100时，一般为显示虚拟键盘事件
-                        if (mEditable && !Utils.isXLargeTablet(mActivity)) {
+                        if (mEditable && !Utils.isXLargeTablet(mActivity!!)) {
                             if (mLeftBottomSheetBehavior!!.state == BottomSheetBehavior.STATE_EXPANDED) {
                                 mLeftBottomSheetBehavior!!.state = BottomSheetBehavior.STATE_HIDDEN
                             }

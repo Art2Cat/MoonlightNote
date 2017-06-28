@@ -15,6 +15,7 @@ import com.art2cat.dev.moonlightnote.R
 import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity
 import com.art2cat.dev.moonlightnote.model.Constants
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils
+import com.art2cat.dev.moonlightnote.utils.FragmentUtils.Companion.REPLACE_NORMAL
 import com.art2cat.dev.moonlightnote.utils.SPUtils
 import com.art2cat.dev.moonlightnote.utils.ShortcutsUtils
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils
@@ -79,8 +80,7 @@ class LoginActivity : AppCompatActivity() {
             val user = firebaseAuth.currentUser
             if (user != null) {
                 Log.d(TAG, "onAuthStateChanged:signed_in:" + user.uid)
-                Log.d(TAG, "onAuthStateChanged: " + user.displayName!!)
-                mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.context!!, user.uid)
+                mFDatabaseUtils = FDatabaseUtils(MoonlightApplication.context!!, user.uid)
                 mFDatabaseUtils!!.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER)
 
                 initShortcuts()
@@ -114,10 +114,10 @@ class LoginActivity : AppCompatActivity() {
         val id = R.id.login_container
         val reLogin = intent.getBooleanExtra("reLogin", false)
         if (reLogin) {
-            FragmentUtils.addFragment(supportFragmentManager, id, LoginFragment())
+            FragmentUtils.getInstance().addFragment(supportFragmentManager, id, LoginFragment())
         } else {
             //在这里首先加载一个含有广告的fragment
-            FragmentUtils.addFragment(supportFragmentManager, id, SlashFragment())
+            FragmentUtils.getInstance().addFragment(supportFragmentManager, id, SlashFragment())
             startLoginFragment()
         }
 
@@ -143,7 +143,7 @@ class LoginActivity : AppCompatActivity() {
     private fun startLoginFragment() {
         //创建handler对象，调用postDelayed()方法，启动插播3秒广告
         val handler = Handler()
-        handler.postDelayed(UpdateUI(), 3000)
+        handler.postDelayed(UpdateUI(), 5000)
     }
 
     override fun onBackPressed() {
@@ -202,8 +202,8 @@ class LoginActivity : AppCompatActivity() {
                 finishAfterTransition()
             } else {
                 val fragment = LoginFragment()
-                FragmentUtils.replaceFragment(supportFragmentManager, R.id.login_container,
-                        fragment, FragmentUtils.REPLACE_NORMAL)
+                FragmentUtils.getInstance().replaceFragment(supportFragmentManager, R.id.login_container,
+                        fragment, REPLACE_NORMAL)
                 //                mFragmentManager.beginTransaction()
                 //                        .setCustomAnimations(R.anim.fragment_slide_left_enter,
                 //                                R.anim.fragment_slide_left_exit,

@@ -7,7 +7,7 @@ import com.art2cat.dev.moonlightnote.utils.ToastUtils
 import com.github.orangegangsters.lollipin.lib.managers.AppLock
 import com.github.orangegangsters.lollipin.lib.managers.AppLockActivity
 
-class MoonlightPinActivity : AppLockActivity() {
+open class MoonlightPinActivity : AppLockActivity() {
 
     //    @Override
     //    public void showForgotDialog() {

@@ -88,6 +88,7 @@ open class Constants {
         open val RECORD_AUDIO = 104
         open val CAMERA_PERMS = 105
 
+
         open val GET_AUDIO_FORMAT = "android.speech.extra.GET_AUDIO_FORMAT"
         open val GET_AUDIO = "android.speech.extra.GET_AUDIO"
         /**

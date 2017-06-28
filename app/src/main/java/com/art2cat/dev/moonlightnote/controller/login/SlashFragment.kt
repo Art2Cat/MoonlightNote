@@ -24,7 +24,7 @@ class SlashFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        val view = inflater!!.inflate(R.layout.fragment_slash, container, false)
+        val view: View = inflater!!.inflate(R.layout.fragment_slash, container, false)
         MobileAds.initialize(activity, APP_ID)
         val adView: NativeExpressAdView = view.findViewById(R.id.adView)
         val request = AdRequest.Builder()
