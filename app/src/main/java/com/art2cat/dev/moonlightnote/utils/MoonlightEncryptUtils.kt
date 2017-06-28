@@ -108,14 +108,12 @@ open class MoonlightEncryptUtils {
 
     @AnyThread
     fun encrypt(key: String?, moonlight: Moonlight): Moonlight? {
-        Log.d("MoonlightEncryptUtils", "key is " + key)
         val metadata = getMetadata(moonlight)
         if (key!!.isNotEmpty()) {
             try {
 
                 if (metadata[0].isNotEmpty()) {
                     moonlight.title = AESUtils.encrypt(key, metadata[0]) as String
-                    Log.d("MoonlightEncryptUtils", "key is " + moonlight.title)
                 }
 
                 if (metadata[1].isNotEmpty()) {
@@ -149,33 +147,31 @@ open class MoonlightEncryptUtils {
 
     @AnyThread
     fun decrypt(key: String?, moonlight: Moonlight): Moonlight? {
-        Log.d("MoonlightEncryptUtils", "key is " + key)
         if (key!!.isNotEmpty()) {
             val metadata = getMetadata(moonlight)
             try {
 
                 if (metadata[0].isNotEmpty()) {
                     moonlight.title = AESUtils.decrypt(key, metadata[0]) as String
-                    Log.d("MoonlightEncryptUtils", "key is " + moonlight.title)
                 }
                 if (metadata[1].isNotEmpty()) {
-                    moonlight.content = AESUtils.encrypt(key, metadata[1]) as String
+                    moonlight.content = AESUtils.decrypt(key, metadata[1]) as String
                 }
 
                 if (metadata[2].isNotEmpty()) {
-                    moonlight.imageUrl = AESUtils.encrypt(key, metadata[2]) as String
+                    moonlight.imageUrl = AESUtils.decrypt(key, metadata[2]) as String
                 }
 
                 if (metadata[3].isNotEmpty()) {
-                    moonlight.audioUrl = AESUtils.encrypt(key, metadata[3]) as String
+                    moonlight.audioUrl = AESUtils.decrypt(key, metadata[3]) as String
                 }
 
                 if (metadata[4].isNotEmpty()) {
-                    moonlight.imageName = AESUtils.encrypt(key, metadata[4]) as String
+                    moonlight.imageName = AESUtils.decrypt(key, metadata[4]) as String
                 }
 
                 if (metadata[5].isNotEmpty()) {
-                    moonlight.audioName = AESUtils.encrypt(key, metadata[5]) as String
+                    moonlight.audioName = AESUtils.decrypt(key, metadata[5]) as String
                 }
 
                 return moonlight

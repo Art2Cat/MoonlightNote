@@ -150,7 +150,6 @@
     <orderEntry type="library" exported="" name="firebase-common-10.2.6" level="project" />
     <orderEntry type="library" exported="" name="support-v4-26.0.0-beta2" level="project" />
     <orderEntry type="library" exported="" name="circleimageview-2.1.0" level="project" />
-    <orderEntry type="library" exported="" name="okio-1.12.0" level="project" />
     <orderEntry type="library" exported="" name="materialcolorpicker-1.0.7" level="project" />
     <orderEntry type="library" exported="" name="cardview-v7-26.0.0-beta2" level="project" />
     <orderEntry type="library" exported="" name="play-services-basement-10.2.6" level="project" />
@@ -158,7 +157,6 @@
     <orderEntry type="library" exported="" name="support-core-utils-26.0.0-beta2" level="project" />
     <orderEntry type="library" exported="" name="play-services-tasks-10.2.6" level="project" />
     <orderEntry type="library" exported="" name="leakcanary-android-1.5.1" level="project" />
-    <orderEntry type="library" exported="" name="okhttp-3.7.0" level="project" />
     <orderEntry type="library" exported="" name="firebase-database-10.2.6" level="project" />
     <orderEntry type="library" exported="" name="play-services-gcm-10.2.6" level="project" />
     <orderEntry type="library" exported="" name="typefaceview-1.5.0" level="project" />

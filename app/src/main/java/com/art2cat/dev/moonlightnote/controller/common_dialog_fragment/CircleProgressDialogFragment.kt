@@ -12,7 +12,7 @@ import android.os.Bundle
 
 class CircleProgressDialogFragment : DialogFragment() {
 
-    override fun onCreateDialog(savedInstanceState: Bundle): Dialog {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         val dialog = ProgressDialog(activity)
         if (arguments != null) {

@@ -10,8 +10,7 @@ import com.github.orangegangsters.lollipin.lib.managers.LockManager
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
 import com.squareup.picasso.Picasso
-import okhttp3.Cache
-import okhttp3.OkHttpClient
+
 import java.io.File
 
 /**

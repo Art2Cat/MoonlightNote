@@ -12,11 +12,8 @@ import com.art2cat.dev.moonlightnote.model.Moonlight
 import com.art2cat.dev.moonlightnote.model.NoteLab
 import com.art2cat.dev.moonlightnote.model.User
 import com.art2cat.dev.moonlightnote.utils.*
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.database.*
 import com.google.gson.Gson
-import okio.Utf8.size
 import java.util.HashMap
 
 /**
@@ -249,7 +246,7 @@ open class FDatabaseUtils (open val mContext: Context, private val mUserId: Stri
             val childUpdates = HashMap<String, Any>()
             //对上传后数据进行还原，
             moonlightE = MoonlightEncryptUtils.newInstance().decryptMoonlight(moonlightE)
-            if (BuildConfig.DEBUG) Log.d(TAG, "updateMoonlight: " + moonlightE.hashCode())
+            if (BuildConfig.DEBUG) Log.d(TAG, "updateMoonlight: " + moonlightE.content)
 
             //按照不同操作类型，更新数据到指定树状表中
             if (type == Constants.EXTRA_TYPE_MOONLIGHT || type == Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT) {

@@ -70,7 +70,6 @@ dependencies {
     implementation 'io.github.kobakei:ratethisapp:1.1.0'
     implementation 'jp.wasabeef:recyclerview-animators:2.2.6'
     implementation 'com.google.code.gson:gson:2.8.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.7.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation('com.github.orangegangsters:lollipin:2.0.0@aar') {
         transitive = true
