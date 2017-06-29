@@ -49,6 +49,8 @@ import com.art2cat.dev.moonlightnote.utils.firebase.StorageUtils
 import com.art2cat.dev.moonlightnote.utils.material_animation.CircularRevealUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.*
+import com.squareup.picasso.MemoryPolicy
+import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -303,8 +305,10 @@ abstract class MoonlightDetailFragment : BaseFragment(),
             val url = moonlight!!.imageUrl
             Picasso.with(mActivity)
                     .load(Uri.parse(url))
-//                    .memoryPolicy(NO_CACHE, NO_STORE)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+//                    .networkPolicy(NetworkPolicy.OFFLINE)
                     .placeholder(R.drawable.ic_cloud_download_black_24dp)
+                    .config(Bitmap.Config.RGB_565)
                     .into(mImage)
             mImage!!.post { CircularRevealUtils.get().show(mImage as AppCompatImageView) }
 
@@ -744,7 +748,7 @@ abstract class MoonlightDetailFragment : BaseFragment(),
             Log.d(TAG, "dir.mkdirs():" + isDirCreate)
         }
 
-        val originFile: File = File(uri.toString())
+        val originFile = File(uri.toString())
         val file = File(dir, UUID.randomUUID().toString() + ".amr")
         originFile.copyTo(file)
         return Uri.fromFile(file)
@@ -1105,7 +1109,8 @@ abstract class MoonlightDetailFragment : BaseFragment(),
         if (mFileUri != null) {
             Picasso.with(mActivity)
                     .load(mFileUri)
-//                    .memoryPolicy(NO_CACHE, NO_STORE)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                    .networkPolicy(NetworkPolicy.OFFLINE)
                     .placeholder(R.drawable.ic_cloud_download_black_24dp)
                     .config(Bitmap.Config.RGB_565)
                     .into(mImage)

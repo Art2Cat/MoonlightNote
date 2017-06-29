@@ -3,14 +3,18 @@ package com.art2cat.dev.moonlightnote.controller.moonlight
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import android.support.v4.app.Fragment
 import android.support.v4.view.ViewCompat
 import android.support.v4.view.ViewPropertyAnimatorListener
 import android.support.v7.widget.*
 import android.util.Log
 import android.view.View
 import com.art2cat.dev.moonlightnote.R
+import com.squareup.picasso.MemoryPolicy
+import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import jp.wasabeef.recyclerview.animators.holder.AnimateViewHolder
+import java.util.*
 
 /**
  * Created by Rorschach
@@ -46,14 +50,15 @@ class MoonlightViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), A
         mContent.visibility = View.VISIBLE
     }
 
-    fun displayImage(context: Context, url: String?) {
+    fun displayImage(context: Context, url: String?, tag: Object) {
         if (url != null) {
             Log.d(TAG, "displayImage: succeed")
             Picasso.with(context)
                     .load(Uri.parse(url))
-//                    .memoryPolicy(NO_CACHE)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+//                    .networkPolicy(NetworkPolicy.OFFLINE)
                     .placeholder(R.drawable.ic_cloud_download_black_24dp)
-//                    .tag(tag)
+                    .tag(tag)
                     .config(Bitmap.Config.RGB_565)
                     .into(mImage)
             mImage.visibility = View.VISIBLE

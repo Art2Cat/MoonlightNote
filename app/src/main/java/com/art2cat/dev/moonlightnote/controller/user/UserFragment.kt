@@ -46,6 +46,8 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.squareup.picasso.MemoryPolicy
+import com.squareup.picasso.NetworkPolicy
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import org.greenrobot.eventbus.EventBus
@@ -194,6 +196,8 @@ class UserFragment : BaseFragment(), View.OnClickListener {
 
             Picasso.with(activity)
                     .load(url)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+//                    .networkPolicy(NetworkPolicy.OFFLINE)
                     .into(mCircleImageView)
         }
     }
@@ -203,6 +207,9 @@ class UserFragment : BaseFragment(), View.OnClickListener {
 
             Picasso.with(activity)
                     .load(mDownloadUrl)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                    .placeholder(R.drawable.ic_account_circle_black_48dp)
+//                    .networkPolicy(NetworkPolicy.OFFLINE)
                     .into(mCircleImageView)
             mUser!!.photoUrl = mDownloadUrl.toString()
         } else {

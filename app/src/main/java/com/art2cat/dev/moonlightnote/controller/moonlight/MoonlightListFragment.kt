@@ -37,6 +37,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
+import java.io.ObjectInput
 
 /**
  * Created by Rorschach
@@ -57,6 +58,7 @@ abstract class MoonlightListFragment : BaseFragment() {
     private var mMenuInflater: MenuInflater? = null
     private var isLogin = true
     private var isInflate = false
+    private val tag = Object()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -212,7 +214,7 @@ abstract class MoonlightListFragment : BaseFragment() {
                             Log.i(TAG, "populateViewHolder: " + moonlightD.imageName)
                             viewHolder.mImage.setImageResource(R.drawable.ic_cloud_download_black_24dp)
                             //                        viewHolder.mImage.setTag(moonlightD.imageName);
-                            viewHolder.displayImage(mActivity!!, moonlightD.imageUrl)
+                            viewHolder.displayImage(mActivity!!, moonlightD.imageUrl, tag)
                         } else {
                             viewHolder.mImage.visibility = View.GONE
                         }
