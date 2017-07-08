@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -42,11 +41,9 @@ public class ChangePasswordFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_change_password, container, false);
-        final TextInputEditText oldET = (TextInputEditText)
-                view.findViewById(R.id.old_password_editText);
-        final TextInputEditText newET = (TextInputEditText)
-                view.findViewById(R.id.new_password_editText);
-        AppCompatButton button = (AppCompatButton) view.findViewById(R.id.change_password);
+        final TextInputEditText oldET = view.findViewById(R.id.old_password_editText);
+        final TextInputEditText newET = view.findViewById(R.id.new_password_editText);
+        AppCompatButton button = view.findViewById(R.id.change_password);
 
 
         setHasOptionsMenu(true);
@@ -85,22 +82,12 @@ public class ChangePasswordFragment extends Fragment {
                                                     });
                                                 }
                                             }
-                                        }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        SnackBarUtils.longSnackBar(v, e.toString(),
-                                                SnackBarUtils.TYPE_INFO).show();
-                                    }
-                                });
+                                        }).addOnFailureListener(e -> SnackBarUtils.longSnackBar(v, e.toString(),
+                                        SnackBarUtils.TYPE_INFO).show());
                             }
                         }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            SnackBarUtils.longSnackBar(v, e.toString(),
-                                    SnackBarUtils.TYPE_INFO).show();
-                        }
-                    });
+                    }).addOnFailureListener(e -> SnackBarUtils.longSnackBar(v, e.toString(),
+                            SnackBarUtils.TYPE_INFO).show());
                 }
             }
         });

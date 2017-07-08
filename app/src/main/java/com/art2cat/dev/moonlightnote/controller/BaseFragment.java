@@ -3,7 +3,6 @@ package com.art2cat.dev.moonlightnote.controller;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -64,11 +63,7 @@ public abstract class BaseFragment extends Fragment {
      * @param listener 监听器
      */
     public static void removeOnGlobalLayoutListener(View v, ViewTreeObserver.OnGlobalLayoutListener listener) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            v.getViewTreeObserver().removeGlobalOnLayoutListener(listener);
-        } else {
-            v.getViewTreeObserver().removeOnGlobalLayoutListener(listener);
-        }
+        v.getViewTreeObserver().removeOnGlobalLayoutListener(listener);
     }
 
     @Override

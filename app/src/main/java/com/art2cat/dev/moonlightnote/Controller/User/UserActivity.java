@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
@@ -23,12 +22,7 @@ public class UserActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
 
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onBackPressed();
-            }
-        });
+        mToolbar.setNavigationOnClickListener(view -> onBackPressed());
 
         FragmentUtils.addFragment(getSupportFragmentManager(), R.id.common_fragment_container, new UserFragment());
     }

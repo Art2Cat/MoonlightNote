@@ -1,13 +1,10 @@
 package com.art2cat.dev.moonlightnote.utils.firebase;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 /**
@@ -21,20 +18,17 @@ public class AuthUtils {
         FirebaseAuth auth = FirebaseAuth.getInstance();
 
         auth.sendPasswordResetEmail(emailAddress)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            SnackBarUtils.longSnackBar(mView, context.getString(R.string.login_send_email_succeed),
-                                    SnackBarUtils.TYPE_INFO)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        SnackBarUtils.longSnackBar(mView, context.getString(R.string.login_send_email_succeed),
+                                SnackBarUtils.TYPE_INFO)
 //                                    .setAction("Check your email", new View.OnClickListener() {
 //                                        @Override
 //                                        public void onClick(View v) {
 //                                            Utils.openMailClient(context);
 //                                        }
 //                                    })
-                                    .show();
-                        }
+                                .show();
                     }
                 });
     }
