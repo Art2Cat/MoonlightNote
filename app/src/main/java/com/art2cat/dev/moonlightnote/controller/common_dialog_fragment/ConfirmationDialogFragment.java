@@ -37,6 +37,7 @@ public class ConfirmationDialogFragment extends DialogFragment {
         confirmationDialogFragment.setArguments(args);
         return confirmationDialogFragment;
     }
+
     public static ConfirmationDialogFragment newInstance(String id, String title, String message, int type) {
         ConfirmationDialogFragment confirmationDialogFragment = new ConfirmationDialogFragment();
         Bundle args = new Bundle();

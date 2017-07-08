@@ -24,7 +24,7 @@ public abstract class CommonSettingsFragment extends Fragment {
     public static final int TYPE_LICENSE = 1;
     public static final int TYPE_RIVACY_POLICY = 2;
 
-    private int mType ;
+    private int mType;
 
     public CommonSettingsFragment() {
         // Required empty public constructor

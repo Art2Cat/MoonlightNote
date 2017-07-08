@@ -2,7 +2,6 @@ package com.art2cat.dev.moonlightnote.controller.user;
 
 
 import android.Manifest;
-import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +9,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
@@ -129,10 +129,10 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_user, container, false);
-        mCircleImageView = (CircleImageView) mView.findViewById(R.id.user_head_picture);
-        mNickname = (AppCompatTextView) mView.findViewById(R.id.user_nickname);
-        mEmail = (AppCompatTextView) mView.findViewById(R.id.user_email);
-        mAdView = (AdView) mView.findViewById(R.id.banner_adView);
+        mCircleImageView = mView.findViewById(R.id.user_head_picture);
+        mNickname = mView.findViewById(R.id.user_nickname);
+        mEmail = mView.findViewById(R.id.user_email);
+        mAdView = mView.findViewById(R.id.banner_adView);
 
         getActivity().setTitle(R.string.title_activity_user);
 
@@ -309,25 +309,14 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                         FDatabaseUtils.emptyNote(user.getUid());
                         FDatabaseUtils.emptyTrash(user.getUid());
 
-                        user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            LogUtils.getInstance(TAG).setMessage("User account deleted.").debug();
-                                            startActivity(new Intent(getActivity(), LoginActivity.class));
-                                        }
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        if (BuildConfig.DEBUG) Log.d(TAG, e.toString());
-                                    }
-                                });
+                        user.reauthenticate(credential).addOnCompleteListener(task -> user.delete().addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                LogUtils.getInstance(TAG).setMessage("User account deleted.").debug();
+                                startActivity(new Intent(getActivity(), LoginActivity.class));
                             }
-                        });
+                        }).addOnFailureListener(e -> {
+                            if (BuildConfig.DEBUG) Log.d(TAG, e.toString());
+                        }));
                     }
                     break;
             }
@@ -351,15 +340,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
         if (profileUpdates != null) {
             user.updateProfile(profileUpdates)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                LogUtils.getInstance(TAG).setMessage("User profile updated.").debug();
-                                if (mUser != null) {
-                                    BusEventUtils.post(Constants.BUS_FLAG_UPDATE_USER, null);
-                                    UserUtils.updateUser(user.getUid(), mUser);
-                                }
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            LogUtils.getInstance(TAG).setMessage("User profile updated.").debug();
+                            if (mUser != null) {
+                                BusEventUtils.post(Constants.BUS_FLAG_UPDATE_USER, null);
+                                UserUtils.updateUser(user.getUid(), mUser);
                             }
                         }
                     });
@@ -489,24 +475,18 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         // Upload file to Firebase Storage
         StorageTask<UploadTask.TaskSnapshot> uploadTask = photoRef.putFile(fileUri);
 
-        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                mUser.setPhotoUrl(taskSnapshot.getDownloadUrl().toString());
-                updateUI(taskSnapshot.getDownloadUrl());
-                UserUtils.saveUserToCache(getActivity().getApplicationContext(), mUser);
-                updateProfile(null, taskSnapshot.getDownloadUrl());
-                mCircleProgressDialogFragment.dismiss();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                mCircleProgressDialogFragment.dismiss();
-                LogUtils.getInstance(TAG).setMessage("onFailure: ").error(e);
-                mFileName = null;
-                if (user.getPhotoUrl() != null) {
-                    updateUI(user.getPhotoUrl());
-                }
+        uploadTask.addOnSuccessListener(taskSnapshot -> {
+            mUser.setPhotoUrl(taskSnapshot.getDownloadUrl().toString());
+            updateUI(taskSnapshot.getDownloadUrl());
+            UserUtils.saveUserToCache(getActivity().getApplicationContext(), mUser);
+            updateProfile(null, taskSnapshot.getDownloadUrl());
+            mCircleProgressDialogFragment.dismiss();
+        }).addOnFailureListener(e -> {
+            mCircleProgressDialogFragment.dismiss();
+            LogUtils.getInstance(TAG).setMessage("onFailure: ").error(e);
+            mFileName = null;
+            if (user.getPhotoUrl() != null) {
+                updateUI(user.getPhotoUrl());
             }
         });
     }

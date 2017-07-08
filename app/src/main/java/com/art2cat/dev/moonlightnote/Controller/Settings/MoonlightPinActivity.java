@@ -83,7 +83,7 @@ public class MoonlightPinActivity extends AppLockActivity {
     @Override
     protected void onPinCodeSuccess() {
         super.onPinCodeSuccess();
-        if (getIntent().getIntExtra(AppLock.EXTRA_TYPE, 78)== 0) {
+        if (getIntent().getIntExtra(AppLock.EXTRA_TYPE, 78) == 0) {
             ToastUtils.with(this)
                     .setMessage("App protection will enable next time.")
                     .showShortToast();

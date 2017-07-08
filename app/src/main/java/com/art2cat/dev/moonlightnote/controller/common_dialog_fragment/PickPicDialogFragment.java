@@ -39,8 +39,8 @@ public class PickPicDialogFragment extends DialogFragment {
         @SuppressLint("InflateParams")
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_pick_pic, null);
 
-        TextView camera = (TextView) view.findViewById(R.id.camera);
-        TextView album = (TextView) view.findViewById(R.id.album);
+        TextView camera = view.findViewById(R.id.camera);
+        TextView album = view.findViewById(R.id.album);
 
 
         camera.setOnClickListener(new View.OnClickListener() {

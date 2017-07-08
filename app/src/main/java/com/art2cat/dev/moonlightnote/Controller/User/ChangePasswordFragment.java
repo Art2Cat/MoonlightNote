@@ -40,55 +40,52 @@ public class ChangePasswordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View view = inflater.inflate(R.layout.fragment_change_password, container, false);
-        final TextInputEditText oldET = view.findViewById(R.id.old_password_editText);
-        final TextInputEditText newET = view.findViewById(R.id.new_password_editText);
+        View view = inflater.inflate(R.layout.fragment_change_password, container, false);
+        TextInputEditText oldET = view.findViewById(R.id.old_password_editText);
+        TextInputEditText newET = view.findViewById(R.id.new_password_editText);
         AppCompatButton button = view.findViewById(R.id.change_password);
 
 
         setHasOptionsMenu(true);
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                String oldPassword = oldET.getText().toString();
-                final String newPassword = newET.getText().toString();
+        button.setOnClickListener(v -> {
+            String oldPassword = oldET.getText().toString();
+            final String newPassword = newET.getText().toString();
 
-                if (!oldPassword.equals("") && !newPassword.equals("")) {
-                    AuthCredential credential = EmailAuthProvider
-                            .getCredential(user.getEmail(), oldPassword);
-                    user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                user.updatePassword(newPassword)
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    Log.d(TAG, "User password updated.");
-                                                    Snackbar snackbar = SnackBarUtils
-                                                            .shortSnackBar(v, "Password updated"
-                                                                    , SnackBarUtils.TYPE_INFO);
-                                                    snackbar.show();
-                                                    // 当snackbar显示消失是，启动回退栈
-                                                    snackbar.setCallback(new Snackbar.Callback() {
-                                                        @Override
-                                                        public void onDismissed(Snackbar snackbar, int event) {
-                                                            getActivity().onBackPressed();
-                                                            super.onDismissed(snackbar, event);
-                                                        }
-                                                    });
-                                                }
+            if (!oldPassword.equals("") && !newPassword.equals("")) {
+                AuthCredential credential = EmailAuthProvider
+                        .getCredential(user.getEmail(), oldPassword);
+                user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            user.updatePassword(newPassword)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "User password updated.");
+                                                Snackbar snackbar = SnackBarUtils
+                                                        .shortSnackBar(v, "Password updated"
+                                                                , SnackBarUtils.TYPE_INFO);
+                                                snackbar.show();
+                                                // 当snackbar显示消失是，启动回退栈
+                                                snackbar.setCallback(new Snackbar.Callback() {
+                                                    @Override
+                                                    public void onDismissed(Snackbar snackbar, int event) {
+                                                        getActivity().onBackPressed();
+                                                        super.onDismissed(snackbar, event);
+                                                    }
+                                                });
                                             }
-                                        }).addOnFailureListener(e -> SnackBarUtils.longSnackBar(v, e.toString(),
-                                        SnackBarUtils.TYPE_INFO).show());
-                            }
+                                        }
+                                    }).addOnFailureListener(e -> SnackBarUtils.longSnackBar(v, e.toString(),
+                                    SnackBarUtils.TYPE_INFO).show());
                         }
-                    }).addOnFailureListener(e -> SnackBarUtils.longSnackBar(v, e.toString(),
-                            SnackBarUtils.TYPE_INFO).show());
-                }
+                    }
+                }).addOnFailureListener(e -> SnackBarUtils.longSnackBar(v, e.toString(),
+                        SnackBarUtils.TYPE_INFO).show());
             }
         });
         return view;

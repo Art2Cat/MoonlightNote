@@ -9,6 +9,7 @@ import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
@@ -25,7 +26,7 @@ import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
  * on 2016/11/18 13:49.
  */
 
-public class MoonlightViewHolder extends AnimateViewHolder {
+public class MoonlightViewHolder extends RecyclerView.ViewHolder implements AnimateViewHolder {
     private static final String TAG = "MoonlightViewHolder";
     public CardView mCardView;
     public LinearLayoutCompat mTransitionItem;
@@ -36,40 +37,13 @@ public class MoonlightViewHolder extends AnimateViewHolder {
 
     public MoonlightViewHolder(View itemView) {
         super(itemView);
-        mCardView = (CardView) itemView.findViewById(R.id.item_main);
-        mTransitionItem = (LinearLayoutCompat) itemView.findViewById(R.id.transition_item);
-        mTitle = (AppCompatTextView) itemView.findViewById(R.id.moonlight_title);
-        mContent = (AppCompatTextView) itemView.findViewById(R.id.moonlight_content);
-        mImage = (AppCompatImageView) itemView.findViewById(R.id.moonlight_image);
-        mAudio = (LinearLayoutCompat) itemView.findViewById(R.id.moonlight_audio);
+        mCardView = itemView.findViewById(R.id.item_main);
+        mTransitionItem = itemView.findViewById(R.id.transition_item);
+        mTitle = itemView.findViewById(R.id.moonlight_title);
+        mContent = itemView.findViewById(R.id.moonlight_content);
+        mImage = itemView.findViewById(R.id.moonlight_image);
+        mAudio = itemView.findViewById(R.id.moonlight_audio);
     }
-
-    @Override
-    public void animateRemoveImpl(ViewPropertyAnimatorListener listener) {
-        ViewCompat.animate(itemView)
-                .translationY(-itemView.getHeight() * 0.3f)
-                .alpha(0)
-                .setDuration(300)
-                .setListener(listener)
-                .start();
-    }
-
-    @Override
-    public void preAnimateAddImpl() {
-        ViewCompat.setTranslationY(itemView, -itemView.getHeight() * 0.3f);
-        ViewCompat.setAlpha(itemView, 0);
-    }
-
-    @Override
-    public void animateAddImpl(ViewPropertyAnimatorListener listener) {
-        ViewCompat.animate(itemView)
-                .translationY(0)
-                .alpha(1)
-                .setDuration(300)
-                .setListener(listener)
-                .start();
-    }
-
 
     public void displayTitle(String title) {
 
@@ -100,5 +74,36 @@ public class MoonlightViewHolder extends AnimateViewHolder {
 
     public void setColor(int color) {
         mCardView.setCardBackgroundColor(color);
+    }
+
+    @Override
+    public void preAnimateAddImpl(RecyclerView.ViewHolder holder) {
+
+    }
+
+    @Override
+    public void preAnimateRemoveImpl(RecyclerView.ViewHolder holder) {
+        ViewCompat.setTranslationY(itemView, -itemView.getHeight() * 0.3f);
+        ViewCompat.setAlpha(itemView, 0);
+    }
+
+    @Override
+    public void animateAddImpl(RecyclerView.ViewHolder holder, ViewPropertyAnimatorListener listener) {
+        ViewCompat.animate(itemView)
+                .translationY(0)
+                .alpha(1)
+                .setDuration(300)
+                .setListener(listener)
+                .start();
+    }
+
+    @Override
+    public void animateRemoveImpl(RecyclerView.ViewHolder holder, ViewPropertyAnimatorListener listener) {
+        ViewCompat.animate(itemView)
+                .translationY(-itemView.getHeight() * 0.3f)
+                .alpha(0)
+                .setDuration(300)
+                .setListener(listener)
+                .start();
     }
 }

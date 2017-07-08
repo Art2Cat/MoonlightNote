@@ -60,8 +60,8 @@ public class InputDialogFragment extends DialogFragment {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         @SuppressLint("InflateParams")
         View view = inflater.inflate(R.layout.dialog_input, null);
-        TextInputLayout textInputLayout = (TextInputLayout) view.findViewById(R.id.inputLayout);
-        mTextInputEditText = (TextInputEditText) view.findViewById(R.id.dialog_editText);
+        TextInputLayout textInputLayout = view.findViewById(R.id.inputLayout);
+        mTextInputEditText = view.findViewById(R.id.dialog_editText);
         if (mType == 0) {
             textInputLayout.setHint(getString(R.string.dialog_enter_your_register_email));
             mTextInputEditText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);

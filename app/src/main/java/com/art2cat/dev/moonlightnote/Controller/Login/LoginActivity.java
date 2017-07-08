@@ -157,7 +157,22 @@ public class LoginActivity extends AppCompatActivity {
     private void startLoginFragment() {
         //创建handler对象，调用postDelayed()方法，启动插播3秒广告
         Handler handler = new Handler();
-        handler.postDelayed(new UpdateUI(), 3000);
+        handler.postDelayed(() -> {
+                        /*
+             * 判断当前用户是否登陆，如何用户登陆成功，直接跳转至主界面，并销毁当前Activity
+             * 如果登陆失败，则跳转至登陆及注册界面
+             */
+            if (mLoginState) {
+
+                startActivity(new Intent(LoginActivity.this, MoonlightActivity.class));
+                //这里调用Activity.finish()方法销毁当前Activity
+                finishAfterTransition();
+            } else {
+                Fragment fragment = new LoginFragment();
+                FragmentUtils.replaceFragment(getSupportFragmentManager(), R.id.login_container,
+                        fragment, FragmentUtils.REPLACE_NORMAL);
+            }
+        }, 3000);
     }
 
     public void onBackPressed() {
@@ -196,37 +211,5 @@ public class LoginActivity extends AppCompatActivity {
         shortcutInfoList.add(compose);
         ShortcutsUtils.getInstance(LoginActivity.this)
                 .setShortcuts(shortcutInfoList);
-    }
-
-    /**
-     * 自定义一个Runnable类，在这里进行UI的更新
-     */
-    class UpdateUI implements Runnable {
-
-        @Override
-        public void run() {
-
-            /**
-             * 判断当前用户是否登陆，如何用户登陆成功，直接跳转至主界面，并销毁当前Activity
-             * 如果登陆失败，则跳转至登陆及注册界面
-             */
-            if (mLoginState) {
-
-                startActivity(new Intent(LoginActivity.this, MoonlightActivity.class));
-                //这里调用Activity.finish()方法销毁当前Activity
-                finishAfterTransition();
-            } else {
-                Fragment fragment = new LoginFragment();
-                FragmentUtils.replaceFragment(getSupportFragmentManager(), R.id.login_container,
-                        fragment, FragmentUtils.REPLACE_NORMAL);
-//                mFragmentManager.beginTransaction()
-//                        .setCustomAnimations(R.anim.fragment_slide_left_enter,
-//                                R.anim.fragment_slide_left_exit,
-//                                R.anim.fragment_slide_right_enter,
-//                                R.anim.fragment_slide_right_exit)
-//                        .replace(R.id.login_container, fragment)
-//                        .commit();
-            }
-        }
     }
 }

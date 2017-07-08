@@ -82,6 +82,7 @@ class MyColorPickerDialog extends ColorChooserDialog {
             dismiss();
         }
     };
+
     MyColorPickerDialog(Context context) {
         super(context);
     }
@@ -95,27 +96,27 @@ class MyColorPickerDialog extends ColorChooserDialog {
 //        int padding = getContext().getResources().getDimensionPixelOffset(R.dimen.padding);
 //        view.setPadding(padding, padding, padding, 0);
 
-        one = (ImageButton) findViewById(R.id.b1);
-        two = (ImageButton) findViewById(R.id.b2);
-        three = (ImageButton) findViewById(R.id.b3);
-        four = (ImageButton) findViewById(R.id.b4);
-        five = (ImageButton) findViewById(R.id.b5);
-        six = (ImageButton) findViewById(R.id.b6);
-        seven = (ImageButton) findViewById(R.id.b7);
-        eight = (ImageButton) findViewById(R.id.b8);
-        nine = (ImageButton) findViewById(R.id.b9);
-        ten = (ImageButton) findViewById(R.id.b10);
-        eleven = (ImageButton) findViewById(R.id.b11);
-        twelve = (ImageButton) findViewById(R.id.b12);
-        thirteen = (ImageButton) findViewById(R.id.b13);
-        fourteen = (ImageButton) findViewById(R.id.b14);
-        fifteen = (ImageButton) findViewById(R.id.b15);
-        sixteen = (ImageButton) findViewById(R.id.b16);
-        seventeen = (ImageButton) findViewById(R.id.b17);
-        eighteen = (ImageButton) findViewById(R.id.b18);
-        nineteen = (ImageButton) findViewById(R.id.b19);
-        ImageButton twenty = (ImageButton) findViewById(R.id.b20);
-        twentyOne = (Button) findViewById(R.id.b21);
+        one = findViewById(R.id.b1);
+        two = findViewById(R.id.b2);
+        three = findViewById(R.id.b3);
+        four = findViewById(R.id.b4);
+        five = findViewById(R.id.b5);
+        six = findViewById(R.id.b6);
+        seven = findViewById(R.id.b7);
+        eight = findViewById(R.id.b8);
+        nine = findViewById(R.id.b9);
+        ten = findViewById(R.id.b10);
+        eleven = findViewById(R.id.b11);
+        twelve = findViewById(R.id.b12);
+        thirteen = findViewById(R.id.b13);
+        fourteen = findViewById(R.id.b14);
+        fifteen = findViewById(R.id.b15);
+        sixteen = findViewById(R.id.b16);
+        seventeen = findViewById(R.id.b17);
+        eighteen = findViewById(R.id.b18);
+        nineteen = findViewById(R.id.b19);
+        ImageButton twenty = findViewById(R.id.b20);
+        twentyOne = findViewById(R.id.b21);
 
 
         colors = new ArrayList<>();
@@ -164,11 +165,7 @@ class MyColorPickerDialog extends ColorChooserDialog {
 //        buttons.add(twenty);
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            Colorize();
-        } else {
-            ColorizeOld();
-        }
+        Colorize();
 
         twenty.setVisibility(View.GONE);
         twentyOne.setVisibility(View.INVISIBLE);
@@ -202,19 +199,6 @@ class MyColorPickerDialog extends ColorChooserDialog {
 
     }
 
-    private void ColorizeOld() {
-        for (int i = 0; i < buttons.size(); i++) {
-            ShapeDrawable d = new ShapeDrawable(new OvalShape());
-            d.getPaint().setColor(colors.get(i));
-            d.getPaint().setStrokeWidth(1f);
-            d.setBounds(58, 58, 58, 58);
-            buttons.get(i).setVisibility(View.INVISIBLE);
-            d.getPaint().setStyle(Paint.Style.FILL);
-            d.getPaint().setColor(colors.get(i));
-            buttons.get(i).setBackground(d);
-        }
-        animate();
-    }
 
     private void animate() {
         Log.e("animate", "true");

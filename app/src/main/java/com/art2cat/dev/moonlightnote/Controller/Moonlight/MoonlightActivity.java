@@ -367,19 +367,16 @@ public class MoonlightActivity extends BaseFragmentActivity
         //FloatingActionButton实例化
         mFAB = (FloatingActionButton) findViewById(R.id.fab);
         //设置FloatingActionButton点击事件
-        mFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isLogin) {
-                    FragmentUtils.replaceFragment(getSupportFragmentManager(),
-                            R.id.main_fragment_container,
-                            new CreateMoonlightFragment(),
-                            FragmentUtils.REPLACE_BACK_STACK);
-                    checkLockStatus();
-                } else {
-                    SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
-                            SnackBarUtils.TYPE_INFO).show();
-                }
+        mFAB.setOnClickListener(view -> {
+            if (isLogin) {
+                FragmentUtils.replaceFragment(getSupportFragmentManager(),
+                        R.id.main_fragment_container,
+                        new CreateMoonlightFragment(),
+                        FragmentUtils.REPLACE_BACK_STACK);
+                checkLockStatus();
+            } else {
+                SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
+                        SnackBarUtils.TYPE_INFO).show();
             }
         });
 
@@ -398,49 +395,43 @@ public class MoonlightActivity extends BaseFragmentActivity
         //获取headerView
         View headerView = mNavigationView.getHeaderView(0);
 
-        mSortButton = (Button) headerView.findViewById(R.id.sort_up_or_down_btn);
-        mSortButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isLogin) {
-                    if (!isClicked) {
-                        mNavigationView.getMenu().clear();
-                        mNavigationView.inflateMenu(R.menu.activity_main_drawer_account);
-                        mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_arrow_drop_up_black_24dp, null));
-                        isClicked = !isClicked;
-                    } else {
-                        mNavigationView.getMenu().clear();
-                        mNavigationView.inflateMenu(R.menu.activity_main_drawer);
-                        mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_arrow_drop_down_black_24dp, null));
-                        isClicked = !isClicked;
-                    }
+        mSortButton = headerView.findViewById(R.id.sort_up_or_down_btn);
+        mSortButton.setOnClickListener(view -> {
+            if (isLogin) {
+                if (!isClicked) {
+                    mNavigationView.getMenu().clear();
+                    mNavigationView.inflateMenu(R.menu.activity_main_drawer_account);
+                    mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_arrow_drop_up_black_24dp, null));
+                    isClicked = !isClicked;
                 } else {
-                    SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
-                            SnackBarUtils.TYPE_INFO).show();
+                    mNavigationView.getMenu().clear();
+                    mNavigationView.inflateMenu(R.menu.activity_main_drawer);
+                    mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_arrow_drop_down_black_24dp, null));
+                    isClicked = !isClicked;
                 }
+            } else {
+                SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
+                        SnackBarUtils.TYPE_INFO).show();
             }
         });
 
         //头像实例化
-        mCircleImageView = (CircleImageView) headerView.findViewById(R.id.imageView);
+        mCircleImageView = headerView.findViewById(R.id.imageView);
         //设置点击头像事件启动LoginActivity
-        mCircleImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isLogin) {
-                    Intent intent = new Intent(MoonlightActivity.this, UserActivity.class);
-                    startActivity(intent);
-                    checkLockStatus();
-                } else {
-                    SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
-                            SnackBarUtils.TYPE_INFO).show();
-                }
+        mCircleImageView.setOnClickListener(view -> {
+            if (isLogin) {
+                Intent intent = new Intent(MoonlightActivity.this, UserActivity.class);
+                startActivity(intent);
+                checkLockStatus();
+            } else {
+                SnackBarUtils.shortSnackBar(mCoordinatorLayout, getString(R.string.login_request),
+                        SnackBarUtils.TYPE_INFO).show();
             }
         });
 
         //TextView实例化
-        mEmailTextView = (TextView) headerView.findViewById(R.id.nav_header_email);
-        mNicknameTextView = (TextView) headerView.findViewById(R.id.nav_header_nickname);
+        mEmailTextView = headerView.findViewById(R.id.nav_header_email);
+        mNicknameTextView = headerView.findViewById(R.id.nav_header_nickname);
         int type = getIntent().getIntExtra("type", 0);
         if (mUserId != null) {
             FragmentUtils.addFragment(getSupportFragmentManager(),

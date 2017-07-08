@@ -19,6 +19,7 @@ import com.google.android.gms.ads.NativeExpressAdView;
  */
 public class SlashFragment extends Fragment {
     private static final String APP_ID = "ca-app-pub-5043396164425122~8442166898";
+
     public SlashFragment() {
         // Required empty public constructor
     }
@@ -34,7 +35,7 @@ public class SlashFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_slash, container, false);
         MobileAds.initialize(getActivity(), APP_ID);
-        NativeExpressAdView adView = (NativeExpressAdView) view.findViewById(R.id.adView);
+        NativeExpressAdView adView = view.findViewById(R.id.adView);
         AdRequest request = new AdRequest.Builder()
 //                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
 //                .addTestDevice("0ACA1878D607E6C4360F91E0A0379C2F")

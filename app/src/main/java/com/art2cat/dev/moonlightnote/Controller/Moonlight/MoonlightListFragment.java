@@ -11,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -126,7 +125,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // [END create_database_reference]
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        mRecyclerView = rootView.findViewById(R.id.recyclerView);
         mRecyclerView.setHasFixedSize(true);
 
         return rootView;
@@ -181,13 +180,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
 
         });
 
-        mRecyclerView.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View view, DragEvent dragEvent) {
-
-                return false;
-            }
-        });
+        mRecyclerView.setOnDragListener((view, dragEvent) -> false);
 
         setOverflowButtonColor(mActivity, 0xFFFFFFFF);
 
@@ -273,49 +266,43 @@ public abstract class MoonlightListFragment extends BaseFragment {
                         viewHolder.mAudio.setVisibility(View.GONE);
                     }
 
-                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (isLogin) {
-                                moonlightD.setId(moonlightKey);
-                                if (isTrash()) {
-                                    Log.d(TAG, "onClick: trash");
-                                    TrashDetailFragment trashDetailFragment = TrashDetailFragment.newInstance(moonlightD, 12);
-                                    FragmentUtils.replaceFragment(getFragmentManager(),
-                                            R.id.main_fragment_container,
-                                            trashDetailFragment,
-                                            FragmentUtils.REPLACE_BACK_STACK);
-                                    BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
-                                } else {
-                                    Log.d(TAG, "onClick: edit");
-                                    EditMoonlightFragment editMoonlightFragment = EditMoonlightFragment.newInstance(moonlightD, 0);
-                                    FragmentUtils.replaceFragment(getFragmentManager(),
-                                            R.id.main_fragment_container,
-                                            editMoonlightFragment,
-                                            FragmentUtils.REPLACE_BACK_STACK);
-                                    BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
-                                }
-                                changeToolbar(null, 1);
-                                setParams(0);
+                    viewHolder.itemView.setOnClickListener(view -> {
+                        if (isLogin) {
+                            moonlightD.setId(moonlightKey);
+                            if (isTrash()) {
+                                Log.d(TAG, "onClick: trash");
+                                TrashDetailFragment trashDetailFragment = TrashDetailFragment.newInstance(moonlightD, 12);
+                                FragmentUtils.replaceFragment(getFragmentManager(),
+                                        R.id.main_fragment_container,
+                                        trashDetailFragment,
+                                        FragmentUtils.REPLACE_BACK_STACK);
+                                BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
+                            } else {
+                                Log.d(TAG, "onClick: edit");
+                                EditMoonlightFragment editMoonlightFragment = EditMoonlightFragment.newInstance(moonlightD, 0);
+                                FragmentUtils.replaceFragment(getFragmentManager(),
+                                        R.id.main_fragment_container,
+                                        editMoonlightFragment,
+                                        FragmentUtils.REPLACE_BACK_STACK);
+                                BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
                             }
+                            changeToolbar(null, 1);
+                            setParams(0);
                         }
                     });
 
-                    viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View view) {
-                            moonlightD.setId(moonlightKey);
-                            if (moonlightKey.equals(moonlightD.getId())) {
-                                if (!isTrash()) {
-                                    setParams(1);
-                                    changeToolbar(moonlightD, 0);
-                                } else {
-                                    changeToolbar(moonlightD, 0);
-                                    setParams(1);
-                                }
+                    viewHolder.itemView.setOnLongClickListener(view -> {
+                        moonlightD.setId(moonlightKey);
+                        if (moonlightKey.equals(moonlightD.getId())) {
+                            if (!isTrash()) {
+                                setParams(1);
+                                changeToolbar(moonlightD, 0);
+                            } else {
+                                changeToolbar(moonlightD, 0);
+                                setParams(1);
                             }
-                            return false;
                         }
+                        return false;
                     });
                 }
             };
@@ -371,12 +358,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
 
     private void notifyChange() {
         Log.d(TAG, "notifyChange: ");
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mFirebaseRecyclerAdapter.notifyDataSetChanged();
-            }
-        }, 1000);
+        new Handler().postDelayed(() -> mFirebaseRecyclerAdapter.notifyDataSetChanged(), 1000);
     }
 
     @Override
@@ -520,82 +502,76 @@ public abstract class MoonlightListFragment extends BaseFragment {
 
 
                 mToolbar2.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-                mToolbar2.setNavigationOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        setParams(0);
-                        changeToolbar(null, 1);
-                        isInflate = true;
-                    }
+                mToolbar2.setNavigationOnClickListener(view -> {
+                    setParams(0);
+                    changeToolbar(null, 1);
+                    isInflate = true;
                 });
-                mToolbar2.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.action_delete:
-                                FDatabaseUtils.moveToTrash(getUid(), moonlight);
-                                mActivity.setTitle(R.string.app_name);
-                                break;
-                            case R.id.action_delete_forever:
-                                if (moonlight.getImageUrl() != null) {
-                                    StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
-                                }
-                                if (moonlight.getAudioUrl() != null) {
-                                    StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
-                                }
-                                FDatabaseUtils.removeMoonlight(getUid(),
-                                        moonlight.getId(),
-                                        Constants.EXTRA_TYPE_MOONLIGHT);
-                                mActivity.setTitle(R.string.app_name);
-                                break;
-                            case R.id.action_make_a_copy:
-                                FDatabaseUtils.addMoonlight(getUid(),
-                                        moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
-                                mActivity.setTitle(R.string.app_name);
-                                break;
-                            case R.id.action_send:
-                                //启动Intent分享
-                                Intent in = new Intent(Intent.ACTION_SEND);
-                                in.setType("text/plain");
-                                if (moonlight.getTitle() != null) {
-                                    in.putExtra(Intent.EXTRA_TITLE, moonlight.getTitle());
-                                }
+                mToolbar2.setOnMenuItemClickListener(item -> {
+                    switch (item.getItemId()) {
+                        case R.id.action_delete:
+                            FDatabaseUtils.moveToTrash(getUid(), moonlight);
+                            mActivity.setTitle(R.string.app_name);
+                            break;
+                        case R.id.action_delete_forever:
+                            if (moonlight.getImageUrl() != null) {
+                                StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
+                            }
+                            if (moonlight.getAudioUrl() != null) {
+                                StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
+                            }
+                            FDatabaseUtils.removeMoonlight(getUid(),
+                                    moonlight.getId(),
+                                    Constants.EXTRA_TYPE_MOONLIGHT);
+                            mActivity.setTitle(R.string.app_name);
+                            break;
+                        case R.id.action_make_a_copy:
+                            FDatabaseUtils.addMoonlight(getUid(),
+                                    moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+                            mActivity.setTitle(R.string.app_name);
+                            break;
+                        case R.id.action_send:
+                            //启动Intent分享
+                            Intent in = new Intent(Intent.ACTION_SEND);
+                            in.setType("text/plain");
+                            if (moonlight.getTitle() != null) {
+                                in.putExtra(Intent.EXTRA_TITLE, moonlight.getTitle());
+                            }
 
-                                if (moonlight.getContent() != null) {
-                                    in.putExtra(Intent.EXTRA_TEXT, moonlight.getContent());
-                                }
+                            if (moonlight.getContent() != null) {
+                                in.putExtra(Intent.EXTRA_TEXT, moonlight.getContent());
+                            }
 
-                                if (moonlight.getImageUrl() != null) {
-                                    in.putExtra(Intent.EXTRA_TEXT, moonlight.getImageUrl());
-                                }
-                                //设置分享选择器
-                                in = Intent.createChooser(in, "Send to");
-                                startActivity(in);
-                                mActivity.setTitle(R.string.app_name);
-                                break;
-                            case R.id.action_restore:
-                                FDatabaseUtils.restoreToNote(getUid(), moonlight);
-                                mActivity.setTitle(R.string.fragment_trash);
-                                break;
-                            case R.id.action_trash_delete_forever:
-                                if (moonlight.getImageUrl() != null) {
-                                    StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
-                                }
-                                if (moonlight.getAudioUrl() != null) {
-                                    StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
-                                }
-                                FDatabaseUtils.removeMoonlight(getUid(),
-                                        moonlight.getId(),
-                                        Constants.EXTRA_TYPE_DELETE_TRASH);
-                                mActivity.setTitle(R.string.fragment_trash);
-                                break;
-                        }
-                        setParams(0);
-                        changeToolbar(null, 1);
-                        changeOptionsMenu(3);
-                        isInflate = true;
-                        return false;
+                            if (moonlight.getImageUrl() != null) {
+                                in.putExtra(Intent.EXTRA_TEXT, moonlight.getImageUrl());
+                            }
+                            //设置分享选择器
+                            in = Intent.createChooser(in, "Send to");
+                            startActivity(in);
+                            mActivity.setTitle(R.string.app_name);
+                            break;
+                        case R.id.action_restore:
+                            FDatabaseUtils.restoreToNote(getUid(), moonlight);
+                            mActivity.setTitle(R.string.fragment_trash);
+                            break;
+                        case R.id.action_trash_delete_forever:
+                            if (moonlight.getImageUrl() != null) {
+                                StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
+                            }
+                            if (moonlight.getAudioUrl() != null) {
+                                StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
+                            }
+                            FDatabaseUtils.removeMoonlight(getUid(),
+                                    moonlight.getId(),
+                                    Constants.EXTRA_TYPE_DELETE_TRASH);
+                            mActivity.setTitle(R.string.fragment_trash);
+                            break;
                     }
+                    setParams(0);
+                    changeToolbar(null, 1);
+                    changeOptionsMenu(3);
+                    isInflate = true;
+                    return false;
                 });
                 break;
             case 1:
