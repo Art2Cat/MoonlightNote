@@ -25,7 +25,6 @@ import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.controller.BaseFragmentActivity;
 import com.art2cat.dev.moonlightnote.controller.login.LoginActivity;
 import com.art2cat.dev.moonlightnote.controller.settings.SettingsActivity;
-import com.art2cat.dev.moonlightnote.controller.user.UserActivity;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
 import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.User;
