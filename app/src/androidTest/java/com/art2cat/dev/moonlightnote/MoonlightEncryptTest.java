@@ -1,13 +1,10 @@
 package com.art2cat.dev.moonlightnote;
 
 
-
 import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.utils.MoonlightEncryptUtils;
 
-
-import junit.framework.TestCase;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,9 +13,10 @@ import org.junit.Test;
  * on 6/28/2017.
  */
 
-public class MoonlightEncryptTest extends TestCase{
+public class MoonlightEncryptTest {
 
     private Moonlight moonlight;
+
     @Before
     public void init() {
         moonlight = new Moonlight();
@@ -34,10 +32,15 @@ public class MoonlightEncryptTest extends TestCase{
         init();
         MoonlightEncryptUtils moonlightEncryptUtils = MoonlightEncryptUtils.newInstance();
         moonlightEncryptUtils.setKey("12345678");
-        assert moonlight != null;
+        Assert.assertNotNull(moonlight);
         System.out.println(moonlight.getContent());
-        Moonlight moonlight1 = moonlightEncryptUtils.encrypt("12345678",moonlight);
-        assert moonlight1 != null;
-        System.out.println(moonlight1.getContent());
+
+        Moonlight encrypt = moonlightEncryptUtils.encryptMoonlight(moonlight);
+        Assert.assertNotNull(encrypt);
+        System.out.println(encrypt.getContent());
+
+        Moonlight decrypt = moonlightEncryptUtils.decryptMoonlight(encrypt);
+        Assert.assertNotNull(decrypt);
+        Assert.assertEquals(moonlight.getContent(), decrypt.getContent());
     }
 }

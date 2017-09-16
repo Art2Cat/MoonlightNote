@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="play-services-clearcut-10.2.6">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/play-services-clearcut-10.2.6.aar/31a5684c5c45595e0ac853355e399707/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/play-services-clearcut-10.2.6.aar/31a5684c5c45595e0ac853355e399707/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.android/build-cache/6f17b1494a27e4c09daa97a8bdd391ec3b0050f1/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/6f17b1494a27e4c09daa97a8bdd391ec3b0050f1/output/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
