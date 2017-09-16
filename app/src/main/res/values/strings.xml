@@ -331,5 +331,6 @@
     <string name="test">TEST ONLY</string>
     <string name="menu_feedback">Feedback</string>
     <string name="menu_delete">Remove image</string>
+    <string name="share_contet">\"Hey, I found a great app at: https://play.google.com/store/apps/details?id=com.art2cat.dev.moonlightnote\"</string>
 
 </resources>

@@ -11,7 +11,12 @@ android {
         versionCode 22
         versionName "1.0.17071522"
         multiDexEnabled true
+
+        jackOptions {
+            enabled true
+        }
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -32,6 +37,11 @@ android {
         exclude 'META-INF/license'
         exclude 'META-INF/license.txt'
     }
+<<<<<<< HEAD
+=======
+    productFlavors {
+    }
+>>>>>>> origin/rorschach
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -40,6 +50,7 @@ android {
 }
 
 dependencies {
+<<<<<<< HEAD
     implementation fileTree(include: ['*.aar', '*.jar'], dir: 'libs')
     implementation 'com.android.support:multidex:1.0.1'
     implementation 'com.android.support:recyclerview-v7:26.0.0-beta2'
@@ -79,6 +90,46 @@ dependencies {
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation 'junit:junit:4.12'
+=======
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.android.support:recyclerview-v7:26.0.0-alpha1'
+    compile 'com.android.support:appcompat-v7:26.0.0-alpha1'
+    compile 'com.android.support:cardview-v7:26.0.0-alpha1'
+    compile 'com.android.support:support-v13:26.0.0-alpha1'
+    compile 'com.android.support:design:26.0.0-alpha1'
+    compile 'com.google.android.gms:play-services-drive:10.2.6'
+    compile 'com.google.android.gms:play-services-auth:10.2.6'
+    compile 'com.google.android.gms:play-services-ads:10.2.6'
+    compile 'com.google.android.gms:play-services-gcm:10.2.6'
+    compile 'com.google.firebase:firebase-core:10.2.6'
+    compile 'com.google.firebase:firebase-analytics:10.2.6'
+    compile 'com.google.firebase:firebase-auth:10.2.6'
+    compile 'com.google.firebase:firebase-messaging:10.2.6'
+    compile 'com.google.firebase:firebase-database:10.2.6'
+    compile 'com.google.firebase:firebase-storage:10.2.6'
+    compile 'com.google.firebase:firebase-ads:10.2.6'
+    compile 'com.google.firebase:firebase-config:10.2.6'
+    compile 'com.google.firebase:firebase-appindexing:10.2.6'
+    compile 'com.firebase:firebase-client-android:2.5.2'
+    compile 'com.firebaseui:firebase-ui-database:1.2.0'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
+    compile 'pub.devrel:easypermissions:0.2.1'
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.turki-alkhateeb:materialcolorpicker:1.0.7'
+    compile 'io.github.kobakei:ratethisapp:1.1.0'
+    compile 'jp.wasabeef:recyclerview-animators:2.2.6'
+    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.squareup.okhttp3:okhttp:3.7.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile('com.github.orangegangsters:lollipin:2.0.0@aar') {
+        transitive = true
+    }
+    //    compile 'uk.me.lewisdeane.ldialogs:ldialogs@aar'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+>>>>>>> origin/rorschach
 }
 apply plugin: 'com.google.gms.google-services'
 repositories {

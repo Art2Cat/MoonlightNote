@@ -8,9 +8,13 @@ buildscript {
         jcenter()
     }
     dependencies {
+<<<<<<< HEAD
 
         classpath 'com.android.tools.build:gradle:3.0.0-alpha4'
         // Add this line
+=======
+        classpath 'com.android.tools.build:gradle:2.3.2'
+>>>>>>> origin/rorschach
         classpath "com.google.gms:google-services:3.0.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
