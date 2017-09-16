@@ -32,7 +32,7 @@ public class MoonlightEncryptTest extends TestCase{
     @Test
     public void testEncrypt() {
         init();
-        MoonlightEncryptUtils moonlightEncryptUtils = new MoonlightEncryptUtils();
+        MoonlightEncryptUtils moonlightEncryptUtils = MoonlightEncryptUtils.newInstance();
         moonlightEncryptUtils.setKey("12345678");
         assert moonlight != null;
         System.out.println(moonlight.getContent());

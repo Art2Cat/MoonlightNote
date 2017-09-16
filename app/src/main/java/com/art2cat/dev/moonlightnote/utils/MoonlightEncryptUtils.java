@@ -149,6 +149,10 @@ public class MoonlightEncryptUtils {
         return moonlight1;
     }
 
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     private class MoonlightEncryptTask extends AsyncTask<Moonlight, Void, Moonlight> {
         static final int ENCRYPT = 101;
         static final int DECRYPT = 102;
