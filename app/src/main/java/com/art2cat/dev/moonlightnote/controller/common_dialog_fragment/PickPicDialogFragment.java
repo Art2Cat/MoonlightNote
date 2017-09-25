@@ -21,7 +21,6 @@ import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
  */
 
 public class PickPicDialogFragment extends DialogFragment {
-    public static final int EXTRA_TYPE_MOONLIGHT = 0;
     private int mType;
 
     public static PickPicDialogFragment newInstance(int type) {
@@ -43,20 +42,14 @@ public class PickPicDialogFragment extends DialogFragment {
         TextView album = view.findViewById(R.id.album);
 
 
-        camera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                BusEventUtils.post(Constants.BUS_FLAG_CAMERA, null);
-                dismiss();
-            }
+        camera.setOnClickListener(view1 -> {
+            BusEventUtils.post(Constants.BUS_FLAG_CAMERA, null);
+            dismiss();
         });
 
-        album.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                BusEventUtils.post(Constants.BUS_FLAG_ALBUM, null);
-                dismiss();
-            }
+        album.setOnClickListener(view12 -> {
+            BusEventUtils.post(Constants.BUS_FLAG_ALBUM, null);
+            dismiss();
         });
 
         return new AlertDialog.Builder(getActivity()).setView(view).create();
