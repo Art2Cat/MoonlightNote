@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.controller.Moonlight;
+package com.art2cat.dev.moonlightnote.controller.moonlight;
 
 import com.art2cat.dev.moonlightnote.model.Moonlight;
 

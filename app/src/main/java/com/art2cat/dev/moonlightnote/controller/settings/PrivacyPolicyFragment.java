@@ -1,4 +1,4 @@
-package com.art2cat.dev.moonlightnote.controller.Settings;
+package com.art2cat.dev.moonlightnote.controller.settings;
 
 
 import android.app.Fragment;
