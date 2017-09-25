@@ -79,7 +79,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         //获取Bus单例，并注册
         EventBus.getDefault().register(this);
-        LogUtils.getInstance(TAG).setMessage("onCreate").debug();
+        LogUtils.getInstance(TAG).setContent("onCreate").debug();
         //在配置变化的时候将这个fragment保存下来
         setRetainInstance(true);
     }
@@ -88,7 +88,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        LogUtils.getInstance(TAG).setMessage("onCreateView").debug();
+        LogUtils.getInstance(TAG).setContent("onCreateView").debug();
         View rootView = inflater.inflate(R.layout.fragment_moonlight, container, false);
 
         MoonlightActivity moonlightActivity = (MoonlightActivity) mActivity;
@@ -110,12 +110,16 @@ public abstract class MoonlightListFragment extends BaseFragment {
         } else {
             mToolbar.setTitle(R.string.app_name);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary, mActivity.getTheme()));
-                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark,
-                        mActivity.getTheme()));
+                mToolbar.setBackgroundColor(getResources()
+                        .getColor(R.color.colorPrimary, mActivity.getTheme()));
+                mActivity.getWindow().setStatusBarColor(getResources()
+                        .getColor(R.color.colorPrimaryDark,
+                                mActivity.getTheme()));
             } else {
-                mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+                mToolbar.setBackgroundColor(getResources()
+                        .getColor(R.color.colorPrimary));
+                mActivity.getWindow().setStatusBarColor(getResources()
+                        .getColor(R.color.colorPrimaryDark));
             }
             mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
@@ -134,7 +138,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        LogUtils.getInstance(TAG).setMessage("onResume").debug();
+        LogUtils.getInstance(TAG).setContent("onResume").debug();
     }
 
 
@@ -146,7 +150,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
             MoonlightActivity.isHome = false;
         }
 
-        LogUtils.getInstance(TAG).setMessage("onActivityCreated").debug();
+        LogUtils.getInstance(TAG).setContent("onActivityCreated").debug();
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(mActivity);
         mLinearLayoutManager.setReverseLayout(true);
         mLinearLayoutManager.setStackFromEnd(true);
@@ -189,20 +193,20 @@ public abstract class MoonlightListFragment extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        LogUtils.getInstance(TAG).setMessage("onPause").debug();
+        LogUtils.getInstance(TAG).setContent("onPause").debug();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        LogUtils.getInstance(TAG).setMessage("onStop").debug();
+        LogUtils.getInstance(TAG).setContent("onStop").debug();
     }
 
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        LogUtils.getInstance(TAG).setMessage("onDestroyView").debug();
+        LogUtils.getInstance(TAG).setContent("onDestroyView").debug();
         isInflate = false;
         mFirebaseRecyclerAdapter.unregisterAdapterDataObserver(mAdapterDataObserver);
     }
@@ -211,101 +215,111 @@ public abstract class MoonlightListFragment extends BaseFragment {
 
         Query moonlightsQuery = getQuery(mDatabase);
         if (moonlightsQuery != null) {
-            mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder>(Moonlight.class, R.layout.moonlight_item, MoonlightViewHolder.class,
-                    moonlightsQuery) {
+            mFirebaseRecyclerAdapter =
+                    new FirebaseRecyclerAdapter<Moonlight,
+                            MoonlightViewHolder>(Moonlight.class,
+                            R.layout.moonlight_item, MoonlightViewHolder.class,
+                            moonlightsQuery) {
 
-                @Override
-                protected void populateViewHolder(final MoonlightViewHolder viewHolder, Moonlight model, final int position) {
-                    DatabaseReference moonlightRef = getRef(position);
-                    final String moonlightKey = moonlightRef.getKey();
+                        @Override
+                        protected void populateViewHolder(final MoonlightViewHolder viewHolder,
+                                                          Moonlight model, final int position) {
+                            DatabaseReference moonlightRef = getRef(position);
+                            final String moonlightKey = moonlightRef.getKey();
 
-                    final Moonlight moonlightD = MoonlightEncryptUtils.newInstance().decryptMoonlight(model);
+                            final Moonlight moonlightD = MoonlightEncryptUtils
+                                    .newInstance().decryptMoonlight(model);
 
-                    if (moonlightD == null) return;
+                            if (moonlightD == null) return;
 
-                    if (moonlightD.getTitle() != null) {
-                        viewHolder.displayTitle(moonlightD.getTitle());
-                    } else {
-                        viewHolder.mTitle.setVisibility(View.GONE);
-                    }
+                            if (moonlightD.getTitle() != null) {
+                                viewHolder.displayTitle(moonlightD.getTitle());
+                            } else {
+                                viewHolder.mTitle.setVisibility(View.GONE);
+                            }
 
-                    if (moonlightD.getContent() != null) {
-                        viewHolder.displayContent(moonlightD.getContent());
-                    } else {
-                        viewHolder.mContent.setVisibility(View.GONE);
-                    }
+                            if (moonlightD.getContent() != null) {
+                                viewHolder.displayContent(moonlightD.getContent());
+                            } else {
+                                viewHolder.mContent.setVisibility(View.GONE);
+                            }
 
-                    if (moonlightD.getImageName() != null) {
-                        Log.i(TAG, "populateViewHolder: " + moonlightD.getImageName());
-                        viewHolder.mImage.setImageResource(R.drawable.ic_cloud_download_black_24dp);
+                            if (moonlightD.getImageName() != null) {
+                                Log.i(TAG, "populateViewHolder: " + moonlightD.getImageName());
+                                viewHolder.mImage.setImageResource(
+                                        R.drawable.ic_cloud_download_black_24dp);
 //                        viewHolder.mImage.setTag(moonlightD.getImageName());
-                        viewHolder.displayImage(mActivity, moonlightD.getImageUrl());
-                    } else {
-                        viewHolder.mImage.setVisibility(View.GONE);
-                    }
-
-                    if (moonlightD.getColor() != 0) {
-                        viewHolder.setColor(moonlightD.getColor());
-                    } else {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            viewHolder.setColor(mActivity.getResources().getColor(R.color.white, null));
-                        } else {
-                            viewHolder.setColor(mActivity.getResources().getColor(R.color.white));
-                        }
-                    }
-
-                    if (moonlightD.getAudioName() != null) {
-                        String audioName = moonlightD.getAudioName();
-                        if (!isAudioFileExists(audioName)) {
-                            StorageUtils.downloadAudio(
-                                    FirebaseStorage.getInstance().getReference(),
-                                    getUid(), moonlightD.getAudioName());
-                        }
-                        viewHolder.mAudio.setVisibility(View.VISIBLE);
-                    } else {
-                        viewHolder.mAudio.setVisibility(View.GONE);
-                    }
-
-                    viewHolder.itemView.setOnClickListener(view -> {
-                        if (isLogin) {
-                            moonlightD.setId(moonlightKey);
-                            if (isTrash()) {
-                                Log.d(TAG, "onClick: trash");
-                                TrashDetailFragment trashDetailFragment = TrashDetailFragment.newInstance(moonlightD, 12);
-                                FragmentUtils.replaceFragment(getFragmentManager(),
-                                        R.id.main_fragment_container,
-                                        trashDetailFragment,
-                                        FragmentUtils.REPLACE_BACK_STACK);
-                                BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
+                                viewHolder.displayImage(mActivity, moonlightD.getImageUrl());
                             } else {
-                                Log.d(TAG, "onClick: edit");
-                                EditMoonlightFragment editMoonlightFragment = EditMoonlightFragment.newInstance(moonlightD, 0);
-                                FragmentUtils.replaceFragment(getFragmentManager(),
-                                        R.id.main_fragment_container,
-                                        editMoonlightFragment,
-                                        FragmentUtils.REPLACE_BACK_STACK);
-                                BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
+                                viewHolder.mImage.setVisibility(View.GONE);
                             }
-                            changeToolbar(null, 1);
-                            setParams(0);
-                        }
-                    });
 
-                    viewHolder.itemView.setOnLongClickListener(view -> {
-                        moonlightD.setId(moonlightKey);
-                        if (moonlightKey.equals(moonlightD.getId())) {
-                            if (!isTrash()) {
-                                setParams(1);
-                                changeToolbar(moonlightD, 0);
+                            if (moonlightD.getColor() != 0) {
+                                viewHolder.setColor(moonlightD.getColor());
                             } else {
-                                changeToolbar(moonlightD, 0);
-                                setParams(1);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    viewHolder.setColor(mActivity.getResources()
+                                            .getColor(R.color.white, null));
+                                } else {
+                                    viewHolder.setColor(mActivity.getResources()
+                                            .getColor(R.color.white));
+                                }
                             }
+
+                            if (moonlightD.getAudioName() != null) {
+                                String audioName = moonlightD.getAudioName();
+                                if (!isAudioFileExists(audioName)) {
+                                    StorageUtils.downloadAudio(
+                                            FirebaseStorage.getInstance().getReference(),
+                                            getUid(), moonlightD.getAudioName());
+                                }
+                                viewHolder.mAudio.setVisibility(View.VISIBLE);
+                            } else {
+                                viewHolder.mAudio.setVisibility(View.GONE);
+                            }
+
+                            viewHolder.itemView.setOnClickListener(view -> {
+                                if (isLogin) {
+                                    moonlightD.setId(moonlightKey);
+                                    if (isTrash()) {
+                                        Log.d(TAG, "onClick: trash");
+                                        TrashDetailFragment trashDetailFragment =
+                                                TrashDetailFragment.newInstance(moonlightD, 12);
+                                        FragmentUtils.replaceFragment(getFragmentManager(),
+                                                R.id.main_fragment_container,
+                                                trashDetailFragment,
+                                                FragmentUtils.REPLACE_BACK_STACK);
+                                        BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
+                                    } else {
+                                        Log.d(TAG, "onClick: edit");
+                                        EditMoonlightFragment editMoonlightFragment =
+                                                EditMoonlightFragment.newInstance(moonlightD, 0);
+                                        FragmentUtils.replaceFragment(getFragmentManager(),
+                                                R.id.main_fragment_container,
+                                                editMoonlightFragment,
+                                                FragmentUtils.REPLACE_BACK_STACK);
+                                        BusEventUtils.post(Constants.BUS_FLAG_NONE_SECURITY, null);
+                                    }
+                                    changeToolbar(null, 1);
+                                    setParams(0);
+                                }
+                            });
+
+                            viewHolder.itemView.setOnLongClickListener(view -> {
+                                moonlightD.setId(moonlightKey);
+                                if (moonlightKey.equals(moonlightD.getId())) {
+                                    if (!isTrash()) {
+                                        setParams(1);
+                                        changeToolbar(moonlightD, 0);
+                                    } else {
+                                        changeToolbar(moonlightD, 0);
+                                        setParams(1);
+                                    }
+                                }
+                                return false;
+                            });
                         }
-                        return false;
-                    });
-                }
-            };
+                    };
 
             mRecyclerView.setAdapter(mFirebaseRecyclerAdapter);
             Log.d(TAG, "setAdapter");
@@ -369,7 +383,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
             mFirebaseRecyclerAdapter.cleanup();
         }
 
-        LogUtils.getInstance(TAG).setMessage("onDestroy").debug();
+        LogUtils.getInstance(TAG).setContent("onDestroy").debug();
 
         RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
         refWatcher.watch(this);
@@ -378,7 +392,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        LogUtils.getInstance(TAG).setMessage("onCreateOptionsMenu").debug();
+        LogUtils.getInstance(TAG).setContent("onCreateOptionsMenu").debug();
         mMenu = menu;
         mMenuInflater = inflater;
         if (!isTrash()) {
@@ -435,7 +449,8 @@ public abstract class MoonlightListFragment extends BaseFragment {
             case R.id.action_trash_delete_forever:
                 StorageUtils.removePhoto(null, getUid(), mMoonlight.getImageName());
                 StorageUtils.removeAudio(null, getUid(), mMoonlight.getAudioName());
-                FDatabaseUtils.removeMoonlight(getUid(), mMoonlight.getId(), Constants.EXTRA_TYPE_DELETE_TRASH);
+                FDatabaseUtils.removeMoonlight(getUid(), mMoonlight.getId(),
+                        Constants.EXTRA_TYPE_DELETE_TRASH);
                 mMoonlight = null;
                 mActivity.setTitle(R.string.fragment_trash);
                 changeOptionsMenu(3);

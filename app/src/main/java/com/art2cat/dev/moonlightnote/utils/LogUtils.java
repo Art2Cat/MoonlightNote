@@ -11,7 +11,7 @@ import com.art2cat.dev.moonlightnote.BuildConfig;
 public class LogUtils {
     private static LogUtils ourInstance;
     private String tag;
-    private String message;
+    private String content;
 
     private LogUtils() {
     }
@@ -21,39 +21,43 @@ public class LogUtils {
     }
 
     public static LogUtils getInstance(String tag) {
-        if (ourInstance == null) {
-            ourInstance = new LogUtils(tag);
+        if (ourInstance != null) {
+
+        } else {
+            if (ourInstance == null) {
+                synchronized (LogUtils.class) {
+                    ourInstance = new LogUtils(tag);
+                }
+            }
         }
         return ourInstance;
     }
 
 
-    public LogUtils setMessage(String message) {
-        this.message = message;
+    public LogUtils setContent(String content) {
+        this.content = content;
         return this;
     }
 
     public void debug() {
         if (BuildConfig.DEBUG) {
-            Log.d(tag, message);
+            Log.d(tag, content);
         }
     }
 
     public void info() {
-        if (BuildConfig.DEBUG) {
-            Log.i(tag, message);
-        }
+        Log.i(tag, content);
     }
 
     public void warn() {
         if (BuildConfig.DEBUG) {
-            Log.w(tag, message);
+            Log.w(tag, content);
         }
     }
 
     public void error(Exception e) {
         if (BuildConfig.DEBUG) {
-            Log.e(tag, message, e);
+            Log.e(tag, content, e);
         }
     }
 }

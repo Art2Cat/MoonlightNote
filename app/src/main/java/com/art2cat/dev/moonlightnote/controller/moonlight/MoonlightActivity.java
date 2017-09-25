@@ -25,6 +25,7 @@ import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.controller.BaseFragmentActivity;
 import com.art2cat.dev.moonlightnote.controller.login.LoginActivity;
 import com.art2cat.dev.moonlightnote.controller.settings.SettingsActivity;
+import com.art2cat.dev.moonlightnote.controller.user.UserActivity;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
 import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.User;
@@ -37,11 +38,6 @@ import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.utils.UserUtils;
 import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
-import com.art2cat.dev.moonlightnote.utils.image_loader.BitmapUtils;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -87,7 +83,6 @@ public class MoonlightActivity extends BaseFragmentActivity
     private FirebaseAuth mAuth;
     private FirebaseAnalytics mFirebaseAnalytics;
     private int mLock;
-    private GoogleApiClient mClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,8 +124,6 @@ public class MoonlightActivity extends BaseFragmentActivity
             }
         });
 
-        mClient = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-
     }
 
     private void setTransition() {
@@ -168,8 +161,6 @@ public class MoonlightActivity extends BaseFragmentActivity
     @Override
     protected void onStart() {
         super.onStart();
-        mClient.connect();
-        AppIndex.AppIndexApi.start(mClient, getIndexApiAction());
     }
 
     @Override
@@ -197,15 +188,11 @@ public class MoonlightActivity extends BaseFragmentActivity
     @Override
     protected void onStop() {
         super.onStop();
-        AppIndex.AppIndexApi.end(mClient, getIndexApiAction());
-        Log.d(TAG, "onStop: ");
         mFDatabaseUtils.removeListener();
-        mClient.disconnect();
     }
 
     @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy: ");
         EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
@@ -275,10 +262,9 @@ public class MoonlightActivity extends BaseFragmentActivity
                 RateThisApp.showRateDialog(this);
                 break;
             case R.id.nav_share:
-                //启动Intent分享
                 Intent sendIntent = new Intent(ACTION_SEND);
                 sendIntent.putExtra(EXTRA_TEXT,
-                        "Hey, I found a great app at: https://play.google.com/store/apps/details?id=com.art2cat.dev.moonlightnote");
+                        R.string.share_contet);
                 sendIntent.setType("text/plain");
 
                 Bundle bundle = new Bundle();
@@ -286,7 +272,6 @@ public class MoonlightActivity extends BaseFragmentActivity
                 bundle.putBoolean("Share_my_app", true);
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
-                //设置分享选择器
                 sendIntent = createChooser(sendIntent, "Share to");
                 startActivity(sendIntent);
                 break;
@@ -400,12 +385,14 @@ public class MoonlightActivity extends BaseFragmentActivity
                 if (!isClicked) {
                     mNavigationView.getMenu().clear();
                     mNavigationView.inflateMenu(R.menu.activity_main_drawer_account);
-                    mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_arrow_drop_up_black_24dp, null));
+                    mSortButton.setBackground(getResources()
+                            .getDrawable(R.drawable.ic_arrow_drop_up_black_24dp, null));
                     isClicked = !isClicked;
                 } else {
                     mNavigationView.getMenu().clear();
                     mNavigationView.inflateMenu(R.menu.activity_main_drawer);
-                    mSortButton.setBackground(getResources().getDrawable(R.drawable.ic_arrow_drop_down_black_24dp, null));
+                    mSortButton.setBackground(getResources()
+                            .getDrawable(R.drawable.ic_arrow_drop_down_black_24dp, null));
                     isClicked = !isClicked;
                 }
             } else {
@@ -456,11 +443,8 @@ public class MoonlightActivity extends BaseFragmentActivity
                 case Constants.EXTRA_TYPE_MOONLIGHT:
                     SnackBarUtils.shortSnackBar(mCoordinatorLayout,
                             getString(R.string.delete_moonlight), SnackBarUtils.TYPE_INFO)
-                            .setAction(getString(R.string.restore_moonlight), new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
+                            .setAction(getString(R.string.restore_moonlight), view -> {
 
-                                }
                             }).show();
                     break;
                 case Constants.EXTRA_TYPE_TRASH:
@@ -500,9 +484,8 @@ public class MoonlightActivity extends BaseFragmentActivity
             }
             String photoUrl = user.getPhotoUrl();
             if (photoUrl != null) {
-                BitmapUtils bitmapUtils = new BitmapUtils(MoonlightApplication.getContext());
-                Log.d(TAG, "displayUserInfo: " + photoUrl);
-                bitmapUtils.display(mCircleImageView, photoUrl);
+
+                Utils.displayImage(photoUrl, mCircleImageView);
             }
 
         }
@@ -525,21 +508,6 @@ public class MoonlightActivity extends BaseFragmentActivity
         }
         mDrawerLayout.setDrawerLockMode(lockMode);
         mActionBarDrawerToggle.setDrawerIndicatorEnabled(enabled);
-    }
-
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    public Action getIndexApiAction() {
-        Thing object = new Thing.Builder()
-                .setName("Moonlight Page")
-                .setUrl(Uri.parse("https://art2cat.com/2017/01/15/moonlight_note.html"))
-                .build();
-        return new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
     }
 
 }

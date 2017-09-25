@@ -9,7 +9,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -41,6 +40,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -76,7 +76,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.leakcanary.RefWatcher;
-import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -87,9 +86,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -104,8 +101,6 @@ import static com.art2cat.dev.moonlightnote.model.Constants.GREY_DARK;
 import static com.art2cat.dev.moonlightnote.model.Constants.RECORD_AUDIO;
 import static com.art2cat.dev.moonlightnote.model.Constants.STORAGE_PERMS;
 import static com.art2cat.dev.moonlightnote.model.Constants.TAKE_PICTURE;
-import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
-import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -113,7 +108,7 @@ import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 public abstract class MoonlightDetailFragment extends BaseFragment implements
         View.OnClickListener, View.OnFocusChangeListener, PopupMenu.OnMenuItemClickListener,
         FragmentBackHandler {
-    private static final String TAG = "MoonlightDetailFragment";
+    private static final String TAG = MoonlightDetailFragment.class.getName();
     private View mView;
     private Toolbar mToolbar;
     private ContentFrameLayout mViewParent;
@@ -154,7 +149,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private File mFile;
     private Handler mHandler = new Handler();
     private AudioPlayer mAudioPlayer;
-    private Map<Integer, Integer> mColorMaps;
+    private SparseIntArray mColorMaps;
 
     public MoonlightDetailFragment() {
         // Required empty public constructor
@@ -165,7 +160,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        LogUtils.getInstance(TAG).setMessage("onCreate").debug();
+        LogUtils.getInstance(TAG).setContent("onCreate").debug();
         //设置显示OptionsMenu
         setHasOptionsMenu(true);
         //获取Bus单例，并注册
@@ -206,9 +201,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
     }
 
-    @SuppressLint("UseSparseArrays")
     private void initColor() {
-        mColorMaps = new HashMap<>();
+        mColorMaps = new SparseIntArray();
         mColorMaps.put(Constants.AMBER, Constants.AMBER_DARK);
         mColorMaps.put(Constants.BLUE, BLUE_DARK);
         mColorMaps.put(Constants.BLUE_GRAY, Constants.BLUE_GRAY_DARK);
@@ -233,7 +227,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        LogUtils.getInstance(TAG).setMessage("onCreate").debug();
+        LogUtils.getInstance(TAG).setContent("onCreate").debug();
         //视图初始化
         mView = inflater.inflate(R.layout.fragment_moonlight_detail, container, false);
 
@@ -244,7 +238,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         } else {
             mToolbar.setBackgroundColor(getResources().getColor(R.color.white));
         }
-        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) ((MoonlightActivity) mActivity).mToolbar.getLayoutParams();
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams)
+                ((MoonlightActivity) mActivity).mToolbar.getLayoutParams();
         params.setScrollFlags(0);
         ((MoonlightActivity) mActivity).mToolbar.setLayoutParams(params);
         mToolbar.setLayoutParams(params);
@@ -354,17 +349,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         }
         if (moonlight.getImageUrl() != null) {
             String url = moonlight.getImageUrl();
-            Picasso.with(mActivity)
-                    .load(Uri.parse(url))
-                    .memoryPolicy(NO_CACHE, NO_STORE)
-                    .placeholder(R.drawable.ic_cloud_download_black_24dp)
-                    .into(mImage);
-            mImage.post(new Runnable() {
-                @Override
-                public void run() {
-                    CircularRevealUtils.show(mImage);
-                }
-            });
+            Utils.displayImage(url, mImage);
+            mImage.post(() -> CircularRevealUtils.show(mImage));
 
             mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
         }
@@ -403,17 +389,11 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     }
 
     private void changeStatusBarColor(int color) {
-        for (Integer integer : mColorMaps.keySet()) {
-            if (integer == color) {
-                mActivity.getWindow().setStatusBarColor(mColorMaps.get(color));
-                break;
-            }
-        }
+        mActivity.getWindow().setStatusBarColor(mColorMaps.get(color));
     }
 
     @Override
     public void onStart() {
-        Log.d(TAG, "onStart: ");
         super.onStart();
     }
 
@@ -463,7 +443,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause: ");
     }
 
     @Override
@@ -471,14 +450,11 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         super.onResume();
         mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-
-        Log.d(TAG, "onResume: ");
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.i(TAG, "onStop");
         EventBus.getDefault().unregister(this);
     }
 
@@ -500,7 +476,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mAudioPlayer.releasePlayer();
         //移除FragmentOnTouchListener
         if (mFragmentOnTouchListener != null) {
-            ((MoonlightActivity) mActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
+            ((MoonlightActivity)
+                    mActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
         }
 
         RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
@@ -527,6 +504,9 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mImage = null;
         mCoordinatorLayout = null;
         moonlight = null;
+        mColorMaps = null;
+        mCircleProgressDialogFragment = null;
+        mFragmentOnTouchListener = null;
     }
 
     @Override
@@ -638,7 +618,9 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     }
 
     private boolean isEmpty(Moonlight moonlight) {
-        return !(moonlight.getImageUrl() != null || moonlight.getAudioUrl() != null || moonlight.getContent() != null
+        return !(moonlight.getImageUrl() != null
+                || moonlight.getAudioUrl() != null
+                || moonlight.getContent() != null
                 || moonlight.getTitle() != null);
     }
 
@@ -651,7 +633,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                         Log.d(TAG, "handleMessage: " + busEvent.getMessage());
                         File file = new File(new File(Environment.getExternalStorageDirectory()
                                 + "/MoonlightNote/.audio"), busEvent.getMessage());
-                        Uri mAudioUri = FileProvider.getUriForFile(MoonlightApplication.getContext(), Constants.FILE_PROVIDER, file);
+                        Uri mAudioUri = FileProvider.getUriForFile(
+                                MoonlightApplication.getContext(), Constants.FILE_PROVIDER, file);
                         uploadFromUri(mAudioUri, mUserId, 3);
                     }
                     break;
@@ -695,17 +678,20 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                         mAudioPlayer.prepare(moonlight.getAudioName());
                     }
                     mAudioPlayer.startPlaying();
-                    mPlayingAudio.setBackgroundResource(R.drawable.ic_pause_circle_outline_lime_a700_24dp);
+                    mPlayingAudio.setBackgroundResource(
+                            R.drawable.ic_pause_circle_outline_lime_a700_24dp);
                     mAudioPlayer.mPlayer.setOnCompletionListener(mediaPlayer -> {
                         mediaPlayer.reset();
                         mAudioPlayer.mProgressBar.setProgress(0);
-                        mPlayingAudio.setBackgroundResource(R.drawable.ic_play_circle_outline_cyan_400_48dp);
+                        mPlayingAudio.setBackgroundResource(
+                                R.drawable.ic_play_circle_outline_cyan_400_48dp);
                         mAudioPlayer.isPrepared = false;
                         mStartPlaying = true;
                     });
                 } else {
                     mAudioPlayer.stopPlaying();
-                    mPlayingAudio.setBackgroundResource(R.drawable.ic_play_circle_outline_cyan_400_48dp);
+                    mPlayingAudio.setBackgroundResource(
+                            R.drawable.ic_play_circle_outline_cyan_400_48dp);
                     mStartPlaying = true;
                     mAudioPlayer.mPlayer.reset();
                     mAudioPlayer.isPrepared = false;
@@ -1229,18 +1215,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         //当图片地址不为空时，首先从本地读取bitmap设置图片，bitmap为空，则从网络加载
         //图片地址为空则不加载图片
         if (mFileUri != null) {
-            Picasso.with(mActivity)
-                    .load(mFileUri)
-                    .memoryPolicy(NO_CACHE, NO_STORE)
-                    .placeholder(R.drawable.ic_cloud_download_black_24dp)
-                    .config(Bitmap.Config.RGB_565)
-                    .into(mImage);
-            mImage.post(new Runnable() {
-                @Override
-                public void run() {
-                    CircularRevealUtils.show(mImage);
-                }
-            });
+            Utils.displayImage(mFileUri.toString(), mImage);
+            mImage.post(() -> CircularRevealUtils.show(mImage));
 
             mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
         } else {

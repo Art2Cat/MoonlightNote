@@ -3,21 +3,21 @@ package com.art2cat.dev.moonlightnote.controller.login;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.NativeExpressAdView;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link BaseFragment} subclass.
  */
-public class SlashFragment extends Fragment {
+public class SlashFragment extends BaseFragment {
     private static final String APP_ID = "ca-app-pub-5043396164425122~8442166898";
 
     public SlashFragment() {
@@ -34,7 +34,8 @@ public class SlashFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_slash, container, false);
-        MobileAds.initialize(getActivity(), APP_ID);
+        // initialize Admob
+        MobileAds.initialize(mActivity, APP_ID);
         NativeExpressAdView adView = view.findViewById(R.id.adView);
         AdRequest request = new AdRequest.Builder()
 //                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)

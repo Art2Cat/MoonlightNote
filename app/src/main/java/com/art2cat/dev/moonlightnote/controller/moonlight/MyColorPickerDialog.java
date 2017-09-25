@@ -7,7 +7,6 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
@@ -30,27 +29,7 @@ import java.util.List;
 class MyColorPickerDialog extends ColorChooserDialog {
 
     //CONSTANTS
-    public static final int Red = 0xffF44336;
-    public static final int Pink = 0xffE91E63;
-    public static final int Purple = 0xff9C27B0;
-    public static final int DeepPurple = 0xff673AB7;
-    public static final int Indigo = 0xff3F51B5;
-    public static final int Blue = 0xff2196F3;
-    public static final int LightBlue = 0xff03A9F4;
-    public static final int Cyan = 0xff00BCD4;
-    public static final int Teal = 0xff009688;
-    public static final int Green = 0xff4CAF50;
-    public static final int LightGreen = 0xff8BC34A;
-    public static final int Lime = 0xffCDDC39;
-    public static final int Yellow = 0xffFFEB3B;
-    public static final int Amber = 0xffFFC107;
-    public static final int Orange = 0xffFF9800;
-    public static final int DeepOrange = 0xffFF5722;
-    public static final int Brown = 0xff795548;
-    public static final int Grey = 0xff9E9E9E;
-    public static final int BlueGray = 0xff607D8B;
     //    public final int Black =      0xff000000;
-    public static final int White = 0xffffffff;
     private ImageButton one;
     private ImageButton two;
     private ImageButton three;
@@ -120,8 +99,8 @@ class MyColorPickerDialog extends ColorChooserDialog {
 
 
         colors = new ArrayList<>();
-        colors.add(Red);
-        colors.add(Pink);
+        colors.add(red);
+        colors.add(pink);
         colors.add(Purple);
         colors.add(DeepPurple);
         colors.add(Indigo);
@@ -187,7 +166,6 @@ class MyColorPickerDialog extends ColorChooserDialog {
         for (int i = 0; i < buttons.size(); i++) {
             ShapeDrawable d = new ShapeDrawable(new OvalShape());
             d.setBounds(58, 58, 58, 58);
-            Log.e("Shape drown no", i + "");
             buttons.get(i).setVisibility(View.INVISIBLE);
 
             d.getPaint().setStyle(Paint.Style.FILL);
@@ -201,85 +179,60 @@ class MyColorPickerDialog extends ColorChooserDialog {
 
 
     private void animate() {
-        Log.e("animate", "true");
-        Runnable r1 = new Runnable() {
-            @Override
-            public void run() {
-                Log.e("animator 1", "r");
-                animator(one);
-            }
+
+        Runnable r1 = () -> {
+            animator(one);
         };
 
-        Runnable r2 = new Runnable() {
-            @Override
-            public void run() {
-                animator(two);
-                animator(six);
-            }
+        Runnable r2 = () -> {
+            animator(two);
+            animator(six);
         };
 
-        Runnable r3 = new Runnable() {
-            @Override
-            public void run() {
-                animator(three);
-                animator(seven);
-                animator(eleven);
-            }
+        Runnable r3 = () -> {
+            animator(three);
+            animator(seven);
+            animator(eleven);
         };
 
-        Runnable r4 = new Runnable() {
-            @Override
-            public void run() {
-                animator(four);
-                animator(eight);
-                animator(twelve);
-                animator(sixteen);
-            }
+        Runnable r4 = () -> {
+            animator(four);
+            animator(eight);
+            animator(twelve);
+            animator(sixteen);
         };
 
-        Runnable r5 = new Runnable() {
-            @Override
-            public void run() {
-                animator(five);
-                animator(nine);
-                animator(thirteen);
-                animator(seventeen);
-            }
+        Runnable r5 = () -> {
+            animator(five);
+            animator(nine);
+            animator(thirteen);
+            animator(seventeen);
         };
 
-        Runnable r6 = new Runnable() {
-            @Override
-            public void run() {
-                animator(ten);
-                animator(fourteen);
-                animator(eighteen);
-            }
+        Runnable r6 = () -> {
+            animator(ten);
+            animator(fourteen);
+            animator(eighteen);
         };
 
-        Runnable r7 = new Runnable() {
-            @Override
-            public void run() {
-                animator(fifteen);
-                animator(nineteen);
-            }
+        Runnable r7 = () -> {
+            animator(fifteen);
+            animator(nineteen);
         };
 
-//        Runnable r8 = new Runnable() {
+//        Runnable r8 = () -> {
 //            @Override
 //            public void run() {
 //                animator(twenty);
 //            }
 //        };
 
-        Runnable r9 = new Runnable() {
-            @Override
-            public void run() {
-                Animation animation = AnimationUtils.loadAnimation(getContext(), android.R.anim.fade_in);
-                animation.setInterpolator(new AccelerateInterpolator());
-                twentyOne.setAnimation(animation);
-                twentyOne.setVisibility(View.VISIBLE);
-                animation.start();
-            }
+        Runnable r9 = () -> {
+            Animation animation = AnimationUtils.loadAnimation(getContext(), android.R.anim.fade_in);
+            animation.setInterpolator(new AccelerateInterpolator());
+            twentyOne.setAnimation(animation);
+            twentyOne.setVisibility(View.VISIBLE);
+            animation.start();
         };
 
 
@@ -297,7 +250,8 @@ class MyColorPickerDialog extends ColorChooserDialog {
     }
 
     private void animator(final ImageButton imageButton) {
-        Animation animation = AnimationUtils.loadAnimation(getContext(), com.turkialkhateeb.materialcolorpicker.R.anim.color_item);
+        Animation animation = AnimationUtils.loadAnimation(getContext(),
+                R.anim.color_item);
         animation.setInterpolator(new AccelerateInterpolator());
         imageButton.setAnimation(animation);
         imageButton.setVisibility(View.VISIBLE);

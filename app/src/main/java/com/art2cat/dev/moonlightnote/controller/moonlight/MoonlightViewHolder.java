@@ -28,35 +28,33 @@ import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
 
 public class MoonlightViewHolder extends RecyclerView.ViewHolder implements AnimateViewHolder {
     private static final String TAG = "MoonlightViewHolder";
-    public CardView mCardView;
-    public LinearLayoutCompat mTransitionItem;
-    public AppCompatTextView mTitle;
-    public AppCompatTextView mContent;
-    public AppCompatImageView mImage;
-    public LinearLayoutCompat mAudio;
+    AppCompatTextView mTitle;
+    AppCompatTextView mContent;
+    AppCompatImageView mImage;
+    LinearLayoutCompat mAudio;
+    private CardView mCardView;
 
     public MoonlightViewHolder(View itemView) {
         super(itemView);
         mCardView = itemView.findViewById(R.id.item_main);
-        mTransitionItem = itemView.findViewById(R.id.transition_item);
         mTitle = itemView.findViewById(R.id.moonlight_title);
         mContent = itemView.findViewById(R.id.moonlight_content);
         mImage = itemView.findViewById(R.id.moonlight_image);
         mAudio = itemView.findViewById(R.id.moonlight_audio);
     }
 
-    public void displayTitle(String title) {
+    void displayTitle(String title) {
 
         mTitle.setText(title);
         mTitle.setVisibility(View.VISIBLE);
     }
 
-    public void displayContent(String content) {
+    void displayContent(String content) {
         mContent.setText(content);
         mContent.setVisibility(View.VISIBLE);
     }
 
-    public void displayImage(Context context, String url) {
+    void displayImage(Context context, String url) {
         if (url != null) {
             Log.d(TAG, "displayImage: succeed");
             Picasso.with(context)
@@ -88,7 +86,8 @@ public class MoonlightViewHolder extends RecyclerView.ViewHolder implements Anim
     }
 
     @Override
-    public void animateAddImpl(RecyclerView.ViewHolder holder, ViewPropertyAnimatorListener listener) {
+    public void animateAddImpl(RecyclerView.ViewHolder holder,
+                               ViewPropertyAnimatorListener listener) {
         ViewCompat.animate(itemView)
                 .translationY(0)
                 .alpha(1)
@@ -98,7 +97,8 @@ public class MoonlightViewHolder extends RecyclerView.ViewHolder implements Anim
     }
 
     @Override
-    public void animateRemoveImpl(RecyclerView.ViewHolder holder, ViewPropertyAnimatorListener listener) {
+    public void animateRemoveImpl(RecyclerView.ViewHolder holder,
+                                  ViewPropertyAnimatorListener listener) {
         ViewCompat.animate(itemView)
                 .translationY(-itemView.getHeight() * 0.3f)
                 .alpha(0)

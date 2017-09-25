@@ -37,7 +37,8 @@ public class FragmentUtils {
      * @param fm       FragmentManager
      * @param fragment 需要切换的fragment
      */
-    public static void replaceFragment(FragmentManager fm, @IdRes int id, Fragment fragment, int type) {
+    public static void replaceFragment(FragmentManager fm, @IdRes int id, Fragment fragment,
+                                       int type) {
         if (type == REPLACE_BACK_STACK) {
             replaceBackStackFragment(fm, id, fragment);
         } else if (type == REPLACE_NORMAL) {
@@ -46,7 +47,8 @@ public class FragmentUtils {
     }
 
 
-    private static void replaceBackStackFragment(FragmentManager fm, @IdRes int id, Fragment fragment) {
+    private static void replaceBackStackFragment(FragmentManager fm, @IdRes int id,
+                                                 Fragment fragment) {
         fm.beginTransaction()
                 .setTransition(android.support.transition.R.id.transition_current_scene)
                 .setCustomAnimations(R.anim.fragment_slide_left_enter,

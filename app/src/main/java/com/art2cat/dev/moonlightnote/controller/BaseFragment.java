@@ -62,7 +62,9 @@ public abstract class BaseFragment extends Fragment {
      * @param v        view
      * @param listener 监听器
      */
-    public static void removeOnGlobalLayoutListener(View v, ViewTreeObserver.OnGlobalLayoutListener listener) {
+    public static void removeOnGlobalLayoutListener(View v,
+                                                    ViewTreeObserver.OnGlobalLayoutListener listener
+    ) {
         v.getViewTreeObserver().removeOnGlobalLayoutListener(listener);
     }
 

@@ -15,14 +15,12 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.model.Constants;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public abstract class CommonSettingsFragment extends Fragment {
-    public static final int TYPE_ABOUT_APP = 0;
-    public static final int TYPE_LICENSE = 1;
-    public static final int TYPE_RIVACY_POLICY = 2;
 
     private int mType;
 
@@ -54,17 +52,17 @@ public abstract class CommonSettingsFragment extends Fragment {
         int padding = getResources().getDimensionPixelOffset(R.dimen.padding);
         textView.setPadding(padding, padding, padding, padding);
         switch (mType) {
-            case TYPE_ABOUT_APP:
+            case Constants.FRAGMENT_ABOUT:
                 textView.setGravity(Gravity.CENTER);
                 textView.setText(getContent());
                 getActivity().setTitle(R.string.settings_about);
                 break;
-            case TYPE_LICENSE:
+            case Constants.FRAGMENT_LICENSE:
                 textView.setGravity(Gravity.CENTER);
                 textView.setText(getContent());
                 getActivity().setTitle(R.string.settings_license);
                 break;
-            case TYPE_RIVACY_POLICY:
+            case Constants.FRAGMENT_POLICY:
                 textView.setGravity(Gravity.START);
                 textView.setText(getContent());
                 getActivity().setTitle(R.string.settings_policy);

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -25,9 +25,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link BaseFragment} subclass.
  */
-public class ChangePasswordFragment extends Fragment {
+public class ChangePasswordFragment extends BaseFragment {
 
     private static final String TAG = "ChangePasswordFragment";
 
@@ -54,8 +54,11 @@ public class ChangePasswordFragment extends Fragment {
             final String newPassword = newET.getText().toString();
 
             if (!oldPassword.equals("") && !newPassword.equals("")) {
-                AuthCredential credential = EmailAuthProvider
-                        .getCredential(user.getEmail(), oldPassword);
+                AuthCredential credential = null;
+                if (user.getEmail() != null) {
+                    credential = EmailAuthProvider
+                            .getCredential(user.getEmail(), oldPassword);
+                }
                 user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {

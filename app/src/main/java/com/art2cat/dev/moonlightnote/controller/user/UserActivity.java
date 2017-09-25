@@ -24,7 +24,8 @@ public class UserActivity extends AppCompatActivity {
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         mToolbar.setNavigationOnClickListener(view -> onBackPressed());
 
-        FragmentUtils.addFragment(getSupportFragmentManager(), R.id.common_fragment_container, new UserFragment());
+        FragmentUtils.addFragment(getSupportFragmentManager(), R.id.common_fragment_container,
+                new UserFragment());
     }
 
     @Override

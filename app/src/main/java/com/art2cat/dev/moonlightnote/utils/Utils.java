@@ -7,20 +7,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
+import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.controller.settings.MoonlightPinActivity;
 import com.art2cat.dev.moonlightnote.model.NoteLab;
 import com.art2cat.dev.moonlightnote.model.User;
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.picasso.Picasso;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -35,6 +39,8 @@ import java.util.concurrent.TimeUnit;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.art2cat.dev.moonlightnote.model.Constants.EXTRA_PIN;
+import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
+import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 
 /**
  * Created by art2cat
@@ -250,24 +256,22 @@ public class Utils {
 //                context.startActivity(createChooser(intent1, "Open with..."));
             } catch (ActivityNotFoundException e) {
                 e.printStackTrace();
-                ToastUtils.with(context).setMessage( "Email client no found!").showShortToast();
+                ToastUtils.with(context).setMessage("Email client no found!").showShortToast();
             }
         }
     }
 
     /**
      * 是否有网络
+     *
      * @return 返回网络状态
      */
-    public static boolean isNetworkConnected()
-    {
+    public static boolean isNetworkConnected() {
         Context context = MoonlightApplication.getContext();
-        if (context != null)
-        {
+        if (context != null) {
             ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
-            if (mNetworkInfo != null)
-            {
+            if (mNetworkInfo != null) {
                 return mNetworkInfo.isAvailable();
             }
         }
@@ -276,11 +280,12 @@ public class Utils {
 
     /**
      * 是否连上wifi
+     *
      * @return 是否连上wifi
      */
     static public boolean isWifiConnected() {
 
-        ConnectivityManager mConnectivityManager = (ConnectivityManager)  MoonlightApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager mConnectivityManager = (ConnectivityManager) MoonlightApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         return mWiFiNetworkInfo != null && mWiFiNetworkInfo.isAvailable();
     }
@@ -291,18 +296,23 @@ public class Utils {
      * @param context 上下文
      * @return 是否
      */
-    static public boolean isMobileConnected(Context context)
-    {
-        if (context != null)
-        {
+    static public boolean isMobileConnected(Context context) {
+        if (context != null) {
             ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo mMobileNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-            if (mMobileNetworkInfo != null)
-            {
+            if (mMobileNetworkInfo != null) {
                 return mMobileNetworkInfo.isAvailable();
             }
         }
         return false;
     }
 
+    public static void displayImage(String url, ImageView imageView) {
+        Picasso.with(MoonlightApplication.getContext())
+                .load(url)
+                .memoryPolicy(NO_CACHE, NO_STORE)
+                .placeholder(R.drawable.ic_cloud_download_black_24dp)
+                .config(Bitmap.Config.RGB_565)
+                .into(imageView);
+    }
 }

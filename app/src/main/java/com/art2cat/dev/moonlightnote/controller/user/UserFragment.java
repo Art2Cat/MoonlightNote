@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
@@ -22,6 +21,7 @@ import android.view.ViewGroup;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.InputDialogFragment;
@@ -37,17 +37,13 @@ import com.art2cat.dev.moonlightnote.utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.utils.UserUtils;
+import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.art2cat.dev.moonlightnote.utils.firebase.AuthUtils;
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
-import com.art2cat.dev.moonlightnote.utils.image_loader.BitmapUtils;
 import com.art2cat.dev.moonlightnote.utils.material_animation.CircularRevealUtils;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -82,13 +78,13 @@ import static com.art2cat.dev.moonlightnote.model.Constants.FB_STORAGE_REFERENCE
 import static com.art2cat.dev.moonlightnote.model.Constants.FILE_PROVIDER;
 import static com.art2cat.dev.moonlightnote.model.Constants.STORAGE_PERMS;
 import static com.art2cat.dev.moonlightnote.model.Constants.TAKE_PICTURE;
+import static com.github.orangegangsters.lollipin.lib.managers.AppLockActivity.TAG;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link BaseFragment} subclass.
  */
-public class UserFragment extends Fragment implements View.OnClickListener {
-    private static final String TAG = "UserFragment";
+public class UserFragment extends BaseFragment implements View.OnClickListener {
     private View mView;
     private CircleImageView mCircleImageView;
     private AppCompatTextView mNickname;
@@ -97,11 +93,10 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private CircleProgressDialogFragment mCircleProgressDialogFragment;
     private FirebaseUser user;
     private User mUser;
-    private BitmapUtils mBitmapUtils;
     private Uri mFileUri = null;
     private StorageReference mStorageReference;
     private String mFileName;
-    private boolean isChangePwd = false;
+    private LogUtils logUtils = LogUtils.getInstance(UserFragment.class.getName());
 
     public UserFragment() {
         // Required empty public constructor
@@ -117,9 +112,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         //获取firebaseStorage实例
         mStorageReference = FirebaseStorage.getInstance()
                 .getReferenceFromUrl(FB_STORAGE_REFERENCE);
-
-
-        mBitmapUtils = new BitmapUtils(getActivity());
 
         mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance(getString(R.string.prograssBar_uploading));
     }
@@ -138,7 +130,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
 
         mUser = UserUtils.getUserFromCache(getActivity().getApplicationContext());
-        LogUtils.getInstance(TAG).setMessage("displayUserInfo: " + mUser.getUid()).debug();
 
         AdRequest adRequest = new AdRequest.Builder()
 //                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
@@ -220,7 +211,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     private void initView() {
         String nickname = mUser.getNickname();
-        LogUtils.getInstance(TAG).setMessage("initView: " + nickname).debug();
         if (nickname != null) {
             mNickname.setText(nickname);
             mUser.setNickname(nickname);
@@ -228,24 +218,20 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             mNickname.setText(R.string.user_setNickname);
         }
         String email = mUser.getEmail();
-        LogUtils.getInstance(TAG).setMessage("initView: " + email).debug();
         if (email != null) {
             mUser.setEmail(email);
             mEmail.setText(email);
         }
 
         String url = mUser.getPhotoUrl();
-        LogUtils.getInstance(TAG).setMessage("initView: " + url);
         if (url != null) {
-
-            mBitmapUtils.display(mCircleImageView, url);
+            Utils.displayImage(url, mCircleImageView);
         }
     }
 
     private void updateUI(Uri mDownloadUrl) {
         if (mDownloadUrl != null) {
-            BitmapUtils bitmapUtils = new BitmapUtils(getActivity());
-            bitmapUtils.display(mCircleImageView, mDownloadUrl.toString());
+            Utils.displayImage(mDownloadUrl.toString(), mCircleImageView);
             mUser.setPhotoUrl(mDownloadUrl.toString());
         } else {
             mFileName = null;
@@ -279,13 +265,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     public void busAction(BusEvent busEvent) {
         //这里更新视图或者后台操作,从busAction获取传递参数.
         if (busEvent != null) {
+            logUtils.setContent("BusEvent: " + busEvent.getFlag()).debug();
             switch (busEvent.getFlag()) {
                 case BUS_FLAG_CAMERA:
-                    Log.d(TAG, "busEvent: " + busEvent.getFlag());
                     onCameraClick();
                     break;
                 case BUS_FLAG_ALBUM:
-                    Log.d(TAG, "busEvent: " + busEvent.getFlag());
                     onAlbumClick();
                     break;
                 case BUS_FLAG_USERNAME:
@@ -309,14 +294,15 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                         FDatabaseUtils.emptyNote(user.getUid());
                         FDatabaseUtils.emptyTrash(user.getUid());
 
-                        user.reauthenticate(credential).addOnCompleteListener(task -> user.delete().addOnCompleteListener(task1 -> {
-                            if (task1.isSuccessful()) {
-                                LogUtils.getInstance(TAG).setMessage("User account deleted.").debug();
-                                startActivity(new Intent(getActivity(), LoginActivity.class));
-                            }
-                        }).addOnFailureListener(e -> {
-                            if (BuildConfig.DEBUG) Log.d(TAG, e.toString());
-                        }));
+                        user.reauthenticate(credential).addOnCompleteListener(task ->
+                                user.delete().addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        logUtils.setContent("User account deleted.").debug();
+                                        startActivity(new Intent(getActivity(), LoginActivity.class));
+                                    }
+                                }).addOnFailureListener(e -> {
+                                    if (BuildConfig.DEBUG) Log.d(TAG, e.toString());
+                                }));
                     }
                     break;
             }
@@ -335,14 +321,15 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             profileUpdates = new UserProfileChangeRequest.Builder()
                     .setPhotoUri(uri)
                     .build();
-            LogUtils.getInstance(TAG).setMessage("updateProfile: " + profileUpdates.getPhotoUri().toString()).debug();
+            logUtils.setContent("updateProfile: " +
+                    profileUpdates.getPhotoUri().toString()).debug();
         }
 
         if (profileUpdates != null) {
             user.updateProfile(profileUpdates)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            LogUtils.getInstance(TAG).setMessage("User profile updated.").debug();
+                            logUtils.setContent("User profile updated.").debug();
                             if (mUser != null) {
                                 BusEventUtils.post(Constants.BUS_FLAG_UPDATE_USER, null);
                                 UserUtils.updateUser(user.getUid(), mUser);
@@ -400,12 +387,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 dir.mkdirs();
             }
             boolean created = file.createNewFile();
-            LogUtils.getInstance(TAG)
-                    .setMessage("file.createNewFile:" + file.getAbsolutePath() + ":" + created)
+            logUtils
+                    .setContent("file.createNewFile:" + file.getAbsolutePath() + ":" + created)
                     .debug();
         } catch (IOException e) {
             LogUtils.getInstance(TAG)
-                    .setMessage("file.createNewFile" + file.getAbsolutePath() + ":FAILED")
+                    .setContent("file.createNewFile" + file.getAbsolutePath() + ":FAILED")
                     .error(e);
         }
 
@@ -413,7 +400,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         // See: https://developer.android.com/reference/android/support/v4/content/FileProvider.html
 
         mFileUri = FileProvider.getUriForFile(getActivity(), FILE_PROVIDER, file);
-        LogUtils.getInstance(TAG).setMessage("file: " + mFileName).info();
+        LogUtils.getInstance(TAG).setContent("file: " + mFileName).info();
         // Create and launch the intent
         Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         takePicIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
@@ -444,16 +431,16 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             }
             boolean created = file.createNewFile();
             LogUtils.getInstance(TAG)
-                    .setMessage("file.createNewFile:" + file.getAbsolutePath() + ":" + created)
+                    .setContent("file.createNewFile:" + file.getAbsolutePath() + ":" + created)
                     .debug();
         } catch (IOException e) {
             LogUtils.getInstance(TAG)
-                    .setMessage("file.createNewFile" + file.getAbsolutePath() + ":FAILED")
+                    .setContent("file.createNewFile" + file.getAbsolutePath() + ":FAILED")
                     .error(e);
         }
 
         mFileUri = FileProvider.getUriForFile(getActivity(), FILE_PROVIDER, file);
-        LogUtils.getInstance(TAG).setMessage("file: " + mFileName).info();
+        LogUtils.getInstance(TAG).setContent("file: " + mFileName).info();
         Intent albumIntent = new Intent(Intent.ACTION_PICK);
         albumIntent.setType("image/*");
         albumIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
@@ -483,7 +470,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             mCircleProgressDialogFragment.dismiss();
         }).addOnFailureListener(e -> {
             mCircleProgressDialogFragment.dismiss();
-            LogUtils.getInstance(TAG).setMessage("onFailure: ").error(e);
+            LogUtils.getInstance(TAG).setContent("onFailure: ").error(e);
             mFileName = null;
             if (user.getPhotoUrl() != null) {
                 updateUI(user.getPhotoUrl());

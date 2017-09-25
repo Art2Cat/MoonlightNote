@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.model.Constants;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -20,7 +21,7 @@ public class LicenseFragment extends CommonSettingsFragment {
     public CommonSettingsFragment newInstance() {
         LicenseFragment licenseFragment = new LicenseFragment();
         Bundle args = new Bundle();
-        args.putInt("type", TYPE_LICENSE);
+        args.putInt("type", Constants.FRAGMENT_LICENSE);
         licenseFragment.setArguments(args);
         return licenseFragment;
     }

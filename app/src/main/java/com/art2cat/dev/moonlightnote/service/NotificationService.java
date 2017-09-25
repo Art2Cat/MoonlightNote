@@ -30,20 +30,20 @@ public class NotificationService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         LogUtils.getInstance(TAG)
-                .setMessage("From: " + remoteMessage.getFrom())
+                .setContent("From: " + remoteMessage.getFrom())
                 .debug();
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             LogUtils.getInstance(TAG)
-                    .setMessage("Message data payload: " + remoteMessage.getData())
+                    .setContent("Message data payload: " + remoteMessage.getData())
                     .debug();
         }
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             LogUtils.getInstance(TAG)
-                    .setMessage("Message Notification Body: " + remoteMessage.getNotification().getBody())
+                    .setContent("Message Notification Body: " + remoteMessage.getNotification().getBody())
                     .debug();
             sendNotification(remoteMessage.getNotification().getBody());
         }

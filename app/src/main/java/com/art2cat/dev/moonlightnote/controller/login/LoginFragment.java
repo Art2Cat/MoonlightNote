@@ -11,7 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
@@ -27,6 +27,7 @@ import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.InputDialogFragment;
+import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
 import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
@@ -54,7 +55,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * A simple {@link BaseFragment} subclass.
  */
 public class LoginFragment extends BaseFragment implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
     private static final int RC_SIGN_IN = 9001;
@@ -92,7 +93,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         mEmailView = mView.findViewById(R.id.email);
 
         Toolbar toolbar = mView.findViewById(R.id.toolbar);
-        ((LoginActivity) getActivity()).setSupportActionBar(toolbar);
+        ((LoginActivity) mActivity).setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.fragment_login);
 
         mPasswordView = mView.findViewById(R.id.password);
@@ -142,7 +143,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     public void onDestroy() {
         EventBus.getDefault().unregister(this);
         if (mGoogleApiClient != null) {
-            mGoogleApiClient.stopAutoManage(getActivity());
+            mGoogleApiClient.stopAutoManage((FragmentActivity) mActivity);
             mGoogleApiClient.disconnect();
         }
         super.onDestroy();
@@ -200,7 +201,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 flag = 2;
             } else if (flag == 2) {
                 signInWithEmail(email, password);
-                //Intent intent = new Intent(getActivity(), MoonlightDetailActivity.class);
+                //Intent intent = new Intent(mActivity, MoonlightDetailActivity.class);
                 //startActivity(intent);
             }
         }
@@ -288,19 +289,19 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
             case R.id.login_google_btn:
                 showProgress(true);
                 GoogleSignInOptions mGoogleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(getActivity().getString(R.string.default_web_client_id))
+                        .requestIdToken(mActivity.getString(R.string.default_web_client_id))
                         .requestEmail()
                         .build();
                 mGoogleApiClient = null;
-                mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                        .enableAutoManage(getActivity() /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                mGoogleApiClient = new GoogleApiClient.Builder(mActivity)
+                        .enableAutoManage((FragmentActivity) mActivity /* FragmentActivity */, this /* OnConnectionFailedListener */)
                         .addApi(Auth.GOOGLE_SIGN_IN_API, mGoogleSignInOptions)
                         .build();
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
                 startActivityForResult(signInIntent, RC_SIGN_IN);
                 break;
             case R.id.test_btn:
-//                Utils.openMailClient(getActivity());
+//                Utils.openMailClient(mActivity);
                 signInAnonymously();
                 break;
         }
@@ -369,14 +370,14 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                                 SnackBarUtils.TYPE_WARNING);
                     } else {
                         showProgress(false);
-                        Intent intent = new Intent(getActivity(), com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity.class);
+                        Intent intent = new Intent(mActivity, MoonlightActivity.class);
                         Bundle bundle = ActivityOptions
-                                .makeSceneTransitionAnimation(getActivity()).toBundle();
-                        getActivity().startActivity(intent, bundle);
+                                .makeSceneTransitionAnimation(mActivity).toBundle();
+                        mActivity.startActivity(intent, bundle);
                         showShortSnackBar(mView, "Google Sign In succeed", SnackBarUtils.TYPE_INFO);
                         isNewUser = true;
                         SPUtils.putBoolean(MoonlightApplication.getContext(), "User", "google", true);
-                        getActivity().finishAfterTransition();
+                        mActivity.finishAfterTransition();
                     }
                 });
     }
@@ -386,13 +387,13 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         showProgress(false);
-                        Intent intent = new Intent(getActivity(), com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity.class);
+                        Intent intent = new Intent(mActivity, MoonlightActivity.class);
                         Bundle bundle = ActivityOptions
-                                .makeSceneTransitionAnimation(getActivity()).toBundle();
-                        getActivity().startActivity(intent, bundle);
+                                .makeSceneTransitionAnimation(mActivity).toBundle();
+                        mActivity.startActivity(intent, bundle);
 
                         //销毁当前Activity
-                        getActivity().finishAfterTransition();
+                        mActivity.finishAfterTransition();
                         Log.d(TAG, "signIn:onComplete:" + task.isSuccessful());
                     }
                 }).addOnFailureListener(e -> {
@@ -438,10 +439,9 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         showProgress(true);
         mAuth.signInAnonymously()
                 .addOnCompleteListener(task -> {
-                    Log.d(TAG, "signInAnonymously:onComplete:" + task.isSuccessful());
                     if (task.isSuccessful()) {
-                        Intent intent = new Intent(getActivity(), com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity.class);
-                        getActivity().startActivity(intent);
+                        Intent intent = new Intent(mActivity, com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity.class);
+                        mActivity.startActivity(intent);
                     }
 
                     showProgress(false);

@@ -304,7 +304,9 @@
         Disclaimer statement:\n
         see Privacy Policy page
     </string>
-    <string name="confirmation_disable_security">Disable protection and decrypt all your data?</string>
+    <string name="confirmation_disable_security">
+        Disable protection and decrypt all your data?
+    </string>
     <string name="confirmation_title">Confirmation</string>
     <string name="moonlight_image">image</string>
     <string name="trans_moonlight">moonlight</string>
@@ -312,7 +314,8 @@
     <string name="action_empty_note">Empty Note</string>
     <string name="dialog_empty_note_title">Empty Note?</string>
     <string name="dialog_empty_note_confirm">Empty Note</string>
-    <string name="dialog_empty_note_content">All notes will be permanently deleted. Deleted data will not be restored.</string>
+    <string name="dialog_empty_note_content">All notes will be permanently deleted.
+        Deleted data will not be restored.</string>
     <string name="dialog_color_white">white</string>
 
     <string name="pref_header_security">App Security</string>
@@ -326,11 +329,13 @@
     <string name="pref_header_back_up_and_restore">Back up and restore</string>
     <string name="pref_header_about">About</string>
     <string name="settings_connect_to_drive">Connect to Google Drive</string>
-    <string name="settings_connect_to_drive_summary">To use Google Drive backup and restore please connect to your Google Drive account first.</string>
+    <string name="settings_connect_to_drive_summary">To use Google Drive backup and
+        restore please connect to your Google Drive account first.</string>
     <string name="select_your_color">Select your color:</string>
     <string name="test">TEST ONLY</string>
     <string name="menu_feedback">Feedback</string>
     <string name="menu_delete">Remove image</string>
-    <string name="share_contet">\"Hey, I found a great app at: https://play.google.com/store/apps/details?id=com.art2cat.dev.moonlightnote\"</string>
+    <string name="share_contet">\“Hey, I found a great app at:
+        https://play.google.com/store/apps/details?id=com.art2cat.dev.moonlightnote\”</string>
 
 </resources>
