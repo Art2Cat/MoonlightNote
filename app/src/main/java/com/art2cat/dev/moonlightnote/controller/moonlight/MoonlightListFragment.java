@@ -57,7 +57,7 @@ import static android.R.attr.tag;
  * on 9/17/16.
  */
 public abstract class MoonlightListFragment extends BaseFragment {
-    private static final String TAG = "MoonlightListFragment";
+    private static final String TAG = MoonlightListFragment.class.getName();
     private DatabaseReference mDatabase;
     private FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder> mFirebaseRecyclerAdapter;
     private Toolbar mToolbar;
@@ -77,10 +77,11 @@ public abstract class MoonlightListFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //获取Bus单例，并注册
+
         EventBus.getDefault().register(this);
+
         LogUtils.getInstance(TAG).setContent("onCreate").debug();
-        //在配置变化的时候将这个fragment保存下来
+
         setRetainInstance(true);
     }
 
@@ -101,11 +102,8 @@ public abstract class MoonlightListFragment extends BaseFragment {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.grey,
                         mActivity.getTheme()));
-//                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.grey_dark,
-//                        mActivity.getTheme()));
             } else {
                 mToolbar.setBackgroundColor(getResources().getColor(R.color.grey));
-//                mActivity.getWindow().setStatusBarColor(getResources().getColor(R.color.grey_dark));
             }
         } else {
             mToolbar.setTitle(R.string.app_name);
@@ -163,6 +161,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
         mRecyclerView.getItemAnimator().setRemoveDuration(500);
         mRecyclerView.getItemAnimator().setMoveDuration(500);
         mRecyclerView.getItemAnimator().setChangeDuration(500);
+
         setAdapter();
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -248,7 +247,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
                                 Log.i(TAG, "populateViewHolder: " + moonlightD.getImageName());
                                 viewHolder.mImage.setImageResource(
                                         R.drawable.ic_cloud_download_black_24dp);
-//                        viewHolder.mImage.setTag(moonlightD.getImageName());
                                 viewHolder.displayImage(mActivity, moonlightD.getImageUrl());
                             } else {
                                 viewHolder.mImage.setVisibility(View.GONE);
@@ -465,7 +463,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
         super.onOptionsMenuClosed(menu);
     }
 
-    @SuppressWarnings("ConstantConditions")
     public String getUid() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
@@ -498,7 +495,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
         }
     }
 
-    private void changeToolbar(final Moonlight moonlight, int type) {
+    private void changeToolbar(Moonlight moonlight, int type) {
         switch (type) {
             case 0:
                 mToolbar.setVisibility(View.GONE);

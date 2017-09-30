@@ -215,14 +215,9 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         return password.length() > 4;
     }
 
-    /*
-     * Shows the progress UI and hides the login form.
-     */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
+
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
@@ -248,10 +243,8 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            Log.d(TAG, "onActivityResult: " + result.getStatus());
             if (result.isSuccess()) {
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
@@ -259,7 +252,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
             } else {
                 showProgress(false);
                 showShortSnackBar(mView, "Google Sign In failed", SnackBarUtils.TYPE_INFO);
-                Log.d(TAG, "Google Sign In failed");
             }
         }
     }
@@ -440,7 +432,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         mAuth.signInAnonymously()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Intent intent = new Intent(mActivity, com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity.class);
+                        Intent intent = new Intent(mActivity, MoonlightActivity.class);
                         mActivity.startActivity(intent);
                     }
 

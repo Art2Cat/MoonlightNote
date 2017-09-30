@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -307,7 +308,7 @@ public class Utils {
         return false;
     }
 
-    public static void displayImage(String url, ImageView imageView) {
+    public static void displayImage(@NonNull String url, @NonNull ImageView imageView) {
         Picasso.with(MoonlightApplication.getContext())
                 .load(url)
                 .memoryPolicy(NO_CACHE, NO_STORE)

@@ -233,9 +233,7 @@ public class MoonlightActivity extends BaseFragmentActivity
             case R.id.nav_settings:
                 Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
                 if (Utils.isXLargeTablet(this)) {
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     Log.d(TAG, "onNavigationItemSelected: ");
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 }
                 checkLockStatus();
                 startActivity(intent);

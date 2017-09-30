@@ -1,6 +1,5 @@
 package com.art2cat.dev.moonlightnote;
 
-
 import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.utils.MoonlightEncryptUtils;
 

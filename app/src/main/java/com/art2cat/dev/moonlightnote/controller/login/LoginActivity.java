@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
@@ -48,7 +47,9 @@ public class LoginActivity extends AppCompatActivity {
         MobileAds.initialize(this, AD_UNIT_ID);
         mAuth = getInstance();
 
-        boolean flag = SPUtils.getBoolean(this, Constants.USER_CONFIG, Constants.USER_CONFIG_AUTO_LOGIN, false);
+        boolean flag = SPUtils.getBoolean(this,
+                Constants.USER_CONFIG,
+                Constants.USER_CONFIG_AUTO_LOGIN, false);
         if (!flag) {
             signIn();
         }
@@ -84,28 +85,25 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void signIn() {
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N_MR1)
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
-                    mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.getContext(), user.getUid());
-                    mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
+        mAuthListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
+                mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.getContext(),
+                        user.getUid());
+                mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
 
-                    initShortcuts();
+                initShortcuts();
 
 
-                    mLoginState = true;
-                } else {
-                    mLoginState = false;
-                    Log.d(TAG, "onAuthStateChanged:signed_out:");
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
-                        ShortcutsUtils.getInstance(LoginActivity.this)
-                                .removeShortcuts();
-                    }
+                mLoginState = true;
+            } else {
+                mLoginState = false;
+                Log.d(TAG, "onAuthStateChanged:signed_out:");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+                    ShortcutsUtils.getInstance(LoginActivity.this)
+                            .removeShortcuts();
                 }
             }
         };

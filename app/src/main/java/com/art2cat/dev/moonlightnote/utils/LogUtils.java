@@ -50,14 +50,10 @@ public class LogUtils {
     }
 
     public void warn() {
-        if (BuildConfig.DEBUG) {
-            Log.w(tag, content);
-        }
+        Log.w(tag, content);
     }
 
     public void error(Exception e) {
-        if (BuildConfig.DEBUG) {
-            Log.e(tag, content, e);
-        }
+        Log.e(tag, content, e);
     }
 }

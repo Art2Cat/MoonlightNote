@@ -407,26 +407,16 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         initView(mEditable);
         setOverflowButtonColor(mActivity, GREY_DARK);
 
-//        if (Utils.isXLargeTablet(mActivity)) {
-//            LinearLayout.LayoutParams lp =
-//                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-//                            mToolbar.getHeight());
-//            mBottomBarContainer.setLayoutParams(lp);
-//        }
-
         if (!mEditable) {
             //禁用软键盘
             mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             final Snackbar snackbar = SnackBarUtils.longSnackBar(mView, getString(R.string.trash_restore),
                     SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_restore_action,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
+                    view -> {
 
-                            BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
-                            FDatabaseUtils.restoreToNote(mUserId, moonlight);
-                            getFragmentManager().popBackStack();
-                        }
+                        BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
+                        FDatabaseUtils.restoreToNote(mUserId, moonlight);
+                        getFragmentManager().popBackStack();
                     });
 
             mFragmentOnTouchListener = ev -> {
@@ -487,7 +477,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     }
 
     private void release() {
-//        mView = null;
         mToolbar = null;
         mViewParent = null;
         mBottomBarContainer = null;
@@ -566,7 +555,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
     }
 
-    @SuppressLint("LogConditional")
     @Override
     public void onFocusChange(View view, boolean b) {
         switch (view.getId()) {
@@ -646,20 +634,12 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bottom_bar_left:
-//                if (Utils.isXLargeTablet(mActivity)) {
-//                    MenuUtils.showPopupMenu(mActivity, mView, R.menu.menu_detail_left, this);
-//                } else {
                 isLeftOrRight = true;
                 hideSoftKeyboard();
-//                }
                 break;
             case R.id.bottom_bar_right:
-//                if (Utils.isXLargeTablet(mActivity)) {
-//                    MenuUtils.showPopupMenu(mActivity, mView, R.menu.menu_detail_right, this);
-//                } else {
                 isLeftOrRight = false;
                 hideSoftKeyboard();
-//                }
                 break;
             case R.id.moonlight_image:
                 //网页浏览图片。。。
@@ -698,7 +678,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 }
                 break;
             case R.id.delete_audio:
-                //删除录音
                 StorageUtils.removeAudio(mView, mUserId, moonlight.getAudioName());
                 mAudioCardView.setVisibility(View.GONE);
                 moonlight.setAudioName(null);
@@ -716,7 +695,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             case R.id.bottom_sheet_item_move_to_trash:
                 if (!isEmpty(moonlight)) {
                     FDatabaseUtils.moveToTrash(mUserId, moonlight);
-//                    BusEventUtils.post(moonlight, Constants.BUS_FLAG_DELETE);
                 } else {
                     BusEventUtils.post(Constants.BUS_FLAG_NULL, null);
                 }
@@ -730,7 +708,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                     if (mKeyId != null) {
                         FDatabaseUtils.removeMoonlight(mUserId, mKeyId, Constants.EXTRA_TYPE_MOONLIGHT);
                     }
-//                    BusEventUtils.post(moonlight, Constants.BUS_FLAG_PERMENAT_DELETE);
                     moonlight = null;
                 } else {
                     BusEventUtils.post(Constants.BUS_FLAG_NULL, null);
@@ -740,7 +717,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             case R.id.bottom_sheet_item_make_a_copy:
                 if (!isEmpty(moonlight)) {
                     FDatabaseUtils.addMoonlight(mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
-//                    BusEventUtils.post(moonlight, Constants.BUS_FLAG_MAKE_A_COPY);
                     showShortSnackBar(mViewParent,
                             "Note Copy complete.", SnackBarUtils.TYPE_INFO);
                     changeBottomSheetState();
@@ -827,6 +803,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         FileOutputStream fos;
         InputStream inputStream;
         try {
+
             inputStream = contentResolver.openInputStream(uri);
             fos = new FileOutputStream(file);
             try {
@@ -838,7 +815,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 }
                 fos.flush();
             } catch (IOException e) {
-                e.printStackTrace();
+                LogUtils.getInstance(TAG).setContent(e.getMessage()).error(e);
             } finally {
                 //noinspection ThrowFromFinallyBlock
                 fos.close();
@@ -853,7 +830,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         return null;
     }
 
-    @SuppressLint("LogConditional")
+
     @AfterPermissionGranted(CAMERA_PERMS)
     private void onCameraClick() {
         // Check that we have permission to read images from external storage.
@@ -973,7 +950,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         displaySpeechRecognizer();
     }
 
-    public void uploadFromUri(final Uri fileUri, String userId, int type) {
+    public void uploadFromUri(Uri fileUri, String userId, int type) {
         if (mCircleProgressDialogFragment != null) {
             mCircleProgressDialogFragment.show(mActivity.getFragmentManager(), "progress");
         } else {
@@ -1211,18 +1188,13 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
      *
      * @param mFileUri 图片地址
      */
-    private void showImage(Uri mFileUri) {
+    private void showImage(@NonNull Uri mFileUri) {
         //当图片地址不为空时，首先从本地读取bitmap设置图片，bitmap为空，则从网络加载
         //图片地址为空则不加载图片
-        if (mFileUri != null) {
-            Utils.displayImage(mFileUri.toString(), mImage);
-            mImage.post(() -> CircularRevealUtils.show(mImage));
+        Utils.displayImage(mFileUri.toString(), mImage);
+        mImage.post(() -> CircularRevealUtils.show(mImage));
 
-            mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
-        } else {
-            mImageFileName = null;
-            //mImageCardView.setVisibility(View.GONE);
-        }
+        mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
     }
 
     private void showAudio(String audioFileName) {

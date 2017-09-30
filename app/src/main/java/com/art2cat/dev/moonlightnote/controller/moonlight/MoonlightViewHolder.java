@@ -3,6 +3,7 @@ package com.art2cat.dev.moonlightnote.controller.moonlight;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.AppCompatImageView;
@@ -44,7 +45,6 @@ public class MoonlightViewHolder extends RecyclerView.ViewHolder implements Anim
     }
 
     void displayTitle(String title) {
-
         mTitle.setText(title);
         mTitle.setVisibility(View.VISIBLE);
     }
@@ -54,8 +54,7 @@ public class MoonlightViewHolder extends RecyclerView.ViewHolder implements Anim
         mContent.setVisibility(View.VISIBLE);
     }
 
-    void displayImage(Context context, String url) {
-        if (url != null) {
+    void displayImage(Context context, @NonNull String url) {
             Log.d(TAG, "displayImage: succeed");
             Picasso.with(context)
                     .load(Uri.parse(url))
@@ -65,9 +64,6 @@ public class MoonlightViewHolder extends RecyclerView.ViewHolder implements Anim
                     .config(Bitmap.Config.RGB_565)
                     .into(mImage);
             mImage.setVisibility(View.VISIBLE);
-        } else {
-            mImage.setVisibility(View.GONE);
-        }
     }
 
     public void setColor(int color) {
