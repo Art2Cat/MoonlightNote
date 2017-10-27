@@ -1,15 +1,11 @@
 package com.art2cat.dev.moonlightnote.utils.firebase;
 
 import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -36,7 +32,7 @@ public class StorageUtils {
 
     public static void downloadImage(StorageReference storageReference, final String userID, final String imageName) {
 
-        if (imageName != null) {
+        if (imageName == null) {
             return;
         }
 
@@ -49,16 +45,10 @@ public class StorageUtils {
         }
 
         if (localFile != null) {
-            imageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+            imageRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
 
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                }
+            }).addOnFailureListener(exception -> {
+                // Handle any errors
             });
         } else {
             Log.w(TAG, "downloadImage " + "localFile: null");
@@ -88,16 +78,10 @@ public class StorageUtils {
         }
 
         if (localFile != null) {
-            audioRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+            audioRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
 
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                }
+            }).addOnFailureListener(exception -> {
+                // Handle any errors
             });
         } else {
             Log.w(TAG, "downloadAudio " + "localFile: null");
@@ -112,19 +96,12 @@ public class StorageUtils {
 
         StorageReference photoRef = FirebaseStorage.getInstance().getReference()
                 .child(mUserId).child("photos").child(imageName);
-        photoRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                if (mView != null) {
-                    SnackBarUtils.shortSnackBar(mView, "Image removed!", SnackBarUtils.TYPE_INFO).show();
-                }
+        photoRef.delete().addOnSuccessListener(aVoid -> {
+            if (mView != null) {
+                SnackBarUtils.shortSnackBar(mView,
+                        "Image removed!", SnackBarUtils.TYPE_INFO).show();
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.w(TAG, "onFailure: " + e.toString());
-            }
-        });
+        }).addOnFailureListener(e -> Log.w(TAG, "onFailure: " + e.toString()));
 
     }
 
@@ -135,18 +112,13 @@ public class StorageUtils {
 
         StorageReference audioRef = FirebaseStorage.getInstance().getReference()
                 .child(mUserId).child("audios").child(audioName);
-        audioRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                if (mView != null) {
-                    SnackBarUtils.shortSnackBar(mView, "Voice removed!", SnackBarUtils.TYPE_INFO).show();
-                }
+        audioRef.delete().addOnSuccessListener(aVoid -> {
+            if (mView != null) {
+                SnackBarUtils.shortSnackBar(mView,
+                        "Voice removed!", SnackBarUtils.TYPE_INFO).show();
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                if (BuildConfig.DEBUG) Log.d(TAG, e.toString());
-            }
+        }).addOnFailureListener(e -> {
+            if (BuildConfig.DEBUG) Log.d(TAG, e.toString());
         });
 
     }

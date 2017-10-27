@@ -13,9 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
@@ -40,12 +38,10 @@ import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveContents;
 import com.google.android.gms.drive.DriveFile;
-import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.Metadata;
 import com.google.android.gms.drive.MetadataChangeSet;
@@ -62,54 +58,44 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.art2cat.dev.moonlightnote.model.Constants.STORAGE_PERMS;
 
-/**
- * A {@link PreferenceActivity} that presents a set of application settings. On
- * handset devices, settings are presented as a single list. On tablets,
- * settings are split by category, with category headers shown to the left of
- * the list of settings.
- * <p>
- * See <a href="http://developer.android.com/design/patterns/settings.html">
- * Android Design: Settings</a> for design guidelines and the <a
- * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
- * API Guide</a> for more information on developing a Settings UI.
- */
 public class SettingsActivity extends AppCompatPreferenceActivity {
     private static final String TAG = "SettingsActivity";
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
+    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener =
+            (preference, value) -> {
+                String stringValue = value.toString();
 
-            if (preference instanceof ListPreference) {
-                // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
-                ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(stringValue);
+                if (preference instanceof ListPreference) {
+                    // For list preferences, look up the correct display value in
+                    // the preference's 'entries' list.
+                    ListPreference listPreference = (ListPreference) preference;
+                    int index = listPreference.findIndexOfValue(stringValue);
 
-                // Set the summary to reflect the new value.
-                preference.setSummary(
-                        index >= 0
-                                ? listPreference.getEntries()[index]
-                                : null);
+                    // Set the summary to reflect the new value.
+                    preference.setSummary(
+                            index >= 0
+                                    ? listPreference.getEntries()[index]
+                                    : null);
 
-            } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-                preference.setSummary(stringValue);
-            }
-            return true;
-        }
-    };
+                } else {
+                    // For all other preferences, set the summary to the value's
+                    // simple string representation.
+                    preference.setSummary(stringValue);
+                }
+                return true;
+            };
 
     /**
      * Helper method to determine if the device has an extra-large screen. For
@@ -118,27 +104,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     private static boolean isXLargeTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
-
-    /**
-     * Binds a preference's summary to its value. More specifically, when the
-     * preference's value is changed, its summary (line of text below the
-     * preference title) is updated to reflect the value. The summary is also
-     * immediately updated upon calling this method. The exact display format is
-     * dependent on the type of preference.
-     *
-     * @see #sBindPreferenceSummaryToValueListener
-     */
-    private static void bindPreferenceSummaryToValue(Preference preference) {
-        // Set the listener to watch for value changes.
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-
-        // Trigger the listener immediately with the preference's
-        // current value.
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
     }
 
     @Override
@@ -208,7 +173,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     @SuppressLint("ValidFragment")
-    public static class SecurityFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
+    public static class SecurityFragment extends PreferenceFragment
+            implements Preference.OnPreferenceClickListener {
         public static final String PROTECTION = "enable_protection";
         public static final String PIN = "enable_pin";
         public static final String PATTERN = "enable_pattern";
@@ -292,66 +258,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         /**
          * Handle result of Created file
          */
-        final private ResultCallback<DriveFolder.DriveFileResult> fileCallback = new
-                ResultCallback<DriveFolder.DriveFileResult>() {
-                    @Override
-                    public void onResult(@NonNull DriveFolder.DriveFileResult result) {
-                        if (result.getStatus().isSuccess()) {
-
-                            Toast.makeText(getActivity(), "file created: " + "" +
-                                    result.getDriveFile().getDriveId(), Toast.LENGTH_LONG).show();
-                            result.getDriveFile().getDriveId().toString();
-                            SPUtils.putString(getActivity(), "User",
-                                    "GoogleDriveFileID", result.getDriveFile().getDriveId().toString());
-
-                        }
-                    }
-                };
         public DriveFile file;
         private GoogleApiClient mGoogleApiClient;
         private FDatabaseUtils mFDatabaseUtils;
-        final private ResultCallback<DriveApi.MetadataBufferResult> metadataCallback =
-                new ResultCallback<DriveApi.MetadataBufferResult>() {
-                    @Override
-                    public void onResult(@NonNull DriveApi.MetadataBufferResult result) {
-                        if (!result.getStatus().isSuccess()) {
-                            Log.d(TAG, "Problem while retrieving results");
-                            return;
-                        }
-
-                        Metadata metadata = result.getMetadataBuffer().get(0);
-                        if (BuildConfig.DEBUG)
-                            Log.d(TAG, "metadata.getDriveId():" + metadata.getDriveId());
-                        readFileFromDrive(metadata.getDriveId());
-                    }
-                };
         private String mData;
         private int mType;
-        private boolean fileOperation = false;
         private CircleProgressDialogFragment mCircleProgressDialogFragment;
 
-        /**
-         * This is Result result handler of Drive contents.
-         * this callback method call CreateFileOnGoogleDrive() method
-         * and also call readFileFromGoogleDrive() method, send intent onActivityResult() method to handle result.
-         */
-        private ResultCallback<DriveApi.DriveContentsResult> driveContentsCallback =
-                new ResultCallback<DriveApi.DriveContentsResult>() {
-                    @Override
-                    public void onResult(@NonNull DriveApi.DriveContentsResult result) {
-
-                        if (result.getStatus().isSuccess()) {
-
-                            if (fileOperation) {
-                                CreateFileOnGoogleDrive(result);
-                            } else {
-                                queryFile();
-                            }
-                        }
-
-
-                    }
-                };
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -391,10 +304,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     break;
                 case BACKUP_TO_DRIVE:
                     if (mGoogleApiClient != null) {
-                        fileOperation = true;
                         mFDatabaseUtils.exportNote(1);
                         Drive.DriveApi.newDriveContents(mGoogleApiClient)
-                                .setResultCallback(driveContentsCallback);
+                                .setResultCallback(driveContentsResult -> {
+                                    if (driveContentsResult.getStatus().isSuccess()) {
+                                        CreateFileOnGoogleDrive(driveContentsResult);
+                                    }
+                                });
                     } else {
                         SnackBarUtils.shortSnackBar(getView(),
                                 "please connect to Google Drive first!",
@@ -403,9 +319,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     break;
                 case RESTORE_FROM_DRIVE:
                     if (mGoogleApiClient != null) {
-                        fileOperation = false;
                         Drive.DriveApi.newDriveContents(mGoogleApiClient)
-                                .setResultCallback(driveContentsCallback);
+                                .setResultCallback(driveContentsResult -> {
+                                    if (driveContentsResult.getStatus().isSuccess()) {
+                                        queryFile();
+                                    }
+                                });
                     } else {
                         SnackBarUtils.shortSnackBar(getView(),
                                 "please connect to Google Drive first!",
@@ -512,41 +431,40 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
          */
         private void readFileFromDrive(DriveId id) {
             final DriveFile f = id.asDriveFile();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    DriveApi.DriveContentsResult driveContentsResult =
-                            f.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY, null).await();
-                    if (!driveContentsResult.getStatus().isSuccess()) {
-                        LogUtils.getInstance(TAG).setContent("run: " + driveContentsResult.getStatus()).debug();
+            EXECUTOR_SERVICE.execute(() -> {
+                DriveApi.DriveContentsResult driveContentsResult =
+                        f.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY,
+                                null).await();
+                if (!driveContentsResult.getStatus().isSuccess()) {
+                    LogUtils.getInstance(TAG).setContent("run: " + driveContentsResult.getStatus()).debug();
+                    return;
+                }
+
+                DriveContents driveContents = driveContentsResult.getDriveContents();
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(driveContents.getInputStream()));
+                StringBuilder builder = new StringBuilder();
+                String line;
+                try {
+                    while ((line = reader.readLine()) != null) {
+                        builder.append(line);
+                    }
+                    String contentsAsString = builder.toString();
+                    LogUtils.getInstance(TAG).setContent(contentsAsString).debug();
+                    Gson gson = new Gson();
+                    NoteLab noteLab = gson.fromJson(contentsAsString, NoteLab.class);
+                    if (noteLab == null) {
                         return;
                     }
-
-                    DriveContents driveContents = driveContentsResult.getDriveContents();
-                    BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(driveContents.getInputStream()));
-                    StringBuilder builder = new StringBuilder();
-                    String line;
-                    try {
-                        while ((line = reader.readLine()) != null) {
-                            builder.append(line);
-                        }
-                        String contentsAsString = builder.toString();
-                        LogUtils.getInstance(TAG).setContent(contentsAsString).debug();
-                        Gson gson = new Gson();
-                        NoteLab noteLab = gson.fromJson(contentsAsString, NoteLab.class);
-                        if (noteLab == null) {
-                            return;
-                        }
-                        LogUtils.getInstance(TAG).setContent("onResult: " + noteLab.getMoonlights().size()).debug();
-                        mFDatabaseUtils.restoreAll(noteLab);
-                    } catch (IOException e) {
-                        LogUtils.getInstance(TAG).setContent("IOException while reading from the stream").error(e);
-                    }
-
-                    driveContents.discard(mGoogleApiClient);
+                    LogUtils.getInstance(TAG).setContent("onResult: " + noteLab.getMoonlights().size()).debug();
+                    mFDatabaseUtils.restoreAll(noteLab);
+                } catch (IOException e) {
+                    LogUtils.getInstance(TAG).setContent("IOException while reading from the stream").error(e);
                 }
-            }).start();
+
+                driveContents.discard(mGoogleApiClient);
+            });
+
         }
 
         private void queryFile() {
@@ -554,7 +472,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     .addFilter(Filters.contains(SearchableField.TITLE, "Note.json"))
                     .build();
             Drive.DriveApi.query(
-                    mGoogleApiClient, query).setResultCallback(metadataCallback);
+                    mGoogleApiClient, query).setResultCallback(result -> {
+                if (!result.getStatus().isSuccess()) {
+                    Log.d(TAG, "Problem while retrieving results");
+                    return;
+                }
+
+                Metadata metadata = result.getMetadataBuffer().get(0);
+                if (BuildConfig.DEBUG)
+                    Log.d(TAG, "metadata.getDriveId():" + metadata.getDriveId());
+                readFileFromDrive(metadata.getDriveId());
+            });
         }
 
         /**
@@ -567,36 +495,41 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             final DriveContents driveContents = result.getDriveContents();
 
             mData = mFDatabaseUtils.getJson();
+            EXECUTOR_SERVICE.execute(() -> {
+                OutputStream outputStream = driveContents.getOutputStream();
+                Writer writer = new OutputStreamWriter(outputStream);
 
-            // Perform I/O off the UI thread.
-            new Thread() {
-                @Override
-                public void run() {
-                    OutputStream outputStream = driveContents.getOutputStream();
-                    Writer writer = new OutputStreamWriter(outputStream);
-
-                    if (mData == null) {
-                        mData = mFDatabaseUtils.getJson();
-                    }
-                    if (mData != null) {
-                        try {
-                            writer.write(mData);
-                            writer.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                            .setTitle("Note.json")
-                            .setMimeType("plain/text")
-                            .setStarred(true).build();
-
-                    // create a file in root folder
-                    Drive.DriveApi.getRootFolder(mGoogleApiClient)
-                            .createFile(mGoogleApiClient, changeSet, driveContents)
-                            .setResultCallback(fileCallback);
+                if (mData == null) {
+                    mData = mFDatabaseUtils.getJson();
                 }
-            }.start();
+                if (mData != null) {
+                    try {
+                        writer.write(mData);
+                        writer.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
+                        .setTitle("Note.json")
+                        .setMimeType("plain/text")
+                        .setStarred(true).build();
+
+                // create a file in root folder
+                Drive.DriveApi.getRootFolder(mGoogleApiClient)
+                        .createFile(mGoogleApiClient, changeSet, driveContents)
+                        .setResultCallback(result1 -> {
+                            if (result1.getStatus().isSuccess()) {
+
+                                Toast.makeText(getActivity(), "file created: " + "" +
+                                                result1.getDriveFile().getDriveId(),
+                                        Toast.LENGTH_LONG).show();
+                                SPUtils.putString(getActivity(), "User",
+                                        "GoogleDriveFileID",
+                                        result1.getDriveFile().getDriveId().toString());
+                            }
+                        });
+            });
         }
 
         @Override
@@ -651,7 +584,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             LogUtils.getInstance(TAG)
                     .setContent("API client connected.")
                     .info();
-            SnackBarUtils.shortSnackBar(getView(), "Google Drive connected!", SnackBarUtils.TYPE_INFO).show();
+            SnackBarUtils.shortSnackBar(getView(), "Google Drive connected!",
+                    SnackBarUtils.TYPE_INFO).show();
         }
 
         @Override
@@ -665,7 +599,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     @SuppressLint("ValidFragment")
-    public static class AboutPreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
+    public static class AboutPreferenceFragment extends PreferenceFragment
+            implements Preference.OnPreferenceClickListener {
         private static final String POLICY = "settings_policy";
         private static final String LICENSE = "settings_license";
         private static final String ABOUT = "settings_about";
@@ -710,9 +645,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     startActivity(intent);
                     break;
             }
-
             return false;
         }
     }
-
 }

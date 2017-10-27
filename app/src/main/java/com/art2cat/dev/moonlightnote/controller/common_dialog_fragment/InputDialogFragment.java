@@ -3,7 +3,6 @@ package com.art2cat.dev.moonlightnote.controller.common_dialog_fragment;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -80,30 +79,24 @@ public class InputDialogFragment extends DialogFragment {
 
         String positiveText = getString(android.R.string.ok);
         builder.setPositiveButton(positiveText,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // positive button logic
-                        if (mType == 0) {
-                            String email = mTextInputEditText.getText().toString();
-                            BusEventUtils.post(Constants.BUS_FLAG_EMAIL, email);
-                        } else if (mType == 1) {
-                            String nickname = mTextInputEditText.getText().toString();
-                            BusEventUtils.post(Constants.BUS_FLAG_USERNAME, nickname);
-                        } else if (mType == 2) {
-                            String password = mTextInputEditText.getText().toString();
-                            BusEventUtils.post(Constants.BUS_FLAG_DELETE_ACCOUNT, password);
-                        }
+                (dialog, which) -> {
+                    // positive button logic
+                    if (mType == 0) {
+                        String email = mTextInputEditText.getText().toString();
+                        BusEventUtils.post(Constants.BUS_FLAG_EMAIL, email);
+                    } else if (mType == 1) {
+                        String nickname = mTextInputEditText.getText().toString();
+                        BusEventUtils.post(Constants.BUS_FLAG_USERNAME, nickname);
+                    } else if (mType == 2) {
+                        String password = mTextInputEditText.getText().toString();
+                        BusEventUtils.post(Constants.BUS_FLAG_DELETE_ACCOUNT, password);
                     }
                 });
 
         String negativeText = getString(android.R.string.cancel);
         builder.setNegativeButton(negativeText,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // negative button logic
-                    }
+                (dialog, which) -> {
+                    // negative button logic
                 });
         return builder.create();
     }

@@ -36,8 +36,7 @@ public abstract class BaseFragment extends Fragment {
      * @param color    颜色
      */
     public static void setOverflowButtonColor(Activity activity, final int color) {
-        @SuppressLint("PrivateResource")
-        final String overflowDescription = activity.getString(R.string.abc_action_menu_overflow_description);
+        @SuppressLint("PrivateResource") final String overflowDescription = activity.getString(R.string.abc_action_menu_overflow_description);
         final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
         final ViewTreeObserver viewTreeObserver = decorView.getViewTreeObserver();
         viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {

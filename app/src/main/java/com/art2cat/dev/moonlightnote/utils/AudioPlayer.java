@@ -39,7 +39,7 @@ public class AudioPlayer {
                 if (mPlayer.isPlaying()) {
                     mProgressBar.setProgress(mPlayer.getCurrentPosition());
                     // 每次延迟100毫秒再启动线程
-                    handler.postDelayed(updateProgress, 100);
+                    handler.postDelayed(this, 100);
                 }
             }
         }

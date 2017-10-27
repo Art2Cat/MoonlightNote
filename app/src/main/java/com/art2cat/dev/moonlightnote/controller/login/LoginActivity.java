@@ -60,28 +60,16 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart: ");
         addListener();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop: ");
         removeListener();
         if (mFDatabaseUtils != null) {
             mFDatabaseUtils.removeListener();
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     public void signIn() {
@@ -125,10 +113,10 @@ public class LoginActivity extends AppCompatActivity {
         int id = R.id.login_container;
         boolean reLogin = getIntent().getBooleanExtra("reLogin", false);
         if (reLogin) {
-            FragmentUtils.addFragment(getSupportFragmentManager(), id, new com.art2cat.dev.moonlightnote.controller.login.LoginFragment());
+            FragmentUtils.addFragment(getSupportFragmentManager(), id, new LoginFragment());
         } else {
             //在这里首先加载一个含有广告的fragment
-            FragmentUtils.addFragment(getSupportFragmentManager(), id, new com.art2cat.dev.moonlightnote.controller.login.SlashFragment());
+            FragmentUtils.addFragment(getSupportFragmentManager(), id, new SlashFragment());
             startLoginFragment();
         }
 
@@ -165,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
                 //这里调用Activity.finish()方法销毁当前Activity
                 finishAfterTransition();
             } else {
-                Fragment fragment = new com.art2cat.dev.moonlightnote.controller.login.LoginFragment();
+                Fragment fragment = new LoginFragment();
                 FragmentUtils.replaceFragment(getSupportFragmentManager(), R.id.login_container,
                         fragment, FragmentUtils.REPLACE_NORMAL);
             }
@@ -193,10 +181,10 @@ public class LoginActivity extends AppCompatActivity {
     private void enableShortcuts() {
 
         Intent intent = new Intent(Intent.ACTION_MAIN,
-                Uri.EMPTY, this, MoonlightActivity.class).putExtra("type", 101);
+                Uri.EMPTY, this, MoonlightActivity.class)
+                .putExtra("type", 101);
 
-        ShortcutInfo compose = null;
-        compose = ShortcutsUtils.getInstance(LoginActivity.this)
+        ShortcutInfo compose = ShortcutsUtils.getInstance(LoginActivity.this)
                 .createShortcut(
                         "compose",
                         "Compose",

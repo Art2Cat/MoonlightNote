@@ -1,6 +1,5 @@
 package com.art2cat.dev.moonlightnote.custom_view;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -33,7 +32,6 @@ public class CustomRecyclerView extends RecyclerView {
         return !mScrollable || super.dispatchTouchEvent(ev);
     }
 
-    @SuppressLint("DrawAllocation")
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
@@ -41,12 +39,7 @@ public class CustomRecyclerView extends RecyclerView {
             animate(getChildAt(i), i);
 
             if (i == getChildCount() - 1) {
-                getHandler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mScrollable = true;
-                    }
-                }, i * 100);
+                getHandler().postDelayed(() -> mScrollable = true, i * 100);
             }
         }
     }

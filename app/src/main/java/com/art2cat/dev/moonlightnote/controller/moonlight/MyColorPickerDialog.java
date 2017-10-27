@@ -180,9 +180,7 @@ class MyColorPickerDialog extends ColorChooserDialog {
 
     private void animate() {
 
-        Runnable r1 = () -> {
-            animator(one);
-        };
+        Runnable r1 = () -> animator(one);
 
         Runnable r2 = () -> {
             animator(two);

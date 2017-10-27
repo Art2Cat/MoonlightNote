@@ -2,7 +2,6 @@ package com.art2cat.dev.moonlightnote.controller.moonlight;
 
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.content.ContentResolver;
@@ -556,19 +555,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     }
 
     @Override
-    public void onFocusChange(View view, boolean b) {
-        switch (view.getId()) {
-            case R.id.title_TIET:
-                Log.d(TAG, "onFocusChange: title " + b);
-                break;
-            case R.id.content_TIET:
-                Log.d(TAG, "onFocusChange: content " + b);
-                break;
-        }
-
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         //如mEditFlag为true，加载edit_moonlight_menu，反之则加载create_moonlight_menu
@@ -883,7 +869,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         }
     }
 
-    @SuppressLint("LogConditional")
     @AfterPermissionGranted(STORAGE_PERMS)
     private void onAlbumClick() {
         // Check that we have permission to read images from external storage.

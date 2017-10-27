@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote.custom_view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.PointF;
@@ -75,6 +76,7 @@ public class ZoomImageView extends RecyclerImageView {
     /**
      * 初始化UI
      */
+    @SuppressLint("ClickableViewAccessibility")
     public void initUI() {
 
         this.setScaleType(ScaleType.FIT_CENTER);
@@ -200,6 +202,7 @@ public class ZoomImageView extends RecyclerImageView {
          */
         private PointF midPoint;
 
+        @Override
         public boolean onTouch(View v, MotionEvent event) {
             /** 通过与运算保留最后八位 MotionEvent.ACTION_MASK = 255 */
             switch (event.getAction() & MotionEvent.ACTION_MASK) {// 单点监听和多点触碰监听

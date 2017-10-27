@@ -21,7 +21,6 @@ import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
  */
 
 public class PickPicDialogFragment extends DialogFragment {
-    private int mType;
 
     public static PickPicDialogFragment newInstance(int type) {
         PickPicDialogFragment pickPicDialogFragment = new PickPicDialogFragment();
@@ -47,7 +46,7 @@ public class PickPicDialogFragment extends DialogFragment {
             dismiss();
         });
 
-        album.setOnClickListener(view12 -> {
+        album.setOnClickListener(view2 -> {
             BusEventUtils.post(Constants.BUS_FLAG_ALBUM, null);
             dismiss();
         });
