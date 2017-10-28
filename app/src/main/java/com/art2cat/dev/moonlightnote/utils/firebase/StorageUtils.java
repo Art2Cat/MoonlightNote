@@ -47,7 +47,7 @@ public class StorageUtils {
         StorageReference audioRef = storageReference.child(userId).child("audios").child(audioName);
         File localFile = null;
         String path = Environment
-                .getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio";
+                .getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote";
         if (!path.isEmpty()) {
             File dir = new File(path, "/.audio");
             if (!dir.exists()) {
