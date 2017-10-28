@@ -7,10 +7,11 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
-import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.utils.LogUtils;
+import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -29,22 +30,19 @@ public class NotificationService extends FirebaseMessagingService {
      */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        LogUtils.getInstance(TAG)
-                .setContent("From: " + remoteMessage.getFrom())
-                .debug();
+        if (BuildConfig.DEBUG)
+            Log.d(TAG, "onMessageReceived From: " + remoteMessage.getFrom());
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            LogUtils.getInstance(TAG)
-                    .setContent("Message data payload: " + remoteMessage.getData())
-                    .debug();
+            if (BuildConfig.DEBUG)
+                Log.d(TAG, "onMessageReceived Data: " + remoteMessage.getData());
         }
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-            LogUtils.getInstance(TAG)
-                    .setContent("Message Notification Body: " + remoteMessage.getNotification().getBody())
-                    .debug();
+            if (BuildConfig.DEBUG)
+                Log.d(TAG, "onMessageReceived Body: " + remoteMessage.getNotification().getBody());
             sendNotification(remoteMessage.getNotification().getBody());
         }
 
@@ -58,7 +56,7 @@ public class NotificationService extends FirebaseMessagingService {
     private void sendNotification(String messageBody) {
         Intent intent = new Intent(this, MoonlightActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -72,7 +70,8 @@ public class NotificationService extends FirebaseMessagingService {
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        if (notificationManager != null) {
+            notificationManager.notify(0 , notificationBuilder.build());
+        }
     }
 }

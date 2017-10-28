@@ -87,7 +87,6 @@
         <activity android:name=".controller.settings.MoonlightPinActivity" />
         <activity
             android:name=".controller.settings.SettingsActivity"
-            android:launchMode="singleInstance"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".controller.moonlight.MoonlightActivity">
             <meta-data

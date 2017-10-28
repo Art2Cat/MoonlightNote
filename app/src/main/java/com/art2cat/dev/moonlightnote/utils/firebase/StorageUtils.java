@@ -19,17 +19,6 @@ import java.io.File;
 public class StorageUtils {
     private static final String TAG = "StorageUtils";
 
-    private static String getPath(int type) {
-        if (type == 0) {
-            return Environment
-                    .getExternalStorageDirectory().getAbsolutePath() + "/Picture/MoonlightNote";
-        } else if (type == 1) {
-            return Environment
-                    .getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio";
-        }
-        return null;
-    }
-
     public static void downloadImage(StorageReference storageReference, final String userID, final String imageName) {
 
         if (imageName == null) {
@@ -37,22 +26,16 @@ public class StorageUtils {
         }
 
         StorageReference imageRef = storageReference.child(userID).child("photos").child(imageName);
-        File localFile = null;
-        String path = getPath(0);
-        if (path != null) {
-            File dir = new File(path);
-            localFile = new File(dir, imageName + ".jpg");
-        }
+        String path = Environment
+                .getExternalStorageDirectory().getAbsolutePath() + "/Picture/MoonlightNote";
+        File dir = new File(path);
+        File localFile = new File(dir, imageName + ".jpg");
 
-        if (localFile != null) {
-            imageRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
+        imageRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
 
-            }).addOnFailureListener(exception -> {
-                // Handle any errors
-            });
-        } else {
-            Log.w(TAG, "downloadImage " + "localFile: null");
-        }
+        }).addOnFailureListener(exception -> {
+            // Handle any errors
+        });
     }
 
     public static void downloadAudio(StorageReference storageReference, String userId, String audioName) {
@@ -63,10 +46,10 @@ public class StorageUtils {
 
         StorageReference audioRef = storageReference.child(userId).child("audios").child(audioName);
         File localFile = null;
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath()
-                + "/MoonlightNote/.audio/";
+        String path = Environment
+                .getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio";
         if (!path.isEmpty()) {
-            File dir = new File(path, "/audio");
+            File dir = new File(path, "/.audio");
             if (!dir.exists()) {
                 dir.mkdirs();
             }
@@ -82,6 +65,7 @@ public class StorageUtils {
 
             }).addOnFailureListener(exception -> {
                 // Handle any errors
+                Log.e(TAG, "downloadAudio: ", exception);
             });
         } else {
             Log.w(TAG, "downloadAudio " + "localFile: null");

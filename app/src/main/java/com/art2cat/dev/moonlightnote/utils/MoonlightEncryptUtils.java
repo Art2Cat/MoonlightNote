@@ -20,7 +20,8 @@ public class MoonlightEncryptUtils {
     private String key;
 
     private MoonlightEncryptUtils() {
-        key = SPUtils.getString(MoonlightApplication.getContext(), "User", "EncryptKey", null);
+        key = SPUtils.getString(MoonlightApplication.getContext(),
+                "User", "EncryptKey", null);
     }
 
     public static MoonlightEncryptUtils newInstance() {
@@ -71,7 +72,6 @@ public class MoonlightEncryptUtils {
         String[] metadata = getMetadata(moonlight);
         if (key != null) {
             try {
-
                 if (metadata[0] != null) {
                     moonlight.setTitle(AESUtils.decrypt(key, metadata[0]));
                 }
@@ -159,9 +159,6 @@ public class MoonlightEncryptUtils {
         int flag;
         String key;
 
-        MoonlightEncryptTask() {
-        }
-
         MoonlightEncryptTask(int flag, String key) {
             this.flag = flag;
             this.key = key;
@@ -169,7 +166,9 @@ public class MoonlightEncryptUtils {
 
         @Override
         protected Moonlight doInBackground(Moonlight... moonlights) {
-            if (BuildConfig.DEBUG) Log.d("MoonlightEncryptTask", Thread.currentThread().getName());
+            if (BuildConfig.DEBUG) {
+                Log.d("MoonlightEncryptTask", Thread.currentThread().getName());
+            }
             if (flag == ENCRYPT) {
                 return encrypt(key, moonlights[0]);
             } else if (flag == DECRYPT) {

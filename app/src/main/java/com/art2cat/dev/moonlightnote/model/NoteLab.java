@@ -9,7 +9,7 @@ import java.util.List;
  */
 
 public class NoteLab {
-    public List<Moonlight> MoonlightNote;
+    private List<Moonlight> MoonlightNote;
 
     public NoteLab() {
         MoonlightNote = new ArrayList<>();

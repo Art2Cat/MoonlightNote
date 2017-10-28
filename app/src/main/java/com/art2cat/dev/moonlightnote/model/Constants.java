@@ -4,7 +4,7 @@ package com.art2cat.dev.moonlightnote.model;
  * Created by art2cat
  * on 8/10/16.
  */
-public class Constants {
+public final class Constants {
     /**
      * 用户配置
      */

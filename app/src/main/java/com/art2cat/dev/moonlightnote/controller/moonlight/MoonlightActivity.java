@@ -142,7 +142,7 @@ public class MoonlightActivity extends BaseFragmentActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -295,7 +295,7 @@ public class MoonlightActivity extends BaseFragmentActivity
                 break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -341,13 +341,13 @@ public class MoonlightActivity extends BaseFragmentActivity
      */
     private void initView() {
         //Toolbar实例化
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar2 = (Toolbar) findViewById(R.id.toolbar2);
+        mToolbar = findViewById(R.id.toolbar);
+        mToolbar2 = findViewById(R.id.toolbar2);
         setSupportActionBar(mToolbar);
 
-        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.snackbar_container);
+        mCoordinatorLayout = findViewById(R.id.snackbar_container);
         //FloatingActionButton实例化
-        mFAB = (FloatingActionButton) findViewById(R.id.fab);
+        mFAB = findViewById(R.id.fab);
         //设置FloatingActionButton点击事件
         mFAB.setOnClickListener(view -> {
             if (isLogin) {
@@ -363,14 +363,14 @@ public class MoonlightActivity extends BaseFragmentActivity
         });
 
         //DrawerLayout实例化
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
         mActionBarDrawerToggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
         mActionBarDrawerToggle.syncState();
 
         //NavigationView实例化
-        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView = findViewById(R.id.nav_view);
         mNavigationView.inflateMenu(R.menu.activity_main_drawer);
         mNavigationView.setNavigationItemSelectedListener(this);
 

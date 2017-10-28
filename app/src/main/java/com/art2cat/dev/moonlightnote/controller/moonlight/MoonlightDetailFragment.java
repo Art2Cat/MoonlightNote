@@ -34,7 +34,6 @@ import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.LinearLayoutCompat;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -62,7 +61,6 @@ import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.utils.AudioPlayer;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.utils.FragmentBackHandler;
-import com.art2cat.dev.moonlightnote.utils.LogUtils;
 import com.art2cat.dev.moonlightnote.utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.utils.Utils;
@@ -105,9 +103,10 @@ import static com.art2cat.dev.moonlightnote.model.Constants.TAKE_PICTURE;
  * A simple {@link Fragment} subclass.
  */
 public abstract class MoonlightDetailFragment extends BaseFragment implements
-        View.OnClickListener, View.OnFocusChangeListener, PopupMenu.OnMenuItemClickListener,
+        View.OnClickListener,
         FragmentBackHandler {
     private static final String TAG = MoonlightDetailFragment.class.getName();
+    private final Handler mHandler = new Handler();
     private View mView;
     private Toolbar mToolbar;
     private ContentFrameLayout mViewParent;
@@ -146,7 +145,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private Uri mDownloadIUrl;
     private Uri mDownloadAUrl;
     private File mFile;
-    private Handler mHandler = new Handler();
     private AudioPlayer mAudioPlayer;
     private SparseIntArray mColorMaps;
 
@@ -159,7 +157,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        LogUtils.getInstance(TAG).setContent("onCreate").debug();
         //设置显示OptionsMenu
         setHasOptionsMenu(true);
         //获取Bus单例，并注册
@@ -226,7 +223,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        LogUtils.getInstance(TAG).setContent("onCreate").debug();
         //视图初始化
         mView = inflater.inflate(R.layout.fragment_moonlight_detail, container, false);
 
@@ -264,8 +260,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mBottomBarContainer = mView.findViewById(R.id.bottom_bar_container);
         mBottomBarLeft = mView.findViewById(R.id.bottom_bar_left);
         mBottomBarRight = mView.findViewById(R.id.bottom_bar_right);
-        mTitle.setOnFocusChangeListener(this);
-        mContent.setOnFocusChangeListener(this);
         mAudioPlayer = AudioPlayer.getInstance(audioPlayerPB, mShowDuration);
 
         mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance(getString(R.string.prograssBar_uploading));
@@ -592,10 +586,10 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     }
 
     private boolean isEmpty(Moonlight moonlight) {
-        return !(moonlight.getImageUrl() != null
-                || moonlight.getAudioUrl() != null
-                || moonlight.getContent() != null
-                || moonlight.getTitle() != null);
+        return (moonlight.getImageUrl() == null
+                && moonlight.getAudioUrl() == null
+                && moonlight.getContent() == null
+                && moonlight.getTitle() == null);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -801,7 +795,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 }
                 fos.flush();
             } catch (IOException e) {
-                LogUtils.getInstance(TAG).setContent(e.getMessage()).error(e);
+                Log.e(TAG, "copyAudioFile: ", e);
             } finally {
                 //noinspection ThrowFromFinallyBlock
                 fos.close();
@@ -811,7 +805,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             }
             return Uri.fromFile(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "copyAudioFile: ", e);
         }
         return null;
     }
@@ -846,7 +840,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 dir.mkdirs();
             }
             boolean created = mFile.createNewFile();
-            Log.d(TAG, "created:" + created);
+            if (BuildConfig.DEBUG)
+                Log.d(TAG, "created:" + created);
         } catch (IOException e) {
             Log.e(TAG, "file.createNewFile" + mFile.getAbsolutePath() + ":FAILED", e);
         }
@@ -855,7 +850,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         // See: https://developer.android.com/reference/android/support/v4/content/FileProvider.html
 
         mFileUri = FileProvider.getUriForFile(mActivity, Constants.FILE_PROVIDER, mFile);
-        Log.i(TAG, "file: " + mFileUri);
+        if (BuildConfig.DEBUG)
+            Log.i(TAG, "file: " + mFileUri);
 
         Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         takePicIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
@@ -863,7 +859,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         if (takePicIntent.resolveActivity(mActivity.getPackageManager()) != null) {
             startActivityForResult(takePicIntent, TAKE_PICTURE);
             mEditable = false;
-            Log.d(TAG, "onCameraClick: ");
+            if (BuildConfig.DEBUG)
+                Log.d(TAG, "onCameraClick: ");
         } else {
             showLongSnackBar(mView, "No Camera!", SnackBarUtils.TYPE_WARNING);
         }
@@ -887,7 +884,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 dir.mkdirs();
             }
             boolean created = mFile.createNewFile();
-            Log.d(TAG, "file.createNewFile:" + mFile.getAbsolutePath() + ":" + created);
+            if (BuildConfig.DEBUG)
+                Log.d(TAG, "file.createNewFile:" + mFile.getAbsolutePath() + ":" + created);
         } catch (IOException e) {
             Log.e(TAG, "file.createNewFile" + mFile.getAbsolutePath() + ":FAILED", e);
         }
@@ -930,7 +928,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
         if (!dir.exists()) {
             boolean isDirCreate = dir.mkdirs();
-            Log.d(TAG, "onAudioClick: " + isDirCreate);
+            if (BuildConfig.DEBUG)
+                Log.d(TAG, "onAudioClick: " + isDirCreate);
         }
         displaySpeechRecognizer();
     }
@@ -949,14 +948,15 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             // Get a reference to store file at photos/<FILENAME>.jpg
             StorageReference photoRef = mStorageReference.child(userId).child("photos")
                     .child(fileUri.getLastPathSegment());
-            Log.d(TAG, "uploadFromUri: " + fileUri.getLastPathSegment());
+            if (BuildConfig.DEBUG)
+                Log.d(TAG, "uploadFromUri: " + fileUri.getLastPathSegment());
             // Upload file to Firebase Storage
             uploadTask = photoRef.putFile(fileUri);
             uploadTask.addOnSuccessListener(taskSnapshot -> {
                 mDownloadIUrl = taskSnapshot.getDownloadUrl();
                 mImageFileName = taskSnapshot.getMetadata().getName();
-
-                Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadIUrl.toString());
+                if (BuildConfig.DEBUG)
+                    Log.d(TAG, "onSuccess: downloadUrl:  " + mDownloadIUrl.toString());
                 moonlight.setImageName(mImageFileName);
                 moonlight.setImageUrl(mDownloadIUrl.toString());
                 mCircleProgressDialogFragment.dismiss();
@@ -968,7 +968,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 mCircleProgressDialogFragment.dismiss();
                 showImage(fileUri);
             }).addOnPausedListener(taskSnapshot -> {
-                Log.d(TAG, "onPaused: ");
+                if (BuildConfig.DEBUG)
+                    Log.d(TAG, "onPaused: ");
                 mCircleProgressDialogFragment.dismiss();
                 showShortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO);
             });
@@ -979,8 +980,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             uploadTask.addOnSuccessListener(taskSnapshot -> {
                 mDownloadAUrl = taskSnapshot.getDownloadUrl();
                 mAudioFileName = taskSnapshot.getMetadata().getName();
-
-                Log.d(TAG, "onSuccess: downloadUrl:  " + mAudioFileName);
+                if (BuildConfig.DEBUG)
+                    Log.d(TAG, "onSuccess: downloadUrl:  " + mAudioFileName);
                 moonlight.setAudioName(mAudioFileName);
                 moonlight.setAudioUrl(mDownloadAUrl.toString());
                 showAudio(mAudioFileName);
@@ -992,7 +993,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 mCircleProgressDialogFragment.dismiss();
                 showAudio(fileUri.toString());
             }).addOnPausedListener(taskSnapshot -> {
-                Log.d(TAG, "onPaused: ");
+                if (BuildConfig.DEBUG)
+                    Log.d(TAG, "onPaused: ");
                 mCircleProgressDialogFragment.dismiss();
                 showShortSnackBar(mView, "upload paused", SnackBarUtils.TYPE_INFO);
             });
@@ -1001,7 +1003,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
     // Create an intent that can start the Speech Recognizer activity
     private void displaySpeechRecognizer() {
-        Log.d(TAG, "displaySpeechRecognizer: ");
+        if (BuildConfig.DEBUG)
+            Log.d(TAG, "displaySpeechRecognizer: ");
         loseFocus();
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -1029,13 +1032,11 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 //这里是bottomSheet 状态的改变，根据slideOffset可以做一些动画
                 if (bottomSheet == bottomSheetLeft) {
-                    Log.d(TAG, "left onStateChanged: " + newState);
                     if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                         mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                     }
                 }
                 if (bottomSheet == bottomSheetRight) {
-                    Log.d(TAG, "right onStateChanged: " + newState);
                     if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                         mRightBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                     }
@@ -1079,8 +1080,9 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private void hideSoftKeyboard() {
         if (mInputMethodManager != null) {
             if (mEditable) {
-                mInputMethodManager.hideSoftInputFromWindow(mActivity.getWindow().getDecorView().getWindowToken(), 0);
-                mHandler.postDelayed(new BottomSheet(), 100);
+                mInputMethodManager.hideSoftInputFromWindow(mActivity.getWindow()
+                        .getDecorView().getWindowToken(), 0);
+                mHandler.postDelayed(this::changeBottomSheetState, 100);
             }
         }
     }
@@ -1133,7 +1135,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     }
 
     private void loseFocus() {
-        Log.d(TAG, "loseFocus: ");
+        if (BuildConfig.DEBUG)
+            Log.d(TAG, "loseFocus: ");
         mTitle.clearFocus();
         mContent.clearFocus();
     }
@@ -1193,19 +1196,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             }
         } else {
             mShowDuration.setText(Utils.convert(moonlight.getAudioDuration()));
-        }
-    }
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        return false;
-    }
-
-    private class BottomSheet implements Runnable {
-
-        @Override
-        public void run() {
-            changeBottomSheetState();
         }
     }
 }

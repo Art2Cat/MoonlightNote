@@ -1,7 +1,9 @@
 package com.art2cat.dev.moonlightnote.service;
 
+import android.util.Log;
+
+import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.model.User;
-import com.art2cat.dev.moonlightnote.utils.LogUtils;
 import com.art2cat.dev.moonlightnote.utils.UserUtils;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
@@ -18,7 +20,8 @@ public class NotificationInstanceIDService extends FirebaseInstanceIdService {
     public void onTokenRefresh() {
         // Get updated InstanceID token.
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        LogUtils.getInstance(TAG).setContent("Refreshed token: " + refreshedToken).debug();
+        if (BuildConfig.DEBUG)
+            Log.d(TAG, "onTokenRefresh: " + refreshedToken);
         sendRegistrationToServer(refreshedToken);
     }
 

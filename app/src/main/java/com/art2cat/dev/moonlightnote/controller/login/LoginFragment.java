@@ -280,13 +280,15 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 break;
             case R.id.login_google_btn:
                 showProgress(true);
-                GoogleSignInOptions mGoogleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken(mActivity.getString(R.string.default_web_client_id))
-                        .requestEmail()
-                        .build();
+                GoogleSignInOptions mGoogleSignInOptions =
+                        new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                .requestIdToken(mActivity.getString(R.string.default_web_client_id))
+                                .requestEmail()
+                                .build();
                 mGoogleApiClient = null;
                 mGoogleApiClient = new GoogleApiClient.Builder(mActivity)
-                        .enableAutoManage((FragmentActivity) mActivity /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                        .enableAutoManage((FragmentActivity) mActivity,
+                                this /* OnConnectionFailedListener */)
                         .addApi(Auth.GOOGLE_SIGN_IN_API, mGoogleSignInOptions)
                         .build();
                 Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);

@@ -74,7 +74,7 @@ public class ChangePasswordFragment extends BaseFragment {
                                                                 , SnackBarUtils.TYPE_INFO);
                                                 snackbar.show();
                                                 // 当snackbar显示消失是，启动回退栈
-                                                snackbar.setCallback(new Snackbar.Callback() {
+                                                snackbar.addCallback(new Snackbar.Callback() {
                                                     @Override
                                                     public void onDismissed(Snackbar snackbar, int event) {
                                                         getActivity().onBackPressed();

@@ -28,7 +28,6 @@ import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
-import com.art2cat.dev.moonlightnote.utils.LogUtils;
 import com.art2cat.dev.moonlightnote.utils.MoonlightEncryptUtils;
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.utils.firebase.StorageUtils;
@@ -80,8 +79,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
 
         EventBus.getDefault().register(this);
 
-        LogUtils.getInstance(TAG).setContent("onCreate").debug();
-
         setRetainInstance(true);
     }
 
@@ -89,7 +86,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        LogUtils.getInstance(TAG).setContent("onCreateView").debug();
         View rootView = inflater.inflate(R.layout.fragment_moonlight, container, false);
 
         MoonlightActivity moonlightActivity = (MoonlightActivity) mActivity;
@@ -134,13 +130,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        LogUtils.getInstance(TAG).setContent("onResume").debug();
-    }
-
-
-    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (isTrash()) {
@@ -148,7 +137,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
             MoonlightActivity.isHome = false;
         }
 
-        LogUtils.getInstance(TAG).setContent("onActivityCreated").debug();
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(mActivity);
         mLinearLayoutManager.setReverseLayout(true);
         mLinearLayoutManager.setStackFromEnd(true);
@@ -190,28 +178,13 @@ public abstract class MoonlightListFragment extends BaseFragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        LogUtils.getInstance(TAG).setContent("onPause").debug();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        LogUtils.getInstance(TAG).setContent("onStop").debug();
-    }
-
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
-        LogUtils.getInstance(TAG).setContent("onDestroyView").debug();
         isInflate = false;
         mFirebaseRecyclerAdapter.unregisterAdapterDataObserver(mAdapterDataObserver);
     }
 
     private void setAdapter() {
-
         Query moonlightsQuery = getQuery(mDatabase);
         if (moonlightsQuery != null) {
             mFirebaseRecyclerAdapter =
@@ -357,7 +330,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
     }
 
     private boolean isAudioFileExists(String audioName) {
-        File dir = new File(mActivity.getCacheDir(), "/audio");
+        File dir = new File(mActivity.getCacheDir(), "/.audio");
         if (audioName.contains(".amr")) {
             File file = new File(dir, audioName);
             return file.exists();
@@ -381,8 +354,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
             mFirebaseRecyclerAdapter.cleanup();
         }
 
-        LogUtils.getInstance(TAG).setContent("onDestroy").debug();
-
         RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
         refWatcher.watch(this);
     }
@@ -390,7 +361,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        LogUtils.getInstance(TAG).setContent("onCreateOptionsMenu").debug();
         mMenu = menu;
         mMenuInflater = inflater;
         if (!isTrash()) {

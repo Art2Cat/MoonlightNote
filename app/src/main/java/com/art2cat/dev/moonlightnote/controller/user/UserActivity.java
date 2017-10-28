@@ -17,8 +17,8 @@ public class UserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_common);
         initView();
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mCommonFragmentContainer = (ContentFrameLayout) findViewById(R.id.common_fragment_container);
+        mToolbar = findViewById(R.id.toolbar);
+        mCommonFragmentContainer = findViewById(R.id.common_fragment_container);
         setSupportActionBar(mToolbar);
 
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
@@ -35,7 +35,7 @@ public class UserActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        mCommonFragmentContainer = (ContentFrameLayout) findViewById(R.id.common_fragment_container);
+        mCommonFragmentContainer = findViewById(R.id.common_fragment_container);
     }
 
 }

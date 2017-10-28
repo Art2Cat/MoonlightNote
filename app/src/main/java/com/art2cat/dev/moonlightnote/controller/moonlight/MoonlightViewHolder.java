@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.R;
 import com.squareup.picasso.Picasso;
 
@@ -55,15 +56,16 @@ public class MoonlightViewHolder extends RecyclerView.ViewHolder implements Anim
     }
 
     void displayImage(Context context, @NonNull String url) {
+        if (BuildConfig.DEBUG)
             Log.d(TAG, "displayImage: succeed");
-            Picasso.with(context)
-                    .load(Uri.parse(url))
-                    .memoryPolicy(NO_CACHE)
-                    .placeholder(R.drawable.ic_cloud_download_black_24dp)
-                    .tag(tag)
-                    .config(Bitmap.Config.RGB_565)
-                    .into(mImage);
-            mImage.setVisibility(View.VISIBLE);
+        Picasso.with(context)
+                .load(Uri.parse(url))
+                .memoryPolicy(NO_CACHE)
+                .placeholder(R.drawable.ic_cloud_download_black_24dp)
+                .tag(tag)
+                .config(Bitmap.Config.RGB_565)
+                .into(mImage);
+        mImage.setVisibility(View.VISIBLE);
     }
 
     public void setColor(int color) {
@@ -77,8 +79,8 @@ public class MoonlightViewHolder extends RecyclerView.ViewHolder implements Anim
 
     @Override
     public void preAnimateRemoveImpl(RecyclerView.ViewHolder holder) {
-        ViewCompat.setTranslationY(itemView, -itemView.getHeight() * 0.3f);
-        ViewCompat.setAlpha(itemView, 0);
+        itemView.setTranslationY(-itemView.getHeight() * 0.3f);
+        itemView.setAlpha(0);
     }
 
     @Override

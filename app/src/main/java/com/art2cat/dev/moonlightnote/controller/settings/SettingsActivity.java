@@ -28,7 +28,6 @@ import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.Confirmat
 import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.NoteLab;
-import com.art2cat.dev.moonlightnote.utils.LogUtils;
 import com.art2cat.dev.moonlightnote.utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
@@ -436,7 +435,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         f.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY,
                                 null).await();
                 if (!driveContentsResult.getStatus().isSuccess()) {
-                    LogUtils.getInstance(TAG).setContent("run: " + driveContentsResult.getStatus()).debug();
+                    if (BuildConfig.DEBUG)
+                        Log.d(TAG, "readFileFromDrive: " + driveContentsResult.getStatus());
                     return;
                 }
 
@@ -450,16 +450,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         builder.append(line);
                     }
                     String contentsAsString = builder.toString();
-                    LogUtils.getInstance(TAG).setContent(contentsAsString).debug();
                     Gson gson = new Gson();
                     NoteLab noteLab = gson.fromJson(contentsAsString, NoteLab.class);
                     if (noteLab == null) {
                         return;
                     }
-                    LogUtils.getInstance(TAG).setContent("onResult: " + noteLab.getMoonlights().size()).debug();
+                    if (BuildConfig.DEBUG)
+                        Log.i(TAG, "readFileFromDrive: " + noteLab.getMoonlights().size());
                     mFDatabaseUtils.restoreAll(noteLab);
                 } catch (IOException e) {
-                    LogUtils.getInstance(TAG).setContent("IOException while reading from the stream").error(e);
+                    Log.e(TAG, "readFileFromDrive: IOException while reading from the stream, ", e);
                 }
 
                 driveContents.discard(mGoogleApiClient);
@@ -474,7 +474,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             Drive.DriveApi.query(
                     mGoogleApiClient, query).setResultCallback(result -> {
                 if (!result.getStatus().isSuccess()) {
-                    Log.d(TAG, "Problem while retrieving results");
+                    if (BuildConfig.DEBUG)
+                        Log.d(TAG, "Problem while retrieving results");
                     return;
                 }
 
@@ -557,9 +558,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             mCircleProgressDialogFragment.dismiss();
             // Called whenever the API client fails to connect.
 
-            LogUtils.getInstance(TAG)
-                    .setContent("GoogleApiClient connection failed: " + result.toString())
-                    .info();
+            Log.w(TAG, "onConnectionFailed: " + result.getErrorMessage());
             if (!result.hasResolution()) {
                 // show the localized error dialog.
                 GoogleApiAvailability.getInstance().getErrorDialog(getActivity(), result.getErrorCode(), 0).show();
@@ -572,18 +571,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             try {
                 result.startResolutionForResult(getActivity(), REQUEST_CODE_RESOLUTION);
             } catch (IntentSender.SendIntentException e) {
-                LogUtils.getInstance(TAG)
-                        .setContent("Exception while starting resolution activity")
-                        .error(e);
+                Log.e(TAG, "onConnectionFailed: Exception while starting resolution activity, ", e);
             }
         }
 
         @Override
         public void onConnected(Bundle connectionHint) {
             mCircleProgressDialogFragment.dismiss();
-            LogUtils.getInstance(TAG)
-                    .setContent("API client connected.")
-                    .info();
+            if (BuildConfig.DEBUG)
+                Log.i(TAG, "onConnected: API client connected.");
             SnackBarUtils.shortSnackBar(getView(), "Google Drive connected!",
                     SnackBarUtils.TYPE_INFO).show();
         }
@@ -591,9 +587,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         @Override
         public void onConnectionSuspended(int cause) {
             mCircleProgressDialogFragment.dismiss();
-            LogUtils.getInstance(TAG)
-                    .setContent("GoogleApiClient connection suspended")
-                    .info();
+            Log.i(TAG, "onConnectionSuspended: " + "GoogleApiClient connection suspended");
         }
 
     }
