@@ -22,6 +22,7 @@ import jp.wasabeef.recyclerview.animators.holder.AnimateViewHolder;
 
 import static android.R.attr.tag;
 import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
+import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 
 /**
  * Created by Rorschach
@@ -58,14 +59,15 @@ public class MoonlightViewHolder extends RecyclerView.ViewHolder implements Anim
     void displayImage(Context context, @NonNull String url) {
         if (BuildConfig.DEBUG)
             Log.d(TAG, "displayImage: succeed");
-        Picasso.with(context)
-                .load(Uri.parse(url))
-                .memoryPolicy(NO_CACHE)
-                .placeholder(R.drawable.ic_cloud_download_black_24dp)
-                .tag(tag)
-                .config(Bitmap.Config.RGB_565)
-                .into(mImage);
-        mImage.setVisibility(View.VISIBLE);
+        if (!mImage.isAttachedToWindow()) {
+            Picasso.with(context)
+                    .load(Uri.parse(url))
+                    .memoryPolicy(NO_CACHE, NO_STORE)
+                    .placeholder(R.drawable.ic_cloud_download_black_24dp)
+                    .tag(tag)
+                    .config(Bitmap.Config.RGB_565)
+                    .into(mImage);
+        }
     }
 
     public void setColor(int color) {
