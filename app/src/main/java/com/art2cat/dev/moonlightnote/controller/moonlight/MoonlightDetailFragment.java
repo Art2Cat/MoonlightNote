@@ -157,14 +157,9 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        //设置显示OptionsMenu
         setHasOptionsMenu(true);
-        //获取Bus单例，并注册
-        //BusProvider.getInstance().register(this);
         EventBus.getDefault().register(this);
-        //获取用户id
         mUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        //获取firebaseStorage实例
         FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
         mStorageReference = firebaseStorage.getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE);
 
@@ -265,7 +260,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance(getString(R.string.prograssBar_uploading));
 
         if (mEditable) {
-            //获取系统当前时间
             long date = System.currentTimeMillis();
             moonlight.setDate(date);
             String time = Utils.timeFormat(mActivity.getApplicationContext(), new Date(date));
@@ -277,9 +271,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             mImage.setOnClickListener(this);
             mDeleteAudio.setOnClickListener(this);
             mPlayingAudio.setOnClickListener(this);
-//            if (!Utils.isXLargeTablet(mActivity)) {
             showBottomSheet();
-//            }
 
             mBottomBarLeft.setOnClickListener(this);
             mBottomBarRight.setOnClickListener(this);
@@ -401,7 +393,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         setOverflowButtonColor(mActivity, GREY_DARK);
 
         if (!mEditable) {
-            //禁用软键盘
+            // disable softInput keyboard
             mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             final Snackbar snackbar = SnackBarUtils.longSnackBar(mView, getString(R.string.trash_restore),
                     SnackBarUtils.TYPE_WARNING).setAction(R.string.trash_restore_action,
@@ -457,7 +449,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         revertUI();
 
         mAudioPlayer.releasePlayer();
-        //移除FragmentOnTouchListener
+        // remove FragmentOnTouchListener
         if (mFragmentOnTouchListener != null) {
             ((MoonlightActivity)
                     mActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
@@ -515,9 +507,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         }
     }
 
-    /**
-     * 恢复原来的UI界面
-     */
     private void revertUI() {
 
         mToolbar.setVisibility(View.GONE);
@@ -622,7 +611,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 hideSoftKeyboard();
                 break;
             case R.id.moonlight_image:
-                //网页浏览图片。。。
+
                 ScaleFragment scaleFragment = ScaleFragment.newInstance(moonlight.getImageUrl());
                 getFragmentManager()
                         .beginTransaction()
@@ -707,7 +696,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 }
                 break;
             case R.id.bottom_sheet_item_send:
-                //启动Intent分享
                 Intent in = new Intent(Intent.ACTION_SEND);
                 in.setType("text/plain");
                 if (moonlight.getTitle() != null) {
@@ -780,13 +768,9 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
             Log.d(TAG, "dir.mkdirs():" + isDirCreate);
         }
         File file = new File(dir, UUID.randomUUID().toString() + ".amr");
-        FileOutputStream fos;
-        InputStream inputStream;
-        try {
 
-            inputStream = contentResolver.openInputStream(uri);
-            fos = new FileOutputStream(file);
-            try {
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            try (InputStream inputStream = contentResolver.openInputStream(uri)) {
 
                 byte[] buffer = new byte[4 * 1024];
                 int length;
@@ -796,12 +780,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 fos.flush();
             } catch (IOException e) {
                 Log.e(TAG, "copyAudioFile: ", e);
-            } finally {
-                //noinspection ThrowFromFinallyBlock
-                fos.close();
-                assert inputStream != null;
-                //noinspection ThrowFromFinallyBlock
-                inputStream.close();
             }
             return Uri.fromFile(file);
         } catch (IOException e) {
@@ -1177,8 +1155,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
      * @param mFileUri 图片地址
      */
     private void showImage(@NonNull Uri mFileUri) {
-        //当图片地址不为空时，首先从本地读取bitmap设置图片，bitmap为空，则从网络加载
-        //图片地址为空则不加载图片
         Utils.displayImage(mFileUri.toString(), mImage);
         mImage.post(() -> CircularRevealUtils.show(mImage));
 

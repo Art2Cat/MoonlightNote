@@ -107,15 +107,13 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    //启动广告页面
     private void startAdFragment() {
-        //这里判断是否是重新登陆，如果是，则直接进入登陆界面，如果不是则，加载广告页面
+
         int id = R.id.login_container;
         boolean reLogin = getIntent().getBooleanExtra("reLogin", false);
         if (reLogin) {
             FragmentUtils.addFragment(getSupportFragmentManager(), id, new LoginFragment());
         } else {
-            //在这里首先加载一个含有广告的fragment
             FragmentUtils.addFragment(getSupportFragmentManager(), id, new SlashFragment());
             startLoginFragment();
         }
@@ -136,17 +134,9 @@ public class LoginActivity extends AppCompatActivity {
         getWindow().setExitTransition(fade1);
     }
 
-    /**
-     * 启动登录界面
-     */
     private void startLoginFragment() {
-        //创建handler对象，调用postDelayed()方法，启动插播3秒广告
         Handler handler = new Handler();
         handler.postDelayed(() -> {
-                        /*
-             * 判断当前用户是否登陆，如何用户登陆成功，直接跳转至主界面，并销毁当前Activity
-             * 如果登陆失败，则跳转至登陆及注册界面
-             */
             if (mLoginState) {
 
                 startActivity(new Intent(LoginActivity.this, MoonlightActivity.class));

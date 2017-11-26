@@ -97,13 +97,11 @@ public class MoonlightActivity extends BaseFragmentActivity
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        //获取FirebaseAuth实例
         mAuth = getInstance();
         //noinspection ConstantConditions
         mUserId = mAuth.getCurrentUser().getUid();
         mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.getContext(), mUserId);
         mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
-        //获取Bus单例，并注册
         EventBus.getDefault().register(this);
         initView();
         displayUserInfo();
@@ -168,12 +166,6 @@ public class MoonlightActivity extends BaseFragmentActivity
         super.onPause();
         checkLockStatus();
         Log.d(TAG, "onPause: ");
-    }
-
-    @Override
-    protected void onRestart() {
-        Log.d(TAG, "onRestart: ");
-        super.onRestart();
     }
 
     @Override

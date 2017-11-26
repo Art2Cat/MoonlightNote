@@ -2,7 +2,6 @@ package com.art2cat.dev.moonlightnote.controller.user;
 
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.AppCompatButton;
@@ -17,8 +16,6 @@ import android.view.ViewGroup;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,6 +46,7 @@ public class ChangePasswordFragment extends BaseFragment {
         setHasOptionsMenu(true);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
+        assert user != null;
         button.setOnClickListener(v -> {
             String oldPassword = oldET.getText().toString();
             final String newPassword = newET.getText().toString();
@@ -59,36 +57,33 @@ public class ChangePasswordFragment extends BaseFragment {
                     credential = EmailAuthProvider
                             .getCredential(user.getEmail(), oldPassword);
                 }
-                user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
+                if (credential != null) {
+                    user.reauthenticate(credential).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            user.updatePassword(newPassword)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            user.updatePassword(newPassword).addOnCompleteListener(task1 -> {
+                                if (task1.isSuccessful()) {
+                                    Log.d(TAG, "User password updated.");
+                                    Snackbar snackbar = SnackBarUtils
+                                            .shortSnackBar(v, "Password updated",
+                                                    SnackBarUtils.TYPE_INFO);
+                                    snackbar.show();
+
+                                    snackbar.addCallback(new Snackbar.Callback() {
                                         @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Log.d(TAG, "User password updated.");
-                                                Snackbar snackbar = SnackBarUtils
-                                                        .shortSnackBar(v, "Password updated"
-                                                                , SnackBarUtils.TYPE_INFO);
-                                                snackbar.show();
-                                                // 当snackbar显示消失是，启动回退栈
-                                                snackbar.addCallback(new Snackbar.Callback() {
-                                                    @Override
-                                                    public void onDismissed(Snackbar snackbar, int event) {
-                                                        getActivity().onBackPressed();
-                                                        super.onDismissed(snackbar, event);
-                                                    }
-                                                });
-                                            }
+                                        public void onDismissed(Snackbar snackbar, int event) {
+                                            getActivity().onBackPressed();
+                                            super.onDismissed(snackbar, event);
                                         }
-                                    }).addOnFailureListener(e -> SnackBarUtils.longSnackBar(v, e.toString(),
+                                    });
+                                }
+                            }).addOnFailureListener(e -> SnackBarUtils.longSnackBar(v, e.toString(),
                                     SnackBarUtils.TYPE_INFO).show());
                         }
-                    }
-                }).addOnFailureListener(e -> SnackBarUtils.longSnackBar(v, e.toString(),
-                        SnackBarUtils.TYPE_INFO).show());
+
+                    }).addOnFailureListener(e -> SnackBarUtils.longSnackBar(v, e.toString(),
+                            SnackBarUtils.TYPE_INFO).show());
+
+                }
             }
         });
         return view;

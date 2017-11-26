@@ -404,6 +404,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public void onDestroy() {
             super.onDestroy();
             mFDatabaseUtils.removeListener();
+            if (!EXECUTOR_SERVICE.isTerminated()) {
+                EXECUTOR_SERVICE.shutdown();
+            }
         }
 
         private void connectToDrive() {

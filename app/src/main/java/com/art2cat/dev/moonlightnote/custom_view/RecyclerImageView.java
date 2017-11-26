@@ -23,6 +23,11 @@ public class RecyclerImageView extends AppCompatImageView {
     }
 
     @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+    }
+
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         setImageDrawable(null);

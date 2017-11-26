@@ -57,7 +57,8 @@ import org.greenrobot.eventbus.ThreadMode;
 /**
  * A simple {@link BaseFragment} subclass.
  */
-public class LoginFragment extends BaseFragment implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
+public class LoginFragment extends BaseFragment implements View.OnClickListener,
+        GoogleApiClient.OnConnectionFailedListener {
     private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "LoginFragment";
     protected View mView;
@@ -311,7 +312,8 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
             FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user != null) {
                 Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                SPUtils.putString(MoonlightApplication.getContext(), "User", "Id", user.getUid());
+                SPUtils.putString(MoonlightApplication.getContext(),
+                        "User", "Id", user.getUid());
                 Uri photoUrl = user.getPhotoUrl();
                 String nickname = user.getDisplayName();
                 String email = user.getEmail();

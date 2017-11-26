@@ -104,12 +104,11 @@ public abstract class BaseFragment extends Fragment {
         Toast.makeText(MoonlightApplication.getContext(), content, Toast.LENGTH_LONG).show();
     }
 
-    public BaseFragment setArgs(Moonlight moonlight, int flag) {
+    public void setArgs(Moonlight moonlight, int flag) {
         Bundle args = new Bundle();
         args.putParcelable("moonlight", moonlight);
         args.putInt("flag", flag);
         this.setArguments(args);
-        return this;
     }
 
     public interface DrawerLocker {

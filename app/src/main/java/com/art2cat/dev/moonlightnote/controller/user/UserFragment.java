@@ -95,7 +95,6 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
     private User mUser;
     private Uri mFileUri = null;
     private StorageReference mStorageReference;
-    private String mFileName;
 
     public UserFragment() {
         // Required empty public constructor
@@ -104,11 +103,8 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //获取Bus单例，并注册
         EventBus.getDefault().register(this);
-        //获取FirebaseUser对象
         user = FirebaseAuth.getInstance().getCurrentUser();
-        //获取firebaseStorage实例
         mStorageReference = FirebaseStorage.getInstance()
                 .getReferenceFromUrl(FB_STORAGE_REFERENCE);
 
@@ -232,8 +228,6 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
         if (mDownloadUrl != null) {
             Utils.displayImage(mDownloadUrl.toString(), mCircleImageView);
             mUser.setPhotoUrl(mDownloadUrl.toString());
-        } else {
-            mFileName = null;
         }
     }
 
@@ -460,7 +454,6 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
         }).addOnFailureListener(e -> {
             mCircleProgressDialogFragment.dismiss();
             Log.e(TAG, "uploadFromUri: onFailure: ", e);
-            mFileName = null;
             if (user.getPhotoUrl() != null) {
                 updateUI(user.getPhotoUrl());
             }
