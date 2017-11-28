@@ -441,7 +441,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void busAction(BusEvent busEvent) {
-        //这里更新视图或者后台操作,从busAction获取传递参数.
         if (busEvent != null) {
             switch (busEvent.getFlag()) {
                 case Constants.BUS_FLAG_SIGN_OUT:
@@ -511,7 +510,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
                             mActivity.setTitle(R.string.app_name);
                             break;
                         case R.id.action_send:
-                            //启动Intent分享
                             Intent in = new Intent(Intent.ACTION_SEND);
                             in.setType("text/plain");
                             if (moonlight.getTitle() != null) {
@@ -525,7 +523,6 @@ public abstract class MoonlightListFragment extends BaseFragment {
                             if (moonlight.getImageUrl() != null) {
                                 in.putExtra(Intent.EXTRA_TEXT, moonlight.getImageUrl());
                             }
-                            //设置分享选择器
                             in = Intent.createChooser(in, "Send to");
                             startActivity(in);
                             mActivity.setTitle(R.string.app_name);
