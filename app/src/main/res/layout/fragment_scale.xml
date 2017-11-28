@@ -4,13 +4,13 @@
     android:layout_height="match_parent"
     tools:context="com.art2cat.dev.moonlightnote.controller.moonlight.ScaleFragment">
 
-    <com.art2cat.dev.moonlightnote.custom_view.ZoomImageView
+    <com.github.chrisbanes.photoview.PhotoView
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/imageView"
         android:adjustViewBounds="true"
-        android:transitionName="@string/moonlight_image"
         android:contentDescription="@string/moonlight_image"
+        android:transitionName="@string/moonlight_image"
         />
 
 </FrameLayout>

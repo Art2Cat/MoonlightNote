@@ -122,7 +122,7 @@
                         android:text="@string/test"
                         android:textAllCaps="false"
                         android:theme="@style/RaiseButtonStyleX"
-                        android:visibility="gone" />
+                        android:visibility="visible" />
 
                 </android.support.v7.widget.LinearLayoutCompat>
             </android.support.v7.widget.ContentFrameLayout>

@@ -1,21 +1,21 @@
 package com.art2cat.dev.moonlightnote.utils;
 
 import android.annotation.SuppressLint;
-import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.widget.ImageView;
 
-import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.controller.settings.MoonlightPinActivity;
@@ -33,12 +33,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static com.art2cat.dev.moonlightnote.model.Constants.EXTRA_PIN;
 import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
 import static com.squareup.picasso.MemoryPolicy.NO_STORE;
@@ -50,10 +52,10 @@ import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 public class Utils {
 
     /**
-     * 格式化日期
+     * Format the date
      *
-     * @param date 日期
-     * @return 格式化后日期
+     * @param date date
+     * @return formatted date
      */
     public static String dateFormat(Date date) {
         String pattern;
@@ -67,16 +69,16 @@ public class Utils {
     }
 
     /**
-     * 格式化时间
+     * Formatting time
      *
-     * @param context 上下文
-     * @param date    需要格式化的日期
-     * @return 返回格式化后的时间
+     * @param context context
+     * @param date    The date to be formatted
+     * @return returns the formatted time
      */
     public static String timeFormat(Context context, Date date) {
         String pattern = null;
         ContentResolver cv = context.getContentResolver();
-        // 获取当前系统设置
+
         String strTimeFormat = android.provider.Settings.System.getString(cv,
                 android.provider.Settings.System.TIME_12_24);
         if (strTimeFormat != null) {
@@ -103,10 +105,10 @@ public class Utils {
     }
 
     /**
-     * 从FirebaseAuth中获取用户信息
+     * get User info from FirebaseAuth
      *
-     * @param firebaseUser firebase用户类
-     * @return 本地User类
+     * @param firebaseUser Firebase User
+     * @return User
      */
     public static User getUserInfo(FirebaseUser firebaseUser) {
         User user;
@@ -122,10 +124,10 @@ public class Utils {
     }
 
     /**
-     * 锁定App
+     * lock App
      *
-     * @param context 上下文
-     * @param code    锁屏方式代码
+     * @param context context
+     * @param code    lock code
      */
     public static void lockApp(Context context, int code) {
         switch (code) {
@@ -140,10 +142,10 @@ public class Utils {
     }
 
     /**
-     * 解锁App
+     * unlock App
      *
-     * @param context 上下文
-     * @param code    锁屏方式代码
+     * @param context context
+     * @param code    lock code
      */
     public static void unLockApp(Context context, int code) {
         switch (code) {
@@ -159,9 +161,9 @@ public class Utils {
 
 
     /**
-     * 保存笔记数据到本地
+     * save Note to local
      *
-     * @param noteLab 数据集合
+     * @param noteLab NoteLab
      */
     public static void saveNoteToLocal(NoteLab noteLab) {
         String path = Environment
@@ -175,9 +177,9 @@ public class Utils {
     }
 
     /**
-     * 从本地获取笔记数据
+     * get Note from local
      *
-     * @return 数据集合
+     * @return NoteLab
      */
     public static NoteLab getNoteFromLocal() {
         String path = Environment
@@ -202,105 +204,135 @@ public class Utils {
     }
 
     /**
-     * 打开email客户端
+     * open email client
      *
-     * @param context 上下文
+     * @param context context
      */
     public static void openMailClient(Context context) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
-//        intent.addCategory(Intent.CATEGORY_APP_EMAIL);
-        List<ResolveInfo> resInfo = context.getPackageManager().queryIntentActivities(intent, 0);
-        String email = "email";
-        String gmail = "gm";
-        String inbox = "inbox";
-        String outlook = "outlook";
-        String qqmail = "qqmail";
-
-        String packages = null;
-        if (!resInfo.isEmpty()) {
-            for (ResolveInfo info : resInfo) {
-                if (info.activityInfo.packageName.toLowerCase().contains(inbox) || info.activityInfo.name.toLowerCase().contains(inbox)) {
-                    packages = info.activityInfo.packageName;
-                    if (BuildConfig.DEBUG) Log.d("Utils", info.activityInfo.packageName);
-//                    break;
-                } else if (info.activityInfo.packageName.toLowerCase().contains(gmail) || info.activityInfo.name.toLowerCase().contains(gmail)) {
-                    packages = info.activityInfo.packageName;
-                    if (BuildConfig.DEBUG) Log.d("Utils", info.activityInfo.packageName);
-//                    break;
-                } else if (info.activityInfo.packageName.toLowerCase().contains(email) || info.activityInfo.name.toLowerCase().contains(email)) {
-                    packages = info.activityInfo.packageName;
-                    if (BuildConfig.DEBUG) Log.d("Utils", info.activityInfo.packageName);
-
-//                    break;
-                } else if (info.activityInfo.packageName.toLowerCase().contains(outlook) || info.activityInfo.name.toLowerCase().contains(outlook)) {
-                    packages = info.activityInfo.packageName;
-                    if (BuildConfig.DEBUG) Log.d("Utils", info.activityInfo.packageName);
-
-//                    break;
-                } else if (info.activityInfo.packageName.toLowerCase().contains(qqmail) || info.activityInfo.name.toLowerCase().contains(qqmail)) {
-                    packages = info.activityInfo.packageName;
-                    if (BuildConfig.DEBUG) Log.d("Utils", info.activityInfo.packageName);
-//                    break;
-                }
-            }
-
-            if (packages == null) {
-                return;
-            }
-            if (BuildConfig.DEBUG) Log.d("Utils", packages);
-            Intent intent1 = new Intent(Intent.ACTION_VIEW);
-            intent1.setPackage(packages);
-            intent1.addFlags(FLAG_ACTIVITY_NEW_TASK);
-            try {
-                context.startActivity(intent1);
-//                context.startActivity(createChooser(intent1, "Open with..."));
-            } catch (ActivityNotFoundException e) {
-                e.printStackTrace();
-                ToastUtils.with(context).setMessage("Email client no found!").showShortToast();
-            }
-        }
+        List<String> list = new ArrayList<>();
+        list.add("com.google.android.gm");
+        list.add("com.google.android.apps.inbox");
+        list.add("com.microsoft.office.outlook");
+        list.add("com.tencent.qqmail");
+        Intent customChooserIntent = createCustomChooserIntent(context.getPackageManager(),
+                intent, "Open with...", list);
+        context.startActivity(customChooserIntent);
     }
 
     /**
-     * 是否有网络
+     * Creates a chooser that only shows installed apps that are allowed by the whitelist.
      *
-     * @return 返回网络状态
+     * @param pm        PackageManager instance.
+     * @param target    The intent to share.
+     * @param title     The title of the chooser dialog.
+     * @param whitelist A list of package names that are allowed to show.
+     * @return Updated intent, to be passed to {@link Context#startActivity}.
      */
-    public static boolean isNetworkConnected() {
+    private static Intent createCustomChooserIntent(PackageManager pm, Intent target, String title,
+                                                    List<String> whitelist) {
+        Intent dummy = new Intent(target.getAction());
+        dummy.setType(target.getType());
+        List<ResolveInfo> resInfo = pm.queryIntentActivities(dummy, 0);
+
+        List<HashMap<String, String>> metaInfo = new ArrayList<>();
+        for (ResolveInfo ri : resInfo) {
+            if (ri.activityInfo == null || !whitelist.contains(ri.activityInfo.packageName))
+                continue;
+
+            HashMap<String, String> info = new HashMap<>();
+            info.put("packageName", ri.activityInfo.packageName);
+            info.put("className", ri.activityInfo.name);
+            info.put("simpleName", String.valueOf(ri.activityInfo.loadLabel(pm)));
+            metaInfo.add(info);
+        }
+
+        if (metaInfo.isEmpty()) {
+            // Force empty chooser by setting a nonexistent target class.
+            Intent emptyIntent = (Intent) target.clone();
+            emptyIntent.setPackage("your.package.name");
+            emptyIntent.setClassName("your.package.name", "NonExistingActivity");
+            return Intent.createChooser(emptyIntent, title);
+        }
+
+        // Sort items by display name.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            metaInfo.sort((map, map2) -> map.get("simpleName").compareTo(map2.get("simpleName")));
+        } else {
+            Collections.sort(metaInfo, (map, map2) ->
+                    map.get("simpleName").compareTo(map2.get("simpleName")));
+        }
+
+        // create the custom intent list
+        List<Intent> targetedIntents = new ArrayList<>();
+        for (HashMap<String, String> mi : metaInfo) {
+            Intent targetedShareIntent = (Intent) target.clone();
+            targetedShareIntent.setPackage(mi.get("packageName"));
+            targetedShareIntent.setClassName(mi.get("packageName"), mi.get("className"));
+            targetedIntents.add(targetedShareIntent);
+        }
+
+        Intent chooserIntent = Intent.createChooser(targetedIntents.get(0), title);
+        targetedIntents.remove(0);
+        Parcelable[] targetedIntentsParcelable =
+                targetedIntents.toArray(new Parcelable[targetedIntents.size()]);
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedIntentsParcelable);
+        return chooserIntent;
+    }
+
+    /**
+     * Check if the network is connected
+     *
+     * @return network status
+     */
+    static boolean isNetworkConnected() {
         Context context = MoonlightApplication.getContext();
         if (context != null) {
-            ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
-            if (mNetworkInfo != null) {
-                return mNetworkInfo.isAvailable();
+            ConnectivityManager mConnectivityManager =
+                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (mConnectivityManager != null) {
+                NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+                if (mNetworkInfo != null) {
+                    return mNetworkInfo.isAvailable();
+                }
             }
         }
         return false;
     }
 
     /**
-     * 是否连上wifi
+     * Check if the wifi is connected
      *
-     * @return 是否连上wifi
+     * @return status
      */
     static public boolean isWifiConnected() {
 
-        ConnectivityManager mConnectivityManager = (ConnectivityManager) MoonlightApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        ConnectivityManager mConnectivityManager =
+                (ConnectivityManager) MoonlightApplication.getContext()
+                        .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWiFiNetworkInfo = null;
+        if (mConnectivityManager != null) {
+            mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        }
         return mWiFiNetworkInfo != null && mWiFiNetworkInfo.isAvailable();
     }
 
     /**
-     * 是否有数据网络
+     * Check if the data network is connected
      *
-     * @param context 上下文
-     * @return 是否
+     * @param context context
+     * @return status
      */
     static public boolean isMobileConnected(Context context) {
         if (context != null) {
-            ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo mMobileNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            ConnectivityManager mConnectivityManager =
+                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mMobileNetworkInfo = null;
+            if (mConnectivityManager != null) {
+                mMobileNetworkInfo = mConnectivityManager
+                        .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            }
             if (mMobileNetworkInfo != null) {
                 return mMobileNetworkInfo.isAvailable();
             }

@@ -35,6 +35,7 @@ import com.art2cat.dev.moonlightnote.model.User;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.utils.UserUtils;
+import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.art2cat.dev.moonlightnote.utils.firebase.AuthUtils;
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
 import com.google.android.gms.auth.api.Auth;
@@ -85,7 +86,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
@@ -296,8 +297,8 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 startActivityForResult(signInIntent, RC_SIGN_IN);
                 break;
             case R.id.test_btn:
-//                Utils.openMailClient(mActivity);
-                signInAnonymously();
+                Utils.openMailClient(mActivity);
+//                signInAnonymously();
                 break;
         }
     }
@@ -388,7 +389,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                                 .makeSceneTransitionAnimation(mActivity).toBundle();
                         mActivity.startActivity(intent, bundle);
 
-                        //销毁当前Activity
                         mActivity.finishAfterTransition();
                         Log.d(TAG, "signIn:onComplete:" + task.isSuccessful());
                     }

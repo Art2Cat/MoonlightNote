@@ -140,7 +140,6 @@ public class LoginActivity extends AppCompatActivity {
             if (mLoginState) {
 
                 startActivity(new Intent(LoginActivity.this, MoonlightActivity.class));
-                //这里调用Activity.finish()方法销毁当前Activity
                 finishAfterTransition();
             } else {
                 Fragment fragment = new LoginFragment();
@@ -173,8 +172,8 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_MAIN,
                 Uri.EMPTY, this, MoonlightActivity.class)
                 .putExtra("type", 101);
-
-        ShortcutInfo compose = ShortcutsUtils.getInstance(LoginActivity.this)
+        ShortcutsUtils shortcutsUtils = ShortcutsUtils.getInstance(LoginActivity.this);
+        ShortcutInfo compose = shortcutsUtils
                 .createShortcut(
                         "compose",
                         "Compose",
@@ -184,7 +183,6 @@ public class LoginActivity extends AppCompatActivity {
 
         List<ShortcutInfo> shortcutInfoList = new ArrayList<>();
         shortcutInfoList.add(compose);
-        ShortcutsUtils.getInstance(LoginActivity.this)
-                .setShortcuts(shortcutInfoList);
+        shortcutsUtils.setShortcuts(shortcutInfoList);
     }
 }
