@@ -100,7 +100,8 @@ public class FDatabaseUtils {
      * @param moonlight Moonlight
      * @param type      操作类型
      */
-    public static void updateMoonlight(final String userId, @Nullable String keyId, final Moonlight moonlight, final int type) {
+    public static void updateMoonlight(final String userId, @Nullable String keyId,
+                                       final Moonlight moonlight, final int type) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
         Moonlight moonlightE = null;
         String mKey;
@@ -167,7 +168,7 @@ public class FDatabaseUtils {
         if (databaseReference != null) {
             databaseReference.removeValue((databaseError, databaseReference1) -> {
                 if (BuildConfig.DEBUG)
-                    Log.d("FDatabaseUtils", "databaseReference:" + databaseReference1);
+                    Log.d(TAG, "databaseReference:" + databaseReference1);
             });
         }
     }

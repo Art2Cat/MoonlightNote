@@ -1,15 +1,16 @@
 package com.art2cat.dev.moonlightnote.custom_view;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
+
+import com.github.chrisbanes.photoview.PhotoView;
 
 /**
  * Created by Rorschach
  * on 2017/1/22 上午11:37.
  */
 
-public class RecyclerImageView extends AppCompatImageView {
+public class RecyclerImageView extends PhotoView {
     public RecyclerImageView(Context context) {
         super(context);
     }
