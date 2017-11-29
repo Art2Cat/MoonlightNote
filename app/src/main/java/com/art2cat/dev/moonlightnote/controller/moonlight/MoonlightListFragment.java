@@ -29,6 +29,7 @@ import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.utils.MoonlightEncryptUtils;
+import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.utils.firebase.StorageUtils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -204,19 +205,19 @@ public abstract class MoonlightListFragment extends BaseFragment {
 
                             if (moonlightD == null) return;
 
-                            if (moonlightD.getTitle() != null) {
+                            if (Utils.isStringNotEmpty(moonlightD.getTitle())) {
                                 viewHolder.displayTitle(moonlightD.getTitle());
                             } else {
                                 viewHolder.mTitle.setVisibility(View.GONE);
                             }
 
-                            if (moonlightD.getContent() != null) {
+                            if (Utils.isStringNotEmpty(moonlightD.getContent())) {
                                 viewHolder.displayContent(moonlightD.getContent());
                             } else {
                                 viewHolder.mContent.setVisibility(View.GONE);
                             }
 
-                            if (moonlightD.getImageName() != null) {
+                            if (Utils.isStringNotEmpty(moonlightD.getImageName())) {
                                 Log.i(TAG, "populateViewHolder: " + moonlightD.getImageName());
                                 viewHolder.mImage.setVisibility(View.VISIBLE);
                                 viewHolder.displayImage(mActivity, moonlightD.getImageUrl());
@@ -236,7 +237,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
                                 }
                             }
 
-                            if (moonlightD.getAudioName() != null) {
+                            if (Utils.isStringNotEmpty(moonlightD.getAudioName())) {
                                 String audioName = moonlightD.getAudioName();
                                 if (!isAudioFileExists(audioName)) {
                                     StorageUtils.downloadAudio(

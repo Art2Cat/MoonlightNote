@@ -18,9 +18,9 @@
             android:id="@+id/imageView"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:background="@drawable/ic_account_circle_black_48dp"
             android:gravity="center"
-            android:theme="@style/FlatButtonStyleX"
-             />
+            android:theme="@style/FlatButtonStyleX" />
     </LinearLayout>
 
     <LinearLayout
@@ -63,10 +63,10 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:padding="16dp"
             android:layout_gravity="center"
-            android:theme="@style/FlatButtonStyleX"
-            android:background="@drawable/ic_arrow_drop_down_black_24dp" />
+            android:background="@drawable/ic_arrow_drop_down_black_24dp"
+            android:padding="16dp"
+            android:theme="@style/FlatButtonStyleX" />
     </LinearLayout>
 
 

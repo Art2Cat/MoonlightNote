@@ -10,7 +10,7 @@ import java.util.Map;
  * Created by art2cat
  * on 9/17/16.
  */
-public class Moonlight implements Parcelable {
+public class Moonlight implements Parcelable, Cloneable {
 
     public static final Creator<Moonlight> CREATOR = new Creator<Moonlight>() {
         @Override
@@ -205,5 +205,10 @@ public class Moonlight implements Parcelable {
         parcel.writeString(audioName);
         parcel.writeInt(color);
         parcel.writeByte((byte) (trash ? 1 : 0));
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

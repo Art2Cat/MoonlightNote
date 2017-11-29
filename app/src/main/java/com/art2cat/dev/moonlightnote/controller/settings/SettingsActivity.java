@@ -511,7 +511,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         writer.write(mData);
                         writer.close();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        Log.e(TAG, "CreateFileOnGoogleDrive: ", e);
                     }
                 }
                 MetadataChangeSet changeSet = new MetadataChangeSet.Builder()

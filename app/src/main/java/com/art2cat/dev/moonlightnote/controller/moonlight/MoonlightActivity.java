@@ -1,6 +1,7 @@
 package com.art2cat.dev.moonlightnote.controller.moonlight;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,6 +43,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.kobakei.ratethisapp.RateThisApp;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -57,6 +59,8 @@ import static android.content.Intent.EXTRA_SUBJECT;
 import static android.content.Intent.EXTRA_TEXT;
 import static android.content.Intent.createChooser;
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
+import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
+import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 
 public class MoonlightActivity extends BaseFragmentActivity
         implements NavigationView.OnNavigationItemSelectedListener, BaseFragment.DrawerLocker {
@@ -318,7 +322,7 @@ public class MoonlightActivity extends BaseFragmentActivity
             try {
                 fieldValue = field.getInt(new Object());
             } catch (IllegalArgumentException | IllegalAccessException | NullPointerException e) {
-                e.printStackTrace();
+                Log.e(TAG, "getOSVersion: ", e);
             }
 
             if (fieldValue == Build.VERSION.SDK_INT) {
@@ -474,8 +478,11 @@ public class MoonlightActivity extends BaseFragmentActivity
             }
             String photoUrl = user.getPhotoUrl();
             if (photoUrl != null) {
-
-                Utils.displayImage(photoUrl, mCircleImageView);
+                Picasso.with(MoonlightApplication.getContext())
+                        .load(photoUrl)
+                        .memoryPolicy(NO_CACHE, NO_STORE)
+                        .config(Bitmap.Config.RGB_565)
+                        .into(mCircleImageView);
             }
 
         }

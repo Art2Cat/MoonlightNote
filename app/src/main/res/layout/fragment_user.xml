@@ -56,8 +56,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="marquee"
-                        android:singleLine="true"
                         android:paddingTop="8dp"
+                        android:singleLine="true"
                         android:textSize="24sp" />
 
                     <android.support.v7.widget.AppCompatTextView
@@ -76,8 +76,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="marquee"
-                        android:singleLine="true"
                         android:paddingTop="8dp"
+                        android:singleLine="true"
                         android:textSize="24sp" />
 
                     <android.support.v7.widget.AppCompatTextView

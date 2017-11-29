@@ -8,6 +8,7 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.N_MR1)
 public class ShortcutsUtils {
+    private static final String TAG = ShortcutsUtils.class.getName();
     private static ShortcutsUtils shortcutsUtils;
     private Context context;
     private ShortcutManager shortcutManager;
@@ -94,7 +96,7 @@ public class ShortcutsUtils {
             //动态设置应用快捷键
             shortcutManager.setDynamicShortcuts(shortcuts);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "setShortcuts: ", e);
         }
     }
 
@@ -103,7 +105,7 @@ public class ShortcutsUtils {
             //动态设置应用快捷键
             shortcutManager.addDynamicShortcuts(shortcuts);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "addShortcuts: ", e);
         }
     }
 
@@ -116,7 +118,7 @@ public class ShortcutsUtils {
         try {
             shortcutManager.removeDynamicShortcuts(shortcutIds);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "removeShortcuts: ", e);
         }
     }
 
@@ -125,9 +127,11 @@ public class ShortcutsUtils {
      */
     public void removeShortcuts() {
         try {
-            shortcutManager.removeDynamicShortcuts(getShortcutIds());
+            if (getShortcutIds() != null) {
+                shortcutManager.removeDynamicShortcuts(getShortcutIds());
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "removeShortcuts: ", e);
         }
     }
 
@@ -140,7 +144,7 @@ public class ShortcutsUtils {
         try {
             shortcutManager.enableShortcuts(shortcutIds);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "enableShortcuts: ", e);
         }
     }
 
@@ -153,7 +157,7 @@ public class ShortcutsUtils {
         try {
             shortcutManager.disableShortcuts(shortcutIds);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "disableShortcuts: ", e);
         }
     }
 
@@ -172,7 +176,7 @@ public class ShortcutsUtils {
      *
      * @return ID列表
      */
-    public List<String> getShortcutIds() {
+    private List<String> getShortcutIds() {
         List<String> shortcutIdList = new ArrayList<>();
         List<ShortcutInfo> shortcutInfoList = shortcutManager.getDynamicShortcuts();
         if (shortcutInfoList.isEmpty()) {

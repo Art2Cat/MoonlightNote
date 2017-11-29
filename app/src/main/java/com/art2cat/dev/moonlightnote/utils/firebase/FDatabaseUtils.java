@@ -73,7 +73,7 @@ public class FDatabaseUtils {
             FirebaseDatabase.getInstance().getReference().child("users-moonlight")
                     .child(userId).child("trash").removeValue((databaseError, databaseReference) -> Log.d(TAG, "emptyTrash onComplete: "));
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "emptyTrash: ", e);
         }
     }
 
@@ -88,7 +88,7 @@ public class FDatabaseUtils {
                     .child(userId).child("note").removeValue(
                     (databaseError, databaseReference) -> Log.d(TAG, "emptyNote onComplete: "));
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "emptyNote: ", e);
         }
     }
 
@@ -102,7 +102,7 @@ public class FDatabaseUtils {
      */
     public static void updateMoonlight(final String userId, @Nullable String keyId, final Moonlight moonlight, final int type) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        Moonlight moonlightE;
+        Moonlight moonlightE = null;
         String mKey;
         String oldKey;
         oldKey = moonlight.getId();
@@ -115,37 +115,43 @@ public class FDatabaseUtils {
             mKey = keyId;
         }
 
-        //对数据进行加密
-        moonlightE = MoonlightEncryptUtils.newInstance().encryptMoonlight(moonlight);
-        Map<String, Object> moonlightValues = moonlightE.toMap();
-        Map<String, Object> childUpdates = new HashMap<>();
-        //对上传后数据进行还原，
-        moonlightE = MoonlightEncryptUtils.newInstance().decryptMoonlight(moonlightE);
-        if (BuildConfig.DEBUG) Log.d(TAG, "updateMoonlight: " + moonlightE.hashCode());
+        try {
+            moonlightE = (Moonlight) moonlight.clone();
+            moonlightE = MoonlightEncryptUtils.newInstance().encryptMoonlight(moonlightE);
+            Map<String, Object> moonlightValues = moonlightE.toMap();
+            Map<String, Object> childUpdates = new HashMap<>();
 
-        //按照不同操作类型，更新数据到指定树状表中
-        if (type == Constants.EXTRA_TYPE_MOONLIGHT || type == Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT) {
-            childUpdates.put("/users-moonlight/" + userId + "/note/" + mKey, moonlightValues);
-            Log.d(TAG, "updateMoonlight: " + mKey);
-        } else if (type == Constants.EXTRA_TYPE_TRASH) {
-            childUpdates.put("/users-moonlight/" + userId + "/trash/" + mKey, moonlightValues);
-            Log.d(TAG, "updateMoonlight: " + mKey);
-        }
+            if (BuildConfig.DEBUG) Log.d(TAG, "updateMoonlight: " + moonlightE.hashCode());
 
-        final String finalOldKey = oldKey;
-        databaseReference.updateChildren(childUpdates).addOnCompleteListener(task -> {
-            if (type == Constants.EXTRA_TYPE_TRASH) {
-                Log.d(TAG, "onComplete: update" + finalOldKey);
-                if (finalOldKey != null) {
-                    removeMoonlight(userId, finalOldKey, type);
-                }
-            } else if (type == Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT) {
-                Log.d(TAG, "onComplete: update" + finalOldKey);
-                if (finalOldKey != null) {
-                    removeMoonlight(userId, finalOldKey, type);
-                }
+            //按照不同操作类型，更新数据到指定树状表中
+            if (type == Constants.EXTRA_TYPE_MOONLIGHT ||
+                    type == Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT) {
+                childUpdates.put("/users-moonlight/" + userId + "/note/" + mKey, moonlightValues);
+                Log.d(TAG, "updateMoonlight: " + mKey);
+            } else if (type == Constants.EXTRA_TYPE_TRASH) {
+                childUpdates.put("/users-moonlight/" + userId + "/trash/" + mKey, moonlightValues);
+                Log.d(TAG, "updateMoonlight: " + mKey);
             }
-        });
+
+            final String finalOldKey = oldKey;
+            databaseReference.updateChildren(childUpdates).addOnCompleteListener(task -> {
+                if (type == Constants.EXTRA_TYPE_TRASH) {
+                    Log.d(TAG, "onComplete: update" + finalOldKey);
+                    if (finalOldKey != null) {
+                        removeMoonlight(userId, finalOldKey, type);
+                    }
+                } else if (type == Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT) {
+                    Log.d(TAG, "onComplete: update" + finalOldKey);
+                    if (finalOldKey != null) {
+                        removeMoonlight(userId, finalOldKey, type);
+                    }
+                }
+            });
+        } catch (CloneNotSupportedException e) {
+            Log.e(TAG, "updateMoonlight: ", e);
+        } finally {
+            moonlightE = null;
+        }
     }
 
     public static void removeMoonlight(String userId, String keyId, final int type) {

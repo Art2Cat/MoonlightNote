@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
@@ -50,6 +51,8 @@ import static com.squareup.picasso.MemoryPolicy.NO_STORE;
  * on 8/4/16.
  */
 public class Utils {
+
+    private static final String TAG = Utils.class.getName();
 
     /**
      * Format the date
@@ -172,7 +175,7 @@ public class Utils {
             Gson gson = new GsonBuilder().create();
             gson.toJson(noteLab, writer);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "saveNoteToLocal: ", e);
         }
     }
 
@@ -189,7 +192,7 @@ public class Utils {
             Gson gson = new GsonBuilder().create();
             return gson.fromJson(reader, NoteLab.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(TAG, "getNoteFromLocal: ", e);
             return null;
         }
     }
@@ -347,5 +350,25 @@ public class Utils {
                 .placeholder(R.drawable.ic_cloud_download_black_24dp)
                 .config(Bitmap.Config.RGB_565)
                 .into(imageView);
+    }
+
+    /**
+     * Check String is not empty
+     *
+     * @param string String content
+     * @return result
+     */
+    public static boolean isStringNotEmpty(String string) {
+        return !isStringEmpty(string);
+    }
+
+    /**
+     * Check String is empty
+     *
+     * @param string String content
+     * @return result
+     */
+    public static boolean isStringEmpty(String string) {
+        return string == null || string.equals("");
     }
 }
