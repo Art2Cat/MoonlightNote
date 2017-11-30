@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
@@ -29,7 +28,6 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.AppCompatButton;
-import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.ContentFrameLayout;
@@ -61,12 +59,12 @@ import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.utils.AudioPlayer;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.utils.FragmentBackHandler;
-import com.art2cat.dev.moonlightnote.utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.utils.firebase.StorageUtils;
 import com.art2cat.dev.moonlightnote.utils.material_animation.CircularRevealUtils;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -92,11 +90,9 @@ import pub.devrel.easypermissions.EasyPermissions;
 import static android.app.Activity.RESULT_OK;
 import static com.art2cat.dev.moonlightnote.model.Constants.ALBUM_CHOOSE;
 import static com.art2cat.dev.moonlightnote.model.Constants.BLUE_DARK;
-import static com.art2cat.dev.moonlightnote.model.Constants.CAMERA_PERMS;
 import static com.art2cat.dev.moonlightnote.model.Constants.CYAN_DARK;
 import static com.art2cat.dev.moonlightnote.model.Constants.GREY_DARK;
 import static com.art2cat.dev.moonlightnote.model.Constants.RECORD_AUDIO;
-import static com.art2cat.dev.moonlightnote.model.Constants.STORAGE_PERMS;
 import static com.art2cat.dev.moonlightnote.model.Constants.TAKE_PICTURE;
 
 /**
@@ -121,7 +117,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private AppCompatButton mDeleteAudio;
     private AppCompatButton mPlayingAudio;
     private CardView mAudioCardView;
-    private AppCompatImageView mImage;
+    private PhotoView mImage;
     private CircleProgressDialogFragment mCircleProgressDialogFragment;
     private CoordinatorLayout mCoordinatorLayout;
     private BottomSheetBehavior mRightBottomSheetBehavior;
@@ -144,7 +140,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     private String mAudioFileName;
     private Uri mDownloadIUrl;
     private Uri mDownloadAUrl;
-    private File mFile;
     private AudioPlayer mAudioPlayer;
     private SparseIntArray mColorMaps;
 
@@ -216,7 +211,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         //视图初始化
         mView = inflater.inflate(R.layout.fragment_moonlight_detail, container, false);
@@ -401,7 +396,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
 
                         BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
                         FDatabaseUtils.restoreToNote(mUserId, moonlight);
-                        getFragmentManager().popBackStack();
+                        mActivity.getFragmentManager().popBackStack();
                     });
 
             mFragmentOnTouchListener = ev -> {
@@ -610,16 +605,6 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 isLeftOrRight = false;
                 hideSoftKeyboard();
                 break;
-            case R.id.moonlight_image:
-
-                ScaleFragment scaleFragment = ScaleFragment.newInstance(moonlight.getImageUrl());
-                getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.main_fragment_container, scaleFragment)
-                        .addSharedElement(mImage, mImage.getTransitionName())
-                        .addToBackStack("scale")
-                        .commit();
-                break;
             case R.id.playing_audio_button:
                 if (moonlight.getAudioName() != null && mStartPlaying) {
                     mStartPlaying = false;
@@ -653,10 +638,10 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
                 moonlight.setAudioUrl(null);
                 break;
             case R.id.bottom_sheet_item_take_photo:
-                onCameraClick();
+                onCameraClick(mView, mFileUri, mEditable);
                 break;
             case R.id.bottom_sheet_item_choose_image:
-                onAlbumClick();
+                onAlbumClick(mView, mEditable);
                 break;
             case R.id.bottom_sheet_item_recording:
                 onAudioClick();
@@ -720,7 +705,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case TAKE_PICTURE:
-                if (resultCode == RESULT_OK) {
+                if (resultCode == RESULT_OK && mFileUri != null) {
                     Log.d(TAG, "take Picture" + mFileUri.toString());
                     uploadFromUri(mFileUri, mUserId, 0);
                 }
@@ -788,121 +773,21 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         return null;
     }
 
-
-    @AfterPermissionGranted(CAMERA_PERMS)
-    private void onCameraClick() {
-        // Check that we have permission to read images from external storage.
-        String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        String perm1 = Manifest.permission.CAMERA;
-        if (!EasyPermissions.hasPermissions(mActivity, perm) &&
-                !EasyPermissions.hasPermissions(mActivity, perm1)) {
-            PermissionUtils.requestStorage(mActivity, perm);
-            PermissionUtils.requestCamera(mActivity, perm1);
-            return;
-        }
-        if (!EasyPermissions.hasPermissions(mActivity, perm)) {
-            PermissionUtils.requestStorage(mActivity, perm);
-            return;
-        }
-        if (!EasyPermissions.hasPermissions(mActivity, perm1)) {
-            PermissionUtils.requestCamera(mActivity, perm1);
-            return;
-        }
-        // Choose file storage location, must be listed in res/xml/file_paths.xml
-        File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                + "/MoonlightNote/.image");
-        mFile = new File(dir, UUID.randomUUID().toString() + ".jpg");
-        try {
-            // Create directory if it does not exist.
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            boolean created = mFile.createNewFile();
-            if (BuildConfig.DEBUG)
-                Log.d(TAG, "created:" + created);
-        } catch (IOException e) {
-            Log.e(TAG, "file.createNewFile" + mFile.getAbsolutePath() + ":FAILED", e);
-        }
-
-        // Create content:// URI for file, required since Android N
-        // See: https://developer.android.com/reference/android/support/v4/content/FileProvider.html
-
-        mFileUri = FileProvider.getUriForFile(mActivity, Constants.FILE_PROVIDER, mFile);
-        if (BuildConfig.DEBUG)
-            Log.i(TAG, "file: " + mFileUri);
-
-        Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        takePicIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
-
-        if (takePicIntent.resolveActivity(mActivity.getPackageManager()) != null) {
-            startActivityForResult(takePicIntent, TAKE_PICTURE);
-            mEditable = false;
-            if (BuildConfig.DEBUG)
-                Log.d(TAG, "onCameraClick: ");
-        } else {
-            showLongSnackBar(mView, "No Camera!", SnackBarUtils.TYPE_WARNING);
-        }
-    }
-
-    @AfterPermissionGranted(STORAGE_PERMS)
-    private void onAlbumClick() {
-        // Check that we have permission to read images from external storage.
-        String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        if (!EasyPermissions.hasPermissions(mActivity, perm)) {
-            PermissionUtils.requestStorage(mActivity, perm);
-            return;
-        }
-
-        // Choose file storage location, must be listed in res/xml/file_paths.xml
-        File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.image");
-        mFile = new File(dir, UUID.randomUUID().toString() + ".jpg");
-        try {
-            // Create directory if it does not exist.
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            boolean created = mFile.createNewFile();
-            if (BuildConfig.DEBUG)
-                Log.d(TAG, "file.createNewFile:" + mFile.getAbsolutePath() + ":" + created);
-        } catch (IOException e) {
-            Log.e(TAG, "file.createNewFile" + mFile.getAbsolutePath() + ":FAILED", e);
-        }
-
-        Uri fileUri = FileProvider.getUriForFile(mActivity, Constants.FILE_PROVIDER, mFile);
-        Intent albumIntent = new Intent(Intent.ACTION_PICK);
-        albumIntent.setType("image/*");
-        albumIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-
-        if (albumIntent.resolveActivity(mActivity.getPackageManager()) != null) {
-            startActivityForResult(albumIntent, ALBUM_CHOOSE);
-            mEditable = false;
-        } else {
-            showLongSnackBar(mView, "No Album!", SnackBarUtils.TYPE_WARNING);
-        }
-    }
-
     @AfterPermissionGranted(RECORD_AUDIO)
     private void onAudioClick() {
         // Check that we have permission to read images from external storage.
-        String perm = Manifest.permission.RECORD_AUDIO;
-        String perm1 = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        if (!EasyPermissions.hasPermissions(mActivity, perm) &&
-                !EasyPermissions.hasPermissions(mActivity, perm1)) {
-            PermissionUtils.requestStorage(mActivity, perm1);
-            PermissionUtils.requestRecAudio(mActivity, perm);
-            return;
-        }
-        if (!EasyPermissions.hasPermissions(mActivity, perm1)) {
-            PermissionUtils.requestStorage(mActivity, perm1);
-            return;
+        grantStoragePermission();
+
+        if (!EasyPermissions.hasPermissions(mActivity, Manifest.permission.RECORD_AUDIO)) {
+            EasyPermissions.requestPermissions(mActivity,
+                    "If you want to do this continue, " +
+                            "you should give App record audio permission ",
+                    RECORD_AUDIO, Manifest.permission.RECORD_AUDIO);
         }
 
-        if (!EasyPermissions.hasPermissions(mActivity, perm)) {
-            PermissionUtils.requestRecAudio(mActivity, perm);
-            return;
-        }
         // Choose file storage location, must be listed in res/xml/file_paths.xml
-        File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.audio");
+        File dir = new File(Environment.getExternalStorageDirectory() +
+                "/MoonlightNote/.audio");
 
         if (!dir.exists()) {
             boolean isDirCreate = dir.mkdirs();
@@ -912,7 +797,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment implements
         displaySpeechRecognizer();
     }
 
-    public void uploadFromUri(Uri fileUri, String userId, int type) {
+    private void uploadFromUri(Uri fileUri, String userId, int type) {
         if (mCircleProgressDialogFragment != null) {
             mCircleProgressDialogFragment.show(mActivity.getFragmentManager(), "progress");
         } else {

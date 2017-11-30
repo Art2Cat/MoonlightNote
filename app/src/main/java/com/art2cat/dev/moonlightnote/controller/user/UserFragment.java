@@ -1,16 +1,13 @@
 package com.art2cat.dev.moonlightnote.controller.user;
 
 
-import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,9 +31,7 @@ import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.User;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
-import com.art2cat.dev.moonlightnote.utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
-import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.utils.UserUtils;
 import com.art2cat.dev.moonlightnote.utils.firebase.AuthUtils;
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
@@ -59,13 +54,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
-
 import de.hdodenhof.circleimageview.CircleImageView;
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.app.Activity.RESULT_OK;
 import static com.art2cat.dev.moonlightnote.model.Constants.ALBUM_CHOOSE;
@@ -74,10 +63,7 @@ import static com.art2cat.dev.moonlightnote.model.Constants.BUS_FLAG_CAMERA;
 import static com.art2cat.dev.moonlightnote.model.Constants.BUS_FLAG_DELETE_ACCOUNT;
 import static com.art2cat.dev.moonlightnote.model.Constants.BUS_FLAG_EMAIL;
 import static com.art2cat.dev.moonlightnote.model.Constants.BUS_FLAG_USERNAME;
-import static com.art2cat.dev.moonlightnote.model.Constants.CAMERA_PERMS;
 import static com.art2cat.dev.moonlightnote.model.Constants.FB_STORAGE_REFERENCE;
-import static com.art2cat.dev.moonlightnote.model.Constants.FILE_PROVIDER;
-import static com.art2cat.dev.moonlightnote.model.Constants.STORAGE_PERMS;
 import static com.art2cat.dev.moonlightnote.model.Constants.TAKE_PICTURE;
 import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
 import static com.squareup.picasso.MemoryPolicy.NO_STORE;
@@ -116,7 +102,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_user, container, false);
@@ -125,10 +111,10 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
         mEmail = mView.findViewById(R.id.user_email);
         mAdView = mView.findViewById(R.id.banner_adView);
 
-        getActivity().setTitle(R.string.title_activity_user);
+        mActivity.setTitle(R.string.title_activity_user);
 
 
-        mUser = UserUtils.getUserFromCache(getActivity().getApplicationContext());
+        mUser = UserUtils.getUserFromCache(mActivity.getApplicationContext());
 
         AdRequest adRequest = new AdRequest.Builder()
 //                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
@@ -149,7 +135,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (!SPUtils.getBoolean(getActivity(), "User", "google", false)) {
+        if (!SPUtils.getBoolean(mActivity, "User", "google", false)) {
             mCircleImageView.setOnClickListener(this);
             mNickname.setOnClickListener(this);
             setHasOptionsMenu(true);
@@ -202,7 +188,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
                         ConfirmationDialogFragment.newInstance(getString(R.string.delete_account_title),
                                 getString(R.string.delete_account_content),
                                 Constants.EXTRA_TYPE_CDF_DELETE_ACCOUNT);
-                confirmationDialogFragment.show(getActivity().getFragmentManager(), "delete account");
+                confirmationDialogFragment.show(mActivity.getFragmentManager(), "delete account");
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -246,7 +232,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
             case R.id.user_nickname:
                 InputDialogFragment inputDialogFragment1 = InputDialogFragment
                         .newInstance(getString(R.string.dialog_set_nickname), 1);
-                inputDialogFragment1.show(getActivity().getFragmentManager(), "setNickname");
+                inputDialogFragment1.show(mActivity.getFragmentManager(), "setNickname");
                 break;
         }
     }
@@ -257,22 +243,22 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
         if (busEvent != null) {
             switch (busEvent.getFlag()) {
                 case BUS_FLAG_CAMERA:
-                    onCameraClick();
+                    onCameraClick(mView, mFileUri, true);
                     break;
                 case BUS_FLAG_ALBUM:
-                    onAlbumClick();
+                    onAlbumClick(mView, true);
                     break;
                 case BUS_FLAG_USERNAME:
                     if (busEvent.getMessage() != null) {
                         mNickname.setText(busEvent.getMessage());
                         mUser.setNickname(busEvent.getMessage());
-                        UserUtils.saveUserToCache(getActivity().getApplicationContext(), mUser);
+                        UserUtils.saveUserToCache(mActivity.getApplicationContext(), mUser);
                         updateProfile(busEvent.getMessage(), null);
                     }
                     break;
                 case BUS_FLAG_EMAIL:
                     if (busEvent.getMessage().contains("@")) {
-                        AuthUtils.sendRPEmail(getActivity(), mView, busEvent.getMessage());
+                        AuthUtils.sendRPEmail(mActivity, mView, busEvent.getMessage());
                     }
                     break;
                 case BUS_FLAG_DELETE_ACCOUNT:
@@ -288,7 +274,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
                                     if (task1.isSuccessful()) {
                                         if (BuildConfig.DEBUG)
                                             Log.d(TAG, "busAction: User account deleted.");
-                                        startActivity(new Intent(getActivity(), LoginActivity.class));
+                                        startActivity(new Intent(mActivity, LoginActivity.class));
                                     }
                                 }).addOnFailureListener(e -> {
                                     if (BuildConfig.DEBUG) Log.d(TAG, e.toString());
@@ -336,11 +322,11 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
         switch (requestCode) {
             case TAKE_PICTURE:
                 if (resultCode == RESULT_OK && mFileUri != null) {
-                    uploadFromUri(data.getData(), user.getUid());
+                    uploadFromUri(mFileUri, user.getUid());
                 }
                 break;
             case ALBUM_CHOOSE:
-                if (resultCode == RESULT_OK && mFileUri != null) {
+                if (resultCode == RESULT_OK) {
                     uploadFromUri(data.getData(), user.getUid());
                 }
                 break;
@@ -350,99 +336,9 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @AfterPermissionGranted(CAMERA_PERMS)
-    private void onCameraClick() {
-        // Check that we have permission to read images from external storage.
-        String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        String perm1 = Manifest.permission.CAMERA;
-        if (!EasyPermissions.hasPermissions(getActivity(), perm) &&
-                !EasyPermissions.hasPermissions(getActivity(), perm1)) {
-            PermissionUtils.requestStorage(getActivity(), perm);
-            PermissionUtils.requestCamera(getActivity(), perm1);
-            return;
-        }
-        if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
-            PermissionUtils.requestStorage(getActivity(), perm);
-            return;
-        }
-        if (!EasyPermissions.hasPermissions(getActivity(), perm1)) {
-            PermissionUtils.requestCamera(getActivity(), perm1);
-            return;
-        }
-        // Choose file storage location, must be listed in res/xml/file_paths.xml
-        File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.image");
-        File file = new File(dir, UUID.randomUUID().toString() + ".jpg");
-
-        try {
-            // Create directory if it does not exist.
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            boolean created = file.createNewFile();
-            if (BuildConfig.DEBUG)
-                Log.d(TAG, "onCameraClick: file.createNewFile: " + file.getAbsolutePath() + ":"
-                        + created);
-        } catch (IOException e) {
-            Log.e(TAG, "onCameraClick: file.createNewFile: " + file.getAbsolutePath()
-                    + ":FAILED", e);
-        }
-
-        // Create content:// URI for file, required since Android N
-        // See: https://developer.android.com/reference/android/support/v4/content/FileProvider.html
-
-        mFileUri = FileProvider.getUriForFile(getActivity(), FILE_PROVIDER, file);
-        // Create and launch the intent
-        Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        takePicIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
-
-        if (takePicIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivityForResult(takePicIntent, TAKE_PICTURE);
-        } else {
-            SnackBarUtils.longSnackBar(mView, "No Camera!", SnackBarUtils.TYPE_WARNING).show();
-        }
-    }
-
-    @AfterPermissionGranted(STORAGE_PERMS)
-    private void onAlbumClick() {
-        // Check that we have permission to read images from external storage.
-        String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-        if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
-            PermissionUtils.requestStorage(getActivity(), perm);
-            return;
-        }
-
-        // Choose file storage location, must be listed in res/xml/file_paths.xml
-        File dir = new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.image");
-        File file = new File(dir, UUID.randomUUID().toString() + ".jpg");
-        try {
-            // Create directory if it does not exist.
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            boolean created = file.createNewFile();
-            if (BuildConfig.DEBUG)
-                Log.d(TAG, "onCameraClick: file.createNewFile: " + file.getAbsolutePath() + ":"
-                        + created);
-        } catch (IOException e) {
-            Log.e(TAG, "onCameraClick: file.createNewFile: " + file.getAbsolutePath()
-                    + ":FAILED", e);
-        }
-
-        mFileUri = FileProvider.getUriForFile(getActivity(), FILE_PROVIDER, file);
-        Intent albumIntent = new Intent(Intent.ACTION_PICK);
-        albumIntent.setType("image/*");
-        albumIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
-
-        if (albumIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivityForResult(albumIntent, ALBUM_CHOOSE);
-        } else {
-            SnackBarUtils.longSnackBar(mView, "No Album!", SnackBarUtils.TYPE_WARNING).show();
-        }
-    }
-
     private void uploadFromUri(Uri fileUri, String userId) {
 
-        mCircleProgressDialogFragment.show(getActivity().getFragmentManager(), "progress");
+        mCircleProgressDialogFragment.show(mActivity.getFragmentManager(), "progress");
 
         StorageReference photoRef = mStorageReference.child(userId).child("avatar")
                 .child(fileUri.getLastPathSegment());
@@ -453,7 +349,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
         uploadTask.addOnSuccessListener(taskSnapshot -> {
             mUser.setPhotoUrl(taskSnapshot.getDownloadUrl().toString());
             displayImage(taskSnapshot.getDownloadUrl());
-            UserUtils.saveUserToCache(getActivity().getApplicationContext(), mUser);
+            UserUtils.saveUserToCache(mActivity.getApplicationContext(), mUser);
             updateProfile(null, taskSnapshot.getDownloadUrl());
             mCircleProgressDialogFragment.dismiss();
         }).addOnFailureListener(e -> {

@@ -28,7 +28,6 @@ import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.Confirmat
 import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.NoteLab;
-import com.art2cat.dev.moonlightnote.utils.PermissionUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.utils.ToastUtils;
@@ -344,9 +343,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         @AfterPermissionGranted(STORAGE_PERMS)
         private void requestPermission(int type) {
-            String perm = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-            if (!EasyPermissions.hasPermissions(getActivity(), perm)) {
-                PermissionUtils.requestStorage(getActivity(), perm);
+            if (!EasyPermissions.hasPermissions(getActivity(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                EasyPermissions.requestPermissions(getActivity(),
+                        "If you want to do this continue, " +
+                                "you should give App storage permission ",
+                        STORAGE_PERMS, Manifest.permission.WRITE_EXTERNAL_STORAGE);
             } else {
                 if (type == 0) {
                     mFDatabaseUtils.exportNote(0);
