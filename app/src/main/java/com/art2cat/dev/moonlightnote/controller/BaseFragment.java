@@ -28,7 +28,9 @@ import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -49,6 +51,8 @@ public abstract class BaseFragment extends Fragment {
     private static final String KEY_INDEX = "index";
     protected Activity mActivity;
     private int mCurrentIndex = 0;
+    private static final String JPEG_FILE_PREFIX = "IMG_";
+    private static final String JPEG_FILE_SUFFIX = ".jpg";
 
     /**
      * 更改toolbar三个点颜色
@@ -57,7 +61,8 @@ public abstract class BaseFragment extends Fragment {
      * @param color    颜色
      */
     public static void setOverflowButtonColor(Activity activity, final int color) {
-        @SuppressLint("PrivateResource") final String overflowDescription = activity.getString(R.string.abc_action_menu_overflow_description);
+        @SuppressLint("PrivateResource")
+        final String overflowDescription = activity.getString(R.string.abc_action_menu_overflow_description);
         final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
         final ViewTreeObserver viewTreeObserver = decorView.getViewTreeObserver();
         viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -188,37 +193,62 @@ public abstract class BaseFragment extends Fragment {
         // Check that we have permission to read images from external storage.
         grantStoragePermission();
         grantCameraPermission();
-        // Choose file storage location, must be listed in res/xml/file_paths.xml
+
+        dispatchTakePictureIntent(mView, mFileUri, mEditable);
+    }
+
+    private File getImageDir() {
         File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/MoonlightNote/.image");
-        File file = new File(dir, UUID.randomUUID().toString() + ".jpg");
-        try {
-            // Create directory if it does not exist.
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            boolean created = file.createNewFile();
-            if (BuildConfig.DEBUG)
-                Log.d(TAG, "created:" + created);
-        } catch (IOException e) {
-            Log.e(TAG, "file.createNewFile" + file.getAbsolutePath() + ":FAILED", e);
+
+        if (!dir.exists()) {
+            dir.mkdirs();
         }
+        return dir;
+    }
 
-        // Create content:// URI for file, required since Android N
-        // See: https://developer.android.com/reference/android/support/v4/content/FileProvider.html
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = JPEG_FILE_PREFIX + timeStamp + "_";
+        File albumF = getImageDir();
+        File imageF = File.createTempFile(imageFileName, JPEG_FILE_SUFFIX, albumF);
+        return imageF;
+    }
 
-        mFileUri = FileProvider.getUriForFile(mActivity, Constants.FILE_PROVIDER, file);
-        if (BuildConfig.DEBUG)
-            Log.i(TAG, "file: " + mFileUri);
+    protected void galleryAddPic(Uri mCurrentPhotoPath) {
+        Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
+        File f = new File(mCurrentPhotoPath.toString());
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        mActivity.sendBroadcast(mediaScanIntent);
+    }
 
-        Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        takePicIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
+    private void dispatchTakePictureIntent(View mView, Uri mFileUri, boolean mEditable) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(mActivity.getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                Log.e(TAG, "dispatchTakePictureIntent: ", ex);
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(mActivity,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, TAKE_PICTURE);
+            }
 
-        if (takePicIntent.resolveActivity(mActivity.getPackageManager()) != null) {
-            startActivityForResult(takePicIntent, TAKE_PICTURE);
             mEditable = false;
             if (BuildConfig.DEBUG)
                 Log.d(TAG, "onCameraClick: ");
+
         } else {
             showLongSnackBar(mView, "No Camera!", SnackBarUtils.TYPE_WARNING);
         }

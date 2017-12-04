@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
@@ -321,8 +322,13 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case TAKE_PICTURE:
-                if (resultCode == RESULT_OK && mFileUri != null) {
-                    uploadFromUri(mFileUri, user.getUid());
+                if (resultCode == RESULT_OK) {
+                    if (data != null && data.getData() != null) {
+                        uploadFromUri(data.getData(), user.getUid());
+                        galleryAddPic(data.getData());
+                    } else {
+                        Toast.makeText(mActivity, "data.getData() is Null", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 break;
             case ALBUM_CHOOSE:
