@@ -84,7 +84,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
     private CircleProgressDialogFragment mCircleProgressDialogFragment;
     private FirebaseUser user;
     private User mUser;
-    private Uri mFileUri = null;
+    //    private Uri mFileUri = null;
     private StorageReference mStorageReference;
 
     public UserFragment() {
@@ -244,7 +244,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
         if (busEvent != null) {
             switch (busEvent.getFlag()) {
                 case BUS_FLAG_CAMERA:
-                    onCameraClick(mView, mFileUri, true);
+                    onCameraClick(mView, true);
                     break;
                 case BUS_FLAG_ALBUM:
                     onAlbumClick(mView, true);
@@ -323,11 +323,11 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
         switch (requestCode) {
             case TAKE_PICTURE:
                 if (resultCode == RESULT_OK) {
-                    if (data != null && data.getData() != null) {
-                        uploadFromUri(data.getData(), user.getUid());
-                        galleryAddPic(data.getData());
+                    if (mFileUri != null) {
+                        uploadFromUri(mFileUri, user.getUid());
+                        galleryAddPic(mFileUri);
                     } else {
-                        Toast.makeText(mActivity, "data.getData() is Null", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mActivity, "mFileUri is Null", Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
