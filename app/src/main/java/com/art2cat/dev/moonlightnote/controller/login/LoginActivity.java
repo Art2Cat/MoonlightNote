@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FDatabaseUtils mFDatabaseUtils;
-
+    
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,23 +46,21 @@ public class LoginActivity extends AppCompatActivity {
         // initialize Admob
         MobileAds.initialize(this, AD_UNIT_ID);
         mAuth = getInstance();
-
-        boolean flag = SPUtils.getBoolean(this,
-                Constants.USER_CONFIG,
-                Constants.USER_CONFIG_AUTO_LOGIN, false);
+        
+        boolean flag = SPUtils.getBoolean(this, Constants.USER_CONFIG, Constants.USER_CONFIG_AUTO_LOGIN, false);
         if (!flag) {
             signIn();
         }
-
+        
         startAdFragment();
     }
-
+    
     @Override
     protected void onStart() {
         super.onStart();
         addListener();
     }
-
+    
     @Override
     protected void onStop() {
         super.onStop();
@@ -71,44 +69,42 @@ public class LoginActivity extends AppCompatActivity {
             mFDatabaseUtils.removeListener();
         }
     }
-
+    
     public void signIn() {
         mAuthListener = firebaseAuth -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user != null) {
                 Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                 Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
-                mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.getContext(),
-                        user.getUid());
+                mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.getContext(), user.getUid());
                 mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
-
+    
                 initShortcuts();
-
-
+    
+    
                 mLoginState = true;
             } else {
                 mLoginState = false;
                 Log.d(TAG, "onAuthStateChanged:signed_out:");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                    ShortcutsUtils.getInstance(LoginActivity.this)
-                            .removeShortcuts();
+                    ShortcutsUtils.getInstance(LoginActivity.this).removeShortcuts();
                 }
             }
         };
     }
-
+    
     public void addListener() {
         mAuth.addAuthStateListener(mAuthListener);
     }
-
+    
     public void removeListener() {
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-
+    
     private void startAdFragment() {
-
+        
         int id = R.id.login_container;
         boolean reLogin = getIntent().getBooleanExtra("reLogin", false);
         if (reLogin) {
@@ -117,70 +113,65 @@ public class LoginActivity extends AppCompatActivity {
             FragmentUtils.addFragment(getSupportFragmentManager(), id, new SlashFragment());
             startLoginFragment();
         }
-
+        
     }
-
+    
     private void setTransition() {
-
+        
         Fade fade = new Fade();
         fade.setDuration(500);
         fade.setMode(Fade.MODE_IN);
-
+        
         Fade fade1 = new Fade();
         fade1.setDuration(500);
         fade1.setMode(Fade.MODE_OUT);
-
+        
         getWindow().setReenterTransition(fade);
         getWindow().setExitTransition(fade1);
     }
-
+    
     private void startLoginFragment() {
         Handler handler = new Handler();
         handler.postDelayed(() -> {
             if (mLoginState) {
-
+    
                 startActivity(new Intent(LoginActivity.this, MoonlightActivity.class));
                 finishAfterTransition();
             } else {
                 Fragment fragment = new LoginFragment();
-                FragmentUtils.replaceFragment(getSupportFragmentManager(), R.id.login_container,
-                        fragment, FragmentUtils.REPLACE_NORMAL);
+                if (!isDestroyed() && !isFinishing()) {
+                    FragmentUtils.replaceFragment(getSupportFragmentManager(), R.id.login_container, fragment,
+                                                  FragmentUtils.REPLACE_NORMAL);
+                }
             }
         }, 3000);
     }
-
+    
     public void onBackPressed() {
         moveTaskToBack(true);
         android.os.Process.killProcess(android.os.Process.myPid());
         System.exit(1);
     }
-
+    
     private void initShortcuts() {
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.N_MR1) {
             return;
         }
-
+        
         if (!ShortcutsUtils.getInstance(LoginActivity.this).isShortcutsEnable()) {
             enableShortcuts();
         }
-
+        
     }
-
+    
     @RequiresApi(api = Build.VERSION_CODES.N_MR1)
     private void enableShortcuts() {
-
-        Intent intent = new Intent(Intent.ACTION_MAIN,
-                Uri.EMPTY, this, MoonlightActivity.class)
-                .putExtra("type", 101);
+        
+        Intent intent = new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MoonlightActivity.class).putExtra("type", 101);
         ShortcutsUtils shortcutsUtils = ShortcutsUtils.getInstance(LoginActivity.this);
         ShortcutInfo compose = shortcutsUtils
-                .createShortcut(
-                        "compose",
-                        "Compose",
-                        "Compose new note",
-                        R.mipmap.ic_shortcuts_create,
-                        intent);
-
+                .createShortcut("compose", "Compose", "Compose new note", R.mipmap.ic_shortcuts_create, intent);
+        
         List<ShortcutInfo> shortcutInfoList = new ArrayList<>();
         shortcutInfoList.add(compose);
         shortcutsUtils.setShortcuts(shortcutInfoList);

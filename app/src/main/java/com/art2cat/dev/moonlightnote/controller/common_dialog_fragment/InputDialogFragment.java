@@ -1,6 +1,5 @@
 package com.art2cat.dev.moonlightnote.controller.common_dialog_fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
@@ -15,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
@@ -29,8 +29,7 @@ public class InputDialogFragment extends DialogFragment {
     private TextInputEditText mTextInputEditText;
     private int mType;
     private String mTitle;
-
-
+    
     public static InputDialogFragment newInstance(String title, int type) {
         InputDialogFragment inputDialogFragment = new InputDialogFragment();
         Bundle args = new Bundle();
@@ -39,7 +38,7 @@ public class InputDialogFragment extends DialogFragment {
         inputDialogFragment.setArguments(args);
         return inputDialogFragment;
     }
-
+    
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,14 +49,11 @@ public class InputDialogFragment extends DialogFragment {
             mType = args.getInt("type");
         }
     }
-
-    @SuppressLint("LogConditional")
-    @NonNull
+    
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@NonNull Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        @SuppressLint("InflateParams")
         View view = inflater.inflate(R.layout.dialog_input, null);
         TextInputLayout textInputLayout = view.findViewById(R.id.inputLayout);
         mTextInputEditText = view.findViewById(R.id.dialog_editText);
@@ -75,29 +71,27 @@ public class InputDialogFragment extends DialogFragment {
         }
         builder.setView(view);
         builder.setTitle(mTitle);
-        Log.d(TAG, "showLocationDialog: " + mTitle);
-
+        if (BuildConfig.DEBUG) { Log.d(TAG, "showLocationDialog: " + mTitle); }
+        
         String positiveText = getString(android.R.string.ok);
-        builder.setPositiveButton(positiveText,
-                (dialog, which) -> {
-                    // positive button logic
-                    if (mType == 0) {
-                        String email = mTextInputEditText.getText().toString();
-                        BusEventUtils.post(Constants.BUS_FLAG_EMAIL, email);
-                    } else if (mType == 1) {
-                        String nickname = mTextInputEditText.getText().toString();
-                        BusEventUtils.post(Constants.BUS_FLAG_USERNAME, nickname);
-                    } else if (mType == 2) {
-                        String password = mTextInputEditText.getText().toString();
-                        BusEventUtils.post(Constants.BUS_FLAG_DELETE_ACCOUNT, password);
-                    }
-                });
-
+        builder.setPositiveButton(positiveText, (dialog, which) -> {
+            // positive button logic
+            if (mType == 0) {
+                String email = mTextInputEditText.getText().toString();
+                BusEventUtils.post(Constants.BUS_FLAG_EMAIL, email);
+            } else if (mType == 1) {
+                String nickname = mTextInputEditText.getText().toString();
+                BusEventUtils.post(Constants.BUS_FLAG_USERNAME, nickname);
+            } else if (mType == 2) {
+                String password = mTextInputEditText.getText().toString();
+                BusEventUtils.post(Constants.BUS_FLAG_DELETE_ACCOUNT, password);
+            }
+        });
+        
         String negativeText = getString(android.R.string.cancel);
-        builder.setNegativeButton(negativeText,
-                (dialog, which) -> {
-                    // negative button logic
-                });
+        builder.setNegativeButton(negativeText, (dialog, which) -> {
+            // negative button logic
+        });
         return builder.create();
     }
 }

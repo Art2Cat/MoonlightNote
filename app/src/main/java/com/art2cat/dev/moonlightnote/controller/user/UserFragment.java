@@ -25,7 +25,7 @@ import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.InputDialogFragment;
-import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.PickPicDialogFragment;
+import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.PicturePickerDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.login.LoginActivity;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
 import com.art2cat.dev.moonlightnote.model.Constants;
@@ -74,7 +74,7 @@ import static com.squareup.picasso.MemoryPolicy.NO_STORE;
  * A simple {@link BaseFragment} subclass.
  */
 public class UserFragment extends BaseFragment implements View.OnClickListener {
-
+    
     private final String TAG = UserFragment.class.getName();
     private View mView;
     private CircleImageView mCircleImageView;
@@ -86,53 +86,52 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
     private User mUser;
     //    private Uri mFileUri = null;
     private StorageReference mStorageReference;
-
+    
     public UserFragment() {
         // Required empty public constructor
     }
-
+    
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
         user = FirebaseAuth.getInstance().getCurrentUser();
-        mStorageReference = FirebaseStorage.getInstance()
-                .getReferenceFromUrl(FB_STORAGE_REFERENCE);
-
-        mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance(getString(R.string.prograssBar_uploading));
+        mStorageReference = FirebaseStorage.getInstance().getReferenceFromUrl(FB_STORAGE_REFERENCE);
+        
+        mCircleProgressDialogFragment =
+                CircleProgressDialogFragment.newInstance(getString(R.string.prograssBar_uploading));
     }
-
+    
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_user, container, false);
         mCircleImageView = mView.findViewById(R.id.user_head_picture);
         mNickname = mView.findViewById(R.id.user_nickname);
         mEmail = mView.findViewById(R.id.user_email);
         mAdView = mView.findViewById(R.id.banner_adView);
-
+        
         mActivity.setTitle(R.string.title_activity_user);
-
-
+        
+        
         mUser = UserUtils.getUserFromCache(mActivity.getApplicationContext());
-
+        
         AdRequest adRequest = new AdRequest.Builder()
-//                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-//                .addTestDevice("0ACA1878D607E6C4360F91E0A0379C2F")
-//                .addTestDevice("4DA2263EDB49C1F2C00F9D130B823096")
+                //                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                //                .addTestDevice("0ACA1878D607E6C4360F91E0A0379C2F")
+                //                .addTestDevice("4DA2263EDB49C1F2C00F9D130B823096")
                 .build();
         mAdView.loadAd(adRequest);
-
+        
         initView();
         return mView;
     }
-
+    
     @Override
     public void onStart() {
         super.onStart();
     }
-
+    
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -141,7 +140,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
             mNickname.setOnClickListener(this);
             setHasOptionsMenu(true);
         }
-
+        
         mAdView.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {
@@ -150,51 +149,51 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
             }
         });
     }
-
+    
     @Override
     public void onPause() {
         super.onPause();
     }
-
+    
     @Override
     public void onStop() {
         super.onStop();
     }
-
+    
     @Override
     public void onDestroy() {
         EventBus.getDefault().unregister(this);
         mAdView.destroy();
         super.onDestroy();
     }
-
+    
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_user, menu);
     }
-
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_change_password:
-                Fragment fragment = new ChangePasswordFragment();
-                FragmentUtils.replaceFragment(getFragmentManager(),
-                        R.id.common_fragment_container,
-                        fragment,
-                        FragmentUtils.REPLACE_BACK_STACK);
+                if (isResumed() && !isRemoving()) {
+                    Fragment fragment = new ChangePasswordFragment();
+                    FragmentUtils.replaceFragment(getFragmentManager(), R.id.common_fragment_container, fragment,
+                                                  FragmentUtils.REPLACE_BACK_STACK);
+                }
                 break;
             case R.id.action_close_account:
-                ConfirmationDialogFragment confirmationDialogFragment =
-                        ConfirmationDialogFragment.newInstance(getString(R.string.delete_account_title),
-                                getString(R.string.delete_account_content),
-                                Constants.EXTRA_TYPE_CDF_DELETE_ACCOUNT);
+                ConfirmationDialogFragment confirmationDialogFragment = ConfirmationDialogFragment
+                        .newInstance(getString(R.string.delete_account_title),
+                                     getString(R.string.delete_account_content),
+                                     Constants.EXTRA_TYPE_CDF_DELETE_ACCOUNT);
                 confirmationDialogFragment.show(mActivity.getFragmentManager(), "delete account");
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
-
+    
     private void initView() {
         String nickname = mUser.getNickname();
         if (nickname != null) {
@@ -208,36 +207,33 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
             mUser.setEmail(email);
             mEmail.setText(email);
         }
-
+        
         displayImage(Uri.parse(mUser.getPhotoUrl()));
     }
-
+    
     private void displayImage(Uri mDownloadUrl) {
         if (mDownloadUrl != null) {
-            Picasso.with(MoonlightApplication.getContext())
-                    .load(mDownloadUrl)
-                    .memoryPolicy(NO_CACHE, NO_STORE)
-                    .config(Bitmap.Config.RGB_565)
-                    .into(mCircleImageView);
+            Picasso.with(MoonlightApplication.getContext()).load(mDownloadUrl).memoryPolicy(NO_CACHE, NO_STORE)
+                   .config(Bitmap.Config.RGB_565).into(mCircleImageView);
             mUser.setPhotoUrl(mDownloadUrl.toString());
         }
     }
-
+    
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.user_head_picture:
-                PickPicDialogFragment pickPicFragment = new PickPicDialogFragment();
+                PicturePickerDialogFragment pickPicFragment = new PicturePickerDialogFragment();
                 pickPicFragment.show(getFragmentManager(), "PICK_PIC");
                 break;
             case R.id.user_nickname:
-                InputDialogFragment inputDialogFragment1 = InputDialogFragment
-                        .newInstance(getString(R.string.dialog_set_nickname), 1);
+                InputDialogFragment inputDialogFragment1 =
+                        InputDialogFragment.newInstance(getString(R.string.dialog_set_nickname), 1);
                 inputDialogFragment1.show(mActivity.getFragmentManager(), "setNickname");
                 break;
         }
     }
-
+    
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void busAction(BusEvent busEvent) {
         //这里更新视图或者后台操作,从busAction获取传递参数.
@@ -265,59 +261,52 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
                 case BUS_FLAG_DELETE_ACCOUNT:
                     if (busEvent.getMessage() != null) {
                         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        AuthCredential credential = EmailAuthProvider
-                                .getCredential(user.getEmail(), busEvent.getMessage());
+                        AuthCredential credential =
+                                EmailAuthProvider.getCredential(user.getEmail(), busEvent.getMessage());
                         FDatabaseUtils.emptyNote(user.getUid());
                         FDatabaseUtils.emptyTrash(user.getUid());
-
-                        user.reauthenticate(credential).addOnCompleteListener(task ->
-                                user.delete().addOnCompleteListener(task1 -> {
-                                    if (task1.isSuccessful()) {
-                                        if (BuildConfig.DEBUG)
-                                            Log.d(TAG, "busAction: User account deleted.");
-                                        startActivity(new Intent(mActivity, LoginActivity.class));
-                                    }
-                                }).addOnFailureListener(e -> {
-                                    if (BuildConfig.DEBUG) Log.d(TAG, e.toString());
-                                }));
+    
+                        user.reauthenticate(credential)
+                            .addOnCompleteListener(task -> user.delete().addOnCompleteListener(task1 -> {
+                                if (task1.isSuccessful()) {
+                                    if (BuildConfig.DEBUG) { Log.d(TAG, "busAction: User account deleted."); }
+                                    startActivity(new Intent(mActivity, LoginActivity.class));
+                                }
+                            }).addOnFailureListener(e -> {
+                                if (BuildConfig.DEBUG) { Log.d(TAG, e.toString()); }
+                            }));
                     }
                     break;
             }
         }
     }
-
+    
     private void updateProfile(@Nullable String nickname, @Nullable Uri uri) {
         UserProfileChangeRequest profileUpdates = null;
         if (nickname != null) {
-            profileUpdates = new UserProfileChangeRequest.Builder()
-                    .setDisplayName(nickname)
-                    .build();
+            profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(nickname).build();
         }
-
+        
         if (uri != null) {
-            profileUpdates = new UserProfileChangeRequest.Builder()
-                    .setPhotoUri(uri)
-                    .build();
-            if (BuildConfig.DEBUG)
-                Log.d(TAG, "updateProfile Photo uri: " +
-                        profileUpdates.getPhotoUri().toString());
+            profileUpdates = new UserProfileChangeRequest.Builder().setPhotoUri(uri).build();
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "updateProfile Photo uri: " + profileUpdates.getPhotoUri().toString());
+            }
         }
-
+        
         if (profileUpdates != null) {
-            user.updateProfile(profileUpdates)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            if (BuildConfig.DEBUG)
-                                Log.d(TAG, "updateProfile: User profile updated.");
-                            if (mUser != null) {
-                                BusEventUtils.post(Constants.BUS_FLAG_UPDATE_USER, null);
-                                UserUtils.updateUser(user.getUid(), mUser);
-                            }
-                        }
-                    });
+            user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    if (BuildConfig.DEBUG) { Log.d(TAG, "updateProfile: User profile updated."); }
+                    if (mUser != null) {
+                        BusEventUtils.post(Constants.BUS_FLAG_UPDATE_USER, null);
+                        UserUtils.updateUser(user.getUid(), mUser);
+                    }
+                }
+            });
         }
     }
-
+    
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -341,17 +330,16 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
+    
     private void uploadFromUri(Uri fileUri, String userId) {
-
+        
         mCircleProgressDialogFragment.show(mActivity.getFragmentManager(), "progress");
-
-        StorageReference photoRef = mStorageReference.child(userId).child("avatar")
-                .child(fileUri.getLastPathSegment());
-
+        
+        StorageReference photoRef = mStorageReference.child(userId).child("avatar").child(fileUri.getLastPathSegment());
+        
         // Upload file to Firebase Storage
         StorageTask<UploadTask.TaskSnapshot> uploadTask = photoRef.putFile(fileUri);
-
+        
         uploadTask.addOnSuccessListener(taskSnapshot -> {
             mUser.setPhotoUrl(taskSnapshot.getDownloadUrl().toString());
             displayImage(taskSnapshot.getDownloadUrl());
@@ -364,5 +352,5 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
             displayImage(user.getPhotoUrl());
         });
     }
-
+    
 }

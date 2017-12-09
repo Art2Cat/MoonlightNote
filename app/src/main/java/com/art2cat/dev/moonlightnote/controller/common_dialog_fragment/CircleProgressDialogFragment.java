@@ -12,11 +12,11 @@ import android.support.annotation.NonNull;
  */
 
 public class CircleProgressDialogFragment extends DialogFragment {
-
+    
     public static CircleProgressDialogFragment newInstance() {
         return new CircleProgressDialogFragment();
     }
-
+    
     public static CircleProgressDialogFragment newInstance(String message) {
         CircleProgressDialogFragment circle = new CircleProgressDialogFragment();
         Bundle args = new Bundle();
@@ -24,11 +24,11 @@ public class CircleProgressDialogFragment extends DialogFragment {
         circle.setArguments(args);
         return circle;
     }
-
+    
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
+        
         ProgressDialog dialog = new ProgressDialog(getActivity());
         if (getArguments() != null) {
             dialog.setMessage(getArguments().getString("message"));

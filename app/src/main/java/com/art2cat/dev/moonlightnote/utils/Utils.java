@@ -51,9 +51,9 @@ import static com.squareup.picasso.MemoryPolicy.NO_STORE;
  * on 8/4/16.
  */
 public class Utils {
-
+    
     private static final String TAG = Utils.class.getName();
-
+    
     /**
      * Format the date
      *
@@ -70,7 +70,7 @@ public class Utils {
         SimpleDateFormat formatter = new SimpleDateFormat(pattern, Locale.getDefault());
         return formatter.format(date);
     }
-
+    
     /**
      * Formatting time
      *
@@ -81,9 +81,9 @@ public class Utils {
     public static String timeFormat(Context context, Date date) {
         String pattern = null;
         ContentResolver cv = context.getContentResolver();
-
-        String strTimeFormat = android.provider.Settings.System.getString(cv,
-                android.provider.Settings.System.TIME_12_24);
+    
+        String strTimeFormat =
+                android.provider.Settings.System.getString(cv, android.provider.Settings.System.TIME_12_24);
         if (strTimeFormat != null) {
             if (strTimeFormat.equals("24")) {
                 pattern = "HH:mm";
@@ -97,7 +97,7 @@ public class Utils {
         }
         return null;
     }
-
+    
     @SuppressLint("DefaultLocale")
     public static String convert(long milliSeconds) {
         //int hrs = (int) TimeUnit.MILLISECONDS.toHours(milliSeconds) % 24;
@@ -106,7 +106,7 @@ public class Utils {
         //return String.format("%02d:%02d:%02d", hrs, min, sec);
         return String.format("%02d:%02d", min, sec);
     }
-
+    
     /**
      * get User info from FirebaseAuth
      *
@@ -120,12 +120,12 @@ public class Utils {
             user.setPhotoUrl(firebaseUser.getPhotoUrl().toString());
             user.setEmail(firebaseUser.getEmail());
             user.setNickname(firebaseUser.getDisplayName());
-
+    
             return user;
         }
         return null;
     }
-
+    
     /**
      * lock App
      *
@@ -143,7 +143,7 @@ public class Utils {
                 break;
         }
     }
-
+    
     /**
      * unlock App
      *
@@ -161,16 +161,15 @@ public class Utils {
                 break;
         }
     }
-
-
+    
+    
     /**
      * save Note to local
      *
      * @param noteLab NoteLab
      */
     public static void saveNoteToLocal(NoteLab noteLab) {
-        String path = Environment
-                .getExternalStorageDirectory().getAbsolutePath();
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
         try (Writer writer = new FileWriter(path + "/Note.json")) {
             Gson gson = new GsonBuilder().create();
             gson.toJson(noteLab, writer);
@@ -178,17 +177,16 @@ public class Utils {
             Log.e(TAG, "saveNoteToLocal: ", e);
         }
     }
-
+    
     /**
      * get Note from local
      *
      * @return NoteLab
      */
     public static NoteLab getNoteFromLocal() {
-        String path = Environment
-                .getExternalStorageDirectory().getAbsolutePath();
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
         try (Reader reader = new FileReader(path + "/Note.json")) {
-
+    
             Gson gson = new GsonBuilder().create();
             return gson.fromJson(reader, NoteLab.class);
         } catch (IOException e) {
@@ -196,16 +194,16 @@ public class Utils {
             return null;
         }
     }
-
+    
     /**
      * Helper method to determine if the device has an extra-large screen. For
      * example, 10" tablets are extra-large.
      */
     public static boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >=
+                Configuration.SCREENLAYOUT_SIZE_XLARGE;
     }
-
+    
     /**
      * open email client
      *
@@ -219,11 +217,23 @@ public class Utils {
         list.add("com.google.android.apps.inbox");
         list.add("com.microsoft.office.outlook");
         list.add("com.tencent.qqmail");
-        Intent customChooserIntent = createCustomChooserIntent(context.getPackageManager(),
-                intent, "Open with...", list);
+        list.add("org.kman.AquaMail");
+        list.add("com.yahoo.mobile.client.android.mail");
+        list.add("com.fsck.k9");
+        list.add("jp.softbank.mb.mail");
+        list.add("ru.mail.mailapp");
+        list.add("ru.yandex.mail");
+        list.add("com.orange.mail.fr");
+        list.add("com.cloudmagic.mail");
+        list.add("com.syntomo.email");
+        list.add("com.my.mail");
+        list.add("com.asus.mail");
+        list.add("com.ninefolders.hd3");
+        Intent customChooserIntent =
+                createCustomChooserIntent(context.getPackageManager(), intent, "Open with...", list);
         context.startActivity(customChooserIntent);
     }
-
+    
     /**
      * Creates a chooser that only shows installed apps that are allowed by the whitelist.
      *
@@ -238,19 +248,19 @@ public class Utils {
         Intent dummy = new Intent(target.getAction());
         dummy.setType(target.getType());
         List<ResolveInfo> resInfo = pm.queryIntentActivities(dummy, 0);
-
+    
         List<HashMap<String, String>> metaInfo = new ArrayList<>();
         for (ResolveInfo ri : resInfo) {
-            if (ri.activityInfo == null || !whitelist.contains(ri.activityInfo.packageName))
-                continue;
-
+            if (ri.activityInfo == null || !whitelist.contains(ri.activityInfo.packageName) ||
+                    !ri.activityInfo.packageName.contains("mail")) { continue; }
+            
             HashMap<String, String> info = new HashMap<>();
             info.put("packageName", ri.activityInfo.packageName);
             info.put("className", ri.activityInfo.name);
             info.put("simpleName", String.valueOf(ri.activityInfo.loadLabel(pm)));
             metaInfo.add(info);
         }
-
+    
         if (metaInfo.isEmpty()) {
             // Force empty chooser by setting a nonexistent target class.
             Intent emptyIntent = (Intent) target.clone();
@@ -258,15 +268,14 @@ public class Utils {
             emptyIntent.setClassName("your.package.name", "NonExistingActivity");
             return Intent.createChooser(emptyIntent, title);
         }
-
+    
         // Sort items by display name.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             metaInfo.sort((map, map2) -> map.get("simpleName").compareTo(map2.get("simpleName")));
         } else {
-            Collections.sort(metaInfo, (map, map2) ->
-                    map.get("simpleName").compareTo(map2.get("simpleName")));
+            Collections.sort(metaInfo, (map, map2) -> map.get("simpleName").compareTo(map2.get("simpleName")));
         }
-
+    
         // create the custom intent list
         List<Intent> targetedIntents = new ArrayList<>();
         for (HashMap<String, String> mi : metaInfo) {
@@ -275,15 +284,14 @@ public class Utils {
             targetedShareIntent.setClassName(mi.get("packageName"), mi.get("className"));
             targetedIntents.add(targetedShareIntent);
         }
-
+    
         Intent chooserIntent = Intent.createChooser(targetedIntents.get(0), title);
         targetedIntents.remove(0);
-        Parcelable[] targetedIntentsParcelable =
-                targetedIntents.toArray(new Parcelable[targetedIntents.size()]);
+        Parcelable[] targetedIntentsParcelable = targetedIntents.toArray(new Parcelable[targetedIntents.size()]);
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedIntentsParcelable);
         return chooserIntent;
     }
-
+    
     /**
      * Check if the network is connected
      *
@@ -303,24 +311,23 @@ public class Utils {
         }
         return false;
     }
-
+    
     /**
      * Check if the wifi is connected
      *
      * @return status
      */
     static public boolean isWifiConnected() {
-
+    
         ConnectivityManager mConnectivityManager =
-                (ConnectivityManager) MoonlightApplication.getContext()
-                        .getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) MoonlightApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo mWiFiNetworkInfo = null;
         if (mConnectivityManager != null) {
             mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         }
         return mWiFiNetworkInfo != null && mWiFiNetworkInfo.isAvailable();
     }
-
+    
     /**
      * Check if the data network is connected
      *
@@ -333,8 +340,7 @@ public class Utils {
                     (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo mMobileNetworkInfo = null;
             if (mConnectivityManager != null) {
-                mMobileNetworkInfo = mConnectivityManager
-                        .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+                mMobileNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
             }
             if (mMobileNetworkInfo != null) {
                 return mMobileNetworkInfo.isAvailable();
@@ -342,16 +348,12 @@ public class Utils {
         }
         return false;
     }
-
+    
     public static void displayImage(@NonNull String url, @NonNull ImageView imageView) {
-        Picasso.with(MoonlightApplication.getContext())
-                .load(url)
-                .memoryPolicy(NO_CACHE, NO_STORE)
-                .placeholder(R.drawable.ic_cloud_download_black_24dp)
-                .config(Bitmap.Config.RGB_565)
-                .into(imageView);
+        Picasso.with(MoonlightApplication.getContext()).load(url).memoryPolicy(NO_CACHE, NO_STORE)
+               .placeholder(R.drawable.ic_cloud_download_black_24dp).config(Bitmap.Config.RGB_565).into(imageView);
     }
-
+    
     /**
      * Check String is not empty
      *
@@ -361,7 +363,7 @@ public class Utils {
     public static boolean isStringNotEmpty(String string) {
         return !isStringEmpty(string);
     }
-
+    
     /**
      * Check String is empty
      *

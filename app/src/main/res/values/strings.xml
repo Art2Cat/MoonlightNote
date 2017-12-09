@@ -92,10 +92,6 @@
         Copyright (&#169;) 2012-2016 Markus Junginger, greenrobot (http://greenrobot.org)
         EventBus binaries and source code can be used according to the Apache License,
         Version 2.0.\n\n
-
-        Material-Color-Picker:\n
-        Copyright 2016 Turki Alkhateeb\n
-        This library is distributed under an Apache 2.0 License.\n\n
         
         RateThisApp:\n
         Copyright 2013-2016 Keisuke Kobayashi\n
@@ -300,7 +296,7 @@
     </string>
     <string name="settings_about_app_content">Moonlight Note\n\n
         Version:\n
-        1.0.17112823\n\n
+        1.0.17121124\n\n
         Credit:\n
         StudyJamscn(www.studyjamscn.com)\n\n
         Copyright:\n

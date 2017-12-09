@@ -1,12 +1,16 @@
-package com.art2cat.dev.moonlightnote.controller.moonlight;
+package com.art2cat.dev.moonlightnote.controller.common_dialog_fragment;
 
-import android.annotation.TargetApi;
-import android.content.Context;
+import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.graphics.Paint;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
@@ -14,9 +18,10 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import com.art2cat.dev.moonlightnote.BuildConfig;
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
-import com.turkialkhateeb.materialcolorpicker.ColorChooserDialog;
-import com.turkialkhateeb.materialcolorpicker.ColorListener;
+import com.art2cat.dev.moonlightnote.model.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +31,8 @@ import java.util.List;
  * on 12/9/16 11:10 PM.
  */
 
-class MyColorPickerDialog extends ColorChooserDialog {
-
-    //CONSTANTS
-    //    public final int Black =      0xff000000;
+public class ColorPickerDialogFragment extends DialogFragment {
+    private static final String TAG = ColorPickerDialogFragment.class.getName();
     private ImageButton one;
     private ImageButton two;
     private ImageButton three;
@@ -49,78 +52,78 @@ class MyColorPickerDialog extends ColorChooserDialog {
     private ImageButton seventeen;
     private ImageButton eighteen;
     private ImageButton nineteen;
+    private ImageButton twenty;
     private Button twentyOne;
+    
     private List<Integer> colors;
     private List<ImageButton> buttons;
-    private ColorListener myColorListener;
+    
+    private ColorListener colorListener;
     private View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (myColorListener != null)
-                myColorListener.OnColorClick(v, (int) v.getTag());
+            if (colorListener != null) { colorListener.onColorClick(v, (int) v.getTag()); }
             dismiss();
         }
     };
-
-    MyColorPickerDialog(Context context) {
-        super(context);
-    }
-
+    
+    public ColorPickerDialogFragment() {}
+    
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        View view = LayoutInflater.from(getContext())
-//                .inflate(com.turkialkhateeb.materialcolorpicker.R.layout.color_picker_dialog, null);
-        setContentView(R.layout.dialog_color_picker);
-//        int padding = getContext().getResources().getDimensionPixelOffset(R.dimen.padding);
-//        view.setPadding(padding, padding, padding, 0);
-
-        one = findViewById(R.id.b1);
-        two = findViewById(R.id.b2);
-        three = findViewById(R.id.b3);
-        four = findViewById(R.id.b4);
-        five = findViewById(R.id.b5);
-        six = findViewById(R.id.b6);
-        seven = findViewById(R.id.b7);
-        eight = findViewById(R.id.b8);
-        nine = findViewById(R.id.b9);
-        ten = findViewById(R.id.b10);
-        eleven = findViewById(R.id.b11);
-        twelve = findViewById(R.id.b12);
-        thirteen = findViewById(R.id.b13);
-        fourteen = findViewById(R.id.b14);
-        fifteen = findViewById(R.id.b15);
-        sixteen = findViewById(R.id.b16);
-        seventeen = findViewById(R.id.b17);
-        eighteen = findViewById(R.id.b18);
-        nineteen = findViewById(R.id.b19);
-        ImageButton twenty = findViewById(R.id.b20);
-        twentyOne = findViewById(R.id.b21);
-
-
+        
         colors = new ArrayList<>();
-        colors.add(red);
-        colors.add(pink);
-        colors.add(Purple);
-        colors.add(DeepPurple);
-        colors.add(Indigo);
-        colors.add(Blue);
-        colors.add(LightBlue);
-        colors.add(Cyan);
-        colors.add(Teal);
-        colors.add(Green);
-        colors.add(LightGreen);
-        colors.add(Lime);
-        colors.add(Yellow);
-        colors.add(Amber);
-        colors.add(Orange);
-        colors.add(DeepOrange);
-        colors.add(Brown);
-        colors.add(Grey);
-        colors.add(BlueGray);
-//        colors.add(Black);
-        colors.add(White);
-
+        colors.add(Constants.RED);
+        colors.add(Constants.PINK);
+        colors.add(Constants.PURPLE);
+        colors.add(Constants.DEEP_PURPLE);
+        colors.add(Constants.INDIGO);
+        colors.add(Constants.BLUE);
+        colors.add(Constants.LIGHT_BLUE);
+        colors.add(Constants.CYAN);
+        colors.add(Constants.TEAL);
+        colors.add(Constants.GREEN);
+        colors.add(Constants.LIGHT_GREEN);
+        colors.add(Constants.LIME);
+        colors.add(Constants.YELLOW);
+        colors.add(Constants.AMBER);
+        colors.add(Constants.ORANGE);
+        colors.add(Constants.DEEP_ORANGE);
+        colors.add(Constants.BROWN);
+        colors.add(Constants.GREY);
+        colors.add(Constants.BLUE_GRAY);
+        colors.add(0xff000000);
+        colors.add(0xffffffff);
+    }
+    
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.dialog_color_picker, null);
+        one = view.findViewById(R.id.b1);
+        two = view.findViewById(R.id.b2);
+        three = view.findViewById(R.id.b3);
+        four = view.findViewById(R.id.b4);
+        five = view.findViewById(R.id.b5);
+        six = view.findViewById(R.id.b6);
+        seven = view.findViewById(R.id.b7);
+        eight = view.findViewById(R.id.b8);
+        nine = view.findViewById(R.id.b9);
+        ten = view.findViewById(R.id.b10);
+        eleven = view.findViewById(R.id.b11);
+        twelve = view.findViewById(R.id.b12);
+        thirteen = view.findViewById(R.id.b13);
+        fourteen = view.findViewById(R.id.b14);
+        fifteen = view.findViewById(R.id.b15);
+        sixteen = view.findViewById(R.id.b16);
+        seventeen = view.findViewById(R.id.b17);
+        eighteen = view.findViewById(R.id.b18);
+        nineteen = view.findViewById(R.id.b19);
+        twenty = view.findViewById(R.id.b20);
+        twentyOne = view.findViewById(R.id.b21);
+        
         buttons = new ArrayList<>();
         buttons.add(one);
         buttons.add(two);
@@ -141,100 +144,96 @@ class MyColorPickerDialog extends ColorChooserDialog {
         buttons.add(seventeen);
         buttons.add(eighteen);
         buttons.add(nineteen);
-//        buttons.add(twenty);
-
-
-        Colorize();
-
-        twenty.setVisibility(View.GONE);
+        buttons.add(twenty);
+        
+        
+        colorize();
+        
         twentyOne.setVisibility(View.INVISIBLE);
-
+        
         setListeners();
+        builder.setView(view);
+        builder.setTitle("Color Picker");
+        return builder.create();
     }
-
+    
     private void setListeners() {
         for (int i = 0; i < buttons.size(); i++) {
             buttons.get(i).setTag(colors.get(i));
             buttons.get(i).setOnClickListener(listener);
         }
-        twentyOne.setTag(colors.get(19));
+        twentyOne.setTag(colors.get(20));
         twentyOne.setOnClickListener(listener);
     }
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void Colorize() {
+    
+    private void colorize() {
         for (int i = 0; i < buttons.size(); i++) {
             ShapeDrawable d = new ShapeDrawable(new OvalShape());
             d.setBounds(58, 58, 58, 58);
+            if (BuildConfig.DEBUG) { Log.i(TAG, "Shape drown no " + i); }
             buttons.get(i).setVisibility(View.INVISIBLE);
-
+            
             d.getPaint().setStyle(Paint.Style.FILL);
             d.getPaint().setColor(colors.get(i));
-
+            
             buttons.get(i).setBackground(d);
         }
         animate();
-
     }
-
-
+    
     private void animate() {
-
+        Log.i(TAG, "animate true");
         Runnable r1 = () -> animator(one);
-
+        
         Runnable r2 = () -> {
             animator(two);
             animator(six);
         };
-
+        
         Runnable r3 = () -> {
             animator(three);
             animator(seven);
             animator(eleven);
         };
-
+        
         Runnable r4 = () -> {
             animator(four);
             animator(eight);
             animator(twelve);
             animator(sixteen);
         };
-
+        
         Runnable r5 = () -> {
             animator(five);
             animator(nine);
             animator(thirteen);
             animator(seventeen);
         };
-
+        
         Runnable r6 = () -> {
             animator(ten);
             animator(fourteen);
             animator(eighteen);
         };
-
+        
         Runnable r7 = () -> {
             animator(fifteen);
             animator(nineteen);
         };
-
-//        Runnable r8 = () -> {
-//            @Override
-//            public void run() {
-//                animator(twenty);
-//            }
-//        };
-
+        
+        Runnable r8 = () -> animator(twenty);
+        
         Runnable r9 = () -> {
-            Animation animation = AnimationUtils.loadAnimation(getContext(), android.R.anim.fade_in);
+            Animation animation =
+                    AnimationUtils.loadAnimation(MoonlightApplication.getContext(), android.R.anim.fade_in);
             animation.setInterpolator(new AccelerateInterpolator());
             twentyOne.setAnimation(animation);
             twentyOne.setVisibility(View.VISIBLE);
             animation.start();
         };
-
-
-        android.os.Handler handler = new android.os.Handler();
+        
+        
+        final Handler handler = new Handler();
         int counter = 85;
         handler.postDelayed(r1, counter);
         handler.postDelayed(r2, counter * 2);
@@ -243,22 +242,20 @@ class MyColorPickerDialog extends ColorChooserDialog {
         handler.postDelayed(r5, counter * 5);
         handler.postDelayed(r6, counter * 6);
         handler.postDelayed(r7, counter * 7);
-//        handler.postDelayed(r8,counter * 8);
-        handler.postDelayed(r9, counter * 8);
+        handler.postDelayed(r8, counter * 8);
+        handler.postDelayed(r9, counter * 9);
     }
-
+    
+    
     private void animator(final ImageButton imageButton) {
-        Animation animation = AnimationUtils.loadAnimation(getContext(),
-                R.anim.color_item);
+        Animation animation = AnimationUtils.loadAnimation(MoonlightApplication.getContext(), R.anim.color_item);
         animation.setInterpolator(new AccelerateInterpolator());
         imageButton.setAnimation(animation);
-        imageButton.setVisibility(View.VISIBLE);
+        if (imageButton.getId() != R.id.b20) { imageButton.setVisibility(View.VISIBLE); }
         animation.start();
     }
-
+    
     public void setColorListener(ColorListener listener) {
-        this.myColorListener = listener;
+        this.colorListener = listener;
     }
-
-
 }

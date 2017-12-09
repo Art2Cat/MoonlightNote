@@ -53,6 +53,7 @@ import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment;
+import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ColorPickerDialogFragment;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
 import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
@@ -98,8 +99,7 @@ import static com.art2cat.dev.moonlightnote.model.Constants.TAKE_PICTURE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public abstract class MoonlightDetailFragment
-        extends BaseFragment
+public abstract class MoonlightDetailFragment extends BaseFragment
         implements View.OnClickListener, FragmentBackHandler {
     private static final String TAG = MoonlightDetailFragment.class.getName();
     private final Handler mHandler = new Handler();
@@ -543,8 +543,7 @@ public abstract class MoonlightDetailFragment
         switch (item.getItemId()) {
             case R.id.menu_color_picker:
                 if (mEditable) {
-                    MyColorPickerDialog dialog = new MyColorPickerDialog(mActivity);
-                    dialog.setTitle("Color Picker");
+                    ColorPickerDialogFragment dialog = new ColorPickerDialogFragment();
                     dialog.setColorListener((v, color) -> {
                         moonlight.setColor(color);
                         changeUIColor(color);
@@ -552,7 +551,8 @@ public abstract class MoonlightDetailFragment
                         mEditable = true;
                     });
                     //customize the dialog however you want
-                    dialog.show();
+    
+                    dialog.show(mActivity.getFragmentManager(), "color picker");
                 }
                 break;
             case R.id.action_remove_image:
@@ -898,7 +898,6 @@ public abstract class MoonlightDetailFragment
         
         mLeftBottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
         mRightBottomSheetBehavior.setBottomSheetCallback(bottomSheetCallback);
-        
     }
     
     private void initBottomSheetItem() {
