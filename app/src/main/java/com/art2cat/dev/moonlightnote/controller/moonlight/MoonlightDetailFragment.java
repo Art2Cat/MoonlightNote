@@ -471,6 +471,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
         mImage = null;
         mCoordinatorLayout = null;
         moonlight = null;
+        mColorMaps.clear();
         mColorMaps = null;
         mCircleProgressDialogFragment = null;
         mFragmentOnTouchListener = null;

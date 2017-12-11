@@ -6,13 +6,13 @@
     android:orientation="vertical"
     android:padding="24dp">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:text="@string/select_your_color"
-        android:textSize="21sp"
-        android:textStyle="bold" />
+    <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="24dp"-->
+        <!--android:text="@string/select_your_color"-->
+        <!--android:textSize="21sp"-->
+        <!--android:textStyle="bold" />-->
 
     <ScrollView
         android:layout_width="match_parent"
@@ -220,14 +220,6 @@
                     android:layout_height="58dp"
                     android:layout_marginBottom="8dp"
                     android:layout_marginEnd="8dp"
-                    android:foreground="?android:attr/selectableItemBackground" />
-
-                <ImageButton
-                    android:id="@+id/b20"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="58dp"
-                    android:layout_height="58dp"
-                    android:layout_marginBottom="8dp"
                     android:foreground="?android:attr/selectableItemBackground" />
             </TableRow>
 

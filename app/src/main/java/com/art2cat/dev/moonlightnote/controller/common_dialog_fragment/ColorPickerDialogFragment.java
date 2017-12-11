@@ -31,7 +31,8 @@ import java.util.List;
  * on 12/9/16 11:10 PM.
  */
 
-public class ColorPickerDialogFragment extends DialogFragment {
+public class ColorPickerDialogFragment
+        extends DialogFragment {
     private static final String TAG = ColorPickerDialogFragment.class.getName();
     private ImageButton one;
     private ImageButton two;
@@ -52,14 +53,13 @@ public class ColorPickerDialogFragment extends DialogFragment {
     private ImageButton seventeen;
     private ImageButton eighteen;
     private ImageButton nineteen;
-    private ImageButton twenty;
     private Button twentyOne;
     
     private List<Integer> colors;
     private List<ImageButton> buttons;
     
     private ColorListener colorListener;
-    private View.OnClickListener listener = new View.OnClickListener() {
+    private final View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (colorListener != null) { colorListener.onColorClick(v, (int) v.getTag()); }
@@ -121,7 +121,6 @@ public class ColorPickerDialogFragment extends DialogFragment {
         seventeen = view.findViewById(R.id.b17);
         eighteen = view.findViewById(R.id.b18);
         nineteen = view.findViewById(R.id.b19);
-        twenty = view.findViewById(R.id.b20);
         twentyOne = view.findViewById(R.id.b21);
         
         buttons = new ArrayList<>();
@@ -144,8 +143,6 @@ public class ColorPickerDialogFragment extends DialogFragment {
         buttons.add(seventeen);
         buttons.add(eighteen);
         buttons.add(nineteen);
-        buttons.add(twenty);
-        
         
         colorize();
         
@@ -153,7 +150,7 @@ public class ColorPickerDialogFragment extends DialogFragment {
         
         setListeners();
         builder.setView(view);
-        builder.setTitle("Color Picker");
+        builder.setTitle(R.string.select_your_color);
         return builder.create();
     }
     
@@ -187,43 +184,41 @@ public class ColorPickerDialogFragment extends DialogFragment {
         
         Runnable r2 = () -> {
             animator(two);
-            animator(six);
+            animator(five);
         };
         
         Runnable r3 = () -> {
             animator(three);
-            animator(seven);
-            animator(eleven);
+            animator(six);
+            animator(nine);
         };
         
         Runnable r4 = () -> {
             animator(four);
-            animator(eight);
-            animator(twelve);
-            animator(sixteen);
+            animator(seven);
+            animator(ten);
+            animator(thirteen);
         };
         
         Runnable r5 = () -> {
-            animator(five);
-            animator(nine);
-            animator(thirteen);
+            animator(eight);
+            animator(eleven);
+            animator(fourteen);
             animator(seventeen);
         };
         
         Runnable r6 = () -> {
-            animator(ten);
-            animator(fourteen);
+            animator(twelve);
+            animator(fifteen);
             animator(eighteen);
         };
         
         Runnable r7 = () -> {
-            animator(fifteen);
+            animator(sixteen);
             animator(nineteen);
         };
         
-        Runnable r8 = () -> animator(twenty);
-        
-        Runnable r9 = () -> {
+        Runnable r8 = () -> {
             Animation animation =
                     AnimationUtils.loadAnimation(MoonlightApplication.getContext(), android.R.anim.fade_in);
             animation.setInterpolator(new AccelerateInterpolator());
@@ -231,7 +226,6 @@ public class ColorPickerDialogFragment extends DialogFragment {
             twentyOne.setVisibility(View.VISIBLE);
             animation.start();
         };
-        
         
         final Handler handler = new Handler();
         int counter = 85;
@@ -243,19 +237,29 @@ public class ColorPickerDialogFragment extends DialogFragment {
         handler.postDelayed(r6, counter * 6);
         handler.postDelayed(r7, counter * 7);
         handler.postDelayed(r8, counter * 8);
-        handler.postDelayed(r9, counter * 9);
     }
-    
     
     private void animator(final ImageButton imageButton) {
         Animation animation = AnimationUtils.loadAnimation(MoonlightApplication.getContext(), R.anim.color_item);
         animation.setInterpolator(new AccelerateInterpolator());
         imageButton.setAnimation(animation);
-        if (imageButton.getId() != R.id.b20) { imageButton.setVisibility(View.VISIBLE); }
-        animation.start();
+            imageButton.setVisibility(View.VISIBLE);
+            animation.start();
     }
     
     public void setColorListener(ColorListener listener) {
         this.colorListener = listener;
+    }
+    
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        colors.clear();
+        colors = null;
+        for (ImageButton imageButton : buttons) {
+            imageButton = null;
+        }
+        buttons.clear();
+        buttons = null;
     }
 }
