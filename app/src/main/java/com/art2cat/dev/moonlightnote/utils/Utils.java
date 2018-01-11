@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.controller.settings.MoonlightPinActivity;
@@ -81,7 +82,7 @@ public class Utils {
     public static String timeFormat(Context context, Date date) {
         String pattern = null;
         ContentResolver cv = context.getContentResolver();
-    
+        
         String strTimeFormat =
                 android.provider.Settings.System.getString(cv, android.provider.Settings.System.TIME_12_24);
         if (strTimeFormat != null) {
@@ -120,7 +121,7 @@ public class Utils {
             user.setPhotoUrl(firebaseUser.getPhotoUrl().toString());
             user.setEmail(firebaseUser.getEmail());
             user.setNickname(firebaseUser.getDisplayName());
-    
+            
             return user;
         }
         return null;
@@ -186,7 +187,7 @@ public class Utils {
     public static NoteLab getNoteFromLocal() {
         String path = Environment.getExternalStorageDirectory().getAbsolutePath();
         try (Reader reader = new FileReader(path + "/Note.json")) {
-    
+            
             Gson gson = new GsonBuilder().create();
             return gson.fromJson(reader, NoteLab.class);
         } catch (IOException e) {
@@ -248,19 +249,22 @@ public class Utils {
         Intent dummy = new Intent(target.getAction());
         dummy.setType(target.getType());
         List<ResolveInfo> resInfo = pm.queryIntentActivities(dummy, 0);
-    
+        
         List<HashMap<String, String>> metaInfo = new ArrayList<>();
         for (ResolveInfo ri : resInfo) {
-            if (ri.activityInfo == null || !whitelist.contains(ri.activityInfo.packageName) ||
-                    !ri.activityInfo.packageName.contains("mail")) { continue; }
-            
-            HashMap<String, String> info = new HashMap<>();
-            info.put("packageName", ri.activityInfo.packageName);
-            info.put("className", ri.activityInfo.name);
-            info.put("simpleName", String.valueOf(ri.activityInfo.loadLabel(pm)));
-            metaInfo.add(info);
+            if (BuildConfig.DEBUG) { Log.i(TAG, "createCustomChooserIntent: " + ri.activityInfo.packageName); }
+            if (ri.activityInfo != null) {
+                if (whitelist.contains(ri.activityInfo.packageName) ||
+                        ri.activityInfo.packageName.contains("email") || ri.activityInfo.packageName.contains("mail")) {
+                    HashMap<String, String> info = new HashMap<>();
+                    info.put("packageName", ri.activityInfo.packageName);
+                    info.put("className", ri.activityInfo.name);
+                    info.put("simpleName", String.valueOf(ri.activityInfo.loadLabel(pm)));
+                    metaInfo.add(info);
+                }
+            }
         }
-    
+        
         if (metaInfo.isEmpty()) {
             // Force empty chooser by setting a nonexistent target class.
             Intent emptyIntent = (Intent) target.clone();
@@ -268,23 +272,24 @@ public class Utils {
             emptyIntent.setClassName("your.package.name", "NonExistingActivity");
             return Intent.createChooser(emptyIntent, title);
         }
-    
+        
         // Sort items by display name.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             metaInfo.sort((map, map2) -> map.get("simpleName").compareTo(map2.get("simpleName")));
         } else {
             Collections.sort(metaInfo, (map, map2) -> map.get("simpleName").compareTo(map2.get("simpleName")));
         }
-    
+        
         // create the custom intent list
         List<Intent> targetedIntents = new ArrayList<>();
         for (HashMap<String, String> mi : metaInfo) {
-            Intent targetedShareIntent = (Intent) target.clone();
+            Intent targetedShareIntent =  new Intent(Intent.ACTION_VIEW);
+//            Intent targetedShareIntent = (Intent) target.clone();
             targetedShareIntent.setPackage(mi.get("packageName"));
             targetedShareIntent.setClassName(mi.get("packageName"), mi.get("className"));
             targetedIntents.add(targetedShareIntent);
         }
-    
+        
         Intent chooserIntent = Intent.createChooser(targetedIntents.get(0), title);
         targetedIntents.remove(0);
         Parcelable[] targetedIntentsParcelable = targetedIntents.toArray(new Parcelable[targetedIntents.size()]);
@@ -318,7 +323,7 @@ public class Utils {
      * @return status
      */
     static public boolean isWifiConnected() {
-    
+        
         ConnectivityManager mConnectivityManager =
                 (ConnectivityManager) MoonlightApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo mWiFiNetworkInfo = null;
