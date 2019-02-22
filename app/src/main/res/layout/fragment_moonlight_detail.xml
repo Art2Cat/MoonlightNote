@@ -1,403 +1,403 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.ContentFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/view_parent"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/view_parent"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:clipToPadding="false"
+  tools:context="com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightDetailFragment">
+
+  <android.support.design.widget.CoordinatorLayout
+    android:id="@+id/bottom_sheet_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clipToPadding="false"
-    tools:context="com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightDetailFragment">
+    android:layout_height="match_parent">
 
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/bottom_sheet_container"
+    <android.support.v4.widget.NestedScrollView
+      android:id="@+id/bottom_sheet_left"
+      style="@style/Animation.Design.BottomSheetDialog"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingTop="8dp"
+      android:paddingBottom="8dp"
+      android:paddingLeft="16dp"
+      android:paddingRight="16dp"
+      android:background="@android:color/background_light"
+      android:elevation="6dp"
+      android:orientation="vertical"
+      app:behavior_hideable="true"
+      app:behavior_peekHeight="48dp"
+      app:layout_behavior="@string/bottom_sheet_behavior">
+
+      <android.support.v7.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <android.support.v4.widget.NestedScrollView
-            android:id="@+id/bottom_sheet_left"
-            style="@style/Animation.Design.BottomSheetDialog"
+        <android.support.v7.widget.LinearLayoutCompat
+          android:id="@+id/bottom_sheet_item_take_photo"
+          android:layout_width="match_parent"
+          android:layout_height="48dp"
+          android:orientation="horizontal">
+
+          <android.support.v7.widget.AppCompatImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_camera_black_24dp"/>
+
+          <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/bottom_sheet_left_take_photo"
+            android:textAllCaps="false"/>
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat
+          android:id="@+id/bottom_sheet_item_choose_image"
+          android:layout_width="match_parent"
+          android:layout_height="48dp"
+          android:orientation="horizontal">
+
+          <android.support.v7.widget.AppCompatImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_photo_album_black_24dp"/>
+
+          <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/bottom_sheet_left_choose_image"
+            android:textAllCaps="false"/>
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat
+          android:id="@+id/bottom_sheet_item_recording"
+          android:layout_width="match_parent"
+          android:layout_height="48dp"
+          android:orientation="horizontal">
+
+          <android.support.v7.widget.AppCompatImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_settings_voice_black_24dp"/>
+
+          <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/bottom_sheet_left_recording"
+            android:textAllCaps="false"/>
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat
+          android:layout_width="match_parent"
+          android:layout_height="48dp"
+          android:orientation="horizontal">
+
+          <android.support.v7.widget.AppCompatImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center_vertical"/>
+
+          <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/app_name"/>
+        </android.support.v7.widget.LinearLayoutCompat>
+      </android.support.v7.widget.LinearLayoutCompat>
+    </android.support.v4.widget.NestedScrollView>
+
+    <android.support.v4.widget.NestedScrollView
+      android:id="@+id/bottom_sheet_right"
+      style="@style/Animation.Design.BottomSheetDialog"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingTop="8dp"
+      android:paddingBottom="8dp"
+      android:paddingLeft="16dp"
+      android:paddingRight="16dp"
+      android:background="@android:color/background_light"
+      android:elevation="6dp"
+      android:orientation="vertical"
+      app:behavior_hideable="true"
+      app:behavior_peekHeight="48dp"
+      app:layout_behavior="@string/bottom_sheet_behavior">
+
+      <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.LinearLayoutCompat
+          android:id="@+id/bottom_sheet_item_move_to_trash"
+          android:layout_width="match_parent"
+          android:layout_height="48dp"
+          android:orientation="horizontal">
+
+          <android.support.v7.widget.AppCompatImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_delete_black_24dp"/>
+
+          <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/bottom_sheet_right_move_to_trash"
+            android:textAllCaps="false"/>
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat
+          android:id="@+id/bottom_sheet_item_permanent_delete"
+          android:layout_width="match_parent"
+          android:layout_height="48dp"
+          android:orientation="horizontal">
+
+          <android.support.v7.widget.AppCompatImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_delete_forever_black_24dp"/>
+
+          <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/bottom_sheet_right_permanent_delete"
+            android:textAllCaps="false"/>
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat
+          android:id="@+id/bottom_sheet_item_make_a_copy"
+          android:layout_width="match_parent"
+          android:layout_height="48dp"
+          android:orientation="horizontal">
+
+          <android.support.v7.widget.AppCompatImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_content_copy_black_24dp"/>
+
+          <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/bottom_sheet_right_make_a_copy"
+            android:textAllCaps="false"/>
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat
+          android:id="@+id/bottom_sheet_item_send"
+          android:layout_width="match_parent"
+          android:layout_height="48dp"
+          android:orientation="horizontal">
+
+          <android.support.v7.widget.AppCompatImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_send_black_24dp"/>
+
+          <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/bottom_sheet_right_send"
+            android:textAllCaps="false"/>
+        </android.support.v7.widget.LinearLayoutCompat>
+
+        <android.support.v7.widget.LinearLayoutCompat
+          android:layout_width="match_parent"
+          android:layout_height="48dp"
+          android:orientation="horizontal">
+
+          <android.support.v7.widget.AppCompatImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center_vertical"/>
+
+          <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center_vertical"
+            android:text="@string/app_name"/>
+        </android.support.v7.widget.LinearLayoutCompat>
+      </android.support.v7.widget.LinearLayoutCompat>
+    </android.support.v4.widget.NestedScrollView>
+
+    <android.support.v4.widget.NestedScrollView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:scrollbars="none">
+
+      <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:transitionName="@string/trans_moonlight">
+
+        <com.art2cat.dev.moonlightnote.custom_view.RecyclerImageView
+          android:id="@+id/moonlight_image"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:adjustViewBounds="true"
+          android:scaleType="fitCenter"
+          android:transitionName="@string/moonlight_image"
+          android:visibility="invisible"/>
+
+        <android.support.design.widget.TextInputLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:layout_marginStart="16dp"
+          android:layout_marginEnd="16dp">
+
+          <android.support.design.widget.TextInputEditText
+            android:id="@+id/title_TIET"
+            android:textStyle="bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/background_light"
-            android:elevation="6dp"
-            android:orientation="vertical"
-            android:paddingBottom="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="8dp"
-            app:behavior_hideable="true"
-            app:behavior_peekHeight="48dp"
-            app:layout_behavior="@string/bottom_sheet_behavior">
+            android:background="@null"
+            android:hint="@string/moonlight_detail_title"
+            android:inputType="none"
+            android:textSize="24sp"/>
+        </android.support.design.widget.TextInputLayout>
 
-            <android.support.v7.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+        <android.support.design.widget.TextInputLayout
+          android:id="@+id/content_TIL"
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="1"
+          android:layout_marginTop="16dp"
+          android:layout_marginStart="16dp"
+          android:layout_marginEnd="16dp">
 
-                <android.support.v7.widget.LinearLayoutCompat
-                    android:id="@+id/bottom_sheet_item_take_photo"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:orientation="horizontal">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="16dp"
-                        android:src="@drawable/ic_camera_black_24dp" />
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/bottom_sheet_left_take_photo"
-                        android:textAllCaps="false" />
-                </android.support.v7.widget.LinearLayoutCompat>
-
-                <android.support.v7.widget.LinearLayoutCompat
-                    android:id="@+id/bottom_sheet_item_choose_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:orientation="horizontal">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="16dp"
-                        android:src="@drawable/ic_photo_album_black_24dp" />
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/bottom_sheet_left_choose_image"
-                        android:textAllCaps="false" />
-                </android.support.v7.widget.LinearLayoutCompat>
-
-                <android.support.v7.widget.LinearLayoutCompat
-                    android:id="@+id/bottom_sheet_item_recording"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:orientation="horizontal">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="16dp"
-                        android:src="@drawable/ic_settings_voice_black_24dp" />
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/bottom_sheet_left_recording"
-                        android:textAllCaps="false" />
-                </android.support.v7.widget.LinearLayoutCompat>
-
-                <android.support.v7.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:orientation="horizontal">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="16dp"/>
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/app_name" />
-                </android.support.v7.widget.LinearLayoutCompat>
-            </android.support.v7.widget.LinearLayoutCompat>
-        </android.support.v4.widget.NestedScrollView>
-
-        <android.support.v4.widget.NestedScrollView
-            android:id="@+id/bottom_sheet_right"
-            style="@style/Animation.Design.BottomSheetDialog"
+          <android.support.design.widget.TextInputEditText
+            android:id="@+id/content_TIET"
+            android:textStyle="normal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/background_light"
-            android:elevation="6dp"
-            android:orientation="vertical"
-            android:paddingBottom="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="8dp"
-            app:behavior_hideable="true"
-            app:behavior_peekHeight="48dp"
-            app:layout_behavior="@string/bottom_sheet_behavior">
+            android:background="@null"
+            android:hint="@string/moonlight_detail_note"
+            android:textSize="18sp"/>
+        </android.support.design.widget.TextInputLayout>
 
-            <android.support.v7.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+        <android.support.v7.widget.CardView
+          android:id="@+id/audio_container"
+          style="@style/AudioCardViewStyle"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:layout_marginBottom="72dp"
+          android:layout_marginStart="16dp"
+          android:layout_marginEnd="16dp"
+          android:visibility="gone">
 
-                <android.support.v7.widget.LinearLayoutCompat
-                    android:id="@+id/bottom_sheet_item_move_to_trash"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:orientation="horizontal">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="16dp"
-                        android:src="@drawable/ic_delete_black_24dp" />
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/bottom_sheet_right_move_to_trash"
-                        android:textAllCaps="false" />
-                </android.support.v7.widget.LinearLayoutCompat>
-
-                <android.support.v7.widget.LinearLayoutCompat
-                    android:id="@+id/bottom_sheet_item_permanent_delete"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:orientation="horizontal">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="16dp"
-                        android:src="@drawable/ic_delete_forever_black_24dp" />
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/bottom_sheet_right_permanent_delete"
-                        android:textAllCaps="false" />
-                </android.support.v7.widget.LinearLayoutCompat>
-
-                <android.support.v7.widget.LinearLayoutCompat
-                    android:id="@+id/bottom_sheet_item_make_a_copy"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:orientation="horizontal">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="16dp"
-                        android:src="@drawable/ic_content_copy_black_24dp" />
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/bottom_sheet_right_make_a_copy"
-                        android:textAllCaps="false" />
-                </android.support.v7.widget.LinearLayoutCompat>
-
-                <android.support.v7.widget.LinearLayoutCompat
-                    android:id="@+id/bottom_sheet_item_send"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:orientation="horizontal">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="16dp"
-                        android:src="@drawable/ic_send_black_24dp" />
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/bottom_sheet_right_send"
-                        android:textAllCaps="false" />
-                </android.support.v7.widget.LinearLayoutCompat>
-
-                <android.support.v7.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:orientation="horizontal">
-
-                    <android.support.v7.widget.AppCompatImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="16dp" />
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/app_name" />
-                </android.support.v7.widget.LinearLayoutCompat>
-            </android.support.v7.widget.LinearLayoutCompat>
-        </android.support.v4.widget.NestedScrollView>
-
-        <android.support.v4.widget.NestedScrollView
+          <android.support.v7.widget.LinearLayoutCompat
+            android:id="@+id/audio_container_inner"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="none">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-            <android.support.v7.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:transitionName="@string/trans_moonlight">
+            <android.support.v7.widget.AppCompatButton
+              android:id="@+id/playing_audio_button"
+              android:layout_width="30dp"
+              android:layout_height="30dp"
+              android:layout_gravity="center_vertical"
+              android:background="@drawable/ic_play_circle_outline_cyan_400_48dp"/>
 
-                <com.art2cat.dev.moonlightnote.custom_view.RecyclerImageView
-                    android:id="@+id/moonlight_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitCenter"
-                    android:transitionName="@string/moonlight_image"
-                    android:visibility="invisible" />
+            <ProgressBar
+              android:id="@+id/moonlight_audio_progressBar"
+              style="@android:style/Widget.Material.ProgressBar.Horizontal"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:layout_gravity="center_vertical"
+              android:paddingStart="4dp"
+              android:paddingEnd="8dp"/>
 
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp">
+            <android.support.v7.widget.AppCompatTextView
+              android:id="@+id/moonlight_audio_duration"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center_vertical"/>
 
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/title_TIET"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@null"
-                        android:hint="@string/moonlight_detail_title"
-                        android:inputType="none"
-                        android:textSize="24sp"
-                        android:textStyle="bold" />
-                </android.support.design.widget.TextInputLayout>
+            <android.support.v7.widget.AppCompatButton
+              android:id="@+id/delete_audio"
+              android:layout_width="30dp"
+              android:layout_height="30dp"
+              android:layout_gravity="center_vertical"
+              android:background="@drawable/ic_clear_black_24dp"/>
+          </android.support.v7.widget.LinearLayoutCompat>
+        </android.support.v7.widget.CardView>
 
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/content_TIL"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_weight="1">
+      </android.support.v7.widget.LinearLayoutCompat>
 
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/content_TIET"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@null"
-                        android:hint="@string/moonlight_detail_note"
-                        android:textSize="18sp"
-                        android:textStyle="normal" />
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.v7.widget.CardView
-                    android:id="@+id/audio_container"
-                    style="@style/AudioCardViewStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="72dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:visibility="gone">
-
-                    <android.support.v7.widget.LinearLayoutCompat
-                        android:id="@+id/audio_container_inner"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <android.support.v7.widget.AppCompatButton
-                            android:id="@+id/playing_audio_button"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center_vertical"
-                            android:background="@drawable/ic_play_circle_outline_cyan_400_48dp" />
-
-                        <ProgressBar
-                            android:id="@+id/moonlight_audio_progressBar"
-                            style="@android:style/Widget.Material.ProgressBar.Horizontal"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_weight="1"
-                            android:paddingEnd="8dp"
-                            android:paddingStart="4dp" />
-
-                        <android.support.v7.widget.AppCompatTextView
-                            android:id="@+id/moonlight_audio_duration"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical" />
-
-                        <android.support.v7.widget.AppCompatButton
-                            android:id="@+id/delete_audio"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center_vertical"
-                            android:background="@drawable/ic_clear_black_24dp" />
-                    </android.support.v7.widget.LinearLayoutCompat>
-                </android.support.v7.widget.CardView>
-
-            </android.support.v7.widget.LinearLayoutCompat>
-
-        </android.support.v4.widget.NestedScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 
-    </android.support.design.widget.CoordinatorLayout>
+  </android.support.design.widget.CoordinatorLayout>
 
-    <android.support.v7.widget.LinearLayoutCompat
-        android:id="@+id/bottom_bar_container"
-        style="@style/Widget.AppCompat.Toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_gravity="bottom"
-        android:background="@color/colorPrimary"
-        android:elevation="9dp"
-        android:orientation="horizontal">
+  <android.support.v7.widget.LinearLayoutCompat
+    android:id="@+id/bottom_bar_container"
+    style="@style/Widget.AppCompat.Toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_gravity="bottom"
+    android:background="@color/colorPrimary"
+    android:elevation="9dp"
+    android:orientation="horizontal">
 
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/bottom_bar_left"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/ic_add_grey_24dp"
-            android:foreground="?android:attr/selectableItemBackground" />
+    <android.support.v7.widget.AppCompatButton
+      android:id="@+id/bottom_bar_left"
+      style="@style/Widget.AppCompat.Button.Borderless"
+      android:layout_width="?attr/actionBarSize"
+      android:layout_height="?attr/actionBarSize"
+      android:layout_gravity="center_vertical"
+      android:background="@drawable/ic_add_grey_24dp"
+      android:foreground="?android:attr/selectableItemBackground"/>
 
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/bottom_bar_display_time"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center" />
+    <android.support.v7.widget.AppCompatTextView
+      android:id="@+id/bottom_bar_display_time"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="1"
+      android:gravity="center"/>
 
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/bottom_bar_right"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/ic_more_horiz_24dp"
-            android:foreground="?android:attr/selectableItemBackground" />
-    </android.support.v7.widget.LinearLayoutCompat>
+    <android.support.v7.widget.AppCompatButton
+      android:id="@+id/bottom_bar_right"
+      style="@style/Widget.AppCompat.Button.Borderless"
+      android:layout_width="?attr/actionBarSize"
+      android:layout_height="?attr/actionBarSize"
+      android:layout_gravity="center_vertical"
+      android:background="@drawable/ic_more_horiz_24dp"
+      android:foreground="?android:attr/selectableItemBackground"/>
+  </android.support.v7.widget.LinearLayoutCompat>
 
 </android.support.v7.widget.ContentFrameLayout>

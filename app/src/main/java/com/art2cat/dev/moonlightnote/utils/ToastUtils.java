@@ -4,41 +4,42 @@ import android.content.Context;
 import android.widget.Toast;
 
 /**
- * Created by Rorschach
- * on 2017/1/13 10:52.
+ * Created by Rorschach on 2017/1/13 10:52.
  */
 
 public class ToastUtils {
-    private Context context;
-    private String content;
 
-    private static ToastUtils newInstance() {
-        return new ToastUtils();
-    }
-    public static ToastUtils with(Context context) {
-        ToastUtils toastUtils = ToastUtils.newInstance();
-        toastUtils.setContext(context);
-        return toastUtils;
-    }
+  private Context context;
+  private String content;
 
-    public ToastUtils setMessage(String message) {
-        this.setContent(message);
-        return this;
-    }
+  private static ToastUtils newInstance() {
+    return new ToastUtils();
+  }
 
-    public void showShortToast() {
-        Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
-    }
+  public static ToastUtils with(Context context) {
+    ToastUtils toastUtils = ToastUtils.newInstance();
+    toastUtils.setContext(context);
+    return toastUtils;
+  }
 
-    public void showLongToast() {
-        Toast.makeText(context, content, Toast.LENGTH_LONG).show();
-    }
+  public ToastUtils setMessage(String message) {
+    this.setContent(message);
+    return this;
+  }
 
-    private void setContext(Context context) {
-        this.context = context;
-    }
+  public void showShortToast() {
+    Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
+  }
 
-    private void setContent(String message) {
-        this.content = message;
-    }
+  public void showLongToast() {
+    Toast.makeText(context, content, Toast.LENGTH_LONG).show();
+  }
+
+  private void setContext(Context context) {
+    this.context = context;
+  }
+
+  private void setContent(String message) {
+    this.content = message;
+  }
 }

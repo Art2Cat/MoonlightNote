@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:clipToPadding="false"
+  android:orientation="vertical"
+  tools:context=".controller.moonlight.MoonlightFragment">
+
+  <android.support.v7.widget.RecyclerView
+    android:id="@+id/recyclerView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipToPadding="false"
-    android:orientation="vertical"
-    tools:context=".controller.moonlight.MoonlightFragment">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:padding="4dp" />
-    <!--<com.art2cat.dev.moonlightnote.CustomView.CustomRecyclerView-->
-    <!--android:id="@+id/recyclerView"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:padding="4dp" />-->
+    android:padding="4dp"
+    android:clipToPadding="false"/>
+  <!--<com.art2cat.dev.moonlightnote.CustomView.CustomRecyclerView-->
+  <!--android:id="@+id/recyclerView"-->
+  <!--android:layout_width="match_parent"-->
+  <!--android:layout_height="match_parent"-->
+  <!--android:padding="4dp" />-->
 </android.support.v7.widget.LinearLayoutCompat>

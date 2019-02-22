@@ -6,12 +6,13 @@ buildscript {
             url 'https://maven.google.com'
         }
         jcenter()
+        google()
     }
     dependencies {
 
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.3.1'
 
-        classpath "com.google.gms:google-services:3.0.0"
+        classpath "com.google.gms:google-services:4.2.0"
 
     }
 }
@@ -20,15 +21,13 @@ allprojects {
         maven {
             url "https://github.com/omadahealth/omada-nexus/raw/master/release"
         }
-        maven {
-            url 'https://maven.google.com'
-        }
         maven { url "https://jitpack.io" }
         flatDir {
             dirs 'libs'
         }
 
         jcenter()
+        google()
     }
 }
 task clean(type: Delete) {

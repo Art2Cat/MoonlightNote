@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <Preference
-        android:key="enable_protection"
-        android:title="@string/pref_enable_protect" />
-    <Preference
-        android:enabled="true"
-        android:key="enable_pin"
-        android:title="@string/pref_security_pin" />
-    <Preference
-        android:enabled="true"
-        android:key="enable_pattern"
-        android:title="@string/pref_security_pattern" />
+  <Preference
+    android:key="enable_protection"
+    android:title="@string/pref_enable_protect"/>
+  <Preference
+    android:enabled="true"
+    android:key="enable_pin"
+    android:title="@string/pref_security_pin"/>
+  <Preference
+    android:enabled="true"
+    android:key="enable_pattern"
+    android:title="@string/pref_security_pattern"/>
 
 </PreferenceScreen>

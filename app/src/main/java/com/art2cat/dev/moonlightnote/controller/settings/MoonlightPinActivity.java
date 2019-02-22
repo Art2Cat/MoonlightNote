@@ -1,7 +1,6 @@
 package com.art2cat.dev.moonlightnote.controller.settings;
 
 import android.util.Log;
-
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.utils.ToastUtils;
 import com.github.orangegangsters.lollipin.lib.managers.AppLock;
@@ -58,43 +57,45 @@ public class MoonlightPinActivity extends AppLockActivity {
 //        customDialog.show();
 //    }
 
-    @Override
-    public void showForgotDialog() {
-        ToastUtils.with(this)
-                .setMessage("For security this feature has been disabled!")
-                .showShortToast();
-    }
+  @Override
+  public void showForgotDialog() {
+    ToastUtils.with(this)
+        .setMessage("For security this feature has been disabled!")
+        .showShortToast();
+  }
 
-    @Override
-    public void onPinFailure(int attempts) {
-        if (attempts == 5) {
-            moveTaskToBack(true);
-            android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(1);
-        }
+  @Override
+  public void onPinFailure(int attempts) {
+    if (attempts == 5) {
+      moveTaskToBack(true);
+      android.os.Process.killProcess(android.os.Process.myPid());
+      System.exit(1);
     }
+  }
 
-    @Override
-    public void onPinSuccess(int attempts) {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onPinSuccess: " + attempts);
-        finish();
+  @Override
+  public void onPinSuccess(int attempts) {
+    if (BuildConfig.DEBUG) {
+      Log.d(TAG, "onPinSuccess: " + attempts);
     }
+    finish();
+  }
 
-    @Override
-    protected void onPinCodeSuccess() {
-        super.onPinCodeSuccess();
-        if (getIntent().getIntExtra(AppLock.EXTRA_TYPE, 78) == 0) {
-            ToastUtils.with(this)
-                    .setMessage("App protection will enable next time.")
-                    .showShortToast();
-        }
+  @Override
+  protected void onPinCodeSuccess() {
+    super.onPinCodeSuccess();
+    if (getIntent().getIntExtra(AppLock.EXTRA_TYPE, 78) == 0) {
+      ToastUtils.with(this)
+          .setMessage("App protection will enable next time.")
+          .showShortToast();
     }
+  }
 
-    @Override
-    public void onBackPressed() {
-        moveTaskToBack(true);
-        android.os.Process.killProcess(android.os.Process.myPid());
-        System.exit(1);
-        super.onBackPressed();
-    }
+  @Override
+  public void onBackPressed() {
+    moveTaskToBack(true);
+    android.os.Process.killProcess(android.os.Process.myPid());
+    System.exit(1);
+    super.onBackPressed();
+  }
 }

@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/snackbar_container"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:id="@+id/snackbar_container"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <android.support.design.widget.AppBarLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:theme="@style/AppTheme.AppBarOverlay">
 
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+    <android.support.v7.widget.Toolbar
+      android:id="@+id/toolbar"
+      android:layout_width="match_parent"
+      android:layout_height="?attr/actionBarSize"
+      app:layout_scrollFlags="scroll|enterAlways"
+      app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+    <android.support.v7.widget.Toolbar
+      android:id="@+id/toolbar2"
+      android:layout_width="match_parent"
+      android:layout_height="?attr/actionBarSize"
+      android:background="@color/light_green"
+      android:visibility="gone"
+      app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar2"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/light_green"
-            android:visibility="gone"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+  </android.support.design.widget.AppBarLayout>
 
-    </android.support.design.widget.AppBarLayout>
+  <include layout="@layout/content_moonlight"/>
 
-    <include layout="@layout/content_moonlight" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_action_create"
-        app:layout_behavior="com.art2cat.dev.moonlightnote.custom_view.ScaleDownShowBehavior" />
+  <android.support.design.widget.FloatingActionButton
+    android:id="@+id/fab"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/fab_margin"
+    android:layout_gravity="bottom|end"
+    android:src="@drawable/ic_action_create"
+    app:layout_behavior="com.art2cat.dev.moonlightnote.custom_view.ScaleDownShowBehavior"/>
 
 </android.support.design.widget.CoordinatorLayout>

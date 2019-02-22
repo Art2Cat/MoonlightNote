@@ -4,38 +4,38 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.Toolbar;
-
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
 
 public class UserActivity extends AppCompatActivity {
-    public Toolbar mToolbar;
-    public ContentFrameLayout mCommonFragmentContainer;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_common);
-        initView();
-        mToolbar = findViewById(R.id.toolbar);
-        mCommonFragmentContainer = findViewById(R.id.common_fragment_container);
-        setSupportActionBar(mToolbar);
+  public Toolbar mToolbar;
+  public ContentFrameLayout mCommonFragmentContainer;
 
-        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        mToolbar.setNavigationOnClickListener(view -> onBackPressed());
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_common);
+    initView();
+    mToolbar = findViewById(R.id.toolbar);
+    mCommonFragmentContainer = findViewById(R.id.common_fragment_container);
+    setSupportActionBar(mToolbar);
 
-        FragmentUtils.addFragment(getSupportFragmentManager(), R.id.common_fragment_container,
-                new UserFragment());
-    }
+    mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+    mToolbar.setNavigationOnClickListener(view -> onBackPressed());
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        finish();
-    }
+    FragmentUtils.addFragment(getSupportFragmentManager(), R.id.common_fragment_container,
+        new UserFragment());
+  }
 
-    private void initView() {
-        mCommonFragmentContainer = findViewById(R.id.common_fragment_container);
-    }
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    finish();
+  }
+
+  private void initView() {
+    mCommonFragmentContainer = findViewById(R.id.common_fragment_container);
+  }
 
 }

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/snackbar_container"
-    tools:context="com.art2cat.dev.moonlightnote.controller.user.UserActivity"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/snackbar_container"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  tools:context="com.art2cat.dev.moonlightnote.controller.user.UserActivity">
 
-    <include layout="@layout/app_bar_common"
-        tools:ignore="DuplicateIncludedIds" />
+  <include
+    layout="@layout/app_bar_common"
+    tools:ignore="DuplicateIncludedIds"/>
 
 </android.support.design.widget.CoordinatorLayout>

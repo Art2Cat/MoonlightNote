@@ -1,38 +1,38 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory
-        android:title="@string/backup_to_drive">
+  <PreferenceCategory
+    android:title="@string/backup_to_drive">
 
-        <Preference
-            android:key="connect_to_drive"
-            android:title="@string/settings_connect_to_drive"
-            android:summary="@string/settings_connect_to_drive_summary"
-            />
+    <Preference
+      android:key="connect_to_drive"
+      android:summary="@string/settings_connect_to_drive_summary"
+      android:title="@string/settings_connect_to_drive"
+      />
 
-        <Preference
-            android:key="backup_to_drive"
-            android:title="@string/settings_backup_to_drive"
-            />
+    <Preference
+      android:key="backup_to_drive"
+      android:title="@string/settings_backup_to_drive"
+      />
 
-        <Preference
-            android:key="restore_from_drive"
-            android:title="@string/settings_restore_data"
-            />
+    <Preference
+      android:key="restore_from_drive"
+      android:title="@string/settings_restore_data"
+      />
 
-    </PreferenceCategory>
+  </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/backup_to_sd">
+  <PreferenceCategory
+    android:title="@string/backup_to_sd">
 
-        <Preference
-            android:key="backup_to_sd"
-            android:title="@string/settings_backup_to_drive"
-            />
+    <Preference
+      android:key="backup_to_sd"
+      android:title="@string/settings_backup_to_drive"
+      />
 
-        <Preference
-            android:key="restore_from_sd"
-            android:title="@string/settings_restore_data"
-            />
+    <Preference
+      android:key="restore_from_sd"
+      android:title="@string/settings_restore_data"
+      />
 
-    </PreferenceCategory>
+  </PreferenceCategory>
 
 </PreferenceScreen>

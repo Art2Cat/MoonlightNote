@@ -1,44 +1,44 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+  xmlns:ads="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/colorPrimary"
+  android:theme="@style/AppTheme.NoActionBar"
+  tools:ignore="Overdraw">
+
+  <com.google.android.gms.ads.NativeExpressAdView
+    android:id="@+id/adView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentTop="true"
+    android:layout_gravity="center_horizontal"
     android:background="@color/colorPrimary"
-    android:theme="@style/AppTheme.NoActionBar"
-    tools:ignore="Overdraw">
+    ads:adSize="360x360"
+    ads:adUnitId="ca-app-pub-5043396164425122/9918900095"/>
 
-    <com.google.android.gms.ads.NativeExpressAdView
-        android:id="@+id/adView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_gravity="center_horizontal"
-        android:background="@color/colorPrimary"
-        ads:adSize="360x360"
-        ads:adUnitId="ca-app-pub-5043396164425122/9918900095" />
+  <android.support.v7.widget.LinearLayoutCompat
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_alignParentTop="true"
+    android:layout_toEndOf="@+id/adView"
+    android:padding="16dp"
+    android:gravity="center"
+    android:orientation="vertical">
 
-    <android.support.v7.widget.LinearLayoutCompat
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/adView"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="16dp">
+    <android.support.v7.widget.AppCompatImageView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:paddingBottom="16dp"
+      android:src="@mipmap/ic_launcher"/>
 
-        <android.support.v7.widget.AppCompatImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="16dp"
-            android:src="@mipmap/ic_launcher" />
-
-        <android.support.v7.widget.AppCompatTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/app_name"
-            android:textSize="36sp" />
-    </android.support.v7.widget.LinearLayoutCompat>
+    <android.support.v7.widget.AppCompatTextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:text="@string/app_name"
+      android:textSize="36sp"/>
+  </android.support.v7.widget.LinearLayoutCompat>
 
 </RelativeLayout>
