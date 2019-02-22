@@ -25,7 +25,7 @@ import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
-import com.art2cat.dev.moonlightnote.model.Constants;
+import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
@@ -55,7 +55,7 @@ import org.greenrobot.eventbus.ThreadMode;
 public abstract class MoonlightListFragment extends BaseFragment {
 
   private static final String TAG = MoonlightListFragment.class.getName();
-  private DatabaseReference mDatabase;
+  private DatabaseReference databaseReference;
   private FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder> mFirebaseRecyclerAdapter;
   private Toolbar mToolbar;
   private Toolbar mToolbar2;
@@ -86,27 +86,27 @@ public abstract class MoonlightListFragment extends BaseFragment {
     super.onCreateView(inflater, container, savedInstanceState);
     View rootView = inflater.inflate(R.layout.fragment_moonlight, container, false);
 
-    MoonlightActivity moonlightActivity = (MoonlightActivity) mActivity;
+    MoonlightActivity moonlightActivity = (MoonlightActivity) activity;
     mToolbar = moonlightActivity.mToolbar;
     mToolbar2 = moonlightActivity.mToolbar2;
     mParams = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
 
     if (isTrash()) {
       mToolbar.setTitle(R.string.fragment_trash);
-      mToolbar.setBackgroundColor(getResources().getColor(R.color.grey, mActivity.getTheme()));
+      mToolbar.setBackgroundColor(getResources().getColor(R.color.grey, activity.getTheme()));
     } else {
       mToolbar.setTitle(R.string.app_name);
       mToolbar
-          .setBackgroundColor(getResources().getColor(R.color.colorPrimary, mActivity.getTheme()));
-      mActivity.getWindow()
+          .setBackgroundColor(getResources().getColor(R.color.colorPrimary, activity.getTheme()));
+      activity.getWindow()
           .setStatusBarColor(
-              getResources().getColor(R.color.colorPrimaryDark, mActivity.getTheme()));
-      mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+              getResources().getColor(R.color.colorPrimaryDark, activity.getTheme()));
+      activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
     }
     setHasOptionsMenu(true);
 
     // [START create_database_reference]
-    mDatabase = FirebaseDatabase.getInstance().getReference();
+    databaseReference = FirebaseDatabase.getInstance().getReference();
 
     // [END create_database_reference]
     mRecyclerView = rootView.findViewById(R.id.recyclerView);
@@ -119,11 +119,11 @@ public abstract class MoonlightListFragment extends BaseFragment {
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
     if (isTrash()) {
-      ((MoonlightActivity) mActivity).hideFAB();
+      ((MoonlightActivity) activity).hideFAB();
       MoonlightActivity.isHome = false;
     }
 
-    LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(mActivity);
+    LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(activity);
     mLinearLayoutManager.setReverseLayout(true);
     mLinearLayoutManager.setStackFromEnd(true);
     mRecyclerView.setLayoutManager(mLinearLayoutManager);
@@ -148,10 +148,10 @@ public abstract class MoonlightListFragment extends BaseFragment {
       public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
         super.onScrollStateChanged(recyclerView, newState);
         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-          Picasso.with(mActivity).resumeTag(tag);
+          Picasso.with(activity).resumeTag(tag);
 
         } else {
-          Picasso.with(mActivity).pauseTag(tag);
+          Picasso.with(activity).pauseTag(tag);
         }
       }
 
@@ -159,7 +159,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
 
     mRecyclerView.setOnDragListener((view, dragEvent) -> false);
 
-    setOverflowButtonColor(mActivity, 0xFFFFFFFF);
+    setOverflowButtonColor(activity, 0xFFFFFFFF);
 
   }
 
@@ -171,7 +171,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
   }
 
   private void setAdapter() {
-    Query moonlightsQuery = getQuery(mDatabase);
+    Query moonlightsQuery = getQuery(databaseReference);
     if (moonlightsQuery != null) {
       mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder>(
           Moonlight.class,
@@ -206,7 +206,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
           if (Utils.isStringNotEmpty(moonlightD.getImageName())) {
             Log.i(TAG, "populateViewHolder: " + moonlightD.getImageName());
             viewHolder.mImage.setVisibility(View.VISIBLE);
-            viewHolder.displayImage(mActivity, moonlightD.getImageUrl());
+            viewHolder.displayImage(activity, moonlightD.getImageUrl());
           } else {
             viewHolder.mImage.setVisibility(View.GONE);
           }
@@ -214,7 +214,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
           if (moonlightD.getColor() != 0) {
             viewHolder.setColor(moonlightD.getColor());
           } else {
-            viewHolder.setColor(mActivity.getResources().getColor(R.color.white, null));
+            viewHolder.setColor(activity.getResources().getColor(R.color.white, null));
           }
 
           if (Utils.isStringNotEmpty(moonlightD.getAudioName())) {
@@ -305,7 +305,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
   }
 
   private boolean isAudioFileExists(String audioName) {
-    File dir = new File(mActivity.getCacheDir(), "/.audio");
+    File dir = new File(activity.getCacheDir(), "/.audio");
     if (audioName.contains(".amr")) {
       File file = new File(dir, audioName);
       return file.exists();
@@ -329,7 +329,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
       mFirebaseRecyclerAdapter.cleanup();
     }
 
-    RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
+    RefWatcher refWatcher = MoonlightApplication.getRefWatcher(activity);
     refWatcher.watch(this);
   }
 
@@ -373,19 +373,19 @@ public abstract class MoonlightListFragment extends BaseFragment {
             .newInstance(getUid(), getString(R.string.dialog_empty_note_title),
                 getString(R.string.dialog_empty_note_content),
                 Constants.EXTRA_TYPE_CDF_EMPTY_NOTE);
-        emptyNote.show(mActivity.getFragmentManager(), "Empty Note");
+        emptyNote.show(activity.getFragmentManager(), "Empty Note");
         break;
       case R.id.menu_empty_trash:
         ConfirmationDialogFragment emptyTrash = ConfirmationDialogFragment
             .newInstance(getUid(), getString(R.string.dialog_empty_trash_title),
                 getString(R.string.dialog_empty_trash_content),
                 Constants.EXTRA_TYPE_CDF_EMPTY_TRASH);
-        emptyTrash.show(mActivity.getFragmentManager(), "Empty Trash");
-        mActivity.setTitle(R.string.fragment_trash);
+        emptyTrash.show(activity.getFragmentManager(), "Empty Trash");
+        activity.setTitle(R.string.fragment_trash);
         break;
       case R.id.action_restore:
         FDatabaseUtils.restoreToNote(getUid(), mMoonlight);
-        mActivity.setTitle(R.string.fragment_trash);
+        activity.setTitle(R.string.fragment_trash);
         changeOptionsMenu(3);
         break;
       case R.id.action_trash_delete_forever:
@@ -394,7 +394,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
         FDatabaseUtils
             .removeMoonlight(getUid(), mMoonlight.getId(), Constants.EXTRA_TYPE_DELETE_TRASH);
         mMoonlight = null;
-        mActivity.setTitle(R.string.fragment_trash);
+        activity.setTitle(R.string.fragment_trash);
         changeOptionsMenu(3);
         break;
     }
@@ -465,7 +465,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
           switch (item.getItemId()) {
             case R.id.action_delete:
               FDatabaseUtils.moveToTrash(getUid(), moonlight);
-              mActivity.setTitle(R.string.app_name);
+              activity.setTitle(R.string.app_name);
               break;
             case R.id.action_delete_forever:
               if (moonlight.getImageUrl() != null) {
@@ -476,11 +476,11 @@ public abstract class MoonlightListFragment extends BaseFragment {
               }
               FDatabaseUtils
                   .removeMoonlight(getUid(), moonlight.getId(), Constants.EXTRA_TYPE_MOONLIGHT);
-              mActivity.setTitle(R.string.app_name);
+              activity.setTitle(R.string.app_name);
               break;
             case R.id.action_make_a_copy:
               FDatabaseUtils.addMoonlight(getUid(), moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
-              mActivity.setTitle(R.string.app_name);
+              activity.setTitle(R.string.app_name);
               break;
             case R.id.action_send:
               Intent in = new Intent(Intent.ACTION_SEND);
@@ -498,11 +498,11 @@ public abstract class MoonlightListFragment extends BaseFragment {
               }
               in = Intent.createChooser(in, "Send to");
               startActivity(in);
-              mActivity.setTitle(R.string.app_name);
+              activity.setTitle(R.string.app_name);
               break;
             case R.id.action_restore:
               FDatabaseUtils.restoreToNote(getUid(), moonlight);
-              mActivity.setTitle(R.string.fragment_trash);
+              activity.setTitle(R.string.fragment_trash);
               break;
             case R.id.action_trash_delete_forever:
               if (moonlight.getImageUrl() != null) {
@@ -513,7 +513,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
               }
               FDatabaseUtils
                   .removeMoonlight(getUid(), moonlight.getId(), Constants.EXTRA_TYPE_DELETE_TRASH);
-              mActivity.setTitle(R.string.fragment_trash);
+              activity.setTitle(R.string.fragment_trash);
               break;
           }
           setParams(0);

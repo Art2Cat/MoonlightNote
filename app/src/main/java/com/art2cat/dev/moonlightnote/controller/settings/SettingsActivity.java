@@ -1,7 +1,7 @@
 package com.art2cat.dev.moonlightnote.controller.settings;
 
 
-import static com.art2cat.dev.moonlightnote.model.Constants.STORAGE_PERMS;
+import static com.art2cat.dev.moonlightnote.constants.Constants.STORAGE_PERMS;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -27,7 +27,7 @@ import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
-import com.art2cat.dev.moonlightnote.model.Constants;
+import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.model.NoteLab;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
@@ -127,7 +127,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         NavUtils.navigateUpFromSameTask(this);
       }
       if (super.onMenuItemSelected(featureId, item) && isXLargeTablet(this)) {
-        startActivity(new Intent(SettingsActivity.this, MoonlightActivity.class));
+        startActivity(new Intent(this, MoonlightActivity.class));
         this.finish();
       }
       return true;
@@ -636,17 +636,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     public boolean onPreferenceClick(Preference preference) {
       Intent intent = new Intent(getActivity(), SettingsSecondActivity.class);
+      String settingsTypeEnum = SettingsTypeEnum.class.getSimpleName();
       switch (preference.getKey()) {
         case POLICY:
-          intent.putExtra(Constants.EXTRA_TYPE_FRAGMENT, Constants.FRAGMENT_POLICY);
+          intent.putExtra(settingsTypeEnum, SettingsTypeEnum.POLICY);
           startActivity(intent);
           break;
         case LICENSE:
-          intent.putExtra(Constants.EXTRA_TYPE_FRAGMENT, Constants.FRAGMENT_LICENSE);
+          intent.putExtra(settingsTypeEnum, SettingsTypeEnum.LICENSE);
           startActivity(intent);
           break;
         case ABOUT:
-          intent.putExtra(Constants.EXTRA_TYPE_FRAGMENT, Constants.FRAGMENT_ABOUT);
+          intent.putExtra(settingsTypeEnum, SettingsTypeEnum.ABOUT);
           startActivity(intent);
           break;
       }

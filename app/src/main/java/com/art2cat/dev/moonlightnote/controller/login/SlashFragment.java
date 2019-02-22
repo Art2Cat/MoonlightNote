@@ -35,7 +35,7 @@ public class SlashFragment extends BaseFragment {
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.fragment_slash, container, false);
     // initialize Admob
-    MobileAds.initialize(mActivity, APP_ID);
+    MobileAds.initialize(activity, APP_ID);
     NativeExpressAdView adView = view.findViewById(R.id.adView);
     AdRequest request = new AdRequest.Builder()
 //                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)

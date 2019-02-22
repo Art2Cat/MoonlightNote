@@ -2,12 +2,9 @@ package com.art2cat.dev.moonlightnote.controller.moonlight;
 
 
 import static android.app.Activity.RESULT_OK;
-import static com.art2cat.dev.moonlightnote.model.Constants.ALBUM_CHOOSE;
-import static com.art2cat.dev.moonlightnote.model.Constants.BLUE_DARK;
-import static com.art2cat.dev.moonlightnote.model.Constants.CYAN_DARK;
-import static com.art2cat.dev.moonlightnote.model.Constants.GREY_DARK;
-import static com.art2cat.dev.moonlightnote.model.Constants.RECORD_AUDIO;
-import static com.art2cat.dev.moonlightnote.model.Constants.TAKE_PICTURE;
+import static com.art2cat.dev.moonlightnote.constants.Constants.ALBUM_CHOOSE;
+import static com.art2cat.dev.moonlightnote.constants.Constants.RECORD_AUDIO;
+import static com.art2cat.dev.moonlightnote.constants.Constants.TAKE_PICTURE;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -56,11 +53,12 @@ import android.widget.ProgressBar;
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.constants.ColorConstants;
+import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ColorPickerDialogFragment;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
-import com.art2cat.dev.moonlightnote.model.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.utils.AudioPlayer;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
@@ -130,7 +128,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
   private String mKeyId;
   private int mPaddingBottom;
   private int mBottomBarHeight;
-  //    private Uri mFileUri = null;
+  //    private Uri fileUri = null;
   private StorageReference mStorageReference;
   private String mImageFileName;
   private String mAudioFileName;
@@ -154,7 +152,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     mStorageReference = firebaseStorage.getReferenceFromUrl(Constants.FB_STORAGE_REFERENCE);
 
-    mInputMethodManager = (InputMethodManager) mActivity
+    mInputMethodManager = (InputMethodManager) activity
         .getSystemService(Context.INPUT_METHOD_SERVICE);
 
     mPaddingBottom = getResources().getDimensionPixelOffset(R.dimen.padding_bottom);
@@ -180,7 +178,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
       moonlight = new Moonlight();
     }
 
-    ((DrawerLocker) mActivity).setDrawerEnabled(false);
+    ((DrawerLocker) activity).setDrawerEnabled(false);
 
     initColor();
 
@@ -188,25 +186,25 @@ public abstract class MoonlightDetailFragment extends BaseFragment
 
   private void initColor() {
     mColorMaps = new SparseIntArray();
-    mColorMaps.put(Constants.AMBER, Constants.AMBER_DARK);
-    mColorMaps.put(Constants.BLUE, BLUE_DARK);
-    mColorMaps.put(Constants.BLUE_GRAY, Constants.BLUE_GRAY_DARK);
-    mColorMaps.put(Constants.BROWN, Constants.BROWN_DARK);
-    mColorMaps.put(Constants.CYAN, Constants.CYAN_DARK);
-    mColorMaps.put(Constants.DEEP_ORANGE, Constants.DEEP_ORANGE_DARK);
-    mColorMaps.put(Constants.DEEP_PURPLE, Constants.DEEP_PURPLE_DARK);
-    mColorMaps.put(Constants.GREEN, Constants.GREEN_DARK);
-    mColorMaps.put(Constants.GREY, GREY_DARK);
-    mColorMaps.put(Constants.INDIGO, Constants.INDIGO_DARK);
-    mColorMaps.put(Constants.LIGHT_BLUE, Constants.LIGHT_BLUE_DARK);
-    mColorMaps.put(Constants.LIGHT_GREEN, Constants.LIGHT_GREEN_DARK);
-    mColorMaps.put(Constants.LIME, Constants.LIME_DARK);
-    mColorMaps.put(Constants.ORANGE, Constants.ORANGE_DARK);
-    mColorMaps.put(Constants.PINK, Constants.PINK_DARK);
-    mColorMaps.put(Constants.PURPLE, Constants.PURPLE_DARK);
-    mColorMaps.put(Constants.RED, Constants.RED_DARK);
-    mColorMaps.put(Constants.TEAL, Constants.TEAL_DARK);
-    mColorMaps.put(Constants.YELLOW, Constants.YELLOW_DARK);
+    mColorMaps.put(ColorConstants.AMBER, ColorConstants.AMBER_DARK);
+    mColorMaps.put(ColorConstants.BLUE, ColorConstants.BLUE_DARK);
+    mColorMaps.put(ColorConstants.BLUE_GRAY, ColorConstants.BLUE_GRAY_DARK);
+    mColorMaps.put(ColorConstants.BROWN, ColorConstants.BROWN_DARK);
+    mColorMaps.put(ColorConstants.CYAN, ColorConstants.CYAN_DARK);
+    mColorMaps.put(ColorConstants.DEEP_ORANGE, ColorConstants.DEEP_ORANGE_DARK);
+    mColorMaps.put(ColorConstants.DEEP_PURPLE, ColorConstants.DEEP_PURPLE_DARK);
+    mColorMaps.put(ColorConstants.GREEN, ColorConstants.GREEN_DARK);
+    mColorMaps.put(ColorConstants.GREY, ColorConstants.GREY_DARK);
+    mColorMaps.put(ColorConstants.INDIGO, ColorConstants.INDIGO_DARK);
+    mColorMaps.put(ColorConstants.LIGHT_BLUE, ColorConstants.LIGHT_BLUE_DARK);
+    mColorMaps.put(ColorConstants.LIGHT_GREEN, ColorConstants.LIGHT_GREEN_DARK);
+    mColorMaps.put(ColorConstants.LIME, ColorConstants.LIME_DARK);
+    mColorMaps.put(ColorConstants.ORANGE, ColorConstants.ORANGE_DARK);
+    mColorMaps.put(ColorConstants.PINK, ColorConstants.PINK_DARK);
+    mColorMaps.put(ColorConstants.PURPLE, ColorConstants.PURPLE_DARK);
+    mColorMaps.put(ColorConstants.RED, ColorConstants.RED_DARK);
+    mColorMaps.put(ColorConstants.TEAL, ColorConstants.TEAL_DARK);
+    mColorMaps.put(ColorConstants.YELLOW, ColorConstants.YELLOW_DARK);
   }
 
   @Override
@@ -214,18 +212,18 @@ public abstract class MoonlightDetailFragment extends BaseFragment
       Bundle savedInstanceState) {
     view = inflater.inflate(R.layout.fragment_moonlight_detail, container, false);
 
-    toolbar = ((MoonlightActivity) mActivity).mToolbar2;
+    toolbar = ((MoonlightActivity) activity).mToolbar2;
     toolbar.setVisibility(View.VISIBLE);
     toolbar.setBackgroundColor(getResources().getColor(R.color.white, null));
     AppBarLayout.LayoutParams params =
-        (AppBarLayout.LayoutParams) ((MoonlightActivity) mActivity).mToolbar.getLayoutParams();
+        (AppBarLayout.LayoutParams) ((MoonlightActivity) activity).mToolbar.getLayoutParams();
     params.setScrollFlags(0);
-    ((MoonlightActivity) mActivity).mToolbar.setLayoutParams(params);
+    ((MoonlightActivity) activity).mToolbar.setLayoutParams(params);
     toolbar.setLayoutParams(params);
-    ((MoonlightActivity) mActivity).setSupportActionBar(toolbar);
-    ((MoonlightActivity) mActivity).mToolbar.setVisibility(View.GONE);
+    ((MoonlightActivity) activity).setSupportActionBar(toolbar);
+    ((MoonlightActivity) activity).mToolbar.setVisibility(View.GONE);
     toolbar.setNavigationIcon(R.drawable.ic_arrow_back_grey_700_24dp);
-    toolbar.setNavigationOnClickListener(view -> mActivity.onBackPressed());
+    toolbar.setNavigationOnClickListener(view -> activity.onBackPressed());
 
     viewParent = view.findViewById(R.id.view_parent);
     mTitle = view.findViewById(R.id.title_TIET);
@@ -252,7 +250,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
     if (mEditable) {
       long date = System.currentTimeMillis();
       moonlight.setDate(date);
-      String time = Utils.timeFormat(mActivity.getApplicationContext(), new Date(date));
+      String time = Utils.timeFormat(activity.getApplicationContext(), new Date(date));
       if (time != null) {
         String timeFormat = "Edited: " + time;
         displayTime.setText(timeFormat);
@@ -354,7 +352,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
   }
 
   private void changeStatusBarColor(int color) {
-    mActivity.getWindow().setStatusBarColor(mColorMaps.get(color));
+    activity.getWindow().setStatusBarColor(mColorMaps.get(color));
   }
 
   @Override
@@ -365,18 +363,18 @@ public abstract class MoonlightDetailFragment extends BaseFragment
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-    toolbar.setBackgroundColor(getResources().getColor(R.color.white, mActivity.getTheme()));
+    toolbar.setBackgroundColor(getResources().getColor(R.color.white, activity.getTheme()));
     bottomBarContainer
-        .setBackgroundColor(getResources().getColor(R.color.white, mActivity.getTheme()));
+        .setBackgroundColor(getResources().getColor(R.color.white, activity.getTheme()));
     toolbar.setTitle(null);
-    ((MoonlightActivity) mActivity).mToolbar.setTitle(null);
-    ((MoonlightActivity) mActivity).hideFAB();
+    ((MoonlightActivity) activity).mToolbar.setTitle(null);
+    ((MoonlightActivity) activity).hideFAB();
     initView(mEditable);
-    setOverflowButtonColor(mActivity, GREY_DARK);
+    setOverflowButtonColor(activity, ColorConstants.GREY_DARK);
 
     if (!mEditable) {
       // disable softInput keyboard
-      mActivity.getWindow()
+      activity.getWindow()
           .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
       final Snackbar snackbar =
           SnackBarUtils
@@ -385,7 +383,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
 
                 BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
                 FDatabaseUtils.restoreToNote(mUserId, moonlight);
-                mActivity.getFragmentManager().popBackStack();
+                activity.getFragmentManager().popBackStack();
               });
 
       mFragmentOnTouchListener = ev -> {
@@ -395,7 +393,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
 
         return false;
       };
-      ((MoonlightActivity) mActivity).registerFragmentOnTouchListener(mFragmentOnTouchListener);
+      ((MoonlightActivity) activity).registerFragmentOnTouchListener(mFragmentOnTouchListener);
     }
   }
 
@@ -407,8 +405,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment
   @Override
   public void onResume() {
     super.onResume();
-    mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-    mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+    activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+    activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
   }
 
   @Override
@@ -426,7 +424,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
   public void onDestroy() {
     if (mInputMethodManager != null) {
       mInputMethodManager
-          .hideSoftInputFromWindow(mActivity.getWindow().getDecorView().getWindowToken(), 0);
+          .hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
 
     }
 
@@ -435,10 +433,10 @@ public abstract class MoonlightDetailFragment extends BaseFragment
     mAudioPlayer.releasePlayer();
     // remove FragmentOnTouchListener
     if (mFragmentOnTouchListener != null) {
-      ((MoonlightActivity) mActivity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
+      ((MoonlightActivity) activity).unregisterFragmentOnTouchListener(mFragmentOnTouchListener);
     }
 
-    RefWatcher refWatcher = MoonlightApplication.getRefWatcher(mActivity);
+    RefWatcher refWatcher = MoonlightApplication.getRefWatcher(activity);
     refWatcher.watch(this);
     release();
     super.onDestroy();
@@ -470,7 +468,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
   @Override
   public boolean onBackPressed() {
     commitMoonlight();
-    android.app.FragmentManager fragmentManager = mActivity.getFragmentManager();
+    android.app.FragmentManager fragmentManager = activity.getFragmentManager();
     if (fragmentManager.getBackStackEntryCount() > 0) {
       fragmentManager.popBackStack();
     }
@@ -495,22 +493,22 @@ public abstract class MoonlightDetailFragment extends BaseFragment
     toolbar.setVisibility(View.GONE);
     toolbar.setBackgroundColor(getResources().getColor(R.color.light_green, null));
     AppBarLayout.LayoutParams params =
-        (AppBarLayout.LayoutParams) ((MoonlightActivity) mActivity).mToolbar.getLayoutParams();
+        (AppBarLayout.LayoutParams) ((MoonlightActivity) activity).mToolbar.getLayoutParams();
     params.setScrollFlags(
         AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
             | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
-    ((MoonlightActivity) mActivity).mToolbar.setLayoutParams(params);
-    ((MoonlightActivity) mActivity).mToolbar.setVisibility(View.VISIBLE);
-    ((MoonlightActivity) mActivity).mToolbar.setTitle(getString(R.string.app_name));
+    ((MoonlightActivity) activity).mToolbar.setLayoutParams(params);
+    ((MoonlightActivity) activity).mToolbar.setVisibility(View.VISIBLE);
+    ((MoonlightActivity) activity).mToolbar.setTitle(getString(R.string.app_name));
 
-    ((DrawerLocker) mActivity).setDrawerEnabled(true);
+    ((DrawerLocker) activity).setDrawerEnabled(true);
 
     if (mEditable) {
-      mActivity.getWindow().setStatusBarColor(CYAN_DARK);
-      mActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+      activity.getWindow().setStatusBarColor(ColorConstants.CYAN_DARK);
+      activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
 
-      if (((MoonlightActivity) mActivity).mFAB != null) {
-        ((MoonlightActivity) mActivity).mFAB.show();
+      if (((MoonlightActivity) activity).mFAB != null) {
+        ((MoonlightActivity) activity).mFAB.show();
       }
 
     }
@@ -539,7 +537,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
           });
           //customize the dialog however you want
 
-          dialog.show(mActivity.getFragmentManager(), "color picker");
+          dialog.show(activity.getFragmentManager(), "color picker");
         }
         break;
       case R.id.action_remove_image:
@@ -622,10 +620,11 @@ public abstract class MoonlightDetailFragment extends BaseFragment
         moonlight.setAudioUrl(null);
         break;
       case R.id.bottom_sheet_item_take_photo:
-        onCameraClick(view, mEditable);
+        mEditable = false;
+        onCameraClick(view);
         break;
       case R.id.bottom_sheet_item_choose_image:
-        onAlbumClick(view, mEditable);
+        mEditable = onAlbumClick(view);
         break;
       case R.id.bottom_sheet_item_recording:
         onAudioClick();
@@ -636,7 +635,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
         } else {
           BusEventUtils.post(Constants.BUS_FLAG_NULL, null);
         }
-        mActivity.onBackPressed();
+        activity.onBackPressed();
         mEditable = false;
         break;
       case R.id.bottom_sheet_item_permanent_delete:
@@ -650,7 +649,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
         } else {
           BusEventUtils.post(Constants.BUS_FLAG_NULL, null);
         }
-        mActivity.onBackPressed();
+        activity.onBackPressed();
         break;
       case R.id.bottom_sheet_item_make_a_copy:
         if (isEmpty(moonlight)) {
@@ -687,9 +686,9 @@ public abstract class MoonlightDetailFragment extends BaseFragment
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     switch (requestCode) {
       case TAKE_PICTURE:
-        if (resultCode == RESULT_OK && mFileUri != null) {
-          Log.d(TAG, "take Picture" + mFileUri.toString());
-          uploadFromUri(mFileUri, mUserId, 0);
+        if (resultCode == RESULT_OK && fileUri != null) {
+          Log.d(TAG, "take Picture" + fileUri.toString());
+          uploadFromUri(fileUri, mUserId, 0);
         }
         mEditable = true;
         break;
@@ -726,7 +725,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
   }
 
   private Uri copyAudioFile(Uri uri) {
-    ContentResolver contentResolver = mActivity.getContentResolver();
+    ContentResolver contentResolver = activity.getContentResolver();
     File dir = new File(
         Environment.getExternalStorageDirectory().getAbsolutePath() + "/MoonlightNote/.audio/");
     if (!dir.exists()) {
@@ -759,8 +758,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment
     // Check that we have permission to read images from external storage.
     grantStoragePermission();
 
-    if (!EasyPermissions.hasPermissions(mActivity, Manifest.permission.RECORD_AUDIO)) {
-      EasyPermissions.requestPermissions(mActivity, "If you want to do this continue, " +
+    if (!EasyPermissions.hasPermissions(activity, Manifest.permission.RECORD_AUDIO)) {
+      EasyPermissions.requestPermissions(activity, "If you want to do this continue, " +
               "you should give App record audio permission ", RECORD_AUDIO,
           Manifest.permission.RECORD_AUDIO);
     }
@@ -779,10 +778,10 @@ public abstract class MoonlightDetailFragment extends BaseFragment
 
   private void uploadFromUri(Uri fileUri, String userId, int type) {
     if (mCircleProgressDialogFragment != null) {
-      mCircleProgressDialogFragment.show(mActivity.getFragmentManager(), "progress");
+      mCircleProgressDialogFragment.show(activity.getFragmentManager(), "progress");
     } else {
       mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance();
-      mCircleProgressDialogFragment.show(mActivity.getFragmentManager(), "progress");
+      mCircleProgressDialogFragment.show(activity.getFragmentManager(), "progress");
     }
 
     StorageTask<UploadTask.TaskSnapshot> uploadTask;
@@ -931,7 +930,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
     if (mInputMethodManager != null) {
       if (mEditable) {
         mInputMethodManager
-            .hideSoftInputFromWindow(mActivity.getWindow().getDecorView().getWindowToken(), 0);
+            .hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
         handler.postDelayed(this::changeBottomSheetState, 100);
       }
     }
@@ -939,7 +938,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
 
   private void showSoftKeyboard() {
     if (mInputMethodManager != null) {
-      mInputMethodManager.showSoftInput(mActivity.getWindow().getDecorView(), 0);
+      mInputMethodManager.showSoftInput(activity.getWindow().getDecorView(), 0);
     }
   }
 
@@ -1004,7 +1003,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
       int heightDiff = this.view.getRootView().getHeight() - view.getHeight();
       if (heightDiff > 100) {
         //大小超过100时，一般为显示虚拟键盘事件
-        if (mEditable && !Utils.isXLargeTablet(mActivity)) {
+        if (mEditable && !Utils.isXLargeTablet(activity)) {
           if (mLeftBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             mLeftBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
           }

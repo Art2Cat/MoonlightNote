@@ -3,6 +3,7 @@ package com.art2cat.dev.moonlightnote.controller;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Created by Rorschach on 2017/2/25 下午8:41.
@@ -21,11 +22,7 @@ public abstract class BaseFragmentActivity extends AppCompatActivity {
    */
   @Override
   public boolean dispatchTouchEvent(MotionEvent ev) {
-    for (FragmentOnTouchListener listener : onTouchListeners) {
-      if (listener != null) {
-        listener.onTouch(ev);
-      }
-    }
+    onTouchListeners.stream().filter(Objects::nonNull).forEach(listener -> listener.onTouch(ev));
     return super.dispatchTouchEvent(ev);
   }
 

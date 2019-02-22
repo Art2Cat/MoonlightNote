@@ -28,7 +28,7 @@ import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.InputDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
-import com.art2cat.dev.moonlightnote.model.Constants;
+import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.model.User;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
@@ -94,7 +94,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     mEmailView = mView.findViewById(R.id.email);
 
     Toolbar toolbar = mView.findViewById(R.id.toolbar);
-    ((LoginActivity) mActivity).setSupportActionBar(toolbar);
+    ((LoginActivity) activity).setSupportActionBar(toolbar);
     toolbar.setTitle(R.string.fragment_login);
 
     mPasswordView = mView.findViewById(R.id.password);
@@ -144,7 +144,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
   public void onDestroy() {
     EventBus.getDefault().unregister(this);
     if (mGoogleApiClient != null) {
-      mGoogleApiClient.stopAutoManage((FragmentActivity) mActivity);
+      mGoogleApiClient.stopAutoManage((FragmentActivity) activity);
       mGoogleApiClient.disconnect();
     }
     super.onDestroy();
@@ -202,7 +202,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         flag = 2;
       } else if (flag == 2) {
         signInWithEmail(email, password);
-        //Intent intent = new Intent(mActivity, MoonlightDetailActivity.class);
+        //Intent intent = new Intent(activity, MoonlightDetailActivity.class);
         //startActivity(intent);
       }
     }
@@ -266,7 +266,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         if (TextUtils.isEmpty(email)) {
           InputDialogFragment inputDialogFragment = InputDialogFragment
               .newInstance(getString(R.string.dialog_reset_password), 0);
-          inputDialogFragment.show(mActivity.getFragmentManager(), "resetPassword");
+          inputDialogFragment.show(activity.getFragmentManager(), "resetPassword");
         } else {
           AuthUtils.sendRPEmail(MoonlightApplication.getContext(), mView, email);
         }
@@ -283,12 +283,12 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         showProgress(true);
         GoogleSignInOptions mGoogleSignInOptions =
             new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(mActivity.getString(R.string.default_web_client_id))
+                .requestIdToken(activity.getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         mGoogleApiClient = null;
-        mGoogleApiClient = new GoogleApiClient.Builder(mActivity)
-            .enableAutoManage((FragmentActivity) mActivity,
+        mGoogleApiClient = new GoogleApiClient.Builder(activity)
+            .enableAutoManage((FragmentActivity) activity,
                 this /* OnConnectionFailedListener */)
             .addApi(Auth.GOOGLE_SIGN_IN_API, mGoogleSignInOptions)
             .build();
@@ -296,7 +296,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         startActivityForResult(signInIntent, RC_SIGN_IN);
         break;
       case R.id.test_btn:
-        Utils.openMailClient(mActivity);
+        Utils.openMailClient(activity);
 //                signInAnonymously();
         break;
     }
@@ -366,14 +366,14 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                 SnackBarUtils.TYPE_WARNING);
           } else {
             showProgress(false);
-            Intent intent = new Intent(mActivity, MoonlightActivity.class);
+            Intent intent = new Intent(activity, MoonlightActivity.class);
             Bundle bundle = ActivityOptions
-                .makeSceneTransitionAnimation(mActivity).toBundle();
-            mActivity.startActivity(intent, bundle);
+                .makeSceneTransitionAnimation(activity).toBundle();
+            activity.startActivity(intent, bundle);
             showShortSnackBar(mView, "Google Sign In succeed", SnackBarUtils.TYPE_INFO);
             isNewUser = true;
             SPUtils.putBoolean(MoonlightApplication.getContext(), "User", "google", true);
-            mActivity.finishAfterTransition();
+            activity.finishAfterTransition();
           }
         });
   }
@@ -383,12 +383,12 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         .addOnCompleteListener(task -> {
           if (task.isSuccessful()) {
             showProgress(false);
-            Intent intent = new Intent(mActivity, MoonlightActivity.class);
+            Intent intent = new Intent(activity, MoonlightActivity.class);
             Bundle bundle = ActivityOptions
-                .makeSceneTransitionAnimation(mActivity).toBundle();
-            mActivity.startActivity(intent, bundle);
+                .makeSceneTransitionAnimation(activity).toBundle();
+            activity.startActivity(intent, bundle);
 
-            mActivity.finishAfterTransition();
+            activity.finishAfterTransition();
             Log.d(TAG, "signIn:onComplete:" + task.isSuccessful());
           }
         }).addOnFailureListener(e -> {
@@ -437,8 +437,8 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     mAuth.signInAnonymously()
         .addOnCompleteListener(task -> {
           if (task.isSuccessful()) {
-            Intent intent = new Intent(mActivity, MoonlightActivity.class);
-            mActivity.startActivity(intent);
+            Intent intent = new Intent(activity, MoonlightActivity.class);
+            activity.startActivity(intent);
           }
 
           showProgress(false);

@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import com.art2cat.dev.moonlightnote.controller.settings.MoonlightPinActivity;
@@ -19,24 +20,26 @@ import okhttp3.OkHttpClient;
 
 public class MoonlightApplication extends Application {
 
-  private static Context mContext;
-  private RefWatcher mRefWatcher;
+  @SuppressLint("StaticFieldLeak")
+  private static Context context;
+  private RefWatcher refWatcher;
 
   public static RefWatcher getRefWatcher(Context context) {
     MoonlightApplication application = (MoonlightApplication) context.getApplicationContext();
-    return application.mRefWatcher;
+    return application.refWatcher;
   }
 
   public static Context getContext() {
-    return mContext;
+    return context;
   }
 
   @Override
   public Context getApplicationContext() {
-    mContext = super.getApplicationContext();
+    context = super.getApplicationContext();
     return super.getApplicationContext();
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void onCreate() {
     super.onCreate();
@@ -45,7 +48,7 @@ public class MoonlightApplication extends Application {
       // You should not init your app in this process.
       return;
     }
-    mRefWatcher = LeakCanary.install(this);
+    refWatcher = LeakCanary.install(this);
     LockManager<MoonlightPinActivity> lockManager = LockManager.getInstance();
     lockManager.enableAppLock(this, MoonlightPinActivity.class);
     lockManager.getAppLock().setLogoId(R.drawable.ic_screen_lock_portrait_black_24dp);
@@ -61,6 +64,6 @@ public class MoonlightApplication extends Application {
         .build();
     Picasso.setSingletonInstance(picasso);
 
-    Picasso.with(mContext).setIndicatorsEnabled(true);
+    Picasso.with(context).setIndicatorsEnabled(true);
   }
 }

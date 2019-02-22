@@ -15,7 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.model.Constants;
+import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 
 /**

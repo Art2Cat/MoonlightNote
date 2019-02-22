@@ -1,9 +1,9 @@
 package com.art2cat.dev.moonlightnote.controller;
 
-import static com.art2cat.dev.moonlightnote.model.Constants.ALBUM_CHOOSE;
-import static com.art2cat.dev.moonlightnote.model.Constants.CAMERA_PERMS;
-import static com.art2cat.dev.moonlightnote.model.Constants.STORAGE_PERMS;
-import static com.art2cat.dev.moonlightnote.model.Constants.TAKE_PICTURE;
+import static com.art2cat.dev.moonlightnote.constants.Constants.ALBUM_CHOOSE;
+import static com.art2cat.dev.moonlightnote.constants.Constants.CAMERA_PERMS;
+import static com.art2cat.dev.moonlightnote.constants.Constants.STORAGE_PERMS;
+import static com.art2cat.dev.moonlightnote.constants.Constants.TAKE_PICTURE;
 import static org.greenrobot.eventbus.EventBus.TAG;
 
 import android.Manifest;
@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
@@ -27,7 +28,7 @@ import android.widget.Toast;
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.model.Constants;
+import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import java.io.File;
@@ -42,15 +43,14 @@ import pub.devrel.easypermissions.EasyPermissions;
  * Created by Rorschach on 2017/1/8 14:32.
  */
 
-public abstract class BaseFragment
-    extends Fragment {
+public abstract class BaseFragment extends Fragment {
 
   private static final String KEY_INDEX = "index";
   private static final String JPEG_FILE_PREFIX = "IMG_";
   private static final String JPEG_FILE_SUFFIX = ".jpg";
-  protected Activity mActivity;
-  protected Uri mFileUri;
-  private int mCurrentIndex = 0;
+  protected Activity activity;
+  protected Uri fileUri;
+  private int currentIndex = 0;
 
   /**
    * 更改toolbar三个点颜色
@@ -59,8 +59,8 @@ public abstract class BaseFragment
    * @param color 颜色
    */
   public static void setOverflowButtonColor(Activity activity, final int color) {
-    @SuppressLint("PrivateResource") final String overflowDescription =
-        activity.getString(R.string.abc_action_menu_overflow_description);
+    @SuppressLint("PrivateResource") final String overflowDescription = activity
+        .getString(R.string.abc_action_menu_overflow_description);
     final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
     final ViewTreeObserver viewTreeObserver = decorView.getViewTreeObserver();
     viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -93,7 +93,7 @@ public abstract class BaseFragment
   @Override
   public void onAttach(Context context) {
     super.onAttach(context);
-    this.mActivity = (Activity) context;
+    this.activity = (Activity) context;
   }
 
   @Override
@@ -101,14 +101,14 @@ public abstract class BaseFragment
     super.onCreate(savedInstanceState);
 
     if (savedInstanceState != null) {
-      mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+      currentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
     }
   }
 
   @Override
-  public void onSaveInstanceState(Bundle outState) {
+  public void onSaveInstanceState(@NonNull Bundle outState) {
     super.onSaveInstanceState(outState);
-    outState.putInt(KEY_INDEX, mCurrentIndex);
+    outState.putInt(KEY_INDEX, currentIndex);
   }
 
   public void showShortSnackBar(View view, String content, int type) {
@@ -135,22 +135,22 @@ public abstract class BaseFragment
   }
 
   private void grantCameraPermission() {
-    if (!EasyPermissions.hasPermissions(mActivity, Manifest.permission.CAMERA)) {
-      EasyPermissions.requestPermissions(mActivity, "If you want to do this continue, " +
+    if (!EasyPermissions.hasPermissions(activity, Manifest.permission.CAMERA)) {
+      EasyPermissions.requestPermissions(activity, "If you want to do this continue, " +
           "you should give App camera permission ", CAMERA_PERMS, Manifest.permission.CAMERA);
     }
   }
 
   protected void grantStoragePermission() {
-    if (!EasyPermissions.hasPermissions(mActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-      EasyPermissions.requestPermissions(mActivity, "If you want to do this continue, " +
+    if (!EasyPermissions.hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+      EasyPermissions.requestPermissions(activity, "If you want to do this continue, " +
               "you should give App storage permission ", STORAGE_PERMS,
           Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
   }
 
   @AfterPermissionGranted(STORAGE_PERMS)
-  protected void onAlbumClick(View mView, boolean mEditable) {
+  protected boolean onAlbumClick(View view) {
     // Check that we have permission to read images from external storage.
     grantStoragePermission();
 
@@ -170,26 +170,27 @@ public abstract class BaseFragment
       Log.e(TAG, "file.createNewFile" + file.getAbsolutePath() + ":FAILED", e);
     }
 
-    Uri fileUri = FileProvider.getUriForFile(mActivity, Constants.FILE_PROVIDER, file);
+    Uri fileUri = FileProvider.getUriForFile(activity, Constants.FILE_PROVIDER, file);
     Intent albumIntent = new Intent(Intent.ACTION_PICK);
     albumIntent.setType("image/*");
     albumIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 
-    if (albumIntent.resolveActivity(mActivity.getPackageManager()) != null) {
+    if (albumIntent.resolveActivity(activity.getPackageManager()) != null) {
       startActivityForResult(albumIntent, ALBUM_CHOOSE);
-      mEditable = false;
+      return true;
     } else {
-      showLongSnackBar(mView, "No Album!", SnackBarUtils.TYPE_WARNING);
+      showLongSnackBar(view, "No Album!", SnackBarUtils.TYPE_WARNING);
+      return false;
     }
   }
 
   @AfterPermissionGranted(CAMERA_PERMS)
-  protected void onCameraClick(View mView, boolean mEditable) {
+  protected void onCameraClick(View view) {
     // Check that we have permission to read images from external storage.
     grantStoragePermission();
     grantCameraPermission();
 
-    dispatchTakePictureIntent(mView, mEditable);
+    dispatchTakePictureIntent(view);
   }
 
   private File getImageDir() {
@@ -216,13 +217,13 @@ public abstract class BaseFragment
     File f = new File(mCurrentPhotoPath.toString());
     Uri contentUri = Uri.fromFile(f);
     mediaScanIntent.setData(contentUri);
-    mActivity.sendBroadcast(mediaScanIntent);
+    activity.sendBroadcast(mediaScanIntent);
   }
 
-  private void dispatchTakePictureIntent(View mView, boolean mEditable) {
+  private void dispatchTakePictureIntent(View view) {
     Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     // Ensure that there's a camera activity to handle the intent
-    if (takePictureIntent.resolveActivity(mActivity.getPackageManager()) != null) {
+    if (takePictureIntent.resolveActivity(activity.getPackageManager()) != null) {
       // Create the File where the photo should go
       File photoFile = null;
       try {
@@ -233,18 +234,18 @@ public abstract class BaseFragment
       }
       // Continue only if the File was successfully created
       if (photoFile != null) {
-        mFileUri = FileProvider.getUriForFile(mActivity, Constants.FILE_PROVIDER, photoFile);
-        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFileUri);
+        fileUri = FileProvider.getUriForFile(activity, Constants.FILE_PROVIDER, photoFile);
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
         startActivityForResult(takePictureIntent, TAKE_PICTURE);
       }
 
-      mEditable = false;
       if (BuildConfig.DEBUG) {
         Log.d(TAG, "onCameraClick: ");
       }
 
+
     } else {
-      showLongSnackBar(mView, "No Camera!", SnackBarUtils.TYPE_WARNING);
+      showLongSnackBar(view, "No Camera!", SnackBarUtils.TYPE_WARNING);
     }
   }
 

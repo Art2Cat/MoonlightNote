@@ -1,6 +1,6 @@
 package com.art2cat.dev.moonlightnote.utils;
 
-import static com.art2cat.dev.moonlightnote.model.Constants.EXTRA_PIN;
+import static com.art2cat.dev.moonlightnote.constants.Constants.EXTRA_PIN;
 import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
 import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 

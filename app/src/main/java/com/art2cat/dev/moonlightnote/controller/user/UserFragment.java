@@ -2,14 +2,14 @@ package com.art2cat.dev.moonlightnote.controller.user;
 
 
 import static android.app.Activity.RESULT_OK;
-import static com.art2cat.dev.moonlightnote.model.Constants.ALBUM_CHOOSE;
-import static com.art2cat.dev.moonlightnote.model.Constants.BUS_FLAG_ALBUM;
-import static com.art2cat.dev.moonlightnote.model.Constants.BUS_FLAG_CAMERA;
-import static com.art2cat.dev.moonlightnote.model.Constants.BUS_FLAG_DELETE_ACCOUNT;
-import static com.art2cat.dev.moonlightnote.model.Constants.BUS_FLAG_EMAIL;
-import static com.art2cat.dev.moonlightnote.model.Constants.BUS_FLAG_USERNAME;
-import static com.art2cat.dev.moonlightnote.model.Constants.FB_STORAGE_REFERENCE;
-import static com.art2cat.dev.moonlightnote.model.Constants.TAKE_PICTURE;
+import static com.art2cat.dev.moonlightnote.constants.Constants.ALBUM_CHOOSE;
+import static com.art2cat.dev.moonlightnote.constants.Constants.BUS_FLAG_ALBUM;
+import static com.art2cat.dev.moonlightnote.constants.Constants.BUS_FLAG_CAMERA;
+import static com.art2cat.dev.moonlightnote.constants.Constants.BUS_FLAG_DELETE_ACCOUNT;
+import static com.art2cat.dev.moonlightnote.constants.Constants.BUS_FLAG_EMAIL;
+import static com.art2cat.dev.moonlightnote.constants.Constants.BUS_FLAG_USERNAME;
+import static com.art2cat.dev.moonlightnote.constants.Constants.FB_STORAGE_REFERENCE;
+import static com.art2cat.dev.moonlightnote.constants.Constants.TAKE_PICTURE;
 import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
 import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 
@@ -39,7 +39,7 @@ import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.InputDial
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.PicturePickerDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.login.LoginActivity;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
-import com.art2cat.dev.moonlightnote.model.Constants;
+import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.model.User;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
@@ -62,6 +62,7 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
+import java.util.Objects;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -73,16 +74,16 @@ import org.greenrobot.eventbus.ThreadMode;
 public class UserFragment extends BaseFragment implements View.OnClickListener {
 
   private final String TAG = UserFragment.class.getName();
-  private View mView;
-  private CircleImageView mCircleImageView;
-  private AppCompatTextView mNickname;
-  private AppCompatTextView mEmail;
-  private AdView mAdView;
-  private CircleProgressDialogFragment mCircleProgressDialogFragment;
-  private FirebaseUser user;
-  private User mUser;
-  //    private Uri mFileUri = null;
-  private StorageReference mStorageReference;
+  private View view;
+  private CircleImageView circleImageView;
+  private AppCompatTextView nicknameTextView;
+  private AppCompatTextView emailTextView;
+  private AdView adView;
+  private CircleProgressDialogFragment circleProgressDialogFragment;
+  private FirebaseUser firebaseUser;
+  private User user;
+  //    private Uri fileUri = null;
+  private StorageReference storageReference;
 
   public UserFragment() {
     // Required empty public constructor
@@ -92,10 +93,10 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     EventBus.getDefault().register(this);
-    user = FirebaseAuth.getInstance().getCurrentUser();
-    mStorageReference = FirebaseStorage.getInstance().getReferenceFromUrl(FB_STORAGE_REFERENCE);
+    firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+    storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(FB_STORAGE_REFERENCE);
 
-    mCircleProgressDialogFragment =
+    circleProgressDialogFragment =
         CircleProgressDialogFragment.newInstance(getString(R.string.prograssBar_uploading));
   }
 
@@ -103,25 +104,30 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     // Inflate the layout for this fragment
-    mView = inflater.inflate(R.layout.fragment_user, container, false);
-    mCircleImageView = mView.findViewById(R.id.user_head_picture);
-    mNickname = mView.findViewById(R.id.user_nickname);
-    mEmail = mView.findViewById(R.id.user_email);
-    mAdView = mView.findViewById(R.id.banner_adView);
+    view = inflater.inflate(R.layout.fragment_user, container, false);
+    circleImageView = view.findViewById(R.id.user_head_picture);
+    nicknameTextView = view.findViewById(R.id.user_nickname);
+    emailTextView = view.findViewById(R.id.user_email);
+    adView = view.findViewById(R.id.banner_adView);
 
-    mActivity.setTitle(R.string.title_activity_user);
+    activity.setTitle(R.string.title_activity_user);
 
-    mUser = UserUtils.getUserFromCache(mActivity.getApplicationContext());
+    user = UserUtils.getUserFromCache(activity.getApplicationContext());
+    AdRequest adRequest;
+    if (BuildConfig.DEBUG) {
+      adRequest = new AdRequest.Builder()
+          .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+          .addTestDevice("0ACA1878D607E6C4360F91E0A0379C2F")
+          .addTestDevice("4DA2263EDB49C1F2C00F9D130B823096")
+          .build();
+    } else {
+      adRequest = new AdRequest.Builder().build();
 
-    AdRequest adRequest = new AdRequest.Builder()
-        //                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-        //                .addTestDevice("0ACA1878D607E6C4360F91E0A0379C2F")
-        //                .addTestDevice("4DA2263EDB49C1F2C00F9D130B823096")
-        .build();
-    mAdView.loadAd(adRequest);
+    }
+    adView.loadAd(adRequest);
 
     initView();
-    return mView;
+    return view;
   }
 
   @Override
@@ -132,17 +138,17 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-    if (!SPUtils.getBoolean(mActivity, "User", "google", false)) {
-      mCircleImageView.setOnClickListener(this);
-      mNickname.setOnClickListener(this);
+    if (!SPUtils.getBoolean(activity, "User", "google", false)) {
+      circleImageView.setOnClickListener(this);
+      nicknameTextView.setOnClickListener(this);
       setHasOptionsMenu(true);
     }
 
-    mAdView.setAdListener(new AdListener() {
+    adView.setAdListener(new AdListener() {
       @Override
       public void onAdLoaded() {
         super.onAdLoaded();
-        CircularRevealUtils.show(mAdView);
+        CircularRevealUtils.show(adView);
       }
     });
   }
@@ -160,7 +166,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
   @Override
   public void onDestroy() {
     EventBus.getDefault().unregister(this);
-    mAdView.destroy();
+    adView.destroy();
     super.onDestroy();
   }
 
@@ -186,35 +192,35 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
             .newInstance(getString(R.string.delete_account_title),
                 getString(R.string.delete_account_content),
                 Constants.EXTRA_TYPE_CDF_DELETE_ACCOUNT);
-        confirmationDialogFragment.show(mActivity.getFragmentManager(), "delete account");
+        confirmationDialogFragment.show(activity.getFragmentManager(), "delete account");
         break;
     }
     return super.onOptionsItemSelected(item);
   }
 
   private void initView() {
-    String nickname = mUser.getNickname();
+    String nickname = user.getNickname();
     if (nickname != null) {
-      mNickname.setText(nickname);
-      mUser.setNickname(nickname);
+      this.nicknameTextView.setText(nickname);
+      user.setNickname(nickname);
     } else {
-      mNickname.setText(R.string.user_setNickname);
+      this.nicknameTextView.setText(R.string.user_setNickname);
     }
-    String email = mUser.getEmail();
+    String email = user.getEmail();
     if (email != null) {
-      mUser.setEmail(email);
-      mEmail.setText(email);
+      user.setEmail(email);
+      emailTextView.setText(email);
     }
 
-    displayImage(Uri.parse(mUser.getPhotoUrl()));
+    displayImage(Uri.parse(user.getPhotoUrl()));
   }
 
   private void displayImage(Uri mDownloadUrl) {
     if (mDownloadUrl != null) {
       Picasso.with(MoonlightApplication.getContext()).load(mDownloadUrl)
           .memoryPolicy(NO_CACHE, NO_STORE)
-          .config(Bitmap.Config.RGB_565).into(mCircleImageView);
-      mUser.setPhotoUrl(mDownloadUrl.toString());
+          .config(Bitmap.Config.RGB_565).into(circleImageView);
+      user.setPhotoUrl(mDownloadUrl.toString());
     }
   }
 
@@ -228,7 +234,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
       case R.id.user_nickname:
         InputDialogFragment inputDialogFragment1 =
             InputDialogFragment.newInstance(getString(R.string.dialog_set_nickname), 1);
-        inputDialogFragment1.show(mActivity.getFragmentManager(), "setNickname");
+        inputDialogFragment1.show(activity.getFragmentManager(), "setNickname");
         break;
     }
   }
@@ -239,22 +245,22 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
     if (busEvent != null) {
       switch (busEvent.getFlag()) {
         case BUS_FLAG_CAMERA:
-          onCameraClick(mView, true);
+          onCameraClick(view);
           break;
         case BUS_FLAG_ALBUM:
-          onAlbumClick(mView, true);
+          onAlbumClick(view);
           break;
         case BUS_FLAG_USERNAME:
           if (busEvent.getMessage() != null) {
-            mNickname.setText(busEvent.getMessage());
-            mUser.setNickname(busEvent.getMessage());
-            UserUtils.saveUserToCache(mActivity.getApplicationContext(), mUser);
+            nicknameTextView.setText(busEvent.getMessage());
+            user.setNickname(busEvent.getMessage());
+            UserUtils.saveUserToCache(activity.getApplicationContext(), user);
             updateProfile(busEvent.getMessage(), null);
           }
           break;
         case BUS_FLAG_EMAIL:
           if (busEvent.getMessage().contains("@")) {
-            AuthUtils.sendRPEmail(mActivity, mView, busEvent.getMessage());
+            AuthUtils.sendRPEmail(activity, view, busEvent.getMessage());
           }
           break;
         case BUS_FLAG_DELETE_ACCOUNT:
@@ -271,7 +277,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
                     if (BuildConfig.DEBUG) {
                       Log.d(TAG, "busAction: User account deleted.");
                     }
-                    startActivity(new Intent(mActivity, LoginActivity.class));
+                    startActivity(new Intent(activity, LoginActivity.class));
                   }
                 }).addOnFailureListener(e -> {
                   if (BuildConfig.DEBUG) {
@@ -298,14 +304,14 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
     }
 
     if (profileUpdates != null) {
-      user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
+      firebaseUser.updateProfile(profileUpdates).addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
           if (BuildConfig.DEBUG) {
             Log.d(TAG, "updateProfile: User profile updated.");
           }
-          if (mUser != null) {
+          if (user != null) {
             BusEventUtils.post(Constants.BUS_FLAG_UPDATE_USER, null);
-            UserUtils.updateUser(user.getUid(), mUser);
+            UserUtils.updateUser(firebaseUser.getUid(), user);
           }
         }
       });
@@ -317,17 +323,17 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
     switch (requestCode) {
       case TAKE_PICTURE:
         if (resultCode == RESULT_OK) {
-          if (mFileUri != null) {
-            uploadFromUri(mFileUri, user.getUid());
-            galleryAddPic(mFileUri);
+          if (fileUri != null) {
+            uploadFromUri(fileUri, firebaseUser.getUid());
+            galleryAddPic(fileUri);
           } else {
-            Toast.makeText(mActivity, "mFileUri is Null", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "fileUri is Null", Toast.LENGTH_SHORT).show();
           }
         }
         break;
       case ALBUM_CHOOSE:
         if (resultCode == RESULT_OK) {
-          uploadFromUri(data.getData(), user.getUid());
+          uploadFromUri(data.getData(), firebaseUser.getUid());
         }
         break;
       default:
@@ -338,24 +344,25 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
 
   private void uploadFromUri(Uri fileUri, String userId) {
 
-    mCircleProgressDialogFragment.show(mActivity.getFragmentManager(), "progress");
+    circleProgressDialogFragment.show(activity.getFragmentManager(), "progress");
 
-    StorageReference photoRef = mStorageReference.child(userId).child("avatar")
+    StorageReference photoRef = storageReference.child(userId).child("avatar")
         .child(fileUri.getLastPathSegment());
 
     // Upload file to Firebase Storage
     StorageTask<UploadTask.TaskSnapshot> uploadTask = photoRef.putFile(fileUri);
 
     uploadTask.addOnSuccessListener(taskSnapshot -> {
-      mUser.setPhotoUrl(taskSnapshot.getDownloadUrl().toString());
-      displayImage(taskSnapshot.getDownloadUrl());
-      UserUtils.saveUserToCache(mActivity.getApplicationContext(), mUser);
-      updateProfile(null, taskSnapshot.getDownloadUrl());
-      mCircleProgressDialogFragment.dismiss();
+      String filePath = Objects.requireNonNull(taskSnapshot.getMetadata()).getPath();
+      user.setPhotoUrl(filePath);
+      displayImage(Uri.parse(filePath));
+      UserUtils.saveUserToCache(activity.getApplicationContext(), user);
+      updateProfile(null, Uri.parse(filePath));
+      circleProgressDialogFragment.dismiss();
     }).addOnFailureListener(e -> {
-      mCircleProgressDialogFragment.dismiss();
+      circleProgressDialogFragment.dismiss();
       Log.e(TAG, "uploadFromUri: onFailure: ", e);
-      displayImage(user.getPhotoUrl());
+      displayImage(firebaseUser.getPhotoUrl());
     });
   }
 

@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote.controller.login;
 
+import static com.art2cat.dev.moonlightnote.constants.Constants.STORAGE_PERMS;
 import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 import android.content.Intent;
@@ -17,7 +18,7 @@ import android.util.Log;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
-import com.art2cat.dev.moonlightnote.model.Constants;
+import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.ShortcutsUtils;
@@ -27,15 +28,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 
   private static final String TAG = "LoginActivity";
   private static final String AD_UNIT_ID = "ca-app-pub-5043396164425122/9918900095";
-  private boolean mLoginState = false;
-  private FirebaseAuth mAuth;
-  private FirebaseAuth.AuthStateListener mAuthListener;
-  private FDatabaseUtils mFDatabaseUtils;
+  private boolean loginState = false;
+  private FirebaseAuth firebaseAuth;
+  private FirebaseAuth.AuthStateListener authStateListener;
+  private FDatabaseUtils fDatabaseUtils;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
     setContentView(R.layout.activity_login);
     // initialize Admob
     MobileAds.initialize(this, AD_UNIT_ID);
-    mAuth = getInstance();
+    firebaseAuth = getInstance();
 
     boolean flag = SPUtils
         .getBoolean(this, Constants.USER_CONFIG, Constants.USER_CONFIG_AUTO_LOGIN, false);
@@ -65,26 +67,26 @@ public class LoginActivity extends AppCompatActivity {
   protected void onStop() {
     super.onStop();
     removeListener();
-    if (mFDatabaseUtils != null) {
-      mFDatabaseUtils.removeListener();
+    if (Objects.nonNull(fDatabaseUtils)) {
+      fDatabaseUtils.removeListener();
     }
   }
 
   public void signIn() {
-    mAuthListener = firebaseAuth -> {
+    authStateListener = firebaseAuth -> {
       FirebaseUser user = firebaseAuth.getCurrentUser();
-      if (user != null) {
+      if (Objects.nonNull(user)) {
         Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
         Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
-        mFDatabaseUtils = FDatabaseUtils
+        fDatabaseUtils = FDatabaseUtils
             .newInstance(MoonlightApplication.getContext(), user.getUid());
-        mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
+        fDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
 
         initShortcuts();
 
-        mLoginState = true;
+        loginState = true;
       } else {
-        mLoginState = false;
+        loginState = false;
         Log.d(TAG, "onAuthStateChanged:signed_out:");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
           ShortcutsUtils.getInstance(LoginActivity.this).removeShortcuts();
@@ -94,12 +96,12 @@ public class LoginActivity extends AppCompatActivity {
   }
 
   public void addListener() {
-    mAuth.addAuthStateListener(mAuthListener);
+    firebaseAuth.addAuthStateListener(authStateListener);
   }
 
   public void removeListener() {
-    if (mAuthListener != null) {
-      mAuth.removeAuthStateListener(mAuthListener);
+    if (authStateListener != null) {
+      firebaseAuth.removeAuthStateListener(authStateListener);
     }
   }
 
@@ -133,8 +135,7 @@ public class LoginActivity extends AppCompatActivity {
   private void startLoginFragment() {
     Handler handler = new Handler();
     handler.postDelayed(() -> {
-      if (mLoginState) {
-
+      if (loginState) {
         startActivity(new Intent(LoginActivity.this, MoonlightActivity.class));
         finishAfterTransition();
       } else {
@@ -168,7 +169,7 @@ public class LoginActivity extends AppCompatActivity {
   private void enableShortcuts() {
 
     Intent intent = new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MoonlightActivity.class)
-        .putExtra("type", 101);
+        .putExtra("type", STORAGE_PERMS);
     ShortcutsUtils shortcutsUtils = ShortcutsUtils.getInstance(LoginActivity.this);
     ShortcutInfo compose = shortcutsUtils
         .createShortcut("compose", "Compose", "Compose new note", R.mipmap.ic_shortcuts_create,

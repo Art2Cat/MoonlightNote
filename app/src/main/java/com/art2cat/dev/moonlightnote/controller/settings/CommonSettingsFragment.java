@@ -1,8 +1,11 @@
 package com.art2cat.dev.moonlightnote.controller.settings;
 
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,14 +17,16 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.model.Constants;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public abstract class CommonSettingsFragment extends Fragment {
 
-  private int mType;
+  private static final String TAG = CommonSettingsFragment.class.getName();
+
+  private SettingsTypeEnum type;
 
   public CommonSettingsFragment() {
     // Required empty public constructor
@@ -32,41 +37,49 @@ public abstract class CommonSettingsFragment extends Fragment {
   public abstract Fragment newInstance();
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
+  public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     // Inflate the layout for this fragment
-    if (getArguments() != null) {
-      mType = getArguments().getInt("type");
+    Bundle arguments = getArguments();
+    if (Objects.nonNull(arguments)) {
+      type = (SettingsTypeEnum) arguments.getSerializable(SettingsTypeEnum.class.getSimpleName());
     }
-    LinearLayout linearLayout = new LinearLayout(getActivity());
+    Activity activity = getActivity();
+    Objects.requireNonNull(activity);
+    LinearLayout linearLayout = new LinearLayout(activity);
     linearLayout.setOrientation(LinearLayout.VERTICAL);
     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
         LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
     linearLayout.setLayoutParams(params);
-    ScrollView scrollView = new ScrollView(getActivity());
+    ScrollView scrollView = new ScrollView(activity);
     scrollView.setLayoutParams(params);
     linearLayout.addView(scrollView);
-    TextView textView = new TextView(getActivity());
+    TextView textView = new TextView(activity);
     textView.setLayoutParams(params);
     int padding = getResources().getDimensionPixelOffset(R.dimen.padding);
     textView.setPadding(padding, padding, padding, padding);
-    switch (mType) {
-      case Constants.FRAGMENT_ABOUT:
+
+    switch (type) {
+      case ABOUT:
         textView.setGravity(Gravity.CENTER);
         textView.setText(getContent());
-        getActivity().setTitle(R.string.settings_about);
+        activity.setTitle(R.string.settings_about);
         break;
-      case Constants.FRAGMENT_LICENSE:
+      case LICENSE:
         textView.setGravity(Gravity.CENTER);
         textView.setText(getContent());
-        getActivity().setTitle(R.string.settings_license);
+        activity.setTitle(R.string.settings_license);
         break;
-      case Constants.FRAGMENT_POLICY:
+      case POLICY:
         textView.setGravity(Gravity.START);
         textView.setText(getContent());
-        getActivity().setTitle(R.string.settings_policy);
+        activity.setTitle(R.string.settings_policy);
+        break;
+      default:
+        Log.d(TAG, "onCreateView: No SettingsTypeEnum found");
         break;
     }
+
     setHasOptionsMenu(true);
     scrollView.addView(textView);
     return linearLayout;
@@ -79,10 +92,8 @@ public abstract class CommonSettingsFragment extends Fragment {
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      case android.R.id.home:
-        getActivity().onBackPressed();
-        break;
+    if (item.getItemId() == android.R.id.home) {
+      getActivity().onBackPressed();
     }
     return super.onOptionsItemSelected(item);
   }
