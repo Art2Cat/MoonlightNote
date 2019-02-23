@@ -22,41 +22,17 @@ public class UserUtils {
    */
   public static void saveUserToCache(Context context, User user) {
     if (Objects.nonNull(user)) {
-      if (Objects.nonNull(user.getUid())) {
-        SPUtils.putString(context, "User", "Id", user.getUid());
-      } else {
-        SPUtils.putString(context, "User", "Id", null);
-      }
+      SPUtils.putString(context, "User", "Id", user.getUid());
 
-      if (Objects.nonNull(user.getNickname())) {
-        SPUtils.putString(context, "User", "Username", user.getNickname());
-      } else {
-        SPUtils.putString(context, "User", "Username", null);
-      }
+      SPUtils.putString(context, "User", "Username", user.getNickname());
 
-      if (Objects.nonNull(user.getEmail())) {
-        SPUtils.putString(context, "User", "Email", user.getEmail());
-      } else {
-        SPUtils.putString(context, "User", "Email", null);
-      }
+      SPUtils.putString(context, "User", "Email", user.getEmail());
 
-      if (Objects.nonNull(user.getPhotoUrl())) {
-        SPUtils.putString(context, "User", "PhotoUrl", user.getPhotoUrl());
-      } else {
-        SPUtils.putString(context, "User", "PhotoUrl", null);
-      }
+      SPUtils.putString(context, "User", "PhotoUrl", user.getPhotoUrl());
 
-      if (Objects.nonNull(user.getToken())) {
-        SPUtils.putString(context, "User", "Token", user.getToken());
-      } else {
-        SPUtils.putString(context, "User", "Token", null);
-      }
+      SPUtils.putString(context, "User", "Token", user.getToken());
 
-      if (Objects.nonNull(user.getEncryptKey())) {
-        SPUtils.putString(context, "User", "EncryptKey", user.getEncryptKey());
-      } else {
-        SPUtils.putString(context, "User", "EncryptKey", null);
-      }
+      SPUtils.putString(context, "User", "EncryptKey", user.getEncryptKey());
     }
   }
 

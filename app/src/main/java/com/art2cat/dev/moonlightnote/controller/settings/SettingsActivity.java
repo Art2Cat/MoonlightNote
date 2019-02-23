@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.art2cat.dev.moonlightnote.BuildConfig;
+import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment;
@@ -32,6 +33,7 @@ import com.art2cat.dev.moonlightnote.model.NoteLab;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.utils.ToastUtils;
+import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
 import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.google.android.gms.common.ConnectionResult;
@@ -57,8 +59,11 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -263,14 +268,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     private String mData;
     private int mType;
     private CircleProgressDialogFragment mCircleProgressDialogFragment;
-
+    String userId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       addPreferencesFromResource(R.xml.pref_back_up);
       setHasOptionsMenu(true);
-      String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+      userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
       mFDatabaseUtils = FDatabaseUtils.newInstance(getActivity(), userId);
       mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance();
       Preference connectToDrive = findPreference(CONNECT_TO_DRIVE);
@@ -354,7 +359,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         if (type == 0) {
           mFDatabaseUtils.exportNote(0);
         } else {
-          mFDatabaseUtils.restoreAll();
+          NoteLab noteLab = Utils.getNoteFromLocal();
+          FDatabaseUtils.restoreAll(userId, noteLab);
+          Toast.makeText(MoonlightApplication.getContext(), "Restore succeed!",
+              Toast.LENGTH_LONG).show();
+
         }
       }
     }
@@ -377,7 +386,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             mFDatabaseUtils.exportNote(0);
             break;
           case 1:
-            mFDatabaseUtils.restoreAll();
+            NoteLab noteLab = Utils.getNoteFromLocal();
+            mFDatabaseUtils.restoreAll(userId, noteLab);
+            Toast.makeText(MoonlightApplication.getContext(), "Restore succeed!",
+                Toast.LENGTH_LONG).show();
+
             break;
         }
       }
@@ -437,7 +450,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
     private void readFileFromDrive(DriveId id) {
       final DriveFile f = id.asDriveFile();
-      EXECUTOR_SERVICE.execute(() -> {
+      Future<Boolean> future = EXECUTOR_SERVICE.submit(() -> {
         DriveApi.DriveContentsResult driveContentsResult =
             f.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY,
                 null).await();
@@ -445,7 +458,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
           if (BuildConfig.DEBUG) {
             Log.d(TAG, "readFileFromDrive: " + driveContentsResult.getStatus());
           }
-          return;
+          return false;
         }
 
         DriveContents driveContents = driveContentsResult.getDriveContents();
@@ -461,19 +474,34 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
           Gson gson = new Gson();
           NoteLab noteLab = gson.fromJson(contentsAsString, NoteLab.class);
           if (Objects.isNull(noteLab)) {
-            return;
+            return false;
           }
           if (BuildConfig.DEBUG) {
             Log.i(TAG, "readFileFromDrive: " + noteLab.getMoonlights().size());
           }
-          mFDatabaseUtils.restoreAll(noteLab);
+          mFDatabaseUtils.restoreAll(userId, noteLab);
+          return true;
         } catch (IOException e) {
           Log.e(TAG, "readFileFromDrive: IOException while reading from the stream, ", e);
+          return false;
+        } finally {
+          driveContents.discard(mGoogleApiClient);
         }
 
-        driveContents.discard(mGoogleApiClient);
       });
 
+      if (future.isDone()) {
+        try {
+          if (Boolean.TRUE.equals(future.get())) {
+            Toast.makeText(MoonlightApplication.getContext(), "Restore succeed!",
+                Toast.LENGTH_LONG).show();
+          }
+        } catch (ExecutionException e) {
+          e.printStackTrace();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
     }
 
     private void queryFile() {
