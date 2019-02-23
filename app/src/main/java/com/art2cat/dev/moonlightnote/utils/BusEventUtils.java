@@ -3,6 +3,7 @@ package com.art2cat.dev.moonlightnote.utils;
 import android.support.annotation.Nullable;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
+import java.util.Objects;
 import org.greenrobot.eventbus.EventBus;
 
 /**
@@ -19,7 +20,7 @@ public class BusEventUtils {
    */
   public static void post(int flag, @Nullable String message) {
     BusEvent busEvent = new BusEvent();
-    if (message != null) {
+    if (Objects.nonNull(message)) {
       busEvent.setMessage(message);
     }
     post(busEvent, flag);
@@ -33,7 +34,7 @@ public class BusEventUtils {
    */
   public static void post(Moonlight moonlight, int flag) {
     BusEvent busEvent = new BusEvent();
-    if (moonlight == null) {
+    if (Objects.isNull(moonlight)) {
       return;
     }
     busEvent.setMoonlight(moonlight);

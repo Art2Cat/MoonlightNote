@@ -23,6 +23,7 @@ import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.constants.Constants;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Rorschach on 12/9/16 11:10 PM.
@@ -60,7 +61,7 @@ public class ColorPickerDialogFragment
   private final View.OnClickListener listener = new View.OnClickListener() {
     @Override
     public void onClick(View v) {
-      if (colorListener != null) {
+      if (Objects.nonNull(colorListener)) {
         colorListener.onColorClick(v, (int) v.getTag());
       }
       dismiss();

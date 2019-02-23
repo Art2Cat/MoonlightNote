@@ -30,13 +30,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.controller.BaseFragmentActivity;
 import com.art2cat.dev.moonlightnote.controller.login.LoginActivity;
 import com.art2cat.dev.moonlightnote.controller.settings.SettingsActivity;
 import com.art2cat.dev.moonlightnote.controller.user.UserActivity;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
-import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.model.User;
 import com.art2cat.dev.moonlightnote.utils.BackHandlerHelper;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
@@ -54,6 +54,7 @@ import com.kobakei.ratethisapp.RateThisApp;
 import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 import java.lang.reflect.Field;
+import java.util.Objects;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -198,7 +199,7 @@ public class MoonlightActivity extends BaseFragmentActivity
     int container = R.id.main_fragment_container;
     switch (id) {
       case R.id.nav_notes:
-        if (mUserId != null) {
+        if (Objects.nonNull(mUserId)) {
           Log.d(TAG, "nav_notes: " + isHome);
           if (!isHome) {
             FragmentUtils.replaceFragment(getSupportFragmentManager(),
@@ -211,7 +212,7 @@ public class MoonlightActivity extends BaseFragmentActivity
         }
         break;
       case R.id.nav_trash:
-        if (mUserId != null) {
+        if (Objects.nonNull(mUserId)) {
           Log.d(TAG, "nav_trash: " + isHome);
           if (isHome) {
             FragmentUtils.replaceFragment(getSupportFragmentManager(),
@@ -295,7 +296,7 @@ public class MoonlightActivity extends BaseFragmentActivity
 
 
   public void hideFAB() {
-    if (mFAB == null) {
+    if (Objects.isNull(mFAB)) {
       return;
     }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -411,7 +412,7 @@ public class MoonlightActivity extends BaseFragmentActivity
     mEmailTextView = headerView.findViewById(R.id.nav_header_email);
     mNicknameTextView = headerView.findViewById(R.id.nav_header_nickname);
     int type = getIntent().getIntExtra("type", 0);
-    if (mUserId != null) {
+    if (Objects.nonNull(mUserId)) {
       FragmentUtils.addFragment(getSupportFragmentManager(),
           R.id.main_fragment_container,
           new MoonlightFragment());
@@ -427,7 +428,7 @@ public class MoonlightActivity extends BaseFragmentActivity
 
   @Subscribe(threadMode = ThreadMode.MAIN)
   public void busAction(BusEvent busEvent) {
-    if (busEvent != null) {
+    if (Objects.nonNull(busEvent)) {
       switch (busEvent.getFlag()) {
         case Constants.BUS_FLAG_UPDATE_USER:
           displayUserInfo();
@@ -461,21 +462,21 @@ public class MoonlightActivity extends BaseFragmentActivity
   }
 
   private void displayUserInfo() {
-    if (mFirebaseUser != null) {
+    if (Objects.nonNull(mFirebaseUser)) {
 
       User user = UserUtils.getUserFromCache(MoonlightApplication.getContext());
 
       Log.d(TAG, "displayUserInfo: " + user.getUid());
       String username = user.getNickname();
-      if (username != null) {
+      if (Objects.nonNull(username)) {
         mNicknameTextView.setText(user.getNickname());
       }
       String email = user.getEmail();
-      if (email != null) {
+      if (Objects.nonNull(email)) {
         mEmailTextView.setText(email);
       }
       String photoUrl = user.getPhotoUrl();
-      if (photoUrl != null) {
+      if (Objects.nonNull(photoUrl)) {
         Picasso.with(MoonlightApplication.getContext())
             .load(photoUrl)
             .memoryPolicy(NO_CACHE, NO_STORE)
@@ -498,7 +499,7 @@ public class MoonlightActivity extends BaseFragmentActivity
   public void setDrawerEnabled(boolean enabled) {
     int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :
         DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
-    if (mDrawerLayout == null) {
+    if (Objects.isNull(mDrawerLayout)) {
       return;
     }
     mDrawerLayout.setDrawerLockMode(lockMode);

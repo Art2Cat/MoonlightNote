@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import java.util.Objects;
 
 
 /**
@@ -153,7 +154,7 @@ public class SnackBarUtils {
    */
   public static void setSnackBarColor(Snackbar snackbar, @ColorInt int backgroundColor) {
     View view = snackbar.getView();
-    if (view != null) {
+    if (Objects.nonNull(view)) {
       view.setBackgroundColor(backgroundColor);
     }
   }
@@ -169,7 +170,7 @@ public class SnackBarUtils {
       @ColorInt int messageColor,
       @ColorInt int backgroundColor) {
     View view = snackbar.getView();
-    if (view != null) {
+    if (Objects.nonNull(view)) {
       view.setBackgroundColor(backgroundColor);
       //((TextView) view.findViewById(R.id.snackbar_text)).setTextColor(messageColor);
     }

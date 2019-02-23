@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Created by Art on 2016/10/29 19:13.
@@ -31,7 +32,7 @@ public class AudioPlayer {
   private final Runnable updateProgress = new Runnable() {
     public void run() {
       // 获得歌曲现在播放位置并设置成播放进度条的值
-      if (mPlayer != null) {
+      if (Objects.nonNull(mPlayer)) {
 
         if (mPlayer.isPlaying()) {
           mProgressBar.setProgress(mPlayer.getCurrentPosition());
@@ -49,7 +50,7 @@ public class AudioPlayer {
    * @param duration 音频时间总长
    */
   public static AudioPlayer getInstance(ProgressBar progressBar, AppCompatTextView duration) {
-    if (audioPlayer == null) {
+    if (Objects.isNull(audioPlayer)) {
       audioPlayer = new AudioPlayer();
       audioPlayer.mPlayer = new MediaPlayer();
       audioPlayer.mProgressBar = progressBar;
@@ -85,7 +86,7 @@ public class AudioPlayer {
       }
 
       // check mediaplay instance
-      if (mPlayer == null) {
+      if (Objects.isNull(mPlayer)) {
         audioPlayer.mPlayer = new MediaPlayer();
       }
 
@@ -134,7 +135,7 @@ public class AudioPlayer {
    * 释放播放器
    */
   public void releasePlayer() {
-    if (mPlayer != null) {
+    if (Objects.nonNull(mPlayer)) {
       mPlayer.release();
       mPlayer = null;
     }

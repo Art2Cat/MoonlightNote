@@ -25,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by rorschach on 11/5/16 6:45 PM.
@@ -107,7 +108,7 @@ public class FDatabaseUtils {
     String oldKey;
     oldKey = moonlight.getId();
     //当KeyId为null时，向实时数据库推送获取ID
-    if (keyId == null) {
+    if (Objects.isNull(keyId)) {
       mKey = databaseReference.child("moonlight").push().getKey();
       moonlight.setId(mKey);
       if (BuildConfig.DEBUG) {
@@ -141,12 +142,12 @@ public class FDatabaseUtils {
       databaseReference.updateChildren(childUpdates).addOnCompleteListener(task -> {
         if (type == Constants.EXTRA_TYPE_TRASH) {
           Log.d(TAG, "onComplete: update" + finalOldKey);
-          if (finalOldKey != null) {
+          if (Objects.nonNull(finalOldKey)) {
             removeMoonlight(userId, finalOldKey, type);
           }
         } else if (type == Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT) {
           Log.d(TAG, "onComplete: update" + finalOldKey);
-          if (finalOldKey != null) {
+          if (Objects.nonNull(finalOldKey)) {
             removeMoonlight(userId, finalOldKey, type);
           }
         }
@@ -168,7 +169,7 @@ public class FDatabaseUtils {
           .child("users-moonlight").child(userId).child("trash").child(keyId);
     }
 
-    if (databaseReference != null) {
+    if (Objects.nonNull(databaseReference)) {
       databaseReference.removeValue((databaseError, databaseReference1) -> {
         if (BuildConfig.DEBUG) {
           Log.d(TAG, "databaseReference:" + databaseReference1);
@@ -204,7 +205,7 @@ public class FDatabaseUtils {
   }
 
   public void getDataFromDatabase(@Nullable String keyId, final int type) {
-    if (keyId == null) {
+    if (Objects.isNull(keyId)) {
       return;
     }
     if (type == Constants.EXTRA_TYPE_MOONLIGHT) {
@@ -222,7 +223,7 @@ public class FDatabaseUtils {
     mValueEventListener = new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
-        if (dataSnapshot != null) {
+        if (Objects.nonNull(dataSnapshot)) {
 
           if (type == Constants.EXTRA_TYPE_USER) {
             user = dataSnapshot.getValue(User.class);
@@ -251,7 +252,7 @@ public class FDatabaseUtils {
     mValueEventListener1 = new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
-        if (dataSnapshot != null) {
+        if (Objects.nonNull(dataSnapshot)) {
           NoteLab noteLab = new NoteLab();
 
           int count = (int) dataSnapshot.getChildrenCount();
@@ -288,7 +289,7 @@ public class FDatabaseUtils {
 
   public void restoreAll() {
     NoteLab noteLab = Utils.getNoteFromLocal();
-    if (noteLab != null) {
+    if (Objects.nonNull(noteLab)) {
       for (Moonlight moonlight : noteLab.getMoonlights()) {
         updateMoonlight(mUserId, null, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
       }
@@ -297,7 +298,7 @@ public class FDatabaseUtils {
   }
 
   public void restoreAll(NoteLab noteLab) {
-    if (noteLab != null) {
+    if (Objects.nonNull(noteLab)) {
       for (Moonlight moonlight : noteLab.getMoonlights()) {
         updateMoonlight(mUserId, null, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
       }
@@ -306,10 +307,10 @@ public class FDatabaseUtils {
   }
 
   public void removeListener() {
-    if (mValueEventListener != null) {
+    if (Objects.nonNull(mValueEventListener)) {
       mDatabaseReference.removeEventListener(mValueEventListener);
     }
-    if (mValueEventListener1 != null) {
+    if (Objects.nonNull(mValueEventListener1)) {
       mDatabaseReference1.removeEventListener(mValueEventListener1);
     }
   }

@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Rorschach on 2017/2/25 上午10:51.
@@ -22,7 +23,7 @@ public class BackHandlerHelper {
   public static boolean handleBackPress(FragmentManager fragmentManager) {
     List<Fragment> fragments = fragmentManager.getFragments();
 
-    if (fragments == null) {
+    if (Objects.isNull(fragments)) {
       return false;
     }
 
@@ -55,8 +56,7 @@ public class BackHandlerHelper {
    * @return 如果处理了back键则返回 <b>true</b>
    */
   public static boolean isFragmentBackHandled(Fragment fragment) {
-    return fragment != null
-        && fragment.isVisible()
+    return Objects.nonNull(fragment) && fragment.isVisible()
         && fragment.getUserVisibleHint() //for ViewPager
         && fragment instanceof FragmentBackHandler
         && ((FragmentBackHandler) fragment).onBackPressed();

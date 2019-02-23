@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -82,13 +83,13 @@ public class Utils {
 
     String strTimeFormat =
         android.provider.Settings.System.getString(cv, android.provider.Settings.System.TIME_12_24);
-    if (strTimeFormat != null) {
+    if (Objects.nonNull(strTimeFormat)) {
       if (strTimeFormat.equals("24")) {
         pattern = "HH:mm";
       } else if (strTimeFormat.equals("12")) {
         pattern = "hh:mm a";
       }
-      if (pattern != null) {
+      if (Objects.nonNull(pattern)) {
         SimpleDateFormat formatter = new SimpleDateFormat(pattern, Locale.getDefault());
         return formatter.format(date);
       }
@@ -113,7 +114,7 @@ public class Utils {
    */
   public static User getUserInfo(FirebaseUser firebaseUser) {
     User user;
-    if (firebaseUser != null) {
+    if (Objects.nonNull(firebaseUser)) {
       user = new User();
       user.setPhotoUrl(firebaseUser.getPhotoUrl().toString());
       user.setEmail(firebaseUser.getEmail());
@@ -253,7 +254,7 @@ public class Utils {
       if (BuildConfig.DEBUG) {
         Log.i(TAG, "createCustomChooserIntent: " + ri.activityInfo.packageName);
       }
-      if (ri.activityInfo != null) {
+      if (Objects.nonNull(ri.activityInfo)) {
         if (whitelist.contains(ri.activityInfo.packageName) ||
             ri.activityInfo.packageName.contains("email") || ri.activityInfo.packageName
             .contains("mail")) {
@@ -307,12 +308,12 @@ public class Utils {
    */
   static boolean isNetworkConnected() {
     Context context = MoonlightApplication.getContext();
-    if (context != null) {
+    if (Objects.nonNull(context)) {
       ConnectivityManager mConnectivityManager =
           (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-      if (mConnectivityManager != null) {
+      if (Objects.nonNull(mConnectivityManager)) {
         NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
-        if (mNetworkInfo != null) {
+        if (Objects.nonNull(mNetworkInfo)) {
           return mNetworkInfo.isAvailable();
         }
       }
@@ -331,10 +332,10 @@ public class Utils {
         (ConnectivityManager) MoonlightApplication.getContext()
             .getSystemService(Context.CONNECTIVITY_SERVICE);
     NetworkInfo mWiFiNetworkInfo = null;
-    if (mConnectivityManager != null) {
+    if (Objects.nonNull(mConnectivityManager)) {
       mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
     }
-    return mWiFiNetworkInfo != null && mWiFiNetworkInfo.isAvailable();
+    return Objects.nonNull(mWiFiNetworkInfo) && mWiFiNetworkInfo.isAvailable();
   }
 
   /**
@@ -344,14 +345,14 @@ public class Utils {
    * @return status
    */
   static public boolean isMobileConnected(Context context) {
-    if (context != null) {
+    if (Objects.nonNull(context)) {
       ConnectivityManager mConnectivityManager =
           (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
       NetworkInfo mMobileNetworkInfo = null;
-      if (mConnectivityManager != null) {
+      if (Objects.nonNull(mConnectivityManager)) {
         mMobileNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
       }
-      if (mMobileNetworkInfo != null) {
+      if (Objects.nonNull(mMobileNetworkInfo)) {
         return mMobileNetworkInfo.isAvailable();
       }
     }
@@ -381,6 +382,6 @@ public class Utils {
    * @return result
    */
   public static boolean isStringEmpty(String string) {
-    return string == null || string.equals("");
+    return Objects.isNull(string) || string.equals("");
   }
 }

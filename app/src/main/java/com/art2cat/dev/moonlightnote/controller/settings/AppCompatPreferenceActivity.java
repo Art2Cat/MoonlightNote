@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import java.util.Objects;
 
 /**
  * A {@link android.preference.PreferenceActivity} which implements and proxies the necessary calls
@@ -104,7 +105,7 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
   }
 
   private AppCompatDelegate getDelegate() {
-    if (appCompatDelegate == null) {
+    if (Objects.isNull(appCompatDelegate)) {
       appCompatDelegate = AppCompatDelegate.create(this, null);
     }
     return appCompatDelegate;

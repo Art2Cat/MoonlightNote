@@ -24,11 +24,11 @@ import android.view.inputmethod.EditorInfo;
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.InputDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
-import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.model.User;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
@@ -48,6 +48,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.iid.FirebaseInstanceId;
+import java.util.Objects;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -143,7 +144,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
   @Override
   public void onDestroy() {
     EventBus.getDefault().unregister(this);
-    if (mGoogleApiClient != null) {
+    if (Objects.nonNull(mGoogleApiClient)) {
       mGoogleApiClient.stopAutoManage((FragmentActivity) activity);
       mGoogleApiClient.disconnect();
     }
@@ -310,7 +311,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
   public void signIn() {
     mAuthListener = firebaseAuth -> {
       FirebaseUser user = firebaseAuth.getCurrentUser();
-      if (user != null) {
+      if (Objects.nonNull(user)) {
         Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
         SPUtils.putString(MoonlightApplication.getContext(),
             "User", "Id", user.getUid());
@@ -320,17 +321,17 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         String token = FirebaseInstanceId.getInstance().getToken();
         User user1 = new User();
         user1.setUid(user.getUid());
-        if (nickname != null) {
+        if (Objects.nonNull(nickname)) {
           user1.setNickname(nickname);
         }
-        if (email != null) {
+        if (Objects.nonNull(email)) {
           user1.setEmail(email);
         }
-        if (photoUrl != null) {
+        if (Objects.nonNull(photoUrl)) {
           user1.setPhotoUrl(photoUrl.toString());
         }
 
-        if (token != null) {
+        if (Objects.nonNull(token)) {
           user1.setToken(token);
         }
 
@@ -407,7 +408,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
             showLongSnackBar(mView, "Sign Up succeed!",
                 SnackBarUtils.TYPE_WARNING);
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            assert user != null;
+            assert Objects.nonNull(user);
             user.sendEmailVerification()
                 .addOnCompleteListener(task1 -> {
                   if (task1.isSuccessful()) {
@@ -451,7 +452,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
   }
 
   public void removeListener() {
-    if (mAuthListener != null) {
+    if (Objects.nonNull(mAuthListener)) {
       mAuth.removeAuthStateListener(mAuthListener);
     }
   }

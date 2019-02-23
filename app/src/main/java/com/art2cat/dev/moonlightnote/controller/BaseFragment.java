@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -100,7 +101,7 @@ public abstract class BaseFragment extends Fragment {
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    if (savedInstanceState != null) {
+    if (Objects.nonNull(savedInstanceState)) {
       currentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
     }
   }
@@ -233,7 +234,7 @@ public abstract class BaseFragment extends Fragment {
         Log.e(TAG, "dispatchTakePictureIntent: ", ex);
       }
       // Continue only if the File was successfully created
-      if (photoFile != null) {
+      if (Objects.nonNull(photoFile)) {
         fileUri = FileProvider.getUriForFile(activity, Constants.FILE_PROVIDER, photoFile);
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
         startActivityForResult(takePictureIntent, TAKE_PICTURE);

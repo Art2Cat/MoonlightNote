@@ -1,6 +1,7 @@
 package com.art2cat.dev.moonlightnote.controller.user;
 
 
+import java.util.Objects;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
@@ -44,18 +45,18 @@ public class ChangePasswordFragment extends BaseFragment {
     setHasOptionsMenu(true);
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-    assert user != null;
+    assertObjects.nonNull(user);
     button.setOnClickListener(v -> {
       String oldPassword = oldET.getText().toString();
       final String newPassword = newET.getText().toString();
 
       if (!oldPassword.equals("") && !newPassword.equals("")) {
         AuthCredential credential = null;
-        if (user.getEmail() != null) {
+        if (Objects.nonNull(user.getEmail())) {
           credential = EmailAuthProvider
               .getCredential(user.getEmail(), oldPassword);
         }
-        if (credential != null) {
+        if (Objects.nonNull(credential)) {
           user.reauthenticate(credential).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
               user.updatePassword(newPassword).addOnCompleteListener(task1 -> {

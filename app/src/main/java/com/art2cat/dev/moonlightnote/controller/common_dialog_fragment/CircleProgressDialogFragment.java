@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import java.util.Objects;
 
 /**
  * Created by Rorschach on 11/20/16 6:11 PM.
@@ -29,7 +30,7 @@ public class CircleProgressDialogFragment extends DialogFragment {
   public Dialog onCreateDialog(Bundle savedInstanceState) {
 
     ProgressDialog dialog = new ProgressDialog(getActivity());
-    if (getArguments() != null) {
+    if (Objects.nonNull(getArguments())) {
       dialog.setMessage(getArguments().getString("message"));
     }
     dialog.setIndeterminate(true);

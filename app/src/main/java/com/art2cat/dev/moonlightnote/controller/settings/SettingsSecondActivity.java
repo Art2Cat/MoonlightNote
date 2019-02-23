@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
+import java.util.Objects;
 
 public class SettingsSecondActivity extends AppCompatActivity {
 
@@ -13,7 +14,7 @@ public class SettingsSecondActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_security_second);
     android.app.ActionBar actionBar = getActionBar();
-    if (actionBar != null) {
+    if (Objects.nonNull(actionBar)) {
       actionBar.setHomeButtonEnabled(true);
       actionBar.setDisplayShowHomeEnabled(true);
     }

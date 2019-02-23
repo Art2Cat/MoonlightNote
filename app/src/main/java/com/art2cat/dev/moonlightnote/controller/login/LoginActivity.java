@@ -17,8 +17,8 @@ import android.transition.Fade;
 import android.util.Log;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.constants.Constants;
+import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.ShortcutsUtils;
@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
   }
 
   public void removeListener() {
-    if (authStateListener != null) {
+    if (Objects.nonNull(authStateListener)) {
       firebaseAuth.removeAuthStateListener(authStateListener);
     }
   }

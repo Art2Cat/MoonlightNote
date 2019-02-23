@@ -13,6 +13,7 @@ import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import java.util.Objects;
 
 /**
  * Created by Rorschach on 2016/11/10 19:50.
@@ -41,7 +42,7 @@ public class NotificationService extends FirebaseMessagingService {
     }
 
     // Check if message contains a notification payload.
-    if (remoteMessage.getNotification() != null) {
+    if (Objects.nonNull(remoteMessage.getNotification())) {
       if (BuildConfig.DEBUG) {
         Log.d(TAG, "onMessageReceived Body: " + remoteMessage.getNotification().getBody());
       }
@@ -72,7 +73,7 @@ public class NotificationService extends FirebaseMessagingService {
 
     NotificationManager notificationManager =
         (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-    if (notificationManager != null) {
+    if (Objects.nonNull(notificationManager)) {
       notificationManager.notify(0, notificationBuilder.build());
     }
   }

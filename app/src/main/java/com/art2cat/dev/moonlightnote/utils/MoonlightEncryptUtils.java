@@ -6,6 +6,7 @@ import android.util.Log;
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -28,30 +29,30 @@ public class MoonlightEncryptUtils {
   @AnyThread
   private static Moonlight encrypt(String key, Moonlight moonlight) {
     String[] metadata = getMetadata(moonlight);
-    if (key != null) {
+    if (Objects.nonNull(key)) {
       try {
 
-        if (metadata[0] != null) {
+        if (Objects.nonNull(metadata[0])) {
           moonlight.setTitle(AESUtils.encrypt(key, metadata[0]));
         }
 
-        if (metadata[1] != null) {
+        if (Objects.nonNull(metadata[1])) {
           moonlight.setContent(AESUtils.encrypt(key, metadata[1]));
         }
 
-        if (metadata[2] != null) {
+        if (Objects.nonNull(metadata[2])) {
           moonlight.setImageUrl(AESUtils.encrypt(key, metadata[2]));
         }
 
-        if (metadata[3] != null) {
+        if (Objects.nonNull(metadata[3])) {
           moonlight.setAudioUrl(AESUtils.encrypt(key, metadata[3]));
         }
 
-        if (metadata[4] != null) {
+        if (Objects.nonNull(metadata[4])) {
           moonlight.setImageName(AESUtils.encrypt(key, metadata[4]));
         }
 
-        if (metadata[5] != null) {
+        if (Objects.nonNull(metadata[5])) {
           moonlight.setAudioName(AESUtils.encrypt(key, metadata[5]));
         }
 
@@ -67,29 +68,29 @@ public class MoonlightEncryptUtils {
   private static Moonlight decrypt(String key, Moonlight moonlight) {
 
     String[] metadata = getMetadata(moonlight);
-    if (key != null) {
+    if (Objects.nonNull(key)) {
       try {
-        if (metadata[0] != null) {
+        if (Objects.nonNull(metadata[0])) {
           moonlight.setTitle(AESUtils.decrypt(key, metadata[0]));
         }
 
-        if (metadata[1] != null) {
+        if (Objects.nonNull(metadata[1])) {
           moonlight.setContent(AESUtils.decrypt(key, metadata[1]));
         }
 
-        if (metadata[2] != null) {
+        if (Objects.nonNull(metadata[2])) {
           moonlight.setImageUrl(AESUtils.decrypt(key, metadata[2]));
         }
 
-        if (metadata[3] != null) {
+        if (Objects.nonNull(metadata[3])) {
           moonlight.setAudioUrl(AESUtils.decrypt(key, metadata[3]));
         }
 
-        if (metadata[4] != null) {
+        if (Objects.nonNull(metadata[4])) {
           moonlight.setImageName(AESUtils.decrypt(key, metadata[4]));
         }
 
-        if (metadata[5] != null) {
+        if (Objects.nonNull(metadata[5])) {
           moonlight.setAudioName(AESUtils.decrypt(key, metadata[5]));
         }
 
@@ -121,7 +122,7 @@ public class MoonlightEncryptUtils {
     } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();
     }
-    if (moonlight1 != null) {
+    if (Objects.nonNull(moonlight1)) {
       if (BuildConfig.DEBUG) {
         Log.d("MoonlightEncryptTask", "moonlight:" + moonlight1.getContent());
       }
@@ -139,7 +140,7 @@ public class MoonlightEncryptUtils {
     } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();
     }
-    if (moonlight1 != null) {
+    if (Objects.nonNull(moonlight1)) {
       if (BuildConfig.DEBUG) {
         Log.d("MoonlightEncryptTask", "moonlight:" + moonlight1.getContent());
       }

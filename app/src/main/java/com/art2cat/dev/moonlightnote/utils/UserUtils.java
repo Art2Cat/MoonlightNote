@@ -6,6 +6,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by Rorschach on 11/16/16 7:46 PM.
@@ -20,38 +21,38 @@ public class UserUtils {
    * @param user 用户信息
    */
   public static void saveUserToCache(Context context, User user) {
-    if (user != null) {
-      if (user.getUid() != null) {
+    if (Objects.nonNull(user)) {
+      if (Objects.nonNull(user.getUid())) {
         SPUtils.putString(context, "User", "Id", user.getUid());
       } else {
         SPUtils.putString(context, "User", "Id", null);
       }
 
-      if (user.getNickname() != null) {
+      if (Objects.nonNull(user.getNickname())) {
         SPUtils.putString(context, "User", "Username", user.getNickname());
       } else {
         SPUtils.putString(context, "User", "Username", null);
       }
 
-      if (user.getEmail() != null) {
+      if (Objects.nonNull(user.getEmail())) {
         SPUtils.putString(context, "User", "Email", user.getEmail());
       } else {
         SPUtils.putString(context, "User", "Email", null);
       }
 
-      if (user.getPhotoUrl() != null) {
+      if (Objects.nonNull(user.getPhotoUrl())) {
         SPUtils.putString(context, "User", "PhotoUrl", user.getPhotoUrl());
       } else {
         SPUtils.putString(context, "User", "PhotoUrl", null);
       }
 
-      if (user.getToken() != null) {
+      if (Objects.nonNull(user.getToken())) {
         SPUtils.putString(context, "User", "Token", user.getToken());
       } else {
         SPUtils.putString(context, "User", "Token", null);
       }
 
-      if (user.getEncryptKey() != null) {
+      if (Objects.nonNull(user.getEncryptKey())) {
         SPUtils.putString(context, "User", "EncryptKey", user.getEncryptKey());
       } else {
         SPUtils.putString(context, "User", "EncryptKey", null);

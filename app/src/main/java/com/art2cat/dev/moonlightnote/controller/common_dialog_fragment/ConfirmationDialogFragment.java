@@ -12,6 +12,7 @@ import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
+import java.util.Objects;
 
 /**
  * Created by Rorschach on 2016/11/21 10:59.
@@ -50,7 +51,7 @@ public class ConfirmationDialogFragment extends DialogFragment {
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    if (getArguments() != null) {
+    if (Objects.nonNull(getArguments())) {
       Bundle args = getArguments();
       mUserId = args.getString("id");
       mTitle = args.getString("title");
@@ -63,10 +64,10 @@ public class ConfirmationDialogFragment extends DialogFragment {
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-    if (mTitle != null) {
+    if (Objects.nonNull(mTitle)) {
       builder.setTitle(mTitle);
     }
-    if (mMessage != null) {
+    if (Objects.nonNull(mMessage)) {
       builder.setMessage(mMessage);
     }
     String positiveText;

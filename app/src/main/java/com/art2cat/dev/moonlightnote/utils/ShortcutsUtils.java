@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote.utils;
 
+import java.util.Objects;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
@@ -26,7 +27,7 @@ public class ShortcutsUtils {
 
   public static ShortcutsUtils getInstance(Context context) {
 
-    if (shortcutsUtils == null) {
+    if (Objects.isNull(shortcutsUtils)) {
       shortcutsUtils = new ShortcutsUtils();
       ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
       shortcutsUtils.setShortcutManager(shortcutManager);
@@ -126,7 +127,7 @@ public class ShortcutsUtils {
    */
   public void removeShortcuts() {
     try {
-      if (getShortcutIds() != null) {
+      if (Objects.nonNull(getShortcutIds())) {
         shortcutManager.removeDynamicShortcuts(getShortcutIds());
       }
     } catch (Exception e) {

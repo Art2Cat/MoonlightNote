@@ -8,6 +8,7 @@ import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import java.io.File;
+import java.util.Objects;
 
 /**
  * Created by Rorschach on 2016/11/20 12:56.
@@ -20,7 +21,7 @@ public class StorageUtils {
   public static void downloadImage(StorageReference storageReference, final String userID,
       final String imageName) {
 
-    if (imageName == null) {
+    if (Objects.isNull(imageName)) {
       return;
     }
 
@@ -40,7 +41,7 @@ public class StorageUtils {
   public static void downloadAudio(StorageReference storageReference, String userId,
       String audioName) {
 
-    if (audioName == null) {
+    if (Objects.isNull(audioName)) {
       return;
     }
 
@@ -60,7 +61,7 @@ public class StorageUtils {
       }
     }
 
-    if (localFile != null) {
+    if (Objects.nonNull(localFile)) {
       audioRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
 
       }).addOnFailureListener(exception -> {
@@ -74,14 +75,14 @@ public class StorageUtils {
   }
 
   public static void removePhoto(final View mView, String mUserId, String imageName) {
-    if (imageName == null) {
+    if (Objects.isNull(imageName)) {
       return;
     }
 
     StorageReference photoRef = FirebaseStorage.getInstance().getReference()
         .child(mUserId).child("photos").child(imageName);
     photoRef.delete().addOnSuccessListener(aVoid -> {
-      if (mView != null) {
+      if (Objects.nonNull(mView)) {
         SnackBarUtils.shortSnackBar(mView,
             "Image removed!", SnackBarUtils.TYPE_INFO).show();
       }
@@ -90,14 +91,14 @@ public class StorageUtils {
   }
 
   public static void removeAudio(final View mView, String mUserId, String audioName) {
-    if (audioName == null) {
+    if (Objects.isNull(audioName)) {
       return;
     }
 
     StorageReference audioRef = FirebaseStorage.getInstance().getReference()
         .child(mUserId).child("audios").child(audioName);
     audioRef.delete().addOnSuccessListener(aVoid -> {
-      if (mView != null) {
+      if (Objects.nonNull(mView)) {
         SnackBarUtils.shortSnackBar(mView,
             "Voice removed!", SnackBarUtils.TYPE_INFO).show();
       }

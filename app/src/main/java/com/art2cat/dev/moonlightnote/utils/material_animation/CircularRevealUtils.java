@@ -1,5 +1,6 @@
 package com.art2cat.dev.moonlightnote.utils.material_animation;
 
+import java.util.Objects;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.util.Log;
@@ -28,7 +29,7 @@ public class CircularRevealUtils {
     //显示view
     view.setVisibility(View.VISIBLE);
 
-    if (anim == null) {
+    if (Objects.isNull(anim)) {
       return;
     }
 
@@ -48,7 +49,7 @@ public class CircularRevealUtils {
     //创建动画
     Animator anim = create(view, TYPE_HIDE);
 
-    if (anim == null) {
+    if (Objects.isNull(anim)) {
       return;
     }
 

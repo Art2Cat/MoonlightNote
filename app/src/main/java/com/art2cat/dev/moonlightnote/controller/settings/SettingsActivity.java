@@ -24,10 +24,10 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
-import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.model.NoteLab;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
@@ -56,6 +56,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -113,7 +114,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
    */
   private void setupActionBar() {
     ActionBar actionBar = getSupportActionBar();
-    if (actionBar != null) {
+    if (Objects.nonNull(actionBar)) {
       // Show the Up button in the action bar.
       actionBar.setDisplayHomeAsUpEnabled(true);
     }
@@ -301,7 +302,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
           connectToDrive();
           break;
         case BACKUP_TO_DRIVE:
-          if (mGoogleApiClient != null) {
+          if (Objects.nonNull(mGoogleApiClient)) {
             mFDatabaseUtils.exportNote(1);
             Drive.DriveApi.newDriveContents(mGoogleApiClient)
                 .setResultCallback(driveContentsResult -> {
@@ -316,7 +317,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
           }
           break;
         case RESTORE_FROM_DRIVE:
-          if (mGoogleApiClient != null) {
+          if (Objects.nonNull(mGoogleApiClient)) {
             Drive.DriveApi.newDriveContents(mGoogleApiClient)
                 .setResultCallback(driveContentsResult -> {
                   if (driveContentsResult.getStatus().isSuccess()) {
@@ -398,7 +399,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     public void onPause() {
       super.onPause();
-      if (mGoogleApiClient != null) {
+      if (Objects.nonNull(mGoogleApiClient)) {
         mGoogleApiClient.disconnect();
       }
     }
@@ -414,7 +415,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     private void connectToDrive() {
 
-      if (mGoogleApiClient == null) {
+      if (Objects.isNull(mGoogleApiClient)) {
         // Create the API client and bind it to an instance variable.
         // We use this instance as the callback for connection and connection
         // failures.
@@ -459,7 +460,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
           String contentsAsString = builder.toString();
           Gson gson = new Gson();
           NoteLab noteLab = gson.fromJson(contentsAsString, NoteLab.class);
-          if (noteLab == null) {
+          if (Objects.isNull(noteLab)) {
             return;
           }
           if (BuildConfig.DEBUG) {
@@ -508,10 +509,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         OutputStream outputStream = driveContents.getOutputStream();
         Writer writer = new OutputStreamWriter(outputStream);
 
-        if (mData == null) {
+        if (Objects.isNull(mData)) {
           mData = mFDatabaseUtils.getJson();
         }
-        if (mData != null) {
+        if (Objects.nonNull(mData)) {
           try {
             writer.write(mData);
             writer.close();

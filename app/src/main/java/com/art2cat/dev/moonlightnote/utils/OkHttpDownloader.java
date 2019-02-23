@@ -9,13 +9,14 @@ import android.util.Log;
 import com.squareup.picasso.Downloader;
 import com.squareup.picasso.NetworkPolicy;
 import java.io.IOException;
+import java.util.Objects;
 import okhttp3.CacheControl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 /**
- * 用于picasso的DownLoader，基于OKHTTP3.0，picasso源码中的网络层只能配合OKHTTP2.x的版本
- * Created by dzysg on 2016/3/6 0006.
+ * 用于picasso的DownLoader，基于OKHTTP3.0，picasso源码中的网络层只能配合OKHTTP2.x的版本 Created by dzysg on 2016/3/6
+ * 0006.
  */
 public class OkHttpDownloader implements Downloader {
 
@@ -45,7 +46,7 @@ public class OkHttpDownloader implements Downloader {
         .url(uri.toString())
         .build();
     okhttp3.Response response = mClient.newCall(request).execute();
-    return new Response(response.body().byteStream(), response.cacheResponse() != null,
+    return new Response(response.body().byteStream(), Objects.nonNull(response.cacheResponse()),
         response.body().contentLength());
   }
 

@@ -17,6 +17,7 @@ import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
+import java.util.Objects;
 
 /**
  * Created by Rorschach on 2016/11/21 11:01.
@@ -41,7 +42,7 @@ public class InputDialogFragment extends DialogFragment {
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    if (getArguments() != null) {
+    if (Objects.nonNull(getArguments())) {
       Bundle args = getArguments();
       mTitle = args.getString("title");
       Log.d(TAG, "onCreate: " + mTitle);

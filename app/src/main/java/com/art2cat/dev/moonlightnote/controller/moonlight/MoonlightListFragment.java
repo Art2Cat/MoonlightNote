@@ -22,10 +22,10 @@ import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
-import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
@@ -172,7 +172,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
 
   private void setAdapter() {
     Query moonlightsQuery = getQuery(databaseReference);
-    if (moonlightsQuery != null) {
+    if (Objects.nonNull(moonlightsQuery)) {
       mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Moonlight, MoonlightViewHolder>(
           Moonlight.class,
           R.layout.moonlight_item,
@@ -187,7 +187,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
 
           final Moonlight moonlightD = MoonlightEncryptUtils.newInstance().decryptMoonlight(model);
 
-          if (moonlightD == null) {
+          if (Objects.isNull(moonlightD)) {
             return;
           }
 
@@ -324,7 +324,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
   @Override
   public void onDestroy() {
     super.onDestroy();
-    if (mFirebaseRecyclerAdapter != null) {
+    if (Objects.nonNull(mFirebaseRecyclerAdapter)) {
       Log.d(TAG, "cleanup");
       mFirebaseRecyclerAdapter.cleanup();
     }
@@ -417,7 +417,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
 
   @Subscribe(threadMode = ThreadMode.MAIN)
   public void busAction(BusEvent busEvent) {
-    if (busEvent != null) {
+    if (Objects.nonNull(busEvent)) {
       switch (busEvent.getFlag()) {
         case Constants.BUS_FLAG_SIGN_OUT:
           isLogin = false;
@@ -468,10 +468,10 @@ public abstract class MoonlightListFragment extends BaseFragment {
               activity.setTitle(R.string.app_name);
               break;
             case R.id.action_delete_forever:
-              if (moonlight.getImageUrl() != null) {
+              if (Objects.nonNull(moonlight.getImageUrl())) {
                 StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
               }
-              if (moonlight.getAudioUrl() != null) {
+              if (Objects.nonNull(moonlight.getAudioUrl())) {
                 StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
               }
               FDatabaseUtils
@@ -485,15 +485,15 @@ public abstract class MoonlightListFragment extends BaseFragment {
             case R.id.action_send:
               Intent in = new Intent(Intent.ACTION_SEND);
               in.setType("text/plain");
-              if (moonlight.getTitle() != null) {
+              if (Objects.nonNull(moonlight.getTitle())) {
                 in.putExtra(Intent.EXTRA_TITLE, moonlight.getTitle());
               }
 
-              if (moonlight.getContent() != null) {
+              if (Objects.nonNull(moonlight.getContent())) {
                 in.putExtra(Intent.EXTRA_TEXT, moonlight.getContent());
               }
 
-              if (moonlight.getImageUrl() != null) {
+              if (Objects.nonNull(moonlight.getImageUrl())) {
                 in.putExtra(Intent.EXTRA_TEXT, moonlight.getImageUrl());
               }
               in = Intent.createChooser(in, "Send to");
@@ -505,10 +505,10 @@ public abstract class MoonlightListFragment extends BaseFragment {
               activity.setTitle(R.string.fragment_trash);
               break;
             case R.id.action_trash_delete_forever:
-              if (moonlight.getImageUrl() != null) {
+              if (Objects.nonNull(moonlight.getImageUrl())) {
                 StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
               }
-              if (moonlight.getAudioUrl() != null) {
+              if (Objects.nonNull(moonlight.getAudioUrl())) {
                 StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
               }
               FDatabaseUtils

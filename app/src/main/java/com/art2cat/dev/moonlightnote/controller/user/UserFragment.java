@@ -200,14 +200,14 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
 
   private void initView() {
     String nickname = user.getNickname();
-    if (nickname != null) {
+    if (Objects.nonNull(nickname)) {
       this.nicknameTextView.setText(nickname);
       user.setNickname(nickname);
     } else {
       this.nicknameTextView.setText(R.string.user_setNickname);
     }
     String email = user.getEmail();
-    if (email != null) {
+    if (Objects.nonNull(email)) {
       user.setEmail(email);
       emailTextView.setText(email);
     }
@@ -216,7 +216,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
   }
 
   private void displayImage(Uri mDownloadUrl) {
-    if (mDownloadUrl != null) {
+    if (Objects.nonNull(mDownloadUrl)) {
       Picasso.with(MoonlightApplication.getContext()).load(mDownloadUrl)
           .memoryPolicy(NO_CACHE, NO_STORE)
           .config(Bitmap.Config.RGB_565).into(circleImageView);
@@ -242,7 +242,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
   @Subscribe(threadMode = ThreadMode.MAIN)
   public void busAction(BusEvent busEvent) {
     //这里更新视图或者后台操作,从busAction获取传递参数.
-    if (busEvent != null) {
+    if (Objects.nonNull(busEvent)) {
       switch (busEvent.getFlag()) {
         case BUS_FLAG_CAMERA:
           onCameraClick(view);
@@ -251,7 +251,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
           onAlbumClick(view);
           break;
         case BUS_FLAG_USERNAME:
-          if (busEvent.getMessage() != null) {
+          if (Objects.nonNull(busEvent.getMessage())) {
             nicknameTextView.setText(busEvent.getMessage());
             user.setNickname(busEvent.getMessage());
             UserUtils.saveUserToCache(activity.getApplicationContext(), user);
@@ -264,7 +264,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
           }
           break;
         case BUS_FLAG_DELETE_ACCOUNT:
-          if (busEvent.getMessage() != null) {
+          if (Objects.nonNull(busEvent.getMessage())) {
             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             AuthCredential credential =
                 EmailAuthProvider.getCredential(user.getEmail(), busEvent.getMessage());
@@ -292,24 +292,24 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
 
   private void updateProfile(@Nullable String nickname, @Nullable Uri uri) {
     UserProfileChangeRequest profileUpdates = null;
-    if (nickname != null) {
+    if (Objects.nonNull(nickname)) {
       profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(nickname).build();
     }
 
-    if (uri != null) {
+    if (Objects.nonNull(uri)) {
       profileUpdates = new UserProfileChangeRequest.Builder().setPhotoUri(uri).build();
       if (BuildConfig.DEBUG) {
         Log.d(TAG, "updateProfile Photo uri: " + profileUpdates.getPhotoUri().toString());
       }
     }
 
-    if (profileUpdates != null) {
+    if (Objects.nonNull(profileUpdates)) {
       firebaseUser.updateProfile(profileUpdates).addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
           if (BuildConfig.DEBUG) {
             Log.d(TAG, "updateProfile: User profile updated.");
           }
-          if (user != null) {
+          if (Objects.nonNull(user)) {
             BusEventUtils.post(Constants.BUS_FLAG_UPDATE_USER, null);
             UserUtils.updateUser(firebaseUser.getUid(), user);
           }
@@ -323,7 +323,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
     switch (requestCode) {
       case TAKE_PICTURE:
         if (resultCode == RESULT_OK) {
-          if (fileUri != null) {
+          if (Objects.nonNull(fileUri)) {
             uploadFromUri(fileUri, firebaseUser.getUid());
             galleryAddPic(fileUri);
           } else {

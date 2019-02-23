@@ -4,6 +4,7 @@ import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import com.art2cat.dev.moonlightnote.R;
+import java.util.Objects;
 
 
 /**
@@ -23,7 +24,7 @@ public class FragmentUtils {
    */
   public static void addFragment(FragmentManager fm, @IdRes int id, Fragment fragment) {
     Fragment frag = fm.findFragmentById(id);
-    if (frag == null) {
+    if (Objects.isNull(frag)) {
       fm.beginTransaction()
           .add(id, fragment)
           .commit();
