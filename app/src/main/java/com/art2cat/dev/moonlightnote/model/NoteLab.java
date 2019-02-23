@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Rorschach on 12/17/16 5:10 PM.
+ * Created by rorschach.h on 12/17/16 5:10 PM.
  */
 
 public class NoteLab {

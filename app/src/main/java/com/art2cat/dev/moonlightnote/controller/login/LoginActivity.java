@@ -172,7 +172,7 @@ public class LoginActivity extends AppCompatActivity {
         .putExtra("type", STORAGE_PERMS);
     ShortcutsUtils shortcutsUtils = ShortcutsUtils.getInstance(LoginActivity.this);
     ShortcutInfo compose = shortcutsUtils
-        .createShortcut("compose", "Compose", "Compose new note", R.mipmap.ic_shortcuts_create,
+        .createShortcut("compose", "Compose", "Compose new note", R.drawable.ic_action_create,
             intent);
 
     List<ShortcutInfo> shortcutInfoList = new ArrayList<>();

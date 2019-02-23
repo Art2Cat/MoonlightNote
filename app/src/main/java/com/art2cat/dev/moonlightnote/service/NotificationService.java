@@ -16,7 +16,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.Objects;
 
 /**
- * Created by Rorschach on 2016/11/10 19:50.
+ * Created by rorschach.h on 2016/11/10 19:50.
  */
 
 public class NotificationService extends FirebaseMessagingService {

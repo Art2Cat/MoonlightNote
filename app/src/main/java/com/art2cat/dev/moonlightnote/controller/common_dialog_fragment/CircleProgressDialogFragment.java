@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import java.util.Objects;
 
 /**
- * Created by Rorschach on 11/20/16 6:11 PM.
+ * Created by rorschach.h on 11/20/16 6:11 PM.
  */
 
 public class CircleProgressDialogFragment extends DialogFragment {

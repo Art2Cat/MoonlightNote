@@ -1,6 +1,3 @@
-/**
- * AES加密工具
- */
 package com.art2cat.dev.moonlightnote.utils;
 
 
@@ -15,7 +12,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Created by art2cat on 7/25/16.
+ * Created by rorschach.h on 7/25/16.
  */
 public class AESUtils {
 

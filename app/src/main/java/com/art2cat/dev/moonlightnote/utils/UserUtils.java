@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Created by Rorschach on 11/16/16 7:46 PM.
+ * Created by rorschach.h on 11/16/16 7:46 PM.
  */
 
 public class UserUtils {

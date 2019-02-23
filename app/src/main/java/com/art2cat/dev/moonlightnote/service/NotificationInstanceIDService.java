@@ -8,7 +8,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
 /**
- * Created by Rorschach on 2016/12/22 17:52.
+ * Created by rorschach.h on 2016/12/22 17:52.
  */
 
 public class NotificationInstanceIDService extends FirebaseInstanceIdService {

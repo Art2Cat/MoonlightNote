@@ -4,7 +4,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
 /**
- * Created by Art on 2016/11/2 20:06.
+ * Created by rorschach.h on 2016/11/2 20:06.
  */
 
 public class TrashFragment extends MoonlightListFragment {

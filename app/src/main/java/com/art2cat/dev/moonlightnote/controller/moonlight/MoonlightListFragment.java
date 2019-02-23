@@ -50,7 +50,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 
 /**
- * Created by art2cat on 9/17/16.
+ * Created by rorschach.h on 9/17/16.
  */
 public abstract class MoonlightListFragment extends BaseFragment {
 

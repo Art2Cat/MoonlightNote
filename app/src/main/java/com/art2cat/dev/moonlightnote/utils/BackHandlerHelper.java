@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Created by Rorschach on 2017/2/25 上午10:51.
+ * Created by rorschach.h on 2017/2/25 10:51.
  */
 
 public class BackHandlerHelper {
@@ -56,9 +56,9 @@ public class BackHandlerHelper {
    * @return 如果处理了back键则返回 <b>true</b>
    */
   public static boolean isFragmentBackHandled(Fragment fragment) {
-    return Objects.nonNull(fragment) && fragment.isVisible()
+    return Objects.isNull(fragment) || (fragment.isVisible()
         && fragment.getUserVisibleHint() //for ViewPager
         && fragment instanceof FragmentBackHandler
-        && ((FragmentBackHandler) fragment).onBackPressed();
+        && ((FragmentBackHandler) fragment).onBackPressed());
   }
 }

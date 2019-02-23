@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 /**
- * Created by Rorschach on 2017/2/25 下午8:41.
+ * Created by rorschach.h on 2017/2/25 20:41.
  */
 
 public abstract class BaseFragmentActivity extends AppCompatActivity {

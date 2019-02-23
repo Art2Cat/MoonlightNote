@@ -30,6 +30,8 @@ import com.github.orangegangsters.lollipin.lib.managers.AppLock;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -47,7 +49,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by art2cat on 8/4/16.
+ * Created by rorschach.h on 8/4/16.
  */
 public class Utils {
 
@@ -359,10 +361,38 @@ public class Utils {
     return false;
   }
 
-  public static void displayImage(@NonNull String url, @NonNull ImageView imageView) {
-    Picasso.with(MoonlightApplication.getContext()).load(url).memoryPolicy(NO_CACHE, NO_STORE)
+  public static void displayImage(@NonNull Context context, @NonNull String url,
+      @NonNull ImageView imageView) {
+    Picasso.with(context).load(url).networkPolicy(NetworkPolicy.OFFLINE)
+
         .placeholder(R.drawable.ic_cloud_download_black_24dp).config(Bitmap.Config.RGB_565)
-        .into(imageView);
+        .into(imageView,
+            new Callback() {
+              @Override
+              public void onSuccess() {
+
+              }
+
+              @Override
+              public void onError() {
+                //Try again online if cache failed
+                Picasso.with(context)
+                    .load(url)
+                    .memoryPolicy(NO_CACHE, NO_STORE)
+                    .error(R.drawable.ic_cloud_download_black_24dp)
+                    .into(imageView, new Callback() {
+                      @Override
+                      public void onSuccess() {
+
+                      }
+
+                      @Override
+                      public void onError() {
+                        Log.v("Picasso", "Could not fetch image");
+                      }
+                    });
+              }
+            });
   }
 
   /**

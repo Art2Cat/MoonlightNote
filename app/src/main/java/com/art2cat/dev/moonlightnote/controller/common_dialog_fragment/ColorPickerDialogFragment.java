@@ -20,13 +20,13 @@ import android.widget.ImageButton;
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
-import com.art2cat.dev.moonlightnote.constants.Constants;
+import com.art2cat.dev.moonlightnote.constants.ColorConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * Created by Rorschach on 12/9/16 11:10 PM.
+ * Created by rorschach.h on 12/9/16 11:10 PM.
  */
 
 public class ColorPickerDialogFragment
@@ -76,25 +76,25 @@ public class ColorPickerDialogFragment
     super.onCreate(savedInstanceState);
 
     colors = new ArrayList<>();
-    colors.add(Constants.RED);
-    colors.add(Constants.PINK);
-    colors.add(Constants.PURPLE);
-    colors.add(Constants.DEEP_PURPLE);
-    colors.add(Constants.INDIGO);
-    colors.add(Constants.BLUE);
-    colors.add(Constants.LIGHT_BLUE);
-    colors.add(Constants.CYAN);
-    colors.add(Constants.TEAL);
-    colors.add(Constants.GREEN);
-    colors.add(Constants.LIGHT_GREEN);
-    colors.add(Constants.LIME);
-    colors.add(Constants.YELLOW);
-    colors.add(Constants.AMBER);
-    colors.add(Constants.ORANGE);
-    colors.add(Constants.DEEP_ORANGE);
-    colors.add(Constants.BROWN);
-    colors.add(Constants.GREY);
-    colors.add(Constants.BLUE_GRAY);
+    colors.add(ColorConstants.RED);
+    colors.add(ColorConstants.PINK);
+    colors.add(ColorConstants.PURPLE);
+    colors.add(ColorConstants.DEEP_PURPLE);
+    colors.add(ColorConstants.INDIGO);
+    colors.add(ColorConstants.BLUE);
+    colors.add(ColorConstants.LIGHT_BLUE);
+    colors.add(ColorConstants.CYAN);
+    colors.add(ColorConstants.TEAL);
+    colors.add(ColorConstants.GREEN);
+    colors.add(ColorConstants.LIGHT_GREEN);
+    colors.add(ColorConstants.LIME);
+    colors.add(ColorConstants.YELLOW);
+    colors.add(ColorConstants.AMBER);
+    colors.add(ColorConstants.ORANGE);
+    colors.add(ColorConstants.DEEP_ORANGE);
+    colors.add(ColorConstants.BROWN);
+    colors.add(ColorConstants.GREY);
+    colors.add(ColorConstants.BLUE_GRAY);
     colors.add(0xff000000);
     colors.add(0xffffffff);
   }

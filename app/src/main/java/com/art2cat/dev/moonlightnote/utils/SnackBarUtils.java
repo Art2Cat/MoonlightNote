@@ -12,7 +12,7 @@ import java.util.Objects;
 
 
 /**
- * Created by art2cat on 9/14/16.
+ * Created by rorschach.h on 9/14/16.
  */
 public class SnackBarUtils {
 
@@ -172,7 +172,6 @@ public class SnackBarUtils {
     View view = snackbar.getView();
     if (Objects.nonNull(view)) {
       view.setBackgroundColor(backgroundColor);
-      //((TextView) view.findViewById(R.id.snackbar_text)).setTextColor(messageColor);
     }
   }
 

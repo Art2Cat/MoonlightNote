@@ -1,7 +1,7 @@
 package com.art2cat.dev.moonlightnote.constants;
 
 /**
- * Created by art2cat on 8/10/16.
+ * Created by rorschach.h on 8/10/16.
  */
 public final class Constants {
 

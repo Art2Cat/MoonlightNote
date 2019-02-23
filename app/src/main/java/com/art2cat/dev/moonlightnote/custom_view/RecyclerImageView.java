@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 import com.github.chrisbanes.photoview.PhotoView;
 
 /**
- * Created by Rorschach on 2017/1/22 上午11:37.
+ * Created by rorschach.h on 2017/1/22 11:37.
  */
 
 public class RecyclerImageView extends PhotoView {

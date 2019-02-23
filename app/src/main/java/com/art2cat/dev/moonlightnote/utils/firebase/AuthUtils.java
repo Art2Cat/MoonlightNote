@@ -8,7 +8,7 @@ import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.google.firebase.auth.FirebaseAuth;
 
 /**
- * Created by rorschach on 11/5/16 10:32 PM.
+ * Created by rorschach.h on 11/5/16 10:32 PM.
  */
 
 public class AuthUtils {

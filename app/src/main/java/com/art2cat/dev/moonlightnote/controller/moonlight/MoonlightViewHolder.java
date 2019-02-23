@@ -23,7 +23,7 @@ import com.squareup.picasso.Picasso;
 import jp.wasabeef.recyclerview.animators.holder.AnimateViewHolder;
 
 /**
- * Created by Rorschach on 2016/11/18 13:49.
+ * Created by rorschach.h on 2016/11/18 13:49.
  */
 
 public class MoonlightViewHolder extends RecyclerView.ViewHolder implements AnimateViewHolder {

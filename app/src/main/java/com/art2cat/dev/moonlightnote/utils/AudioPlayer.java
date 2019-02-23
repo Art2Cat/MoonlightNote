@@ -1,83 +1,106 @@
-/**
- * 音频播放器
- */
 package com.art2cat.dev.moonlightnote.utils;
 
-import android.annotation.SuppressLint;
 import android.media.MediaPlayer;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
 import android.widget.ProgressBar;
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
+import com.art2cat.dev.moonlightnote.BuildConfig;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
 /**
- * Created by Art on 2016/10/29 19:13.
+ * Created by rorschach.h on 2016/10/29 19:13.
  */
 
 public class AudioPlayer {
 
   private static final String TAG = "AudioPlayer";
-  private static AudioPlayer audioPlayer;
-  public int mDuration;
-  public boolean isPrepared = false;
-  public MediaPlayer mPlayer;
-  public ProgressBar mProgressBar;
-  private AppCompatTextView mShowDuration;
+  private int duration;
+  private boolean isPrepared = false;
+  private MediaPlayer mediaPlayer;
+  private ProgressBar progressBar;
+  private AppCompatTextView showDuration;
   private Handler handler = new Handler();
-  private final Runnable updateProgress = new Runnable() {
-    public void run() {
-      // 获得歌曲现在播放位置并设置成播放进度条的值
-      if (Objects.nonNull(mPlayer)) {
 
-        if (mPlayer.isPlaying()) {
-          mProgressBar.setProgress(mPlayer.getCurrentPosition());
-          // 每次延迟100毫秒再启动线程
-          handler.postDelayed(updateProgress, 100);
-        }
-      }
-    }
-  };
-
-  /**
-   * 音频播放器
-   *
-   * @param progressBar 播放器进度条
-   * @param duration 音频时间总长
-   */
-  public static AudioPlayer getInstance(ProgressBar progressBar, AppCompatTextView duration) {
-    if (Objects.isNull(audioPlayer)) {
-      audioPlayer = new AudioPlayer();
-      audioPlayer.mPlayer = new MediaPlayer();
-      audioPlayer.mProgressBar = progressBar;
-      audioPlayer.mShowDuration = duration;
-    }
-    return audioPlayer;
+  private AudioPlayer() {
+    this.mediaPlayer = new MediaPlayer();
   }
 
   /**
-   * 准备音频播放数据源
+   * Audio player
    *
-   * @param filename 数据源文件名
+   * @param progressBar audio player progress bar
+   * @param duration audio duration text view
    */
-  @SuppressLint("LogConditional")
+  public static AudioPlayer getInstance(ProgressBar progressBar, AppCompatTextView duration) {
+    AudioPlayer audioPlayer = new AudioPlayer();
+    audioPlayer.setProgressBar(progressBar);
+    audioPlayer.setShowDuration(duration);
+    return audioPlayer;
+  }
+
+  public int getDuration() {
+    return duration;
+  }
+
+  public void setDuration(int duration) {
+    this.duration = duration;
+  }
+
+  public boolean isPrepared() {
+    return isPrepared;
+  }
+
+  public void setPrepared(boolean prepared) {
+    isPrepared = prepared;
+  }
+
+  public MediaPlayer getMediaPlayer() {
+    return mediaPlayer;
+  }
+
+  public AppCompatTextView getShowDuration() {
+    return showDuration;
+  }
+
+  public void setShowDuration(AppCompatTextView showDuration) {
+    this.showDuration = showDuration;
+  }
+
+  public void setMediaPlayer(MediaPlayer mediaPlayer) {
+    this.mediaPlayer = mediaPlayer;
+  }
+
+  public ProgressBar getProgressBar() {
+    return progressBar;
+  }
+
+  public void setProgressBar(ProgressBar progressBar) {
+    this.progressBar = progressBar;
+  }
+
+
+  /**
+   * Prepare audio playback data source
+   *
+   * @param filename data source file name
+   */
   public void prepare(String filename) {
     try {
-      //获取数据源文件目录地址
       String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath()
           + "/MoonlightNote/.audio/";
 
-      //检查文件名是否有".amr",如果没有就添加
+      // if the file name does not contain suffix '.amr', then add it.
       if (!filename.contains(".amr")) {
         filename = filename + ".amr";
       }
-      //合成数据源地址
       String filePath = dirPath + filename;
-      Log.d(TAG, "prepare: " + filePath);
+      if (BuildConfig.DEBUG) {
+        Log.d(TAG, "prepare: " + filePath);
+      }
 
       // check file is exist
       File file = new File(filePath);
@@ -85,59 +108,62 @@ public class AudioPlayer {
         throw new IOException("File not exist!");
       }
 
-      // check mediaplay instance
-      if (Objects.isNull(mPlayer)) {
-        audioPlayer.mPlayer = new MediaPlayer();
-      }
-
-      //设置数据源
-      mPlayer.setDataSource(filePath);
-      //采用异步的方式同步
-      mPlayer.prepare();
-      // 为播放器注册
-      mPlayer.setOnPreparedListener(mediaPlayer -> {
-        Log.d(TAG, "onPrepared: ");
-        //获取音频时长，并设置进度条最大值
-        mDuration = mPlayer.getDuration();
-        Log.d(TAG, "prepare: " + mDuration);
-        mProgressBar.setMax(mDuration);
-        mShowDuration.setText(Utils.convert((long) mDuration));
+      mediaPlayer.setDataSource(filePath);
+      mediaPlayer.prepare();
+      mediaPlayer.setOnPreparedListener(mediaPlayer -> {
+        duration = this.mediaPlayer.getDuration();
+        if (BuildConfig.DEBUG) {
+          Log.d(TAG, "prepare: " + duration);
+        }
+        progressBar.setMax(duration);
+        showDuration.setText(Utils.convert((long) duration));
         isPrepared = true;
       });
     } catch (IOException e) {
-      ToastUtils.with(MoonlightApplication.getContext())
-          .setMessage("AudioPlayer got some errors!" + e)
-          .showLongToast();
-      Log.e(TAG, "prepare() failed ");
+      isPrepared = false;
+      Log.e(TAG, "prepare() failed ", e);
     }
   }
 
   /**
-   * 开始播放并更新进度条
+   * if media source is prepared, start to play audio and update progress bar.
    */
   public void startPlaying() {
     if (isPrepared) {
-      mPlayer.start();
-      handler.post(updateProgress);
+      mediaPlayer.start();
+      Thread updateProgressThread = new Thread(() -> {
+        for (int i = 0; i <= getDuration(); i++) {
+          try {
+            Thread.sleep(100);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+          handler.post(() -> {
+            if (mediaPlayer.isPlaying()) {
+              progressBar.setProgress(mediaPlayer.getCurrentPosition());
+            }
+          });
+        }
+      });
+      updateProgressThread.start();
     }
   }
 
   /**
-   * 停止播放并将进度条归位
+   * once media player stopped, reset media player and progress bar.
    */
   public void stopPlaying() {
-    //释放播放器
-    mPlayer.reset();
-    mProgressBar.setProgress(0);
+    mediaPlayer.reset();
+    progressBar.setProgress(0);
   }
 
   /**
-   * 释放播放器
+   * release media player.
    */
   public void releasePlayer() {
-    if (Objects.nonNull(mPlayer)) {
-      mPlayer.release();
-      mPlayer = null;
+    if (Objects.nonNull(mediaPlayer)) {
+      mediaPlayer.release();
+      mediaPlayer = null;
     }
   }
 }

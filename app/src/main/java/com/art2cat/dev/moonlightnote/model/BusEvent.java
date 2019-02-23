@@ -1,7 +1,7 @@
 package com.art2cat.dev.moonlightnote.model;
 
 /**
- * Created by art2cat on 9/21/16.
+ * Created by rorschach.h on 9/21/16.
  */
 
 public class BusEvent {

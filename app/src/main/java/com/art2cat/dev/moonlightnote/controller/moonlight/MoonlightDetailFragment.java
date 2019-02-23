@@ -322,7 +322,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
     }
     if (Objects.nonNull(moonlight.getImageUrl())) {
       String url = moonlight.getImageUrl();
-      Utils.displayImage(url, mImage);
+      Utils.displayImage(getActivity(), url, mImage);
       mImage.post(() -> CircularRevealUtils.show(mImage));
 
       mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
@@ -507,7 +507,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
       activity.getWindow().setStatusBarColor(ColorConstants.CYAN_DARK);
       activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
 
-      if (((MoonlightActivity) activity) Objects.nonNull(.mFAB)){
+      if (Objects.nonNull(((MoonlightActivity) activity).mFAB)) {
         ((MoonlightActivity) activity).mFAB.show();
       }
 
@@ -593,24 +593,24 @@ public abstract class MoonlightDetailFragment extends BaseFragment
       case R.id.playing_audio_button:
         if (Objects.nonNull(moonlight.getAudioName()) && mStartPlaying) {
           mStartPlaying = false;
-          if (!mAudioPlayer.isPrepared) {
+          if (!mAudioPlayer.isPrepared()) {
             mAudioPlayer.prepare(moonlight.getAudioName());
           }
           mAudioPlayer.startPlaying();
           mPlayingAudio.setBackgroundResource(R.drawable.ic_pause_circle_outline_lime_a700_24dp);
-          mAudioPlayer.mPlayer.setOnCompletionListener(mediaPlayer -> {
+          mAudioPlayer.getMediaPlayer().setOnCompletionListener(mediaPlayer -> {
             mediaPlayer.reset();
-            mAudioPlayer.mProgressBar.setProgress(0);
+            mAudioPlayer.getProgressBar().setProgress(0);
             mPlayingAudio.setBackgroundResource(R.drawable.ic_play_circle_outline_cyan_400_48dp);
-            mAudioPlayer.isPrepared = false;
+            mAudioPlayer.setPrepared(false);
             mStartPlaying = true;
           });
         } else {
           mAudioPlayer.stopPlaying();
           mPlayingAudio.setBackgroundResource(R.drawable.ic_play_circle_outline_cyan_400_48dp);
           mStartPlaying = true;
-          mAudioPlayer.mPlayer.reset();
-          mAudioPlayer.isPrepared = false;
+          mAudioPlayer.getMediaPlayer().reset();
+          mAudioPlayer.setPrepared(false);
         }
         break;
       case R.id.delete_audio:
@@ -1024,7 +1024,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
    * @param mFileUri 图片地址
    */
   private void showImage(@NonNull Uri mFileUri) {
-    Utils.displayImage(mFileUri.toString(), mImage);
+    Utils.displayImage(getActivity(), mFileUri.toString(), mImage);
     mImage.post(() -> CircularRevealUtils.show(mImage));
 
     mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
@@ -1033,11 +1033,13 @@ public abstract class MoonlightDetailFragment extends BaseFragment
   private void showAudio(String audioFileName) {
     if (!moonlight.getAudioName().isEmpty()) {
       mAudioPlayer.prepare(audioFileName);
-      if (mAudioPlayer.isPrepared) {
-        moonlight.setAudioDuration((long) mAudioPlayer.mDuration);
+      if (mAudioPlayer.isPrepared()) {
+        moonlight.setAudioDuration((long) mAudioPlayer.getDuration());
         mAudioCardView.setVisibility(View.VISIBLE);
         mAudioContainer.setBackgroundColor(moonlight.getColor());
         mContentTextInputLayout.setPadding(0, 0, 0, 0);
+      } else {
+        showLongToast("AudioPlayer got some errors!");
       }
     } else {
       mShowDuration.setText(Utils.convert(moonlight.getAudioDuration()));

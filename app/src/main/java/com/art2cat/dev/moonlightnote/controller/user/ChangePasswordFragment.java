@@ -45,7 +45,6 @@ public class ChangePasswordFragment extends BaseFragment {
     setHasOptionsMenu(true);
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-    assertObjects.nonNull(user);
     button.setOnClickListener(v -> {
       String oldPassword = oldET.getText().toString();
       final String newPassword = newET.getText().toString();

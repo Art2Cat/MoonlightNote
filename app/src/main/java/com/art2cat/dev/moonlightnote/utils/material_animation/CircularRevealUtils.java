@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 
 /**
- * Created by Rorschach on 12/15/16 11:21 PM.
+ * Created by rorschach.h on 12/15/16 11:21 PM.
  */
 
 public class CircularRevealUtils {

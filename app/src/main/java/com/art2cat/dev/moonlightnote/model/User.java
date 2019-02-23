@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by art2cat on 8/12/16.
+ * Created by rorschach.h on 8/12/16.
  */
 public class User {
 

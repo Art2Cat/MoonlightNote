@@ -7,7 +7,7 @@ import java.util.Objects;
 import org.greenrobot.eventbus.EventBus;
 
 /**
- * Created by Rorschach on 2016/11/16 14:23.
+ * Created by rorschach.h on 2016/11/16 14:23.
  */
 
 public class BusEventUtils {

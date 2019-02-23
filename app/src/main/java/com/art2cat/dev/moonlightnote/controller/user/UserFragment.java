@@ -10,11 +10,8 @@ import static com.art2cat.dev.moonlightnote.constants.Constants.BUS_FLAG_EMAIL;
 import static com.art2cat.dev.moonlightnote.constants.Constants.BUS_FLAG_USERNAME;
 import static com.art2cat.dev.moonlightnote.constants.Constants.FB_STORAGE_REFERENCE;
 import static com.art2cat.dev.moonlightnote.constants.Constants.TAKE_PICTURE;
-import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
-import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -30,8 +27,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
+import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.controller.BaseFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ConfirmationDialogFragment;
@@ -39,12 +36,12 @@ import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.InputDial
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.PicturePickerDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.login.LoginActivity;
 import com.art2cat.dev.moonlightnote.model.BusEvent;
-import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.model.User;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.UserUtils;
+import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.art2cat.dev.moonlightnote.utils.firebase.AuthUtils;
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.utils.material_animation.CircularRevealUtils;
@@ -60,7 +57,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 import java.util.Objects;
 import org.greenrobot.eventbus.EventBus;
@@ -212,17 +208,9 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
       emailTextView.setText(email);
     }
 
-    displayImage(Uri.parse(user.getPhotoUrl()));
+    Utils.displayImage(getActivity(), user.getPhotoUrl(), circleImageView);
   }
 
-  private void displayImage(Uri mDownloadUrl) {
-    if (Objects.nonNull(mDownloadUrl)) {
-      Picasso.with(MoonlightApplication.getContext()).load(mDownloadUrl)
-          .memoryPolicy(NO_CACHE, NO_STORE)
-          .config(Bitmap.Config.RGB_565).into(circleImageView);
-      user.setPhotoUrl(mDownloadUrl.toString());
-    }
-  }
 
   @Override
   public void onClick(View v) {
@@ -355,14 +343,14 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
     uploadTask.addOnSuccessListener(taskSnapshot -> {
       String filePath = Objects.requireNonNull(taskSnapshot.getMetadata()).getPath();
       user.setPhotoUrl(filePath);
-      displayImage(Uri.parse(filePath));
+      Utils.displayImage(getActivity(), filePath, circleImageView);
       UserUtils.saveUserToCache(activity.getApplicationContext(), user);
       updateProfile(null, Uri.parse(filePath));
       circleProgressDialogFragment.dismiss();
     }).addOnFailureListener(e -> {
       circleProgressDialogFragment.dismiss();
       Log.e(TAG, "uploadFromUri: onFailure: ", e);
-      displayImage(firebaseUser.getPhotoUrl());
+      Utils.displayImage(getActivity(), user.getPhotoUrl(), circleImageView);
     });
   }
 

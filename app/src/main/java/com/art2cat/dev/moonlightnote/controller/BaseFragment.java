@@ -41,7 +41,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 /**
- * Created by Rorschach on 2017/1/8 14:32.
+ * Created by rorschach.h on 2017/1/8 14:32.
  */
 
 public abstract class BaseFragment extends Fragment {

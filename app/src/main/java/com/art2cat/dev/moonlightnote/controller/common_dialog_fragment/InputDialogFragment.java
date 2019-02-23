@@ -20,7 +20,7 @@ import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import java.util.Objects;
 
 /**
- * Created by Rorschach on 2016/11/21 11:01.
+ * Created by rorschach.h on 2016/11/21 11:01.
  */
 
 public class InputDialogFragment extends DialogFragment {

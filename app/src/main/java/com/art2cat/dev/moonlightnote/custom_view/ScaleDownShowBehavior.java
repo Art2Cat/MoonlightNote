@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.animation.LinearInterpolator;
 
 /**
- * Created by Rorschach on 28/10/2017 1:02 PM.
+ * Created by rorschach.h on 28/10/2017 1:02 PM.
  */
 
 public class ScaleDownShowBehavior extends FloatingActionButton.Behavior {
