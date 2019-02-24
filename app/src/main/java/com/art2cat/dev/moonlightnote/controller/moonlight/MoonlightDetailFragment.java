@@ -37,6 +37,7 @@ import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.SparseIntArray;
@@ -305,29 +306,29 @@ public abstract class MoonlightDetailFragment extends BaseFragment
 
   private void initView(boolean editable) {
     if (editable) {
-      if (Objects.nonNull(moonlight.getTitle())) {
+      if (!TextUtils.isEmpty(moonlight.getTitle())) {
         mTitle.setText(moonlight.getTitle());
       }
     } else {
       mTitle.setEnabled(false);
-      if (Objects.nonNull(moonlight.getTitle())) {
+      if (!TextUtils.isEmpty(moonlight.getTitle())) {
         mTitle.setText(moonlight.getTitle());
       }
     }
-    if (Objects.nonNull(moonlight.getContent())) {
+    if (!TextUtils.isEmpty(moonlight.getContent())) {
       mContent.setText(moonlight.getContent());
       if (!editable) {
         mContent.setEnabled(false);
       }
     }
-    if (Objects.nonNull(moonlight.getImageUrl())) {
+    if (!TextUtils.isEmpty(moonlight.getImageUrl())) {
       String url = moonlight.getImageUrl();
       Utils.displayImage(getActivity(), url, mImage);
       mImage.post(() -> CircularRevealUtils.show(mImage));
 
       mContentTextInputLayout.setPadding(0, 0, 0, mPaddingBottom);
     }
-    if (Objects.nonNull(moonlight.getAudioUrl())) {
+    if (!TextUtils.isEmpty(moonlight.getAudioUrl())) {
       showAudio(moonlight.getAudioName());
       mAudioCardView.setVisibility(View.VISIBLE);
       mContentTextInputLayout.setPadding(0, 0, 0, 0);
@@ -591,7 +592,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
         hideSoftKeyboard();
         break;
       case R.id.playing_audio_button:
-        if (Objects.nonNull(moonlight.getAudioName()) && mStartPlaying) {
+        if (!TextUtils.isEmpty(moonlight.getAudioName()) && mStartPlaying) {
           mStartPlaying = false;
           if (!mAudioPlayer.isPrepared()) {
             mAudioPlayer.prepare(moonlight.getAudioName());
@@ -664,15 +665,15 @@ public abstract class MoonlightDetailFragment extends BaseFragment
       case R.id.bottom_sheet_item_send:
         Intent in = new Intent(Intent.ACTION_SEND);
         in.setType("text/plain");
-        if (Objects.nonNull(moonlight.getTitle())) {
+        if (!TextUtils.isEmpty(moonlight.getTitle())) {
           in.putExtra(Intent.EXTRA_TITLE, moonlight.getTitle());
         }
 
-        if (Objects.nonNull(moonlight.getContent())) {
+        if (!TextUtils.isEmpty(moonlight.getContent())) {
           in.putExtra(Intent.EXTRA_TEXT, moonlight.getContent());
         }
 
-        if (Objects.nonNull(moonlight.getImageUrl())) {
+        if (!TextUtils.isEmpty(moonlight.getImageUrl())) {
           in.putExtra(Intent.EXTRA_TEXT, moonlight.getImageUrl());
         }
         //设置分享选择器

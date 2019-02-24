@@ -60,12 +60,6 @@ public final class Constants {
   public static final int EXTRA_PASSWORD = 307;
   public static final int EXTRA_PATTERN = 308;
 
-  public static final int EXTRA_TYPE_CDF_EMPTY_TRASH = 401;
-  public static final int EXTRA_TYPE_CDF_DELETE_ACCOUNT = 402;
-  public static final int EXTRA_TYPE_CDF_DISABLE_SECURITY = 403;
-  public static final int EXTRA_TYPE_CDF_DELETE_IMAGE = 404;
-  public static final int EXTRA_TYPE_CDF_EMPTY_NOTE = 405;
-
   public static final int EXTRA_TYPE_MOONLIGHT = 201;
   public static final int EXTRA_TYPE_TRASH = 202;
   public static final int EXTRA_TYPE_USER = 203;

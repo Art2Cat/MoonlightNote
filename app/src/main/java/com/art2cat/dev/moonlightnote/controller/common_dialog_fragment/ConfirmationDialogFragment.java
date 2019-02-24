@@ -21,10 +21,15 @@ import java.util.Objects;
 public class ConfirmationDialogFragment extends DialogFragment {
 
   private static final String TAG = "ConfirmationDialog";
-  private String mUserId;
-  private String mTitle;
-  private String mMessage;
-  private int mType;
+  public static final int TYPE_EMPTY_TRASH = 401;
+  public static final int TYPE_DELETE_ACCOUNT = 402;
+  public static final int TYPE_DISABLE_SECURITY = 403;
+  public static final int TYPE_DELETE_IMAGE = 404;
+  public static final int TYPE_EMPTY_NOTE = 405;
+  private String userId;
+  private String title;
+  private String message;
+  private int type;
 
   public static ConfirmationDialogFragment newInstance(String title, String message, int type) {
     ConfirmationDialogFragment confirmationDialogFragment = new ConfirmationDialogFragment();
@@ -51,12 +56,13 @@ public class ConfirmationDialogFragment extends DialogFragment {
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    // TODO: replace method getArguments() by savedInstanceState
     if (Objects.nonNull(getArguments())) {
       Bundle args = getArguments();
-      mUserId = args.getString("id");
-      mTitle = args.getString("title");
-      mMessage = args.getString("message");
-      mType = args.getInt("type");
+      userId = args.getString("id");
+      title = args.getString("title");
+      message = args.getString("message");
+      type = args.getInt("type");
     }
   }
 
@@ -64,18 +70,18 @@ public class ConfirmationDialogFragment extends DialogFragment {
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-    if (Objects.nonNull(mTitle)) {
-      builder.setTitle(mTitle);
+    if (Objects.nonNull(title)) {
+      builder.setTitle(title);
     }
-    if (Objects.nonNull(mMessage)) {
-      builder.setMessage(mMessage);
+    if (Objects.nonNull(message)) {
+      builder.setMessage(message);
     }
     String positiveText;
-    if (mType == Constants.EXTRA_TYPE_CDF_EMPTY_TRASH) {
+    if (type == TYPE_EMPTY_TRASH) {
       positiveText = getString(R.string.dialog_empty_trash_confirm);
-    } else if (mType == Constants.EXTRA_TYPE_CDF_DELETE_ACCOUNT) {
+    } else if (type == TYPE_DELETE_ACCOUNT) {
       positiveText = getString(R.string.dialog_delete_account_confirm);
-    } else if (mType == Constants.EXTRA_TYPE_CDF_EMPTY_NOTE) {
+    } else if (type == TYPE_EMPTY_NOTE) {
       positiveText = getString(R.string.dialog_empty_note_confirm);
     } else {
       positiveText = getString(android.R.string.ok);
@@ -83,27 +89,28 @@ public class ConfirmationDialogFragment extends DialogFragment {
 
     builder.setPositiveButton(positiveText, (dialogInterface, i) -> {
       // positive button logic
-      switch (mType) {
-        case Constants.EXTRA_TYPE_CDF_EMPTY_TRASH:
-          FDatabaseUtils.emptyTrash(mUserId);
+      switch (type) {
+        case TYPE_EMPTY_TRASH:
+          FDatabaseUtils.emptyTrash(userId);
           break;
-        case Constants.EXTRA_TYPE_CDF_DELETE_ACCOUNT:
+        case TYPE_DELETE_ACCOUNT:
           InputDialogFragment inputDialogFragment =
-              InputDialogFragment.newInstance(getString(R.string.dialog_enter_your_password), 2);
+              InputDialogFragment.newInstance(getString(R.string.dialog_enter_your_password),
+                  InputDialogFragment.TYPE_PASSWORD);
           inputDialogFragment.show(getFragmentManager(), "enter password");
           break;
-        case Constants.EXTRA_TYPE_CDF_DISABLE_SECURITY:
+        case TYPE_DISABLE_SECURITY:
           int code = SPUtils.getInt(getActivity().getApplicationContext(), Constants.USER_CONFIG,
               Constants.USER_CONFIG_SECURITY_ENABLE, 0);
           Utils.unLockApp(getActivity(), code);
           SPUtils.putInt(getActivity().getApplicationContext(), Constants.USER_CONFIG,
               Constants.USER_CONFIG_SECURITY_ENABLE, 0);
           break;
-        case Constants.EXTRA_TYPE_CDF_DELETE_IMAGE:
+        case TYPE_DELETE_IMAGE:
           BusEventUtils.post(Constants.BUS_FLAG_DELETE_IMAGE, null);
           break;
-        case Constants.EXTRA_TYPE_CDF_EMPTY_NOTE:
-          FDatabaseUtils.emptyNote(mUserId);
+        case TYPE_EMPTY_NOTE:
+          FDatabaseUtils.emptyNote(userId);
           break;
       }
     });

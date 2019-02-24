@@ -5,6 +5,7 @@ import static com.google.firebase.auth.FirebaseAuth.getInstance;
 
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ public class LoginActivity extends AppCompatActivity {
   private FirebaseAuth firebaseAuth;
   private FirebaseAuth.AuthStateListener authStateListener;
   private FDatabaseUtils fDatabaseUtils;
+  ShortcutsUtils shortcutsUtils;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,6 +57,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     startAdFragment();
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
+      ShortcutManager shortcutManager = this.getSystemService(ShortcutManager.class);
+      shortcutsUtils = ShortcutsUtils.getInstance(shortcutManager);
+    }
   }
 
   @Override
@@ -89,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
         loginState = false;
         Log.d(TAG, "onAuthStateChanged:signed_out:");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-          ShortcutsUtils.getInstance(LoginActivity.this).removeShortcuts();
+          shortcutsUtils.removeShortcuts();
         }
       }
     };
@@ -155,14 +161,11 @@ public class LoginActivity extends AppCompatActivity {
   }
 
   private void initShortcuts() {
-    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.N_MR1) {
-      return;
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
+      if (!shortcutsUtils.isShortcutsEnable()) {
+        enableShortcuts();
+      }
     }
-
-    if (!ShortcutsUtils.getInstance(LoginActivity.this).isShortcutsEnable()) {
-      enableShortcuts();
-    }
-
   }
 
   @RequiresApi(api = Build.VERSION_CODES.N_MR1)
@@ -170,9 +173,8 @@ public class LoginActivity extends AppCompatActivity {
 
     Intent intent = new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MoonlightActivity.class)
         .putExtra("type", STORAGE_PERMS);
-    ShortcutsUtils shortcutsUtils = ShortcutsUtils.getInstance(LoginActivity.this);
     ShortcutInfo compose = shortcutsUtils
-        .createShortcut("compose", "Compose", "Compose new note", R.drawable.ic_action_create,
+        .createShortcut(this, "compose", "Compose", "Compose new note", R.drawable.ic_action_create,
             intent);
 
     List<ShortcutInfo> shortcutInfoList = new ArrayList<>();

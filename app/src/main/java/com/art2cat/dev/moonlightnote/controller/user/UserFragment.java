@@ -187,7 +187,7 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
         ConfirmationDialogFragment confirmationDialogFragment = ConfirmationDialogFragment
             .newInstance(getString(R.string.delete_account_title),
                 getString(R.string.delete_account_content),
-                Constants.EXTRA_TYPE_CDF_DELETE_ACCOUNT);
+                ConfirmationDialogFragment.TYPE_DELETE_ACCOUNT);
         confirmationDialogFragment.show(activity.getFragmentManager(), "delete account");
         break;
     }
@@ -220,9 +220,10 @@ public class UserFragment extends BaseFragment implements View.OnClickListener {
         pickPicFragment.show(getFragmentManager(), "PICK_PIC");
         break;
       case R.id.user_nickname:
-        InputDialogFragment inputDialogFragment1 =
-            InputDialogFragment.newInstance(getString(R.string.dialog_set_nickname), 1);
-        inputDialogFragment1.show(activity.getFragmentManager(), "setNickname");
+        InputDialogFragment inputDialogFragment =
+            InputDialogFragment.newInstance(getString(R.string.dialog_set_nickname),
+                InputDialogFragment.TYPE_NICKNAME);
+        inputDialogFragment.show(activity.getFragmentManager(), "setNickname");
         break;
     }
   }

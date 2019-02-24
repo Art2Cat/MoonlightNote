@@ -1,6 +1,5 @@
 package com.art2cat.dev.moonlightnote.utils;
 
-import java.util.Objects;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
@@ -12,6 +11,7 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by rorschach.h on 1/7/17 9:52 PM.
@@ -21,24 +21,17 @@ import java.util.List;
 public class ShortcutsUtils {
 
   private static final String TAG = ShortcutsUtils.class.getName();
-  private static ShortcutsUtils shortcutsUtils;
-  private Context context;
   private ShortcutManager shortcutManager;
 
-  public static ShortcutsUtils getInstance(Context context) {
+  private ShortcutsUtils() {
+  }
 
-    if (Objects.isNull(shortcutsUtils)) {
-      shortcutsUtils = new ShortcutsUtils();
-      ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
-      shortcutsUtils.setShortcutManager(shortcutManager);
-      shortcutsUtils.setContext(context);
-    }
+  public static ShortcutsUtils getInstance(ShortcutManager shortcutManager) {
+    ShortcutsUtils shortcutsUtils = new ShortcutsUtils();
+    shortcutsUtils.setShortcutManager(shortcutManager);
     return shortcutsUtils;
   }
 
-  private void setContext(Context context) {
-    this.context = context;
-  }
 
   private void setShortcutManager(ShortcutManager shortcutManager) {
     this.shortcutManager = shortcutManager;
@@ -54,7 +47,7 @@ public class ShortcutsUtils {
    * @param intents Intent集合
    * @return 快捷键信息
    */
-  public ShortcutInfo createShortcut(String shortcutId, String shortLabel,
+  public ShortcutInfo createShortcut(Context context, String shortcutId, String shortLabel,
       String longLabel, @DrawableRes int drawableRes,
       Intent[] intents) {
     return new ShortcutInfo.Builder(context, shortcutId)
@@ -75,7 +68,7 @@ public class ShortcutsUtils {
    * @param intent Intent
    * @return 快捷键信息
    */
-  public ShortcutInfo createShortcut(String shortcutId, String shortLabel,
+  public ShortcutInfo createShortcut(Context context, String shortcutId, String shortLabel,
       String longLabel, @DrawableRes int drawableRes,
       Intent intent) {
     return new ShortcutInfo.Builder(context, shortcutId)

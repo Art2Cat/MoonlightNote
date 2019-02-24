@@ -21,9 +21,9 @@ public class PicturePickerDialogFragment extends DialogFragment {
 
   public static PicturePickerDialogFragment newInstance(int type) {
     PicturePickerDialogFragment picturePickerDialogFragment = new PicturePickerDialogFragment();
-    Bundle args = new Bundle();
-    args.putInt("type", type);
-    picturePickerDialogFragment.setArguments(args);
+//    Bundle args = new Bundle();
+//    args.putInt("type", type);
+//    picturePickerDialogFragment.setArguments(args);
     return picturePickerDialogFragment;
   }
 
@@ -37,12 +37,12 @@ public class PicturePickerDialogFragment extends DialogFragment {
     TextView camera = view.findViewById(R.id.camera);
     TextView album = view.findViewById(R.id.album);
 
-    camera.setOnClickListener(view1 -> {
+    camera.setOnClickListener(v -> {
       BusEventUtils.post(Constants.BUS_FLAG_CAMERA, null);
       dismiss();
     });
 
-    album.setOnClickListener(view2 -> {
+    album.setOnClickListener(v -> {
       BusEventUtils.post(Constants.BUS_FLAG_ALBUM, null);
       dismiss();
     });

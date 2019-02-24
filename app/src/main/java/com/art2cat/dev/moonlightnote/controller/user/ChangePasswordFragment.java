@@ -1,6 +1,7 @@
 package com.art2cat.dev.moonlightnote.controller.user;
 
 
+import android.support.annotation.NonNull;
 import java.util.Objects;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -34,20 +35,20 @@ public class ChangePasswordFragment extends BaseFragment {
 
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
+  public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     View view = inflater.inflate(R.layout.fragment_change_password, container, false);
-    TextInputEditText oldET = view.findViewById(R.id.old_password_editText);
-    TextInputEditText newET = view.findViewById(R.id.new_password_editText);
+    TextInputEditText oldPasswordEditText = view.findViewById(R.id.old_password_editText);
+    TextInputEditText newPasswordEditText = view.findViewById(R.id.new_password_editText);
     AppCompatButton button = view.findViewById(R.id.change_password);
 
     setHasOptionsMenu(true);
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     button.setOnClickListener(v -> {
-      String oldPassword = oldET.getText().toString();
-      final String newPassword = newET.getText().toString();
+      String oldPassword = oldPasswordEditText.getText().toString();
+      final String newPassword = newPasswordEditText.getText().toString();
 
       if (!oldPassword.equals("") && !newPassword.equals("")) {
         AuthCredential credential = null;

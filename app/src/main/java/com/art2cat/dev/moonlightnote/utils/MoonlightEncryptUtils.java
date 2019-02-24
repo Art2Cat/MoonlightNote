@@ -2,6 +2,7 @@ package com.art2cat.dev.moonlightnote.utils;
 
 import android.os.AsyncTask;
 import android.support.annotation.AnyThread;
+import android.text.TextUtils;
 import android.util.Log;
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.MoonlightApplication;
@@ -32,27 +33,27 @@ public class MoonlightEncryptUtils {
     if (Objects.nonNull(key)) {
       try {
 
-        if (Objects.nonNull(moonlight.getTitle())) {
+        if (!TextUtils.isEmpty(moonlight.getTitle())) {
           moonlight.setTitle(AESUtils.encrypt(key, moonlight.getTitle()));
         }
 
-        if (Objects.nonNull(moonlight.getContent())) {
+        if (!TextUtils.isEmpty(moonlight.getContent())) {
           moonlight.setContent(AESUtils.encrypt(key, moonlight.getContent()));
         }
 
-        if (Objects.nonNull(moonlight.getImageUrl())) {
+        if (!TextUtils.isEmpty(moonlight.getImageUrl())) {
           moonlight.setImageUrl(AESUtils.encrypt(key, moonlight.getImageUrl()));
         }
 
-        if (Objects.nonNull(moonlight.getAudioUrl())) {
+        if (!TextUtils.isEmpty(moonlight.getAudioUrl())) {
           moonlight.setAudioUrl(AESUtils.encrypt(key, moonlight.getAudioUrl()));
         }
 
-        if (Objects.nonNull(moonlight.getImageName())) {
+        if (!TextUtils.isEmpty(moonlight.getImageName())) {
           moonlight.setImageName(AESUtils.encrypt(key, moonlight.getImageName()));
         }
 
-        if (Objects.nonNull(moonlight.getAudioName())) {
+        if (!TextUtils.isEmpty(moonlight.getAudioName())) {
           moonlight.setAudioName(AESUtils.encrypt(key, moonlight.getAudioName()));
         }
 
@@ -69,27 +70,27 @@ public class MoonlightEncryptUtils {
 
     if (Objects.nonNull(key)) {
       try {
-        if (Objects.nonNull(moonlight.getTitle())) {
+        if (!TextUtils.isEmpty(moonlight.getTitle())) {
           moonlight.setTitle(AESUtils.decrypt(key, moonlight.getTitle()));
         }
 
-        if (Objects.nonNull(moonlight.getContent())) {
+        if (!TextUtils.isEmpty(moonlight.getContent())) {
           moonlight.setContent(AESUtils.decrypt(key, moonlight.getContent()));
         }
 
-        if (Objects.nonNull(moonlight.getImageUrl())) {
+        if (!TextUtils.isEmpty(moonlight.getImageUrl())) {
           moonlight.setImageUrl(AESUtils.decrypt(key, moonlight.getImageUrl()));
         }
 
-        if (Objects.nonNull(moonlight.getAudioUrl())) {
+        if (!TextUtils.isEmpty(moonlight.getAudioUrl())) {
           moonlight.setAudioUrl(AESUtils.decrypt(key, moonlight.getAudioUrl()));
         }
 
-        if (Objects.nonNull(moonlight.getImageName())) {
+        if (!TextUtils.isEmpty(moonlight.getImageName())) {
           moonlight.setImageName(AESUtils.decrypt(key, moonlight.getImageName()));
         }
 
-        if (Objects.nonNull(moonlight.getAudioName())) {
+        if (!TextUtils.isEmpty(moonlight.getAudioName())) {
           moonlight.setAudioName(AESUtils.decrypt(key, moonlight.getAudioName()));
         }
 

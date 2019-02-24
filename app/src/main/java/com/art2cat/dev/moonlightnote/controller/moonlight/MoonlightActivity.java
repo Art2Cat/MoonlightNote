@@ -10,6 +10,7 @@ import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
 import static com.squareup.picasso.MemoryPolicy.NO_STORE;
 
 import android.content.Intent;
+import android.content.pm.ShortcutManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -194,7 +195,7 @@ public class MoonlightActivity extends BaseFragmentActivity
   @SuppressWarnings("StatementWithEmptyBody")
   @Override
   public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-    // Handle navigation mView item clicks here.
+    // Handle navigation view item clicks here.
     int id = item.getItemId();
     int container = R.id.main_fragment_container;
     switch (id) {
@@ -277,7 +278,9 @@ public class MoonlightActivity extends BaseFragmentActivity
         mAuth.signOut();
         isLogin = false;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-          ShortcutsUtils.getInstance(MoonlightActivity.this).removeShortcuts();
+
+          ShortcutManager shortcutManager = this.getSystemService(ShortcutManager.class);
+          ShortcutsUtils.getInstance(shortcutManager).removeShortcuts();
         }
         BusEventUtils.post(Constants.BUS_FLAG_SIGN_OUT, null);
         SPUtils.clear(MoonlightApplication.getContext(), "User");

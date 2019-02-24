@@ -12,6 +12,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -372,14 +373,14 @@ public abstract class MoonlightListFragment extends BaseFragment {
         ConfirmationDialogFragment emptyNote = ConfirmationDialogFragment
             .newInstance(getUid(), getString(R.string.dialog_empty_note_title),
                 getString(R.string.dialog_empty_note_content),
-                Constants.EXTRA_TYPE_CDF_EMPTY_NOTE);
+                ConfirmationDialogFragment.TYPE_EMPTY_NOTE);
         emptyNote.show(activity.getFragmentManager(), "Empty Note");
         break;
       case R.id.menu_empty_trash:
         ConfirmationDialogFragment emptyTrash = ConfirmationDialogFragment
             .newInstance(getUid(), getString(R.string.dialog_empty_trash_title),
                 getString(R.string.dialog_empty_trash_content),
-                Constants.EXTRA_TYPE_CDF_EMPTY_TRASH);
+                ConfirmationDialogFragment.TYPE_EMPTY_TRASH);
         emptyTrash.show(activity.getFragmentManager(), "Empty Trash");
         activity.setTitle(R.string.fragment_trash);
         break;
@@ -468,10 +469,10 @@ public abstract class MoonlightListFragment extends BaseFragment {
               activity.setTitle(R.string.app_name);
               break;
             case R.id.action_delete_forever:
-              if (Objects.nonNull(moonlight.getImageUrl())) {
+              if (!TextUtils.isEmpty(moonlight.getImageUrl())) {
                 StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
               }
-              if (Objects.nonNull(moonlight.getAudioUrl())) {
+              if (!TextUtils.isEmpty(moonlight.getAudioUrl())) {
                 StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
               }
               FDatabaseUtils
@@ -485,15 +486,15 @@ public abstract class MoonlightListFragment extends BaseFragment {
             case R.id.action_send:
               Intent in = new Intent(Intent.ACTION_SEND);
               in.setType("text/plain");
-              if (Objects.nonNull(moonlight.getTitle())) {
+              if (!TextUtils.isEmpty(moonlight.getTitle())) {
                 in.putExtra(Intent.EXTRA_TITLE, moonlight.getTitle());
               }
 
-              if (Objects.nonNull(moonlight.getContent())) {
+              if (!TextUtils.isEmpty(moonlight.getContent())) {
                 in.putExtra(Intent.EXTRA_TEXT, moonlight.getContent());
               }
 
-              if (Objects.nonNull(moonlight.getImageUrl())) {
+              if (!TextUtils.isEmpty(moonlight.getImageUrl())) {
                 in.putExtra(Intent.EXTRA_TEXT, moonlight.getImageUrl());
               }
               in = Intent.createChooser(in, "Send to");
@@ -505,10 +506,10 @@ public abstract class MoonlightListFragment extends BaseFragment {
               activity.setTitle(R.string.fragment_trash);
               break;
             case R.id.action_trash_delete_forever:
-              if (Objects.nonNull(moonlight.getImageUrl())) {
+              if (!TextUtils.isEmpty(moonlight.getImageUrl())) {
                 StorageUtils.removePhoto(null, getUid(), moonlight.getImageName());
               }
-              if (Objects.nonNull(moonlight.getAudioUrl())) {
+              if (!TextUtils.isEmpty(moonlight.getAudioUrl())) {
                 StorageUtils.removeAudio(null, getUid(), moonlight.getAudioName());
               }
               FDatabaseUtils

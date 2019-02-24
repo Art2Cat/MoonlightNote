@@ -59,7 +59,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -225,7 +224,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
               ConfirmationDialogFragment.newInstance(
                   getActivity().getString(R.string.confirmation_title),
                   getActivity().getString(R.string.confirmation_disable_security),
-                  Constants.EXTRA_TYPE_CDF_DISABLE_SECURITY);
+                  ConfirmationDialogFragment.TYPE_DISABLE_SECURITY);
           confirmationDialogFragment.show(getActivity().getFragmentManager(), "cf");
           break;
         case PIN:

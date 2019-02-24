@@ -262,6 +262,7 @@ public class ColorPickerDialogFragment
     colors.clear();
     colors = null;
     for (ImageButton imageButton : buttons) {
+      // help gc
       imageButton = null;
     }
     buttons.clear();

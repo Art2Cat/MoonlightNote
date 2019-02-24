@@ -30,6 +30,7 @@ public class CircleProgressDialogFragment extends DialogFragment {
   public Dialog onCreateDialog(Bundle savedInstanceState) {
 
     ProgressDialog dialog = new ProgressDialog(getActivity());
+    // TODO: replace method getArguments() by savedInstanceState
     if (Objects.nonNull(getArguments())) {
       dialog.setMessage(getArguments().getString("message"));
     }
