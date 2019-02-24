@@ -26,7 +26,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
@@ -121,11 +120,11 @@ public abstract class BaseFragment extends Fragment {
   }
 
   public void showShortToast(String content) {
-    Toast.makeText(MoonlightApplication.getContext(), content, Toast.LENGTH_SHORT).show();
+    Toast.makeText(getContext(), content, Toast.LENGTH_SHORT).show();
   }
 
   public void showLongToast(String content) {
-    Toast.makeText(MoonlightApplication.getContext(), content, Toast.LENGTH_LONG).show();
+    Toast.makeText(getContext(), content, Toast.LENGTH_LONG).show();
   }
 
   public void setArgs(Moonlight moonlight, int flag) {

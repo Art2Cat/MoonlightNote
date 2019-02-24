@@ -25,10 +25,10 @@ import java.util.Objects;
 
 public class InputDialogFragment extends DialogFragment {
 
-  private static final String TAG = "InputDialogFragment";
   public static final int TYPE_EMAIL = 0;
   public static final int TYPE_NICKNAME = 1;
   public static final int TYPE_PASSWORD = 2;
+  private static final String TAG = "InputDialogFragment";
   private TextInputEditText textInputEditText;
   private int type;
   private String title;

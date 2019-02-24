@@ -18,7 +18,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.constants.ColorConstants;
 import java.util.ArrayList;
@@ -224,7 +223,7 @@ public class ColorPickerDialogFragment
 
     Runnable r8 = () -> {
       Animation animation =
-          AnimationUtils.loadAnimation(MoonlightApplication.getContext(), android.R.anim.fade_in);
+          AnimationUtils.loadAnimation(getContext(), android.R.anim.fade_in);
       animation.setInterpolator(new AccelerateInterpolator());
       twentyOne.setAnimation(animation);
       twentyOne.setVisibility(View.VISIBLE);
@@ -245,7 +244,7 @@ public class ColorPickerDialogFragment
 
   private void animator(final ImageButton imageButton) {
     Animation animation = AnimationUtils
-        .loadAnimation(MoonlightApplication.getContext(), R.anim.color_item);
+        .loadAnimation(getContext(), R.anim.color_item);
     animation.setInterpolator(new AccelerateInterpolator());
     imageButton.setAnimation(animation);
     imageButton.setVisibility(View.VISIBLE);

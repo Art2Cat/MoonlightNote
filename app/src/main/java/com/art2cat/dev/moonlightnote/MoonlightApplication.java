@@ -1,6 +1,5 @@
 package com.art2cat.dev.moonlightnote;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import com.art2cat.dev.moonlightnote.controller.settings.MoonlightPinActivity;
@@ -19,8 +18,6 @@ import okhttp3.OkHttpClient;
 
 public class MoonlightApplication extends Application {
 
-  @SuppressLint("StaticFieldLeak")
-  private static Context context;
   private RefWatcher refWatcher;
 
   public static RefWatcher getRefWatcher(Context context) {
@@ -28,13 +25,8 @@ public class MoonlightApplication extends Application {
     return application.refWatcher;
   }
 
-  public static Context getContext() {
-    return context;
-  }
-
   @Override
   public Context getApplicationContext() {
-    context = super.getApplicationContext();
     return super.getApplicationContext();
   }
 

@@ -5,7 +5,6 @@ import android.support.annotation.AnyThread;
 import android.text.TextUtils;
 import android.util.Log;
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -14,18 +13,11 @@ import java.util.concurrent.ExecutionException;
  * Created by rorschach.h on 12/14/16 9:28 PM.
  */
 
-public class MoonlightEncryptUtils {
+public final class MoonlightEncryptUtils {
 
   private static final String TAG = "MoonlightEncryptUtils";
-  private String key;
 
   private MoonlightEncryptUtils() {
-    key = SPUtils.getString(MoonlightApplication.getContext(),
-        "User", "EncryptKey", null);
-  }
-
-  public static MoonlightEncryptUtils newInstance() {
-    return new MoonlightEncryptUtils();
   }
 
   @AnyThread
@@ -102,7 +94,7 @@ public class MoonlightEncryptUtils {
     return null;
   }
 
-  public Moonlight decryptMoonlight(Moonlight moonlight) {
+  public static Moonlight decryptMoonlight(String key, Moonlight moonlight) {
     MoonlightCryptoTask task = new MoonlightCryptoTask(MoonlightCryptoTask.DECRYPT, key);
     task.execute(moonlight);
     Moonlight decrypted = null;
@@ -122,7 +114,7 @@ public class MoonlightEncryptUtils {
     return decrypted;
   }
 
-  public Moonlight encryptMoonlight(Moonlight moonlight) {
+  public static Moonlight encryptMoonlight(String key, Moonlight moonlight) {
     MoonlightCryptoTask task = new MoonlightCryptoTask(MoonlightCryptoTask.ENCRYPT, key);
     task.execute(moonlight);
     Moonlight encrypted = null;
@@ -141,9 +133,9 @@ public class MoonlightEncryptUtils {
     return encrypted;
   }
 
-  public void setKey(String key) {
-    this.key = key;
-  }
+//  public void setKey(String key) {
+//    this.key = key;
+//  }
 
   private static class MoonlightCryptoTask extends AsyncTask<Moonlight, Void, Moonlight> {
 

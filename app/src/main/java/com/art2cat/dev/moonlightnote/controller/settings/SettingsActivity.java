@@ -23,13 +23,13 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
 import com.art2cat.dev.moonlightnote.model.NoteLab;
+import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.utils.ToastUtils;
@@ -59,6 +59,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -262,12 +263,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * Handle result of Created file
      */
     public DriveFile file;
+    String userId;
     private GoogleApiClient mGoogleApiClient;
-    private FDatabaseUtils mFDatabaseUtils;
-    private String mData;
     private int mType;
     private CircleProgressDialogFragment mCircleProgressDialogFragment;
-    String userId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -275,7 +274,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
       addPreferencesFromResource(R.xml.pref_back_up);
       setHasOptionsMenu(true);
       userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-      mFDatabaseUtils = FDatabaseUtils.newInstance(getActivity(), userId);
       mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance();
       Preference connectToDrive = findPreference(CONNECT_TO_DRIVE);
       Preference backupToDrive = findPreference(BACKUP_TO_DRIVE);
@@ -307,11 +305,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
           break;
         case BACKUP_TO_DRIVE:
           if (Objects.nonNull(mGoogleApiClient)) {
-            mFDatabaseUtils.exportNote(1);
+            NoteLab noteLab = export();
             Drive.DriveApi.newDriveContents(mGoogleApiClient)
                 .setResultCallback(driveContentsResult -> {
                   if (driveContentsResult.getStatus().isSuccess()) {
-                    CreateFileOnGoogleDrive(driveContentsResult);
+                    createFileOnGoogleDrive(noteLab, driveContentsResult);
                   }
                 });
           } else {
@@ -346,6 +344,26 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
       return false;
     }
 
+    private NoteLab export() {
+      Future<NoteLab> noteLabFuture = EXECUTOR_SERVICE.submit(new Callable<NoteLab>() {
+
+        @Override
+        public NoteLab call() throws Exception {
+          return FDatabaseUtils.exportNote(getContext(), userId, 1);
+        }
+      });
+      try {
+
+        return noteLabFuture.get();
+
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } catch (ExecutionException e) {
+        e.printStackTrace();
+      }
+      return null;
+    }
+
     @AfterPermissionGranted(STORAGE_PERMS)
     private void requestPermission(int type) {
       if (!EasyPermissions.hasPermissions(getActivity(),
@@ -355,14 +373,24 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 "you should give App storage permission ",
             STORAGE_PERMS, Manifest.permission.WRITE_EXTERNAL_STORAGE);
       } else {
+        NoteLab noteLab;
         if (type == 0) {
-          mFDatabaseUtils.exportNote(0);
+          noteLab = export();
+          if (Objects.nonNull(noteLab) && !noteLab.getMoonlights().isEmpty()) {
+            Utils.saveNoteToLocal(noteLab);
+            ToastUtils.with(getContext())
+                .setMessage("Back up succeed! save in internal storage root name Note.json")
+                .showShortToast();
+            BusEventUtils.post(Constants.BUS_FLAG_EXPORT_DATA_DONE, null);
+          } else {
+            Log.w(TAG, "requestPermission: " + noteLab.getMoonlights().size());
+          }
         } else {
-          NoteLab noteLab = Utils.getNoteFromLocal();
-          FDatabaseUtils.restoreAll(userId, noteLab);
-          Toast.makeText(MoonlightApplication.getContext(), "Restore succeed!",
-              Toast.LENGTH_LONG).show();
-
+          noteLab = Utils.getNoteFromLocal();
+          FDatabaseUtils.restoreAll(getContext(), userId, noteLab);
+          ToastUtils.with(getContext())
+              .setMessage("Restore succeed!")
+              .showLongToast();
         }
       }
     }
@@ -382,12 +410,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         Log.d(TAG, "onPermissionsGranted: ");
         switch (mType) {
           case 0:
-            mFDatabaseUtils.exportNote(0);
+
+            FDatabaseUtils.exportNote(getContext(), userId, 0);
+            ToastUtils.with(getContext())
+                .setMessage("Back up succeed! save in internal storage root name Note.json")
+                .showShortToast();
             break;
           case 1:
             NoteLab noteLab = Utils.getNoteFromLocal();
-            mFDatabaseUtils.restoreAll(userId, noteLab);
-            Toast.makeText(MoonlightApplication.getContext(), "Restore succeed!",
+            FDatabaseUtils.restoreAll(getContext(), userId, noteLab);
+            Toast.makeText(getContext(), "Restore succeed!",
                 Toast.LENGTH_LONG).show();
 
             break;
@@ -419,7 +451,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     public void onDestroy() {
       super.onDestroy();
-      mFDatabaseUtils.removeListener();
       if (!EXECUTOR_SERVICE.isTerminated()) {
         EXECUTOR_SERVICE.shutdown();
       }
@@ -478,7 +509,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
           if (BuildConfig.DEBUG) {
             Log.i(TAG, "readFileFromDrive: " + noteLab.getMoonlights().size());
           }
-          mFDatabaseUtils.restoreAll(userId, noteLab);
+          FDatabaseUtils.restoreAll(getContext(), userId, noteLab);
           return true;
         } catch (IOException e) {
           Log.e(TAG, "readFileFromDrive: IOException while reading from the stream, ", e);
@@ -492,7 +523,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
       if (future.isDone()) {
         try {
           if (Boolean.TRUE.equals(future.get())) {
-            Toast.makeText(MoonlightApplication.getContext(), "Restore succeed!",
+            Toast.makeText(getContext(), "Restore succeed!",
                 Toast.LENGTH_LONG).show();
           }
         } catch (ExecutionException e) {
@@ -525,26 +556,24 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * Create a file in root folder using MetadataChangeSet object.
+     * Create a file in root folder using MetadataChangeSet object. TODO: need fix
      */
-    public void CreateFileOnGoogleDrive(DriveApi.DriveContentsResult result) {
+    public void createFileOnGoogleDrive(NoteLab noteLab, DriveApi.DriveContentsResult result) {
 
       final DriveContents driveContents = result.getDriveContents();
 
-      mData = mFDatabaseUtils.getJson();
       EXECUTOR_SERVICE.execute(() -> {
         OutputStream outputStream = driveContents.getOutputStream();
         Writer writer = new OutputStreamWriter(outputStream);
+        Gson gson = new Gson();
+        String mJson = gson.toJson(noteLab);
 
-        if (Objects.isNull(mData)) {
-          mData = mFDatabaseUtils.getJson();
-        }
-        if (Objects.nonNull(mData)) {
+        if (Objects.nonNull(mJson)) {
           try {
-            writer.write(mData);
+            writer.write(mJson);
             writer.close();
           } catch (IOException e) {
-            Log.e(TAG, "CreateFileOnGoogleDrive: ", e);
+            Log.e(TAG, "createFileOnGoogleDrive: ", e);
           }
         }
         MetadataChangeSet changeSet = new MetadataChangeSet.Builder()

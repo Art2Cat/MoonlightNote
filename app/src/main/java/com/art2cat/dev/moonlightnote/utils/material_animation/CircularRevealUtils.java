@@ -1,11 +1,11 @@
 package com.art2cat.dev.moonlightnote.utils.material_animation;
 
-import java.util.Objects;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import java.util.Objects;
 
 /**
  * Created by rorschach.h on 12/15/16 11:21 PM.

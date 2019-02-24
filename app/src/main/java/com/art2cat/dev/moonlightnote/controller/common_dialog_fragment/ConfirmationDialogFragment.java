@@ -20,12 +20,12 @@ import java.util.Objects;
 
 public class ConfirmationDialogFragment extends DialogFragment {
 
-  private static final String TAG = "ConfirmationDialog";
   public static final int TYPE_EMPTY_TRASH = 401;
   public static final int TYPE_DELETE_ACCOUNT = 402;
   public static final int TYPE_DISABLE_SECURITY = 403;
   public static final int TYPE_DELETE_IMAGE = 404;
   public static final int TYPE_EMPTY_NOTE = 405;
+  private static final String TAG = "ConfirmationDialog";
   private String userId;
   private String title;
   private String message;

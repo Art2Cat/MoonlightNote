@@ -64,6 +64,7 @@ import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.utils.AudioPlayer;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.utils.FragmentBackHandler;
+import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
@@ -383,7 +384,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
               .setAction(R.string.trash_restore_action, view -> {
 
                 BusEventUtils.post(Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT, null);
-                FDatabaseUtils.restoreToNote(mUserId, moonlight);
+                FDatabaseUtils.restoreToNote(getContext(), mUserId, moonlight);
                 activity.getFragmentManager().popBackStack();
               });
 
@@ -480,12 +481,16 @@ public abstract class MoonlightDetailFragment extends BaseFragment
     //当moonlight图片，标题，内容不为空空时，添加moonlight到服务器
     if (mCreateFlag && mEditable) {
       if (isEmpty(moonlight)) {
-        FDatabaseUtils.addMoonlight(mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+        FDatabaseUtils
+            .addMoonlight(getContext(), mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
       }
     }
     //当editFlag为true且moonlight不为空时更新moonlight信息到服务器
     if (mEditable && mEditFlag && Objects.nonNull(moonlight) && !moonlight.isTrash()) {
-      FDatabaseUtils.updateMoonlight(mUserId, mKeyId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+      String key = SPUtils.getString(getContext(),
+          "User", "EncryptKey", null);
+      FDatabaseUtils.updateMoonlight(key, mUserId, mKeyId, moonlight,
+          Constants.EXTRA_TYPE_MOONLIGHT);
     }
   }
 
@@ -572,7 +577,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
                     new File(Environment.getExternalStorageDirectory() + "/MoonlightNote/.audio"),
                     busEvent.getMessage());
             Uri mAudioUri = FileProvider
-                .getUriForFile(MoonlightApplication.getContext(), Constants.FILE_PROVIDER, file);
+                .getUriForFile(getContext(), Constants.FILE_PROVIDER, file);
             uploadFromUri(mAudioUri, mUserId, 3);
           }
           break;
@@ -632,7 +637,7 @@ public abstract class MoonlightDetailFragment extends BaseFragment
         break;
       case R.id.bottom_sheet_item_move_to_trash:
         if (isEmpty(moonlight)) {
-          FDatabaseUtils.moveToTrash(mUserId, moonlight);
+          FDatabaseUtils.moveToTrash(getContext(), mUserId, moonlight);
         } else {
           BusEventUtils.post(Constants.BUS_FLAG_NULL, null);
         }
@@ -654,7 +659,8 @@ public abstract class MoonlightDetailFragment extends BaseFragment
         break;
       case R.id.bottom_sheet_item_make_a_copy:
         if (isEmpty(moonlight)) {
-          FDatabaseUtils.addMoonlight(mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+          FDatabaseUtils
+              .addMoonlight(getContext(), mUserId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
           showShortSnackBar(viewParent, "Note Copy complete.", SnackBarUtils.TYPE_INFO);
           changeBottomSheetState();
         } else {

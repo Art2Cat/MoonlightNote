@@ -5,22 +5,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.model.NoteLab;
 import com.art2cat.dev.moonlightnote.model.User;
-import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.utils.MoonlightEncryptUtils;
-import com.art2cat.dev.moonlightnote.utils.ToastUtils;
+import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.UserUtils;
-import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -32,30 +28,18 @@ import java.util.Objects;
 public class FDatabaseUtils {
 
   private static final String TAG = "FDatabaseUtils";
-  private static HashMap<String, FDatabaseUtils> mHashMap = new HashMap<>();
-  private final Context mContext;
-  private final String mUserId;
   //  public User user;
   private String mJson;
   private boolean complete;
-  private DatabaseReference mDatabaseReference;
-  private DatabaseReference mDatabaseReference1;
-  private ValueEventListener mValueEventListener;
-  private ValueEventListener mValueEventListener1;
+  private DatabaseReference exportDatabaseReference;
+  private ValueEventListener exportValueEventListener;
 
-  private FDatabaseUtils(Context context, String userId) {
-    mContext = context;
-    mDatabaseReference = FirebaseDatabase.getInstance().getReference();
-    mUserId = userId;
-    mHashMap.put(userId, this);
+  private FDatabaseUtils(String userId) {
 
   }
 
-  public static FDatabaseUtils newInstance(Context context, String userId) {
-    if (mHashMap.get(userId) != null) {
-      return mHashMap.get(userId);
-    }
-    return new FDatabaseUtils(context, userId);
+  public static FDatabaseUtils newInstance(String userId) {
+    return new FDatabaseUtils(userId);
   }
 
   /**
@@ -100,7 +84,8 @@ public class FDatabaseUtils {
    * @param moonlight Moonlight
    * @param type 操作类型
    */
-  public static void updateMoonlight(final String userId, @Nullable String keyId,
+  public static void updateMoonlight(final String cryptoKey, final String userId,
+      @Nullable String keyId,
       final Moonlight moonlight, final int type) {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     Moonlight moonlightE = null;
@@ -119,7 +104,7 @@ public class FDatabaseUtils {
 
     try {
       moonlightE = (Moonlight) moonlight.clone();
-      moonlightE = MoonlightEncryptUtils.newInstance().encryptMoonlight(moonlightE);
+      moonlightE = MoonlightEncryptUtils.encryptMoonlight(cryptoKey, moonlightE);
       Map<String, Object> moonlightValues = moonlightE.toMap();
       Map<String, Object> childUpdates = new HashMap<>();
 
@@ -173,13 +158,16 @@ public class FDatabaseUtils {
     }
   }
 
-  public static void addMoonlight(final String userId, final Moonlight moonlight, final int type) {
+  public static void addMoonlight(final Context context, final String userId,
+      final Moonlight moonlight, final int type) {
+    String key = SPUtils.getString(context,
+        "User", "EncryptKey", null);
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     databaseReference.child(userId).addListenerForSingleValueEvent(
         new ValueEventListener() {
           @Override
           public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            updateMoonlight(userId, null, moonlight, type);
+            updateMoonlight(key, userId, null, moonlight, type);
           }
 
           @Override
@@ -189,17 +177,19 @@ public class FDatabaseUtils {
         });
   }
 
-  public static void moveToTrash(String userId, Moonlight moonlight) {
+  public static void moveToTrash(Context context, String userId, Moonlight moonlight) {
     moonlight.setTrash(true);
-    addMoonlight(userId, moonlight, Constants.EXTRA_TYPE_TRASH);
+    addMoonlight(context, userId, moonlight, Constants.EXTRA_TYPE_TRASH);
   }
 
-  public static void restoreToNote(String userId, Moonlight moonlight) {
+  public static void restoreToNote(Context context, String userId, Moonlight moonlight) {
     moonlight.setTrash(false);
-    addMoonlight(userId, moonlight, Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT);
+    addMoonlight(context, userId, moonlight, Constants.EXTRA_TYPE_TRASH_TO_MOONLIGHT);
   }
 
-  public void getDataFromDatabase(@Nullable String keyId, final int type) {
+  public static void getDataFromDatabase(@NonNull Context context, String userId,
+      @Nullable String keyId,
+      final int type) {
     if (Objects.isNull(keyId)) {
       return;
     }
@@ -211,7 +201,7 @@ public class FDatabaseUtils {
 
           if (type == Constants.EXTRA_TYPE_USER) {
             User user = dataSnapshot.getValue(User.class);
-            UserUtils.saveUserToCache(mContext, user);
+            UserUtils.saveUserToCache(context, user);
 //          } else {
 //            moonlight = dataSnapshot.getValue(Moonlight.class);
 //            complete = true;
@@ -229,14 +219,14 @@ public class FDatabaseUtils {
 
       if (type == Constants.EXTRA_TYPE_MOONLIGHT) {
         databaseReference = FirebaseDatabase.getInstance().getReference()
-            .child("users-moonlight").child(mUserId).child("note").child(keyId);
+            .child("users-moonlight").child(userId).child("note").child(keyId);
       } else if (type == Constants.EXTRA_TYPE_TRASH) {
 
         databaseReference = FirebaseDatabase.getInstance().getReference()
-            .child("users-moonlight").child(mUserId).child("trash").child(keyId);
+            .child("users-moonlight").child(userId).child("trash").child(keyId);
       } else if (type == Constants.EXTRA_TYPE_USER) {
         databaseReference = FirebaseDatabase.getInstance().getReference()
-            .child("user").child(mUserId);
+            .child("user").child(userId);
       }
 
       if (Objects.nonNull(databaseReference)) {
@@ -252,36 +242,46 @@ public class FDatabaseUtils {
 
   }
 
-  public void exportNote(final int type) {
-    mDatabaseReference1 = FirebaseDatabase.getInstance().getReference()
-        .child("users-moonlight").child(mUserId).child("note");
+  public static void restoreAll(Context context, String mUserId, NoteLab noteLab) {
 
-    mValueEventListener1 = new ValueEventListener() {
+    String key = SPUtils.getString(context,
+        "User", "EncryptKey", null);
+    if (Objects.nonNull(noteLab)) {
+      for (Moonlight moonlight : noteLab.getMoonlights()) {
+        updateMoonlight(key, mUserId, null, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+      }
+    }
+  }
+
+  /**
+   * TODO: need fix
+   * @param context
+   * @param userId
+   * @param type
+   * @return
+   */
+  public static NoteLab exportNote(Context context, String userId, final int type) {
+    NoteLab noteLab = new NoteLab();
+    DatabaseReference exportDatabaseReference = FirebaseDatabase.getInstance().getReference()
+        .child("users-moonlight").child(userId).child("note");
+    String key = SPUtils.getString(context,
+        "User", "EncryptKey", null);
+
+    ValueEventListener exportValueEventListener = new ValueEventListener() {
       @Override
       public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
         if (Objects.nonNull(dataSnapshot)) {
-          NoteLab noteLab = new NoteLab();
 
-          int count = (int) dataSnapshot.getChildrenCount();
+          Log.i(TAG, "onDataChange: " + dataSnapshot.getChildrenCount());
+          int size = (int) dataSnapshot.getChildrenCount();
+          noteLab.setSize(size);
           for (DataSnapshot child : dataSnapshot.getChildren()) {
             Moonlight moonlight = child.getValue(Moonlight.class);
-            noteLab.setMoonlight(MoonlightEncryptUtils.newInstance().decryptMoonlight(moonlight));
+            noteLab.setMoonlight(
+                MoonlightEncryptUtils.decryptMoonlight(key, moonlight));
           }
-
-          if (count == noteLab.getMoonlights().size()) {
-            if (type == 0) {
-              Utils.saveNoteToLocal(noteLab);
-              ToastUtils.with(MoonlightApplication.getContext())
-                  .setMessage("Back up succeed! save in internal storage root name Note.json")
-                  .showShortToast();
-              BusEventUtils.post(Constants.BUS_FLAG_EXPORT_DATA_DONE, null);
-            } else if (type == 1) {
-              Gson gson = new Gson();
-              mJson = gson.toJson(noteLab);
-              Log.d(TAG, "onDataChange: " + mJson);
-              complete = true;
-            }
-          }
+        } else {
+          Log.e(TAG, "onDataChange: fail");
         }
       }
 
@@ -291,24 +291,20 @@ public class FDatabaseUtils {
       }
 
     };
-    mDatabaseReference1.addValueEventListener(mValueEventListener1);
-  }
-
-  public static void restoreAll(String mUserId, NoteLab noteLab) {
-    if (Objects.nonNull(noteLab)) {
-      for (Moonlight moonlight : noteLab.getMoonlights()) {
-        updateMoonlight(mUserId, null, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+    try {
+      exportDatabaseReference.addValueEventListener(exportValueEventListener);
+      Thread.sleep(10000);
+      Log.d(TAG, "exportNote: notelab: " + noteLab.getMoonlights().size());
+      while (noteLab.getSize() != noteLab.getMoonlights().size()) {
+        Log.d(TAG, "exportNote: " + noteLab.getSize());
       }
+      return noteLab;
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    } finally {
+      exportDatabaseReference.removeEventListener(exportValueEventListener);
     }
-  }
-
-  public void removeListener() {
-    if (Objects.nonNull(mValueEventListener)) {
-      mDatabaseReference.removeEventListener(mValueEventListener);
-    }
-    if (Objects.nonNull(mValueEventListener1)) {
-      mDatabaseReference1.removeEventListener(mValueEventListener1);
-    }
+    return noteLab;
   }
 
   private boolean isComplete() {

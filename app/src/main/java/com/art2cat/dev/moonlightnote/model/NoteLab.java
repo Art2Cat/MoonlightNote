@@ -9,6 +9,8 @@ import java.util.List;
 
 public class NoteLab {
 
+  private int size;
+
   private List<Moonlight> MoonlightNote;
 
   public NoteLab() {
@@ -29,5 +31,13 @@ public class NoteLab {
 
   public Moonlight getMoonlight(int i) {
     return MoonlightNote.get(i);
+  }
+
+  public int getSize() {
+    return size;
+  }
+
+  public void setSize(int size) {
+    this.size = size;
   }
 }

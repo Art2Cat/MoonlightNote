@@ -29,7 +29,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.controller.BaseFragment;
@@ -52,6 +51,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.kobakei.ratethisapp.RateThisApp;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 import java.lang.reflect.Field;
@@ -81,7 +81,6 @@ public class MoonlightActivity extends BaseFragmentActivity
   private TextView mNicknameTextView;
   private String mUserId;
   private FirebaseUser mFirebaseUser;
-  private FDatabaseUtils mFDatabaseUtils;
   private FirebaseAuth mAuth;
   private FirebaseAnalytics mFirebaseAnalytics;
   private int mLock;
@@ -92,7 +91,7 @@ public class MoonlightActivity extends BaseFragmentActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_moonlight);
 
-    mLock = SPUtils.getInt(MoonlightApplication.getContext(), Constants.USER_CONFIG,
+    mLock = SPUtils.getInt(this, Constants.USER_CONFIG,
         Constants.USER_CONFIG_SECURITY_ENABLE, 0);
     if (mLock != 0) {
       isLock = true;
@@ -103,8 +102,7 @@ public class MoonlightActivity extends BaseFragmentActivity
     mAuth = getInstance();
     //noinspection ConstantConditions
     mUserId = mAuth.getCurrentUser().getUid();
-    mFDatabaseUtils = FDatabaseUtils.newInstance(MoonlightApplication.getContext(), mUserId);
-    mFDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
+    FDatabaseUtils.getDataFromDatabase(this, mUserId, null, Constants.EXTRA_TYPE_USER);
     EventBus.getDefault().register(this);
     initView();
     displayUserInfo();
@@ -176,14 +174,13 @@ public class MoonlightActivity extends BaseFragmentActivity
     super.onResume();
     Log.d(TAG, "onResume: ");
     if (isLock) {
-      Utils.lockApp(MoonlightApplication.getContext(), mLock);
+      Utils.lockApp(this, mLock);
     }
   }
 
   @Override
   protected void onStop() {
     super.onStop();
-    mFDatabaseUtils.removeListener();
   }
 
   @Override
@@ -226,7 +223,7 @@ public class MoonlightActivity extends BaseFragmentActivity
         }
         break;
       case R.id.nav_settings:
-        Intent intent = new Intent(getBaseContext(), SettingsActivity.class);
+        Intent intent = new Intent(this, SettingsActivity.class);
         if (Utils.isXLargeTablet(this)) {
           Log.d(TAG, "onNavigationItemSelected: ");
         }
@@ -283,8 +280,8 @@ public class MoonlightActivity extends BaseFragmentActivity
           ShortcutsUtils.getInstance(shortcutManager).removeShortcuts();
         }
         BusEventUtils.post(Constants.BUS_FLAG_SIGN_OUT, null);
-        SPUtils.clear(MoonlightApplication.getContext(), "User");
-        SPUtils.clear(MoonlightApplication.getContext(), Constants.USER_CONFIG);
+        SPUtils.clear(this, "User");
+        SPUtils.clear(this, Constants.USER_CONFIG);
         SnackBarUtils.shortSnackBar(mCoordinatorLayout, "Your account have been remove!",
             SnackBarUtils.TYPE_ALERT).show();
         break;
@@ -467,7 +464,7 @@ public class MoonlightActivity extends BaseFragmentActivity
   private void displayUserInfo() {
     if (Objects.nonNull(mFirebaseUser)) {
 
-      User user = UserUtils.getUserFromCache(MoonlightApplication.getContext());
+      User user = UserUtils.getUserFromCache(this);
 
       Log.d(TAG, "displayUserInfo: " + user.getUid());
       String username = user.getNickname();
@@ -480,8 +477,9 @@ public class MoonlightActivity extends BaseFragmentActivity
       }
       String photoUrl = user.getPhotoUrl();
       if (Objects.nonNull(photoUrl)) {
-        Picasso.with(MoonlightApplication.getContext())
+        Picasso.with(this.getApplicationContext())
             .load(photoUrl)
+            .networkPolicy(NetworkPolicy.OFFLINE)
             .memoryPolicy(NO_CACHE, NO_STORE)
             .config(Bitmap.Config.RGB_565)
             .into(mCircleImageView);

@@ -31,6 +31,7 @@ import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
 import com.art2cat.dev.moonlightnote.utils.FragmentUtils;
 import com.art2cat.dev.moonlightnote.utils.MoonlightEncryptUtils;
+import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
 import com.art2cat.dev.moonlightnote.utils.firebase.StorageUtils;
@@ -186,7 +187,9 @@ public abstract class MoonlightListFragment extends BaseFragment {
           DatabaseReference moonlightRef = getRef(position);
           final String moonlightKey = moonlightRef.getKey();
 
-          final Moonlight moonlightD = MoonlightEncryptUtils.newInstance().decryptMoonlight(model);
+          String key = SPUtils.getString(getContext(),
+              "User", "EncryptKey", null);
+          final Moonlight moonlightD = MoonlightEncryptUtils.decryptMoonlight(key, model);
 
           if (Objects.isNull(moonlightD)) {
             return;
@@ -385,7 +388,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
         activity.setTitle(R.string.fragment_trash);
         break;
       case R.id.action_restore:
-        FDatabaseUtils.restoreToNote(getUid(), mMoonlight);
+        FDatabaseUtils.restoreToNote(getContext(), getUid(), mMoonlight);
         activity.setTitle(R.string.fragment_trash);
         changeOptionsMenu(3);
         break;
@@ -465,7 +468,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
         mToolbar2.setOnMenuItemClickListener(item -> {
           switch (item.getItemId()) {
             case R.id.action_delete:
-              FDatabaseUtils.moveToTrash(getUid(), moonlight);
+              FDatabaseUtils.moveToTrash(getContext(), getUid(), moonlight);
               activity.setTitle(R.string.app_name);
               break;
             case R.id.action_delete_forever:
@@ -480,7 +483,8 @@ public abstract class MoonlightListFragment extends BaseFragment {
               activity.setTitle(R.string.app_name);
               break;
             case R.id.action_make_a_copy:
-              FDatabaseUtils.addMoonlight(getUid(), moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+              FDatabaseUtils
+                  .addMoonlight(getContext(), getUid(), moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
               activity.setTitle(R.string.app_name);
               break;
             case R.id.action_send:
@@ -502,7 +506,7 @@ public abstract class MoonlightListFragment extends BaseFragment {
               activity.setTitle(R.string.app_name);
               break;
             case R.id.action_restore:
-              FDatabaseUtils.restoreToNote(getUid(), moonlight);
+              FDatabaseUtils.restoreToNote(getContext(), getUid(), moonlight);
               activity.setTitle(R.string.fragment_trash);
               break;
             case R.id.action_trash_delete_forever:

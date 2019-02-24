@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.controller.BaseFragment;
@@ -277,7 +276,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
                   InputDialogFragment.TYPE_EMAIL);
           inputDialogFragment.show(activity.getFragmentManager(), "resetPassword");
         } else {
-          AuthUtils.sendRPEmail(MoonlightApplication.getContext(), view, email);
+          AuthUtils.sendRPEmail(getContext(), view, email);
         }
         break;
       case R.id.email_sign_in_button:
@@ -328,7 +327,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
       FirebaseUser user = firebaseAuth.getCurrentUser();
       if (Objects.nonNull(user)) {
         Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-        SPUtils.putString(MoonlightApplication.getContext(),
+        SPUtils.putString(getContext(),
             "User", "Id", user.getUid());
         User localUser = new User();
         localUser.setUid(user.getUid());
@@ -351,7 +350,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         }
 
         UserUtils.updateUser(user.getUid(), localUser);
-        UserUtils.saveUserToCache(MoonlightApplication.getContext(), localUser);
+        UserUtils.saveUserToCache(getContext(), localUser);
       } else {
         if (BuildConfig.DEBUG) {
           Log.d(TAG, "onAuthStateChanged:signed_out:");
@@ -387,7 +386,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
             activity.startActivity(intent, bundle);
             showShortSnackBar(view, "Google Sign In succeed", SnackBarUtils.TYPE_INFO);
             isNewUser = true;
-            SPUtils.putBoolean(MoonlightApplication.getContext(), "User", "google", true);
+            SPUtils.putBoolean(getContext(), "User", "google", true);
             activity.finishAfterTransition();
           }
         });
@@ -481,7 +480,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
   @Subscribe(threadMode = ThreadMode.MAIN)
   public void busAction(BusEvent busEvent) {
     if (busEvent.getMessage().contains("@")) {
-      AuthUtils.sendRPEmail(MoonlightApplication.getContext(), view, busEvent.getMessage());
+      AuthUtils.sendRPEmail(getContext(), view, busEvent.getMessage());
     } else {
       showShortSnackBar(view, "Invalid email address",
           SnackBarUtils.TYPE_WARNING);
@@ -492,6 +491,6 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     Moonlight moonlight = new Moonlight();
     moonlight.setTitle(getString(R.string.init_moonlight_title));
     moonlight.setContent(getString(R.string.init_moonlight_content));
-    FDatabaseUtils.addMoonlight(userId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
+    FDatabaseUtils.addMoonlight(getContext(), userId, moonlight, Constants.EXTRA_TYPE_MOONLIGHT);
   }
 }

@@ -16,7 +16,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Fade;
 import android.util.Log;
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
@@ -35,11 +34,10 @@ public class LoginActivity extends AppCompatActivity {
 
   private static final String TAG = "LoginActivity";
   private static final String AD_UNIT_ID = "ca-app-pub-5043396164425122/9918900095";
+  ShortcutsUtils shortcutsUtils;
   private boolean loginState = false;
   private FirebaseAuth firebaseAuth;
   private FirebaseAuth.AuthStateListener authStateListener;
-  private FDatabaseUtils fDatabaseUtils;
-  ShortcutsUtils shortcutsUtils;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,9 +71,6 @@ public class LoginActivity extends AppCompatActivity {
   protected void onStop() {
     super.onStop();
     removeListener();
-    if (Objects.nonNull(fDatabaseUtils)) {
-      fDatabaseUtils.removeListener();
-    }
   }
 
   public void signIn() {
@@ -84,9 +79,7 @@ public class LoginActivity extends AppCompatActivity {
       if (Objects.nonNull(user)) {
         Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
         Log.d(TAG, "onAuthStateChanged: " + user.getDisplayName());
-        fDatabaseUtils = FDatabaseUtils
-            .newInstance(MoonlightApplication.getContext(), user.getUid());
-        fDatabaseUtils.getDataFromDatabase(null, Constants.EXTRA_TYPE_USER);
+        FDatabaseUtils.getDataFromDatabase(this, user.getUid(), null, Constants.EXTRA_TYPE_USER);
 
         initShortcuts();
 

@@ -62,16 +62,16 @@ public class AudioPlayer {
     return mediaPlayer;
   }
 
+  public void setMediaPlayer(MediaPlayer mediaPlayer) {
+    this.mediaPlayer = mediaPlayer;
+  }
+
   public AppCompatTextView getShowDuration() {
     return showDuration;
   }
 
   public void setShowDuration(AppCompatTextView showDuration) {
     this.showDuration = showDuration;
-  }
-
-  public void setMediaPlayer(MediaPlayer mediaPlayer) {
-    this.mediaPlayer = mediaPlayer;
   }
 
   public ProgressBar getProgressBar() {

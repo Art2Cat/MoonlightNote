@@ -21,7 +21,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ImageView;
 import com.art2cat.dev.moonlightnote.BuildConfig;
-import com.art2cat.dev.moonlightnote.MoonlightApplication;
 import com.art2cat.dev.moonlightnote.R;
 import com.art2cat.dev.moonlightnote.controller.settings.MoonlightPinActivity;
 import com.art2cat.dev.moonlightnote.model.NoteLab;
@@ -308,8 +307,7 @@ public class Utils {
    *
    * @return network status
    */
-  static boolean isNetworkConnected() {
-    Context context = MoonlightApplication.getContext();
+  static boolean isNetworkConnected(Context context) {
     if (Objects.nonNull(context)) {
       ConnectivityManager mConnectivityManager =
           (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -328,11 +326,10 @@ public class Utils {
    *
    * @return status
    */
-  static public boolean isWifiConnected() {
+  static public boolean isWifiConnected(Context context) {
 
     ConnectivityManager mConnectivityManager =
-        (ConnectivityManager) MoonlightApplication.getContext()
-            .getSystemService(Context.CONNECTIVITY_SERVICE);
+        (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     NetworkInfo mWiFiNetworkInfo = null;
     if (Objects.nonNull(mConnectivityManager)) {
       mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);

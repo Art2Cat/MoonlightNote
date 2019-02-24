@@ -1,9 +1,8 @@
 package com.art2cat.dev.moonlightnote.controller.user;
 
 
-import android.support.annotation.NonNull;
-import java.util.Objects;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.AppCompatButton;
@@ -21,6 +20,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import java.util.Objects;
 
 /**
  * A simple {@link BaseFragment} subclass.
