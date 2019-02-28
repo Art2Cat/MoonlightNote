@@ -4,12 +4,12 @@ package com.art2cat.dev.moonlightnote.controller.settings;
 import static com.art2cat.dev.moonlightnote.constants.Constants.STORAGE_PERMS;
 
 import android.Manifest;
+import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +21,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 import com.art2cat.dev.moonlightnote.BuildConfig;
 import com.art2cat.dev.moonlightnote.R;
@@ -28,38 +29,48 @@ import com.art2cat.dev.moonlightnote.constants.Constants;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.CircleProgressDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.common_dialog_fragment.ConfirmationDialogFragment;
 import com.art2cat.dev.moonlightnote.controller.moonlight.MoonlightActivity;
+import com.art2cat.dev.moonlightnote.model.Moonlight;
 import com.art2cat.dev.moonlightnote.model.NoteLab;
 import com.art2cat.dev.moonlightnote.utils.BusEventUtils;
+import com.art2cat.dev.moonlightnote.utils.MoonlightEncryptUtils;
 import com.art2cat.dev.moonlightnote.utils.SPUtils;
 import com.art2cat.dev.moonlightnote.utils.SnackBarUtils;
 import com.art2cat.dev.moonlightnote.utils.ToastUtils;
 import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
 import com.github.orangegangsters.lollipin.lib.managers.AppLock;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
-import com.google.android.gms.drive.DriveApi;
-import com.google.android.gms.drive.DriveContents;
-import com.google.android.gms.drive.DriveFile;
-import com.google.android.gms.drive.DriveId;
-import com.google.android.gms.drive.Metadata;
-import com.google.android.gms.drive.MetadataChangeSet;
-import com.google.android.gms.drive.query.Filters;
-import com.google.android.gms.drive.query.Query;
-import com.google.android.gms.drive.query.SearchableField;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.tasks.Task;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.client.http.FileContent;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -163,6 +174,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     super.onResume();
   }
 
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+  }
+
   /**
    * This method stops fragment injection in malicious applications. Make sure to deny any unknown
    * fragments here.
@@ -248,25 +264,38 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
   @SuppressLint("ValidFragment")
   public static class BackPreferenceFragment extends PreferenceFragment implements
-      Preference.OnPreferenceClickListener, GoogleApiClient.ConnectionCallbacks,
-      GoogleApiClient.OnConnectionFailedListener, EasyPermissions.PermissionCallbacks {
+      Preference.OnPreferenceClickListener, EasyPermissions.PermissionCallbacks {
 
     private static final String CONNECT_TO_DRIVE = "connect_to_drive";
     private static final String BACKUP_TO_DRIVE = "backup_to_drive";
     private static final String RESTORE_FROM_DRIVE = "restore_from_drive";
     private static final String BACKUP_TO_SD = "backup_to_sd";
     private static final String RESTORE_FROM_SD = "restore_from_sd";
+    private static final String DRIVE_SCOPE = "https://www.googleapis.com/auth/drive";
     private static final int REQUEST_CODE_CREATOR = 2;
     private static final int REQUEST_CODE_RESOLUTION = 3;
-    private static final int REQUEST_CODE_SAVE_TO_DRIVE = 1;
+    // Request codes
+    private static final int RC_SIGN_IN = 9001;
+    private static final int RC_RECOVERABLE = 9002;
     /**
      * Handle result of Created file
      */
-    public DriveFile file;
     String userId;
-    private GoogleApiClient mGoogleApiClient;
+    private GoogleSignInClient mGoogleSignInClient;
+    private Account mAccount;
     private int mType;
     private CircleProgressDialogFragment mCircleProgressDialogFragment;
+    private DatabaseReference exportDatabaseReference;
+    private ValueEventListener exportValueEventListener;
+    private String key;
+    private NoteLab noteLab;
+    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    public static final String FILE_MIME_TYPE = "plain/text";
+    /**
+     * Global instance of the HTTP transport.
+     */
+    private static HttpTransport HTTP_TRANSPORT;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -275,6 +304,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
       setHasOptionsMenu(true);
       userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
       mCircleProgressDialogFragment = CircleProgressDialogFragment.newInstance();
+      exportDatabaseReference = FirebaseDatabase.getInstance().getReference()
+          .child("users-moonlight").child(userId).child("note");
+      key = SPUtils.getString(getContext(),
+          "User", "EncryptKey", null);
+      // Configure sign-in to request the user's ID, email address, basic profile,
+      // and readonly access to contacts.
+      GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+          .requestScopes(new Scope(DRIVE_SCOPE))
+          .requestEmail()
+          .build();
+
+      mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gso);
       Preference connectToDrive = findPreference(CONNECT_TO_DRIVE);
       Preference backupToDrive = findPreference(BACKUP_TO_DRIVE);
       Preference restoreFromDrive = findPreference(RESTORE_FROM_DRIVE);
@@ -285,6 +326,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
       restoreFromDrive.setOnPreferenceClickListener(this);
       backupToSd.setOnPreferenceClickListener(this);
       restoreFromSd.setOnPreferenceClickListener(this);
+    }
+
+    @Override
+    public void onStart() {
+      super.onStart();
     }
 
     @Override
@@ -301,17 +347,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public boolean onPreferenceClick(Preference preference) {
       switch (preference.getKey()) {
         case CONNECT_TO_DRIVE:
-          connectToDrive();
+          Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+          startActivityForResult(signInIntent, RC_SIGN_IN);
           break;
         case BACKUP_TO_DRIVE:
-          if (Objects.nonNull(mGoogleApiClient)) {
-            NoteLab noteLab = export();
-            Drive.DriveApi.newDriveContents(mGoogleApiClient)
-                .setResultCallback(driveContentsResult -> {
-                  if (driveContentsResult.getStatus().isSuccess()) {
-                    createFileOnGoogleDrive(noteLab, driveContentsResult);
-                  }
-                });
+          if (Objects.nonNull(mAccount)) {
+            backup(mAccount);
           } else {
             SnackBarUtils.shortSnackBar(getView(),
                 "please connect to Google Drive first!",
@@ -319,13 +360,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
           }
           break;
         case RESTORE_FROM_DRIVE:
-          if (Objects.nonNull(mGoogleApiClient)) {
-            Drive.DriveApi.newDriveContents(mGoogleApiClient)
-                .setResultCallback(driveContentsResult -> {
-                  if (driveContentsResult.getStatus().isSuccess()) {
-                    queryFile();
-                  }
-                });
+
+          if (Objects.nonNull(mAccount)) {
+            readFileFromDrive(mAccount);
           } else {
             SnackBarUtils.shortSnackBar(getView(),
                 "please connect to Google Drive first!",
@@ -344,24 +381,51 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
       return false;
     }
 
-    private NoteLab export() {
-      Future<NoteLab> noteLabFuture = EXECUTOR_SERVICE.submit(new Callable<NoteLab>() {
+    private void backup(Account account) {
 
-        @Override
-        public NoteLab call() throws Exception {
-          return FDatabaseUtils.exportNote(getContext(), userId, 1);
+      noteLab = new NoteLab();
+      if (Objects.isNull(exportValueEventListener)) {
+        exportValueEventListener = new ValueEventListener() {
+          @Override
+          public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            if (Objects.nonNull(dataSnapshot)) {
+
+              Log.i(TAG, "onDataChange: " + dataSnapshot.getChildrenCount());
+              int size = (int) dataSnapshot.getChildrenCount();
+              dataSnapshot.getChildren().forEach(child -> {
+                Moonlight moonlight = child.getValue(Moonlight.class);
+                noteLab.setMoonlight(MoonlightEncryptUtils.decryptMoonlight(key, moonlight));
+              });
+
+              if (noteLab.getMoonlights().size() == size) {
+                // if account is null, backup to local.
+                if (Objects.isNull(account)) {
+                  Utils.saveNoteToLocal(noteLab);
+                  ToastUtils.with(getContext())
+                      .setMessage("Back up succeed! save in internal storage root name Note.json")
+                      .showShortToast();
+                  BusEventUtils.post(Constants.BUS_FLAG_EXPORT_DATA_DONE, null);
+                } else {
+                  createFileOnGoogleDrive(noteLab, account);
+                }
+              }
+            } else {
+              Log.e(TAG, "onDataChange: fail");
+            }
+          }
+
+          @Override
+          public void onCancelled(@NonNull DatabaseError databaseError) {
+            Log.w(TAG, "loadMoonlight:onCancelled", databaseError.toException());
+          }
+
+        };
+
+        if (Objects.nonNull(exportDatabaseReference)) {
+          exportDatabaseReference.addValueEventListener(exportValueEventListener);
         }
-      });
-      try {
-
-        return noteLabFuture.get();
-
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      } catch (ExecutionException e) {
-        e.printStackTrace();
       }
-      return null;
+
     }
 
     @AfterPermissionGranted(STORAGE_PERMS)
@@ -373,18 +437,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 "you should give App storage permission ",
             STORAGE_PERMS, Manifest.permission.WRITE_EXTERNAL_STORAGE);
       } else {
-        NoteLab noteLab;
         if (type == 0) {
-          noteLab = export();
-          if (Objects.nonNull(noteLab) && !noteLab.getMoonlights().isEmpty()) {
-            Utils.saveNoteToLocal(noteLab);
-            ToastUtils.with(getContext())
-                .setMessage("Back up succeed! save in internal storage root name Note.json")
-                .showShortToast();
-            BusEventUtils.post(Constants.BUS_FLAG_EXPORT_DATA_DONE, null);
-          } else {
-            Log.w(TAG, "requestPermission: " + noteLab.getMoonlights().size());
-          }
+          backup(null);
         } else {
           noteLab = Utils.getNoteFromLocal();
           FDatabaseUtils.restoreAll(getContext(), userId, noteLab);
@@ -410,18 +464,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         Log.d(TAG, "onPermissionsGranted: ");
         switch (mType) {
           case 0:
-
-            FDatabaseUtils.exportNote(getContext(), userId, 0);
-            ToastUtils.with(getContext())
-                .setMessage("Back up succeed! save in internal storage root name Note.json")
-                .showShortToast();
+            backup(null);
             break;
           case 1:
             NoteLab noteLab = Utils.getNoteFromLocal();
             FDatabaseUtils.restoreAll(getContext(), userId, noteLab);
             Toast.makeText(getContext(), "Restore succeed!",
                 Toast.LENGTH_LONG).show();
-
             break;
         }
       }
@@ -443,9 +492,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     public void onPause() {
       super.onPause();
-      if (Objects.nonNull(mGoogleApiClient)) {
-        mGoogleApiClient.disconnect();
-      }
     }
 
     @Override
@@ -454,70 +500,106 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
       if (!EXECUTOR_SERVICE.isTerminated()) {
         EXECUTOR_SERVICE.shutdown();
       }
-    }
-
-    private void connectToDrive() {
-
-      if (Objects.isNull(mGoogleApiClient)) {
-        // Create the API client and bind it to an instance variable.
-        // We use this instance as the callback for connection and connection
-        // failures.
-        // Since no account name is passed, the user is prompted to choose.
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-            .addApi(Drive.API)
-            .addScope(Drive.SCOPE_FILE)
-            .addConnectionCallbacks(this)
-            .addOnConnectionFailedListener(this)
-            .build();
-        mCircleProgressDialogFragment.show(getFragmentManager(), "progressbar");
+      if (Objects.nonNull(mGoogleSignInClient)) {
+        mGoogleSignInClient.signOut();
       }
-      // Connect the client. Once connected, the camera is launched.
-      mGoogleApiClient.connect();
+
+      if (Objects.nonNull(exportDatabaseReference) && Objects.nonNull(exportValueEventListener)) {
+        exportDatabaseReference.removeEventListener(exportValueEventListener);
+      }
     }
+
+    private void handleSignInResult(@NonNull Task<GoogleSignInAccount> completedTask) {
+      Log.d(TAG, "handleSignInResult:" + completedTask.isSuccessful());
+
+      try {
+        GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+        // Store the account from the result
+        if (Objects.nonNull(account)) {
+          mAccount = account.getAccount();
+          mCircleProgressDialogFragment.dismiss();
+        }
+
+      } catch (ApiException e) {
+        Log.w(TAG, "handleSignInResult:error", e);
+
+        mCircleProgressDialogFragment.dismiss();
+        // Clear the local account
+        mAccount = null;
+
+        // Signed out, show unauthenticated UI.
+      }
+    }
+
 
     /**
      * Create a new file and save it to Drive.
      */
-    private void readFileFromDrive(DriveId id) {
-      final DriveFile f = id.asDriveFile();
+    private void readFileFromDrive(Account account) {
+
       Future<Boolean> future = EXECUTOR_SERVICE.submit(() -> {
-        DriveApi.DriveContentsResult driveContentsResult =
-            f.open(mGoogleApiClient, DriveFile.MODE_READ_ONLY,
-                null).await();
-        if (!driveContentsResult.getStatus().isSuccess()) {
-          if (BuildConfig.DEBUG) {
-            Log.d(TAG, "readFileFromDrive: " + driveContentsResult.getStatus());
-          }
-          return false;
-        }
-
-        DriveContents driveContents = driveContentsResult.getDriveContents();
-        BufferedReader reader = new BufferedReader(
-            new InputStreamReader(driveContents.getInputStream()));
-        StringBuilder builder = new StringBuilder();
-        String line;
+        Context context = getActivity().getApplicationContext();
         try {
-          while ((line = reader.readLine()) != null) {
-            builder.append(line);
-          }
-          String contentsAsString = builder.toString();
-          Gson gson = new Gson();
-          NoteLab noteLab = gson.fromJson(contentsAsString, NoteLab.class);
-          if (Objects.isNull(noteLab)) {
-            return false;
-          }
-          if (BuildConfig.DEBUG) {
-            Log.i(TAG, "readFileFromDrive: " + noteLab.getMoonlights().size());
-          }
-          FDatabaseUtils.restoreAll(getContext(), userId, noteLab);
-          return true;
-        } catch (IOException e) {
-          Log.e(TAG, "readFileFromDrive: IOException while reading from the stream, ", e);
-          return false;
-        } finally {
-          driveContents.discard(mGoogleApiClient);
-        }
+          GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(
+              context,
+              Collections.singleton(DRIVE_SCOPE));
+          credential.setSelectedAccount(account);
+          Drive drive = new com.google.api.services.drive.Drive.Builder(
+              HTTP_TRANSPORT, JSON_FACTORY, credential)
+//              .setApplicationName(APPLICATION_NAME)
+              .build();
+          String pageToken = null;
+          do {
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension(".json");
+            FileList result = drive.files().list()
+                .setQ("mimeType='text/json'")
+                .setSpaces("drive")
+                .setFields("nextPageToken, files(id, name)")
+                .setPageToken(pageToken)
+                .execute();
+            for (File file : result.getFiles()) {
+              System.out.printf("Found file: %s (%s)\n",
+                  file.getName(), file.getId());
+              if ("Note.json".equals(file.getName())) {
+                InputStream inputStream = drive.files().export(file.getId(), FILE_MIME_TYPE)
+                    .executeMediaAsInputStream();
+                BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(inputStream));
+                StringBuilder builder = new StringBuilder();
+                String line;
+                try {
+                  while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                  }
+                  String contentsAsString = builder.toString();
+                  Gson gson = new Gson();
+                  NoteLab noteLab = gson.fromJson(contentsAsString, NoteLab.class);
+                  if (Objects.isNull(noteLab)) {
+                    return false;
+                  }
+                  if (BuildConfig.DEBUG) {
+                    Log.i(TAG, "readFileFromDrive: " + noteLab.getMoonlights().size());
+                  }
+                  FDatabaseUtils.restoreAll(getContext(), userId, noteLab);
+                  return true;
+                } catch (IOException e) {
+                  Log.e(TAG, "readFileFromDrive: IOException while reading from the stream, ", e);
+                  return false;
+                }
+              }
+            }
+            pageToken = result.getNextPageToken();
+          } while (pageToken != null);
 
+
+        } catch (UserRecoverableAuthIOException recoverableException) {
+//          getActivity().getApplicationContext().onRecoverableAuthException(recoverableException);
+        } catch (IOException e) {
+          Log.w(TAG, "getContacts:exception", e);
+          return false;
+        }
+        return false;
       });
 
       if (future.isDone()) {
@@ -534,67 +616,51 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
       }
     }
 
-    private void queryFile() {
-      Query query = new Query.Builder()
-          .addFilter(Filters.contains(SearchableField.TITLE, "Note.json"))
-          .build();
-      Drive.DriveApi.query(
-          mGoogleApiClient, query).setResultCallback(result -> {
-        if (!result.getStatus().isSuccess()) {
-          if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Problem while retrieving results");
-          }
-          return;
-        }
+    public void createFileOnGoogleDrive(NoteLab noteLab, Account account) {
 
-        Metadata metadata = result.getMetadataBuffer().get(0);
-        if (BuildConfig.DEBUG) {
-          Log.d(TAG, "metadata.getDriveId():" + metadata.getDriveId());
-        }
-        readFileFromDrive(metadata.getDriveId());
-      });
-    }
-
-    /**
-     * Create a file in root folder using MetadataChangeSet object. TODO: need fix
-     */
-    public void createFileOnGoogleDrive(NoteLab noteLab, DriveApi.DriveContentsResult result) {
-
-      final DriveContents driveContents = result.getDriveContents();
-
+      Context context = getActivity().getApplicationContext();
       EXECUTOR_SERVICE.execute(() -> {
-        OutputStream outputStream = driveContents.getOutputStream();
-        Writer writer = new OutputStreamWriter(outputStream);
-        Gson gson = new Gson();
-        String mJson = gson.toJson(noteLab);
+        GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(
+            context,
+            Collections.singleton(DRIVE_SCOPE));
+        credential.setSelectedAccount(account);
+        Drive drive = new com.google.api.services.drive.Drive.Builder(
+            HTTP_TRANSPORT, JSON_FACTORY, credential)
+//              .setApplicationName(APPLICATION_NAME)
+            .build();
+        File fileMetadata = new File();
 
-        if (Objects.nonNull(mJson)) {
-          try {
-            writer.write(mJson);
+        fileMetadata
+            .setName("Note.json")
+            .setMimeType(FILE_MIME_TYPE)
+            .setStarred(true);
+        try {
+          java.io.File filePath = new java.io.File("/data/local/tmp/Note.json");
+          filePath.createNewFile();
+          Gson gson = new Gson();
+          String mJson = gson.toJson(noteLab);
+          BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.getAbsolutePath()));
+          writer.write(mJson);
+
+          FileContent mediaContent = new FileContent(FILE_MIME_TYPE, filePath);
+          File file = drive.files().create(fileMetadata, mediaContent)
+              .setFields("id")
+              .execute();
+          if (Objects.nonNull(file) && Objects.nonNull(file.getId())) {
+            Toast.makeText(context, "file created: " + "" +
+                    file.getId(),
+                Toast.LENGTH_LONG).show();
+            SPUtils.putString(context, "User",
+                "GoogleDriveFileID",
+                file.getId());
             writer.close();
-          } catch (IOException e) {
-            Log.e(TAG, "createFileOnGoogleDrive: ", e);
+            if (filePath.exists()) {
+              filePath.delete();
+            }
           }
+        } catch (IOException e) {
+          e.printStackTrace();
         }
-        MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-            .setTitle("Note.json")
-            .setMimeType("plain/text")
-            .setStarred(true).build();
-
-        // create a file in root folder
-        Drive.DriveApi.getRootFolder(mGoogleApiClient)
-            .createFile(mGoogleApiClient, changeSet, driveContents)
-            .setResultCallback(result1 -> {
-              if (result1.getStatus().isSuccess()) {
-
-                Toast.makeText(getActivity(), "file created: " + "" +
-                        result1.getDriveFile().getDriveId(),
-                    Toast.LENGTH_LONG).show();
-                SPUtils.putString(getActivity(), "User",
-                    "GoogleDriveFileID",
-                    result1.getDriveFile().getDriveId().toString());
-              }
-            });
       });
     }
 
@@ -603,59 +669,25 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
       super.onActivityResult(requestCode, resultCode, data);
       switch (requestCode) {
         case REQUEST_CODE_CREATOR:
-          ToastUtils.with(getActivity()).setMessage("Done").showShortToast();
           if (resultCode == Activity.RESULT_OK) {
-            //startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE),
-//                                REQUEST_CODE_SAVE_TO_DRIVE);
             ToastUtils.with(getActivity()).setMessage("Done").showShortToast();
           }
           break;
-        case REQUEST_CODE_SAVE_TO_DRIVE:
-//                    if (resultCode == Activity.RESULT_OK) {
-//                        // Store the image data as a bitmap for writing later.
-//                    }
+        case RC_SIGN_IN:
+          mCircleProgressDialogFragment.show(getFragmentManager(), "progress");
+          Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+          handleSignInResult(task);
+          break;
+
+        // Handling a user-recoverable auth exception
+        case RC_RECOVERABLE:
+          if (resultCode == RESULT_OK) {
+            // TODO: ????
+          }
           break;
       }
     }
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult result) {
-      mCircleProgressDialogFragment.dismiss();
-      // Called whenever the API client fails to connect.
-
-      Log.w(TAG, "onConnectionFailed: " + result.getErrorMessage());
-      if (!result.hasResolution()) {
-        // show the localized error dialog.
-        GoogleApiAvailability.getInstance().getErrorDialog(getActivity(), result.getErrorCode(), 0)
-            .show();
-        return;
-      }
-      // The failure has a resolution. Resolve it.
-      // Called typically when the app is not yet authorized, and an
-      // authorization
-      // dialog is displayed to the user.
-      try {
-        result.startResolutionForResult(getActivity(), REQUEST_CODE_RESOLUTION);
-      } catch (IntentSender.SendIntentException e) {
-        Log.e(TAG, "onConnectionFailed: Exception while starting resolution activity, ", e);
-      }
-    }
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-      mCircleProgressDialogFragment.dismiss();
-      if (BuildConfig.DEBUG) {
-        Log.i(TAG, "onConnected: API client connected.");
-      }
-      SnackBarUtils.shortSnackBar(getView(), "Google Drive connected!",
-          SnackBarUtils.TYPE_INFO).show();
-    }
-
-    @Override
-    public void onConnectionSuspended(int cause) {
-      mCircleProgressDialogFragment.dismiss();
-      Log.i(TAG, "onConnectionSuspended: " + "GoogleApiClient connection suspended");
-    }
 
   }
 

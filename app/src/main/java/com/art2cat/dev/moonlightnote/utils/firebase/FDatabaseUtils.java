@@ -28,19 +28,6 @@ import java.util.Objects;
 public class FDatabaseUtils {
 
   private static final String TAG = "FDatabaseUtils";
-  //  public User user;
-  private String mJson;
-  private boolean complete;
-  private DatabaseReference exportDatabaseReference;
-  private ValueEventListener exportValueEventListener;
-
-  private FDatabaseUtils(String userId) {
-
-  }
-
-  public static FDatabaseUtils newInstance(String userId) {
-    return new FDatabaseUtils(userId);
-  }
 
   /**
    * 清空回收站全部内容
@@ -252,70 +239,4 @@ public class FDatabaseUtils {
       }
     }
   }
-
-  /**
-   * TODO: need fix
-   * @param context
-   * @param userId
-   * @param type
-   * @return
-   */
-  public static NoteLab exportNote(Context context, String userId, final int type) {
-    NoteLab noteLab = new NoteLab();
-    DatabaseReference exportDatabaseReference = FirebaseDatabase.getInstance().getReference()
-        .child("users-moonlight").child(userId).child("note");
-    String key = SPUtils.getString(context,
-        "User", "EncryptKey", null);
-
-    ValueEventListener exportValueEventListener = new ValueEventListener() {
-      @Override
-      public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-        if (Objects.nonNull(dataSnapshot)) {
-
-          Log.i(TAG, "onDataChange: " + dataSnapshot.getChildrenCount());
-          int size = (int) dataSnapshot.getChildrenCount();
-          noteLab.setSize(size);
-          for (DataSnapshot child : dataSnapshot.getChildren()) {
-            Moonlight moonlight = child.getValue(Moonlight.class);
-            noteLab.setMoonlight(
-                MoonlightEncryptUtils.decryptMoonlight(key, moonlight));
-          }
-        } else {
-          Log.e(TAG, "onDataChange: fail");
-        }
-      }
-
-      @Override
-      public void onCancelled(@NonNull DatabaseError databaseError) {
-        Log.w(TAG, "loadMoonlight:onCancelled", databaseError.toException());
-      }
-
-    };
-    try {
-      exportDatabaseReference.addValueEventListener(exportValueEventListener);
-      Thread.sleep(10000);
-      Log.d(TAG, "exportNote: notelab: " + noteLab.getMoonlights().size());
-      while (noteLab.getSize() != noteLab.getMoonlights().size()) {
-        Log.d(TAG, "exportNote: " + noteLab.getSize());
-      }
-      return noteLab;
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    } finally {
-      exportDatabaseReference.removeEventListener(exportValueEventListener);
-    }
-    return noteLab;
-  }
-
-  private boolean isComplete() {
-    return complete;
-  }
-
-  public String getJson() {
-    if (isComplete()) {
-      return mJson;
-    }
-    return null;
-  }
-
 }

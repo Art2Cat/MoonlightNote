@@ -22,18 +22,18 @@ public class Moonlight implements Parcelable, Cloneable {
     }
   };
 
-  public String id;
-  public String title;
-  public String content;
-  public String imageUrl;
-  public String audioUrl;
-  public long date;
-  public long audioDuration;
-  public String label;
-  public String imageName;
-  public String audioName;
-  public int color;
-  public boolean trash;
+  private String id;
+  private String title;
+  private String content;
+  private String imageUrl;
+  private String audioUrl;
+  private long date;
+  private long audioDuration;
+  private String label;
+  private String imageName;
+  private String audioName;
+  private int color;
+  private boolean trash;
 
   public Moonlight() {
 
@@ -207,6 +207,8 @@ public class Moonlight implements Parcelable, Cloneable {
 
   @Override
   public Object clone() throws CloneNotSupportedException {
-    return super.clone();
+    super.clone();
+    return new Moonlight(id, title, content, imageUrl, audioUrl,
+        date, audioDuration, label, imageName, audioName, color, trash);
   }
 }
