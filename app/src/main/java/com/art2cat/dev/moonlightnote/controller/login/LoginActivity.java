@@ -33,7 +33,6 @@ import java.util.Objects;
 public class LoginActivity extends AppCompatActivity {
 
   private static final String TAG = "LoginActivity";
-  private static final String AD_UNIT_ID = "ca-app-pub-5043396164425122/9918900095";
   ShortcutsUtils shortcutsUtils;
   private boolean loginState = false;
   private FirebaseAuth firebaseAuth;
@@ -45,7 +44,6 @@ public class LoginActivity extends AppCompatActivity {
     setTransition();
     setContentView(R.layout.activity_login);
     // initialize Admob
-    MobileAds.initialize(this, AD_UNIT_ID);
     firebaseAuth = getInstance();
 
     boolean flag = SPUtils

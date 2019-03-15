@@ -53,6 +53,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.firebase.auth.FirebaseAuth;
@@ -75,6 +76,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -311,8 +313,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
       // Configure sign-in to request the user's ID, email address, basic profile,
       // and readonly access to contacts.
       GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-          .requestScopes(new Scope(DRIVE_SCOPE))
           .requestEmail()
+          .requestScopes(new Scope(DriveScopes.DRIVE_FILE))
           .build();
 
       mGoogleSignInClient = GoogleSignIn.getClient(getContext(), gso);
@@ -497,8 +499,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     public void onDestroy() {
       super.onDestroy();
-      if (!EXECUTOR_SERVICE.isTerminated()) {
-        EXECUTOR_SERVICE.shutdown();
+      if (Objects.nonNull(EXECUTOR_SERVICE)) {
+        try {
+          // wait 1 second for closing all threads
+          EXECUTOR_SERVICE.awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }
       }
       if (Objects.nonNull(mGoogleSignInClient)) {
         mGoogleSignInClient.signOut();

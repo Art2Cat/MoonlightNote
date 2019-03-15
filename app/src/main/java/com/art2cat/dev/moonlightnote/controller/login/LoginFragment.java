@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
@@ -35,14 +34,13 @@ import com.art2cat.dev.moonlightnote.utils.UserUtils;
 import com.art2cat.dev.moonlightnote.utils.Utils;
 import com.art2cat.dev.moonlightnote.utils.firebase.AuthUtils;
 import com.art2cat.dev.moonlightnote.utils.firebase.FDatabaseUtils;
-import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.Builder;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
@@ -71,7 +69,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
   private View loginFormView;
   private FirebaseAuth firebaseAuth;
   private FirebaseAuth.AuthStateListener authStateListener;
-  private GoogleApiClient googleApiClient;
+  private GoogleSignInClient googleSignInClient;
   private boolean isNewUser = false;
 
   public LoginFragment() {
@@ -81,6 +79,7 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
     firebaseAuth = FirebaseAuth.getInstance();
     EventBus.getDefault().register(this);
     signIn();
@@ -147,9 +146,8 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
   @Override
   public void onDestroy() {
     EventBus.getDefault().unregister(this);
-    if (Objects.nonNull(googleApiClient)) {
-      googleApiClient.stopAutoManage((FragmentActivity) activity);
-      googleApiClient.disconnect();
+    if (Objects.nonNull(googleSignInClient)) {
+      googleSignInClient.revokeAccess();
     }
     super.onDestroy();
   }
@@ -248,18 +246,15 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
     super.onActivityResult(requestCode, resultCode, data);
 
     if (requestCode == RC_SIGN_IN) {
-      GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-      if (result.isSuccess()) {
-        GoogleSignInAccount account = result.getSignInAccount();
+      Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+      try {
+        // Google Sign In was successful, authenticate with Firebase
+        GoogleSignInAccount account = task.getResult(ApiException.class);
         firebaseAuthWithGoogle(account);
         isNewUser = true;
-      } else {
-        showProgress(false);
-        showShortSnackBar(view, "Google Sign In failed: " + result.getStatus(),
-            SnackBarUtils.TYPE_INFO);
-        if (BuildConfig.DEBUG) {
-          Log.e(TAG, "onActivityResult: " + result.getStatus());
-        }
+      } catch (ApiException e) {
+        // Google Sign In failed, update UI appropriately
+        Log.w(TAG, "Google sign in failed", e);
       }
     }
   }
@@ -287,27 +282,13 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
         break;
       case R.id.login_google_btn:
         showProgress(true);
-        GoogleSignInOptions mGoogleSignInOptions =
+        GoogleSignInOptions gso =
             new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(activity.getString(R.string.default_web_client_id))
+//                .requestIdToken(activity.getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-        if (Objects.isNull(googleApiClient)) {
-          googleApiClient = new Builder(activity)
-              .enableAutoManage((FragmentActivity) activity,
-                  new OnConnectionFailedListener() {
-                    @Override
-                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-                      if (BuildConfig.DEBUG) {
-                        Log.e(TAG, "onConnectionFailed: " + connectionResult.getErrorMessage());
-                      }
-                    }
-                  }
-              )
-              .addApi(Auth.GOOGLE_SIGN_IN_API, mGoogleSignInOptions)
-              .build();
-        }
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+        googleSignInClient = GoogleSignIn.getClient(getContext(), gso);
+        Intent signInIntent = googleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
         break;
       case R.id.test_btn:
@@ -360,26 +341,15 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
   }
 
   public void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-    if (BuildConfig.DEBUG) {
-      Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-    }
+    Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
     AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
     firebaseAuth.signInWithCredential(credential)
-        .addOnCompleteListener(task -> {
-          if (BuildConfig.DEBUG) {
-            Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
-          }
-
-          if (!task.isSuccessful()) {
-            showProgress(false);
-            Log.w(TAG, "signInWithCredential", task.getException());
-            //noinspection ThrowableResultOfMethodCallIgnored,ConstantConditions
-            String exception = task.getException().getMessage();
-            showShortSnackBar(view, "Authentication failed: " + exception,
-                SnackBarUtils.TYPE_WARNING);
-          } else {
-            showProgress(false);
+        .addOnCompleteListener(getActivity(), task -> {
+          if (task.isSuccessful()) {
+            // Sign in success, update UI with the signed-in user's information
+            Log.d(TAG, "signInWithCredential:success");
+            FirebaseUser user = firebaseAuth.getCurrentUser();
             Intent intent = new Intent(activity, MoonlightActivity.class);
             Bundle bundle = ActivityOptions
                 .makeSceneTransitionAnimation(activity).toBundle();
@@ -388,7 +358,15 @@ public class LoginFragment extends BaseFragment implements View.OnClickListener,
             isNewUser = true;
             SPUtils.putBoolean(getContext(), "User", "google", true);
             activity.finishAfterTransition();
+          } else {
+            // If sign in fails, display a message to the user.
+            String exception = task.getException().getMessage();
+            showShortSnackBar(view, "Authentication failed: " + exception,
+                SnackBarUtils.TYPE_WARNING);
+            Log.w(TAG, "signInWithCredential:failure", task.getException());
           }
+
+          showProgress(false);
         });
   }
 
